@@ -53,7 +53,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-300 mb-4">
+            <p className="text-sm text-subtle mb-4">
               Your unique spiritual signature has been generated. This sigil represents your energy and essence.
             </p>
             <Button
@@ -70,7 +70,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
             <div className="w-24 h-24 mx-auto bg-cosmic/50 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-primary/30">
               <i className="fas fa-magic text-primary text-2xl"></i>
             </div>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-muted mb-4">
               Generate your unique AI-powered spiritual sigil
             </p>
             <Button

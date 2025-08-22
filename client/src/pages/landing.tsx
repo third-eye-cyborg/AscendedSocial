@@ -44,7 +44,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/about'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-about"
               >
                 About
@@ -52,7 +52,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/features'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-features"
               >
                 Features
@@ -60,7 +60,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
               >
                 Pricing
@@ -102,7 +102,7 @@ export default function Landing() {
                   Social Reality
                 </span>
               </h2>
-              <p className="text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto font-light">
+              <p className="text-2xl text-subtle mb-12 leading-relaxed max-w-4xl mx-auto font-light">
                 Where ancient wisdom meets cutting-edge technology. Connect with enlightened souls,
                 <br className="hidden lg:block" />
                 share your spiritual journey, and unlock your highest potential in a sacred digital space.
@@ -126,7 +126,7 @@ export default function Landing() {
             </div>
             
             {/* Trust Indicators */}
-            <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-sm text-gray-400 animate-fade-in" style={{animationDelay: '0.5s'}}>
+            <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-sm text-muted animate-fade-in" style={{animationDelay: '0.5s'}}>
               <div className="flex items-center gap-2">
                 <div className="flex -space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">A</div>
@@ -156,7 +156,7 @@ export default function Landing() {
                   Mystical Features
                 </span>
               </h3>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-muted max-w-3xl mx-auto leading-relaxed">
                 Harness the power of AI-enhanced spirituality to elevate your consciousness and connect with your tribe.
               </p>
             </div>
@@ -174,7 +174,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-chakra-heart">AI-Generated Sigils</h3>
-                    <p className="text-gray-200 leading-relaxed text-lg">
+                    <p className="text-secondary leading-relaxed text-lg">
                       Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-heart text-sm font-semibold">
@@ -196,7 +196,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Chakra Intelligence</h3>
-                    <p className="text-gray-200 leading-relaxed text-lg">
+                    <p className="text-secondary leading-relaxed text-lg">
                       AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-crown text-sm font-semibold">
@@ -218,7 +218,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-primary">Sacred Energy System</h3>
-                    <p className="text-gray-200 leading-relaxed text-lg">
+                    <p className="text-secondary leading-relaxed text-lg">
                       Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                     </p>
                     <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">
@@ -245,7 +245,7 @@ export default function Landing() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-primary mb-1">Daily Oracle Readings</h4>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-subtle text-sm">
                     Receive personalized spiritual guidance and wisdom each day through AI-powered readings.
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export default function Landing() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-secondary mb-1">AI Tarot Readings</h4>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-subtle text-sm">
                     Premium users can access deep tarot insights generated by advanced AI consciousness.
                   </p>
                 </div>
@@ -269,7 +269,7 @@ export default function Landing() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-accent-light mb-1">Sparks & Visions</h4>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-subtle text-sm">
                     Share short spiritual moments (Sparks) and longer wisdom videos (Visions).
                   </p>
                 </div>
@@ -281,7 +281,7 @@ export default function Landing() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-chakra-heart mb-1">Aura Tracking</h4>
-                  <p className="text-gray-300 text-sm">
+                  <p className="text-subtle text-sm">
                     Monitor your spiritual growth through an intelligent aura system that evolves with you.
                   </p>
                 </div>
@@ -318,7 +318,7 @@ export default function Landing() {
               </span>
             </h3>
             
-            <p className="text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-2xl text-subtle mb-12 leading-relaxed max-w-4xl mx-auto">
               Join thousands of awakened souls on their journey of spiritual ascension. 
               <br className="hidden lg:block" />
               Your transformation begins with a single conscious choice.
@@ -353,7 +353,7 @@ export default function Landing() {
           </div>
           
           {/* Trust badges */}
-          <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-gray-400 text-sm animate-fade-in" style={{animationDelay: '0.8s'}}>
+          <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-muted text-sm animate-fade-in" style={{animationDelay: '0.8s'}}>
             <div className="flex items-center gap-2">
               <i className="fas fa-lock text-primary"></i>
               <span>256-bit Encrypted</span>

@@ -27,7 +27,7 @@ export default function About() {
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Ascended Social
                 </h1>
-                <p className="text-xs text-gray-400 font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-muted font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
               </div>
             </div>
             
@@ -35,7 +35,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-home"
               >
                 Home
@@ -43,7 +43,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/features'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-features"
               >
                 Features
@@ -51,7 +51,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
               >
                 Pricing
@@ -79,7 +79,7 @@ export default function About() {
                 About Ascended Social
               </span>
             </h2>
-            <p className="text-2xl text-gray-300 mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-2xl text-subtle mb-8 leading-relaxed max-w-4xl mx-auto">
               Where ancient wisdom meets cutting-edge technology to create the future of spiritual connection.
             </p>
           </div>
@@ -94,7 +94,7 @@ export default function About() {
                   </div>
                   <h3 className="text-4xl font-display font-bold mb-6 text-primary">Our Mission</h3>
                 </div>
-                <p className="text-xl text-gray-200 leading-relaxed text-center max-w-4xl mx-auto">
+                <p className="text-xl text-secondary leading-relaxed text-center max-w-4xl mx-auto">
                   We believe that true spiritual growth happens in community. Ascended Social is designed to be a sacred digital space where seekers, healers, and enlightened souls can connect, share wisdom, and support each other on their journey to higher consciousness.
                 </p>
               </CardContent>
@@ -117,7 +117,7 @@ export default function About() {
                     <img src={logoImage} alt="Ascended Social Logo" className="w-8 h-8" />
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-chakra-heart">Authentic Connection</h4>
-                  <p className="text-gray-200 leading-relaxed">
+                  <p className="text-secondary leading-relaxed">
                     We foster genuine relationships built on vulnerability, trust, and mutual respect for each person's unique spiritual journey.
                   </p>
                 </CardContent>
@@ -130,7 +130,7 @@ export default function About() {
                     <i className="fas fa-eye text-white text-xl"></i>
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Sacred Technology</h4>
-                  <p className="text-gray-200 leading-relaxed">
+                  <p className="text-secondary leading-relaxed">
                     We harness the power of AI and technology not to replace human intuition, but to enhance and amplify our natural spiritual gifts.
                   </p>
                 </CardContent>
@@ -143,7 +143,7 @@ export default function About() {
                     <i className="fas fa-infinity text-white text-xl"></i>
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-primary">Inclusive Wisdom</h4>
-                  <p className="text-gray-200 leading-relaxed">
+                  <p className="text-secondary leading-relaxed">
                     We welcome all spiritual traditions and paths, believing that wisdom comes in many forms and every soul has something valuable to share.
                   </p>
                 </CardContent>
@@ -161,7 +161,7 @@ export default function About() {
                   </div>
                   <h3 className="text-4xl font-display font-bold mb-6 text-secondary">Our Vision</h3>
                 </div>
-                <p className="text-xl text-gray-200 leading-relaxed text-center max-w-4xl mx-auto">
+                <p className="text-xl text-secondary leading-relaxed text-center max-w-4xl mx-auto">
                   We envision a world where technology serves consciousness, where digital spaces feel sacred, and where every person has access to the tools and community they need to awaken to their highest potential. Ascended Social is just the beginning of this revolution in spiritual connection.
                 </p>
               </CardContent>
@@ -175,7 +175,7 @@ export default function About() {
                 Ready to Begin?
               </span>
             </h3>
-            <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-subtle mb-8 max-w-3xl mx-auto">
               Join a community of awakened souls on a journey of transformation and connection.
             </p>
             <Button 

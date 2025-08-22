@@ -45,13 +45,13 @@ export default function OracleSidebar() {
               </div>
 
               <div 
-                className="text-sm text-gray-300 leading-relaxed mb-3"
+                className="text-sm text-subtle leading-relaxed mb-3"
                 data-testid="text-daily-reading"
               >
                 {(dailyReading as any)?.content}
               </div>
 
-              <div className="flex items-center justify-between text-xs text-gray-400">
+              <div className="flex items-center justify-between text-xs text-muted">
                 <span data-testid="text-reading-title">
                   {(dailyReading as any)?.metadata?.title || 'Daily Wisdom'}
                 </span>
@@ -67,7 +67,7 @@ export default function OracleSidebar() {
             </>
           ) : (
             <div className="text-center py-4">
-              <p className="text-gray-400 text-sm">No reading available</p>
+              <p className="text-muted text-sm">No reading available</p>
             </div>
           )}
         </CardContent>
@@ -111,7 +111,7 @@ export default function OracleSidebar() {
                     <h4 className="text-sm font-medium text-white truncate">
                       {rec.title}
                     </h4>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-muted">
                       {rec.type} • {rec.reason}
                     </p>
                   </div>
@@ -120,7 +120,7 @@ export default function OracleSidebar() {
             </div>
           ) : (
             <div className="text-center py-4">
-              <p className="text-gray-400 text-sm">No recommendations available</p>
+              <p className="text-muted text-sm">No recommendations available</p>
             </div>
           )}
 
@@ -146,7 +146,7 @@ export default function OracleSidebar() {
                 <div className="w-3 h-3 rounded-full bg-chakra-heart"></div>
                 <span className="text-sm">Heart Chakra</span>
               </div>
-              <span className="text-xs text-gray-400">2.4k posts</span>
+              <span className="text-xs text-muted">2.4k posts</span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -154,7 +154,7 @@ export default function OracleSidebar() {
                 <div className="w-3 h-3 rounded-full bg-chakra-crown"></div>
                 <span className="text-sm">Crown Chakra</span>
               </div>
-              <span className="text-xs text-gray-400">1.8k posts</span>
+              <span className="text-xs text-muted">1.8k posts</span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -162,7 +162,7 @@ export default function OracleSidebar() {
                 <div className="w-3 h-3 rounded-full bg-chakra-throat"></div>
                 <span className="text-sm">Throat Chakra</span>
               </div>
-              <span className="text-xs text-gray-400">1.5k posts</span>
+              <span className="text-xs text-muted">1.5k posts</span>
             </div>
             
             <div className="flex items-center justify-between">
@@ -170,7 +170,7 @@ export default function OracleSidebar() {
                 <div className="w-3 h-3 rounded-full bg-chakra-third"></div>
                 <span className="text-sm">Third Eye</span>
               </div>
-              <span className="text-xs text-gray-400">1.2k posts</span>
+              <span className="text-xs text-muted">1.2k posts</span>
             </div>
           </div>
         </CardContent>
@@ -185,7 +185,7 @@ export default function OracleSidebar() {
           <div className="space-y-2">
             <Button
               variant="ghost"
-              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              className="w-full justify-start px-3 py-2 text-subtle hover:text-white hover:bg-cosmic-light"
               data-testid="button-generate-sigil"
             >
               <i className="fas fa-magic mr-2 text-accent-light"></i>
@@ -194,7 +194,7 @@ export default function OracleSidebar() {
             
             <Button
               variant="ghost"
-              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              className="w-full justify-start px-3 py-2 text-subtle hover:text-white hover:bg-cosmic-light"
               data-testid="button-meditation-timer"
             >
               <i className="fas fa-clock mr-2 text-primary"></i>
@@ -203,7 +203,7 @@ export default function OracleSidebar() {
             
             <Button
               variant="ghost"
-              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              className="w-full justify-start px-3 py-2 text-subtle hover:text-white hover:bg-cosmic-light"
               data-testid="button-chakra-test"
             >
               <i className="fas fa-vial mr-2 text-secondary"></i>

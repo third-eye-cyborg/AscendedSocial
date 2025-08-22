@@ -87,8 +87,8 @@ export default function ProfileSettings() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-gray-300 mb-1">Your unique spiritual identifier</p>
-                  <p className="text-xs text-gray-400 font-mono">{(user as any)?.sigil || "No sigil generated"}</p>
+                  <p className="text-subtle mb-1">Your unique spiritual identifier</p>
+                  <p className="text-xs text-muted font-mono">{(user as any)?.sigil || "No sigil generated"}</p>
                 </div>
               </div>
               <Button
@@ -112,7 +112,7 @@ export default function ProfileSettings() {
           <CardContent>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="username" className="text-gray-300">Username</Label>
+                <Label htmlFor="username" className="text-subtle">Username</Label>
                 <Input
                   id="username"
                   value={username}

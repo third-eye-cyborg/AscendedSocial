@@ -20,7 +20,7 @@ export default function OracleSidebar() {
   if (!user) return null;
 
   return (
-    <aside className="w-80 fixed right-0 top-16 h-screen bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto">
+    <aside className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
       {/* Daily Oracle Reading */}
       <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30 hover-lift animate-scale-in">
         <CardHeader>
@@ -144,7 +144,7 @@ export default function OracleSidebar() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-chakra-heart"></div>
-                <span className="text-sm">Heart Chakra</span>
+                <span className="text-sm text-white">Heart Chakra</span>
               </div>
               <span className="text-xs text-gray-300">2.4k posts</span>
             </div>
@@ -152,7 +152,7 @@ export default function OracleSidebar() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-chakra-crown"></div>
-                <span className="text-sm">Crown Chakra</span>
+                <span className="text-sm text-white">Crown Chakra</span>
               </div>
               <span className="text-xs text-gray-300">1.8k posts</span>
             </div>
@@ -160,7 +160,7 @@ export default function OracleSidebar() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-chakra-throat"></div>
-                <span className="text-sm">Throat Chakra</span>
+                <span className="text-sm text-white">Throat Chakra</span>
               </div>
               <span className="text-xs text-gray-300">1.5k posts</span>
             </div>
@@ -168,7 +168,7 @@ export default function OracleSidebar() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full bg-chakra-third"></div>
-                <span className="text-sm">Third Eye</span>
+                <span className="text-sm text-white">Third Eye</span>
               </div>
               <span className="text-xs text-gray-300">1.2k posts</span>
             </div>

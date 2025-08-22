@@ -612,7 +612,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserConnections(userId: string): Promise<any[]> {
-    const connections = await db
+    const userConnections = await db
       .select()
       .from(connections)
       .where(
@@ -621,7 +621,7 @@ export class DatabaseStorage implements IStorage {
           eq(connections.receiverId, userId)
         )
       );
-    return connections;
+    return userConnections;
   }
 }
 

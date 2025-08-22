@@ -8,6 +8,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "./ObjectUploader";
 import type { UploadResult } from '@uppy/core';
+import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
 
 export default function CreatePost() {
   const { user } = useAuth();
@@ -117,32 +118,47 @@ export default function CreatePost() {
   }
 
   return (
-    <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
-      <CardContent className="p-4">
+    <Card className="bg-gradient-to-br from-cosmic-light via-cosmic-light to-cosmic border border-primary/40 rounded-2xl mb-6 shadow-2xl hover:shadow-primary/10 transition-all duration-300">
+      <CardContent className="p-6">
         <form onSubmit={handleSubmit}>
-          <div className="flex items-start space-x-3">
-            {/* User Sigil */}
-            <div className="sigil-container w-10 h-10 rounded-full p-0.5 flex-shrink-0">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
-                {(user as any)?.sigil ? (
-                  <span className="text-xs text-white font-mono" data-testid="text-user-sigil">
-                    {(user as any)?.sigil}
-                  </span>
-                ) : (
-                  <i className="fas fa-lotus text-white"></i>
-                )}
+          <div className="flex items-start space-x-4">
+            {/* Enhanced User Avatar */}
+            <div className="relative group">
+              <div className="sigil-container w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-0.5 flex-shrink-0 shadow-lg">
+                <div className="w-full h-full bg-gradient-to-br from-cosmic to-cosmic-light rounded-full flex items-center justify-center border border-primary/30">
+                  {(user as any)?.profileImageUrl ? (
+                    <img 
+                      src={(user as any).profileImageUrl} 
+                      alt={(user as any)?.username || 'User'} 
+                      className="w-full h-full rounded-full object-cover"
+                      data-testid="img-user-avatar"
+                    />
+                  ) : (user as any)?.sigil ? (
+                    <span className="text-xs text-white font-mono drop-shadow-lg" data-testid="text-user-sigil">
+                      {(user as any)?.sigil}
+                    </span>
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                      <i className="fas fa-lotus text-white text-sm drop-shadow-lg"></i>
+                    </div>
+                  )}
+                </div>
               </div>
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/0 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             
-            {/* Post Content */}
-            <div className="flex-1">
-              <Textarea
-                placeholder="Share your spiritual insight..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full bg-transparent border-none resize-none text-white placeholder:text-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[80px]"
-                data-testid="textarea-content"
-              />
+            {/* Enhanced Post Content */}
+            <div className="flex-1 bg-gradient-to-b from-cosmic/30 to-cosmic-light/30 rounded-xl p-4 border border-primary/20">
+              <div className="relative">
+                <Textarea
+                  placeholder="Share your spiritual insight..."
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  className="w-full bg-transparent border-none resize-none text-white placeholder:text-primary/60 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[100px] text-lg leading-relaxed"
+                  data-testid="textarea-content"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
+              </div>
               
               {/* Media Preview */}
               {mediaUrl && (
@@ -178,41 +194,55 @@ export default function CreatePost() {
                 </div>
               )}
               
-              {/* Actions */}
-              <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center space-x-4 text-gray-300">
+              {/* Enhanced Actions */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
+                <div className="flex items-center space-x-6">
                   <ObjectUploader
                     maxNumberOfFiles={1}
                     maxFileSize={50 * 1024 * 1024} // 50MB
                     onGetUploadParameters={handleGetUploadParameters}
                     onComplete={handleUploadComplete}
-                    buttonClassName="hover:text-primary transition-colors p-0 h-auto bg-transparent border-none"
+                    buttonClassName="group relative p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-300 border-none shadow-md hover:shadow-lg"
                   >
-                    <i className="fas fa-image" data-testid="button-add-media"></i>
+                    <div className="relative">
+                      <i className="fas fa-image text-primary group-hover:text-white transition-colors text-lg" data-testid="button-add-media"></i>
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
                   </ObjectUploader>
                   
                   <button 
                     type="button" 
-                    className="hover:text-primary transition-colors"
+                    className="group relative p-2 rounded-full bg-accent/10 hover:bg-accent/20 transition-all duration-300 shadow-md hover:shadow-lg"
                     data-testid="button-add-poll"
                   >
-                    <i className="fas fa-poll"></i>
+                    <div className="relative">
+                      <i className="fas fa-poll text-accent group-hover:text-white transition-colors text-lg"></i>
+                      <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
                   </button>
+                  
+                  <div className="flex items-center text-xs text-primary/60 ml-2">
+                    <i className="fas fa-sparkles mr-1"></i>
+                    <span>Share your wisdom</span>
+                  </div>
                 </div>
                 
                 <Button 
                   type="submit"
                   disabled={!content.trim() || createPostMutation.isPending}
-                  className="bg-primary hover:bg-primary/80 px-6 py-2 font-medium"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 px-8 py-3 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   data-testid="button-share"
                 >
                   {createPostMutation.isPending ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Sharing...</span>
+                      <span>Ascending...</span>
                     </div>
                   ) : (
-                    "Share"
+                    <div className="flex items-center space-x-2">
+                      <i className="fas fa-paper-plane"></i>
+                      <span>Ascend</span>
+                    </div>
                   )}
                 </Button>
               </div>

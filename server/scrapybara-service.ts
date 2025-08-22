@@ -18,6 +18,8 @@ interface AnalysisResult {
 class ScrapybaraService {
   private client: ScrapybaraClient | null = null;
   private currentInstance: any = null;
+  private currentBrowserInstance: any = null;
+  private savedAuthStates: Map<string, string> = new Map();
 
   constructor() {
     // Initialize with environment variables if available
@@ -50,17 +52,33 @@ class ScrapybaraService {
     }
   }
 
-  public async takeScreenshot(): Promise<ScreenshotResult> {
-    if (!this.currentInstance || !this.client) {
-      throw new Error('No active instance found');
+  public async startBrowserInstance(): Promise<string> {
+    if (!this.client) {
+      throw new Error('Scrapybara client not initialized. Please provide API key.');
     }
 
     try {
-      // Use the instance screenshot API
-      const screenshot = await this.client!.instance.screenshot(this.currentInstance.id);
+      console.log('Starting new Browser instance...');
+      this.currentBrowserInstance = await this.client.startBrowser();
+      console.log('Browser instance started:', this.currentBrowserInstance.id);
+      return this.currentBrowserInstance.id;
+    } catch (error) {
+      console.error('Failed to start browser instance:', error);
+      throw error;
+    }
+  }
+
+  public async takeScreenshot(): Promise<ScreenshotResult> {
+    if (!this.currentBrowserInstance || !this.client) {
+      throw new Error('No active browser instance found');
+    }
+
+    try {
+      // Use the browser instance screenshot API
+      const screenshot = await this.currentBrowserInstance.screenshot();
       
       return {
-        image: screenshot.image || '',
+        image: screenshot.base64Image || '',
         timestamp: new Date().toISOString()
       };
     } catch (error) {
@@ -70,39 +88,36 @@ class ScrapybaraService {
   }
 
   public async navigateToApp(baseUrl: string): Promise<ScreenshotResult> {
-    if (!this.currentInstance || !this.client) {
-      await this.startInstance();
+    if (!this.currentBrowserInstance || !this.client) {
+      await this.startBrowserInstance();
     }
 
     try {
       console.log('Navigating to:', baseUrl);
       
-      // Start browser and navigate
-      await this.client!.browser.start(this.currentInstance.id);
-      
       // Use computer API to navigate
-      await this.client!.instance.computer(this.currentInstance.id, {
-        action: 'key',
-        coordinates: ['cmd+t'] // Open new tab
+      await this.currentBrowserInstance.computer({
+        action: 'press_key',
+        keys: ['ctrl', 't'] // Open new tab
       });
       
-      await this.client!.instance.computer(this.currentInstance.id, {
-        action: 'type',
+      await this.currentBrowserInstance.computer({
+        action: 'type_text',
         text: baseUrl
       });
       
-      await this.client!.instance.computer(this.currentInstance.id, {
-        action: 'key', 
-        coordinates: ['Return']
+      await this.currentBrowserInstance.computer({
+        action: 'press_key', 
+        keys: ['Return']
       });
       
       // Wait for page to load
       await new Promise(resolve => setTimeout(resolve, 5000));
       
       // Take screenshot
-      const result = await this.client!.instance.screenshot(this.currentInstance.id);
+      const result = await this.currentBrowserInstance.screenshot();
       
-      const imageBase64 = result.image || '';
+      const imageBase64 = result.base64Image || '';
       
       return {
         image: imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`,
@@ -122,19 +137,20 @@ class ScrapybaraService {
       // Look for login button and click it
       console.log('Looking for login button...');
       
-      // Try to find and click login button
-      await this.client!.instance.computer(this.currentInstance.id, {
-        action: 'click',
-        coordinates: [1000, 100] // Approximate header area where login button might be
+      // Try to find and click login button (approximate header area)
+      await this.currentBrowserInstance.computer({
+        action: 'click_mouse',
+        button: 'left',
+        coordinates: [1000, 100]
       });
       
       // Wait for potential auth redirect
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       // Take screenshot after auth attempt
-      const result = await this.client!.instance.screenshot(this.currentInstance.id);
+      const result = await this.currentBrowserInstance.screenshot();
       
-      const imageBase64 = result.image || '';
+      const imageBase64 = result.base64Image || '';
       const authenticated = true; // For now assume auth worked
         
       return {
@@ -150,16 +166,87 @@ class ScrapybaraService {
     }
   }
 
-  public async captureAppPages(baseUrl: string, pages: string[] = ['/']): Promise<Record<string, ScreenshotResult>> {
+  public async manualAuthAndSave(baseUrl: string, authStateName: string = 'default'): Promise<{authStateId: string, streamUrl: string}> {
+    try {
+      if (!this.currentBrowserInstance) {
+        await this.startBrowserInstance();
+      }
+
+      // Get stream URL for manual authentication
+      const streamResult = await this.currentBrowserInstance.getStreamUrl();
+      const streamUrl = streamResult.streamUrl;
+
+      console.log(`Manual authentication required. Stream URL: ${streamUrl}`);
+      console.log('Please navigate to the stream URL and complete the authentication manually.');
+      console.log(`After authentication, the auth state will be saved as: ${authStateName}`);
+
+      // Navigate to the app
+      await this.navigateToApp(baseUrl);
+
+      // Wait for manual authentication (in a real scenario, you'd wait for user input)
+      console.log('Waiting 30 seconds for manual authentication...');
+      await new Promise(resolve => setTimeout(resolve, 30000));
+
+      // Save auth state after manual authentication
+      // Use the correct API endpoint directly
+      const authResult = await this.currentBrowserInstance.saveAuth({
+        name: authStateName
+      });
+
+      const authStateId = authResult.authStateId;
+      this.savedAuthStates.set(authStateName, authStateId);
+
+      console.log(`Auth state saved with ID: ${authStateId}`);
+
+      return {
+        authStateId,
+        streamUrl
+      };
+    } catch (error) {
+      console.error('Failed to save auth state:', error);
+      throw error;
+    }
+  }
+
+  public async authenticateWithSavedState(authStateName: string = 'default'): Promise<boolean> {
+    try {
+      if (!this.currentBrowserInstance) {
+        throw new Error('No active browser instance');
+      }
+
+      const authStateId = this.savedAuthStates.get(authStateName);
+      if (!authStateId) {
+        throw new Error(`No saved auth state found for: ${authStateName}`);
+      }
+
+      await this.currentBrowserInstance.authenticate({
+        authStateId: authStateId
+      });
+
+      console.log(`Successfully authenticated using saved state: ${authStateName}`);
+      return true;
+    } catch (error) {
+      console.error('Failed to authenticate with saved state:', error);
+      throw error;
+    }
+  }
+
+  public async captureAppPages(baseUrl: string, pages: string[] = ['/'], useAuth: boolean = true, authStateName: string = 'default'): Promise<Record<string, ScreenshotResult>> {
     const screenshots: Record<string, ScreenshotResult> = {};
 
     try {
-      // First perform authentication
-      const authResult = await this.performAuthentication(baseUrl);
-      screenshots['auth'] = authResult.screenshot;
+      if (!this.currentBrowserInstance) {
+        await this.startBrowserInstance();
+      }
 
-      if (!authResult.authenticated) {
-        console.log('Authentication may not have completed, but continuing...');
+      // Authenticate with saved state if requested
+      if (useAuth) {
+        try {
+          await this.authenticateWithSavedState(authStateName);
+          console.log('Successfully authenticated with saved state');
+        } catch (authError) {
+          console.log('Failed to authenticate with saved state, continuing without auth:', authError);
+        }
       }
 
       // Navigate to each requested page
@@ -169,28 +256,28 @@ class ScrapybaraService {
           console.log(`Capturing screenshot for: ${fullUrl}`);
           
           // Navigate by typing in address bar
-          await this.client!.instance.computer(this.currentInstance.id, {
-            action: 'key',
-            coordinates: ['cmd+l'] // Select address bar
+          await this.currentBrowserInstance.computer({
+            action: 'press_key',
+            keys: ['ctrl', 'l'] // Select address bar
           });
           
-          await this.client!.instance.computer(this.currentInstance.id, {
-            action: 'type',
+          await this.currentBrowserInstance.computer({
+            action: 'type_text',
             text: fullUrl
           });
           
-          await this.client!.instance.computer(this.currentInstance.id, {
-            action: 'key',
-            coordinates: ['Return']
+          await this.currentBrowserInstance.computer({
+            action: 'press_key',
+            keys: ['Return']
           });
           
           // Wait for page to load
           await new Promise(resolve => setTimeout(resolve, 3000));
           
           // Take screenshot
-          const result = await this.client!.instance.screenshot(this.currentInstance.id);
+          const result = await this.currentBrowserInstance.screenshot();
           
-          const imageBase64 = result.image || '';
+          const imageBase64 = result.base64Image || '';
           screenshots[page] = {
             image: imageBase64.startsWith('data:') ? imageBase64 : `data:image/png;base64,${imageBase64}`,
             timestamp: new Date().toISOString()
@@ -245,17 +332,23 @@ class ScrapybaraService {
   }
 
   public async stopInstance(): Promise<void> {
-    if (!this.currentInstance || !this.client) {
+    if (!this.currentBrowserInstance && !this.currentInstance) {
       console.log('No instance to stop');
       return;
     }
 
     try {
-      if (this.currentInstance && this.client) {
-        await this.client.instance.stop(this.currentInstance.id);
+      if (this.currentBrowserInstance) {
+        await this.currentBrowserInstance.stop();
+        this.currentBrowserInstance = null;
+        console.log('Browser instance stopped');
       }
-      this.currentInstance = null;
-      console.log('Instance stopped');
+      
+      if (this.currentInstance) {
+        await this.currentInstance.stop();
+        this.currentInstance = null;
+        console.log('Ubuntu instance stopped');
+      }
     } catch (error) {
       console.error('Failed to stop instance:', error);
       throw error;
@@ -263,11 +356,29 @@ class ScrapybaraService {
   }
 
   public getInstanceInfo(): any {
-    return this.currentInstance ? {
-      id: this.currentInstance.id,
-      status: 'active',
-      type: 'ubuntu-standard'
-    } : null;
+    const instances = [];
+    
+    if (this.currentBrowserInstance) {
+      instances.push({
+        id: this.currentBrowserInstance.id,
+        status: 'active',
+        type: 'browser'
+      });
+    }
+    
+    if (this.currentInstance) {
+      instances.push({
+        id: this.currentInstance.id,
+        status: 'active',
+        type: 'ubuntu-standard'
+      });
+    }
+    
+    return instances.length > 0 ? instances : null;
+  }
+
+  public getSavedAuthStates(): Record<string, string> {
+    return Object.fromEntries(this.savedAuthStates);
   }
 }
 

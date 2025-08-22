@@ -131,6 +131,17 @@ export default function Sidebar() {
             <span>Oracle</span>
           </button>
         </Link>
+        <Link href={`/profile/${(user as any)?.id}`}>
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === `/profile/${(user as any)?.id}` ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-profile"
+          >
+            <i className="fas fa-user-circle"></i>
+            <span>Profile</span>
+          </button>
+        </Link>
       </nav>
 
       {/* Premium Features */}

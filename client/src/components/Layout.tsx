@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useLocation } from "wouter";
 import Sidebar from "./Sidebar";
 import OracleSidebar from "./OracleSidebar";
 import SearchModal from "./SearchModal";
@@ -16,6 +17,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { user } = useAuth();
+  const [location] = useLocation();
   const isMobile = useIsMobile();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -109,14 +111,21 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               )}
               
-              {/* User Sigil/Avatar */}
+              {/* User Profile/Avatar */}
               <button 
                 onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
-                className="sigil-container w-10 h-10 rounded-full p-0.5 animate-glow hover:scale-110 transition-transform duration-200 cursor-pointer"
+                className="w-10 h-10 rounded-full p-0.5 animate-glow hover:scale-110 transition-transform duration-200 cursor-pointer"
                 data-testid="button-profile"
               >
-                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
-                  {(user as any)?.sigil ? (
+                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden border border-primary/30">
+                  {(user as any)?.profileImageUrl ? (
+                    <img 
+                      src={(user as any).profileImageUrl} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover rounded-full"
+                      data-testid="img-profile"
+                    />
+                  ) : (user as any)?.sigil ? (
                     <span className="text-[10px] text-white font-mono break-all text-center" data-testid="text-sigil">
                       {((user as any)?.sigil as string).slice(0, 3)}
                     </span>
@@ -152,7 +161,9 @@ export default function Layout({ children }: LayoutProps) {
 
         {/* Main Content */}
         <div className="flex-1 xl:ml-64 2xl:mr-80">
-          {children}
+          <div className="pb-20 xl:pb-0">
+            {children}
+          </div>
         </div>
 
         {/* Right Sidebar - Hidden on mobile, tablet, and smaller desktop */}
@@ -166,7 +177,9 @@ export default function Layout({ children }: LayoutProps) {
         <nav className="fixed bottom-0 left-0 right-0 bg-cosmic-light border-t border-primary/30 px-4 py-2 z-50">
           <div className="flex items-center justify-around">
             <button 
-              className="flex flex-col items-center space-y-1 text-primary" 
+              className={`flex flex-col items-center space-y-1 transition-colors ${
+                location === "/" ? "text-primary" : "text-gray-300 hover:text-primary"
+              }`}
               onClick={() => window.location.href = '/'}
               data-testid="button-home"
             >
@@ -175,16 +188,20 @@ export default function Layout({ children }: LayoutProps) {
             </button>
             
             <button 
-              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
-              onClick={() => window.location.href = '/visions'}
+              className={`flex flex-col items-center space-y-1 transition-colors ${
+                location === "/sparks" ? "text-primary" : "text-gray-300 hover:text-primary"
+              }`}
+              onClick={() => window.location.href = '/sparks'}
               data-testid="button-videos"
             >
-              <i className="fas fa-video"></i>
-              <span className="text-xs">Videos</span>
+              <i className="fas fa-bolt"></i>
+              <span className="text-xs">Sparks</span>
             </button>
             
             <button 
-              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
+              className={`flex flex-col items-center space-y-1 transition-colors ${
+                location === "/oracle" ? "text-primary" : "text-gray-300 hover:text-primary"
+              }`}
               onClick={() => window.location.href = '/oracle'}
               data-testid="button-oracle"
             >
@@ -193,7 +210,9 @@ export default function Layout({ children }: LayoutProps) {
             </button>
             
             <button 
-              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
+              className={`flex flex-col items-center space-y-1 transition-colors ${
+                location === `/profile/${(user as any)?.id}` ? "text-primary" : "text-gray-300 hover:text-primary"
+              }`}
               onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
               data-testid="button-profile-mobile"
             >

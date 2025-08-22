@@ -218,6 +218,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Force refresh daily reading
+  app.post('/api/readings/daily', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Force generate new daily reading
+      const aiReading = await generateDailyReading();
+      const reading = await storage.createReading({
+        type: "daily",
+        content: aiReading.content,
+        metadata: {
+          title: aiReading.title,
+          card: aiReading.card,
+          symbols: aiReading.symbols,
+          guidance: aiReading.guidance
+        }
+      }, userId);
+      
+      res.json(reading);
+    } catch (error) {
+      console.error("Error generating new daily reading:", error);
+      res.status(500).json({ message: "Failed to generate new daily reading" });
+    }
+  });
+
   app.post('/api/readings/tarot', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -267,6 +292,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       res.status(500).json({ message: "Failed to fetch recommendations" });
+    }
+  });
+
+  // Force refresh oracle recommendations
+  app.post('/api/oracle/recommendations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's recent posts for context
+      const userPosts = await storage.getUserPosts(userId, 5);
+      const userHistory = userPosts.map(post => post.content);
+      
+      // Force generate fresh recommendations
+      const recommendations = await generateOracleRecommendations(userHistory, user.aura || 0);
+      res.json(recommendations);
+    } catch (error) {
+      console.error("Error refreshing recommendations:", error);
+      res.status(500).json({ message: "Failed to refresh recommendations" });
     }
   });
 
@@ -405,6 +453,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating username:", error);
       res.status(500).json({ message: "Failed to update username" });
+    }
+  });
+
+  app.put('/api/users/:userId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const currentUserId = req.user.claims.sub;
+      
+      // Users can only update their own profile
+      if (userId !== currentUserId) {
+        return res.status(403).json({ message: "Can only update your own profile" });
+      }
+      
+      const { username, bio } = req.body;
+      
+      if (username && username.trim().length < 3) {
+        return res.status(400).json({ message: "Username must be at least 3 characters" });
+      }
+      
+      const updateData: any = {};
+      if (username) updateData.username = username.trim();
+      if (bio !== undefined) updateData.bio = bio.trim();
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
     }
   });
 

@@ -1,18 +1,32 @@
 import { useParams } from "wouter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import Layout from "@/components/Layout";
 import PostCard from "@/components/PostCard";
 import SigilGenerator from "@/components/SigilGenerator";
 import { getChakraColor } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 
 export default function Profile() {
   const { userId } = useParams();
   const { user: currentUser } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({
+    username: "",
+    bio: "",
+  });
 
   const { data: userProfile, isLoading: userLoading } = useQuery({
     queryKey: ["/api/users", userId],
@@ -30,6 +44,50 @@ export default function Profile() {
   });
 
   const isOwnProfile = currentUser && (currentUser as any)?.id === userId;
+
+  // Mutation for updating profile
+  const updateProfileMutation = useMutation({
+    mutationFn: async (profileData: { username?: string; bio?: string }) => {
+      return apiRequest("PUT", `/api/users/${userId}`, profileData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users", userId] });
+      setIsEditModalOpen(false);
+      toast({
+        title: "✨ Profile Updated!",
+        description: "Your spiritual profile has been updated successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Initialize form when profile data loads
+  useEffect(() => {
+    if (userProfile) {
+      setEditForm({
+        username: (userProfile as any)?.username || "",
+        bio: (userProfile as any)?.bio || "",
+      });
+    }
+  }, [userProfile]);
+
+  const handleSaveProfile = () => {
+    if (!editForm.username.trim()) {
+      toast({
+        title: "Username Required",
+        description: "Please enter a username",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateProfileMutation.mutate(editForm);
+  };
 
   if (userLoading) {
     return (
@@ -159,13 +217,73 @@ export default function Profile() {
                 <div className="space-y-2">
                   {isOwnProfile ? (
                     <>
-                      <Button 
-                        className="w-full bg-primary hover:bg-primary/80"
-                        data-testid="button-edit-profile"
-                      >
-                        <i className="fas fa-edit mr-2"></i>
-                        Edit Profile
-                      </Button>
+                      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+                        <DialogTrigger asChild>
+                          <Button 
+                            className="w-full bg-primary hover:bg-primary/80"
+                            data-testid="button-edit-profile"
+                          >
+                            <i className="fas fa-edit mr-2"></i>
+                            Edit Profile
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-cosmic-light border border-primary/30 text-white max-w-md">
+                          <DialogHeader>
+                            <DialogTitle className="text-accent-light">Edit Your Spiritual Profile</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="username" className="text-white">Username</Label>
+                              <Input
+                                id="username"
+                                value={editForm.username}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, username: e.target.value }))}
+                                placeholder="Enter your spiritual name"
+                                className="bg-cosmic border-primary/30 text-white"
+                                data-testid="input-edit-username"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="bio" className="text-white">Bio</Label>
+                              <Textarea
+                                id="bio"
+                                value={editForm.bio}
+                                onChange={(e) => setEditForm(prev => ({ ...prev, bio: e.target.value }))}
+                                placeholder="Share your spiritual journey..."
+                                className="bg-cosmic border-primary/30 text-white min-h-[80px]"
+                                data-testid="textarea-edit-bio"
+                              />
+                            </div>
+                            <div className="flex space-x-3">
+                              <Button
+                                variant="outline"
+                                onClick={() => setIsEditModalOpen(false)}
+                                className="flex-1 border-primary/50 text-white hover:bg-cosmic"
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                onClick={handleSaveProfile}
+                                disabled={updateProfileMutation.isPending}
+                                className="flex-1 bg-primary hover:bg-primary/80"
+                                data-testid="button-save-profile"
+                              >
+                                {updateProfileMutation.isPending ? (
+                                  <>
+                                    <i className="fas fa-spinner animate-spin mr-2"></i>
+                                    Saving...
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="fas fa-save mr-2"></i>
+                                    Save
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                       <SigilGenerator />
                     </>
                   ) : (

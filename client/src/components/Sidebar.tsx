@@ -2,9 +2,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Link, useLocation } from "wouter";
 
 export default function Sidebar() {
   const { user } = useAuth();
+  const [location] = useLocation();
 
   const { data: userStats } = useQuery({
     queryKey: ["/api/users", (user as any)?.id, "stats"],
@@ -74,30 +76,39 @@ export default function Sidebar() {
 
       {/* Navigation Menu */}
       <nav className="space-y-2 mb-6">
-        <button 
-          onClick={() => window.location.hash = 'feed'}
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-primary text-white w-full text-left"
-          data-testid="link-feed"
-        >
-          <i className="fas fa-home"></i>
-          <span>Feed</span>
-        </button>
-        <button 
-          onClick={() => alert('Visions - Video content coming soon! 📹✨')}
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
-          data-testid="link-visions"
-        >
-          <i className="fas fa-video"></i>
-          <span>Visions</span>
-        </button>
-        <button 
-          onClick={() => alert('Sparks - Quick spiritual insights feature coming soon! ⚡🔮')}
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
-          data-testid="link-sparks"
-        >
-          <i className="fas fa-bolt"></i>
-          <span>Sparks</span>
-        </button>
+        <Link href="/">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-feed"
+          >
+            <i className="fas fa-home"></i>
+            <span>Feed</span>
+          </button>
+        </Link>
+        <Link href="/visions">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/visions" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-visions"
+          >
+            <i className="fas fa-video"></i>
+            <span>Visions</span>
+          </button>
+        </Link>
+        <Link href="/sparks">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/sparks" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-sparks"
+          >
+            <i className="fas fa-bolt"></i>
+            <span>Sparks</span>
+          </button>
+        </Link>
         <button 
           onClick={() => {
             // Scroll to oracle reading in right sidebar
@@ -114,14 +125,17 @@ export default function Sidebar() {
           <i className="fas fa-eye"></i>
           <span>The Oracle</span>
         </button>
-        <button 
-          onClick={() => alert('Community features - Sacred circles, group meditations, and spiritual discussions coming soon! 🕉️')}
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
-          data-testid="link-community"
-        >
-          <i className="fas fa-users"></i>
-          <span>Community</span>
-        </button>
+        <Link href="/community">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/community" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-community"
+          >
+            <i className="fas fa-users"></i>
+            <span>Community</span>
+          </button>
+        </Link>
       </nav>
 
       {/* Premium Features */}

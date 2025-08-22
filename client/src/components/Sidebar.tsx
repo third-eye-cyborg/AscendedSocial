@@ -84,7 +84,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-secondary hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
           data-testid="link-visions"
         >
           <i className="fas fa-video"></i>
@@ -92,7 +92,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-secondary hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
           data-testid="link-sparks"
         >
           <i className="fas fa-bolt"></i>
@@ -100,7 +100,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-secondary hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
           data-testid="link-oracle"
         >
           <i className="fas fa-eye"></i>
@@ -108,7 +108,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-secondary hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
           data-testid="link-community"
         >
           <i className="fas fa-users"></i>

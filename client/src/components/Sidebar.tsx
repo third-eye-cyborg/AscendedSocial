@@ -74,46 +74,54 @@ export default function Sidebar() {
 
       {/* Navigation Menu */}
       <nav className="space-y-2 mb-6">
-        <a 
-          href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-primary text-white"
+        <button 
+          onClick={() => window.location.hash = 'feed'}
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg bg-primary text-white w-full text-left"
           data-testid="link-feed"
         >
           <i className="fas fa-home"></i>
           <span>Feed</span>
-        </a>
-        <a 
-          href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
+        </button>
+        <button 
+          onClick={() => alert('Visions - Video content coming soon! 📹✨')}
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
           data-testid="link-visions"
         >
           <i className="fas fa-video"></i>
           <span>Visions</span>
-        </a>
-        <a 
-          href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
+        </button>
+        <button 
+          onClick={() => alert('Sparks - Quick spiritual insights feature coming soon! ⚡🔮')}
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
           data-testid="link-sparks"
         >
           <i className="fas fa-bolt"></i>
           <span>Sparks</span>
-        </a>
-        <a 
-          href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
+        </button>
+        <button 
+          onClick={() => {
+            // Scroll to oracle reading in right sidebar
+            const oracleSection = document.querySelector('[data-testid="text-daily-reading"]');
+            if (oracleSection) {
+              oracleSection.scrollIntoView({ behavior: 'smooth' });
+            } else {
+              alert('Oracle readings available in the right sidebar! 🔮');
+            }
+          }}
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
           data-testid="link-oracle"
         >
           <i className="fas fa-eye"></i>
           <span>The Oracle</span>
-        </a>
-        <a 
-          href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors"
+        </button>
+        <button 
+          onClick={() => alert('Community features - Sacred circles, group meditations, and spiritual discussions coming soon! 🕉️')}
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
           data-testid="link-community"
         >
           <i className="fas fa-users"></i>
           <span>Community</span>
-        </a>
+        </button>
       </nav>
 
       {/* Premium Features */}
@@ -124,33 +132,36 @@ export default function Sidebar() {
             Premium Tools
           </h4>
           <div className="space-y-2 text-sm">
-            <a 
-              href="#" 
-              className="block text-white hover:text-accent-light transition-colors duration-200"
+            <button 
+              onClick={() => alert('AI Tarot Readings - Premium feature coming soon! Unlock mystical insights with AI-powered tarot spreads 🃏✨')}
+              className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
               data-testid="link-tarot"
             >
               <i className="fas fa-cards-blank mr-2"></i>AI Tarot Readings
-            </a>
-            <a 
-              href="#" 
-              className="block text-white hover:text-accent-light transition-colors duration-200"
+            </button>
+            <button 
+              onClick={() => alert('Live Streaming - Share your spiritual journey live! Premium meditation sessions and workshops 📡🧘‍♀️')}
+              className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
               data-testid="link-streaming"
             >
               <i className="fas fa-broadcast-tower mr-2"></i>Live Streaming
-            </a>
-            <a 
-              href="#" 
-              className="block text-white hover:text-accent-light transition-colors duration-200"
+            </button>
+            <button 
+              onClick={() => alert('Custom Sigils - Generate personalized spiritual symbols! AI-created sigils based on your energy ⚡🎨')}
+              className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
               data-testid="link-sigils"
             >
               <i className="fas fa-crystal-ball mr-2"></i>Custom Sigils
-            </a>
+            </button>
           </div>
           <Button 
             className="w-full mt-3 bg-primary text-white font-semibold hover:bg-primary/90 transition-colors duration-200"
-            onClick={() => window.location.href = '/subscribe'}
+            onClick={() => {
+              alert('✨ Premium Subscription ✨\n\nUnlock:\n• Unlimited energy points\n• Advanced oracle readings\n• Custom sigil generation\n• Priority support\n\nSubscription page coming soon!');
+            }}
             data-testid="button-upgrade"
           >
+            <i className="fas fa-crown mr-2"></i>
             Upgrade Now
           </Button>
         </CardContent>

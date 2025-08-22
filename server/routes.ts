@@ -269,7 +269,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User stats
+  // Search routes
+  app.get('/api/search', async (req, res) => {
+    try {
+      const query = req.query.query as string;
+      const type = req.query.type as string || 'all';
+      
+      if (!query || query.length < 2) {
+        return res.status(400).json({ message: "Query must be at least 2 characters" });
+      }
+      
+      const results: any[] = [];
+      
+      // Search posts if type is 'all' or 'posts'
+      if (type === 'all' || type === 'posts') {
+        const posts = await storage.searchPosts(query, 10);
+        const postResults = posts.map(post => ({
+          type: 'post',
+          id: post.id,
+          title: `${post.author.username || post.author.email || 'Anonymous'}`,
+          content: post.content,
+          author: post.author,
+          chakra: post.chakra,
+          createdAt: post.createdAt
+        }));
+        results.push(...postResults);
+      }
+      
+      // Search users if type is 'all' or 'users' 
+      if (type === 'all' || type === 'users') {
+        const users = await storage.searchUsers(query, 10);
+        const userResults = await Promise.all(users.map(async user => {
+          const stats = await storage.getUserStats(user.id);
+          return {
+            type: 'user',
+            id: user.id,
+            title: user.username || user.email || 'Spiritual Seeker',
+            content: `Spiritual seeker with ${stats.totalPosts || 0} posts shared`,
+            author: user,
+            auraLevel: stats.auraLevel,
+            createdAt: user.createdAt
+          };
+        }));
+        results.push(...userResults);
+      }
+      
+      res.json(results);
+    } catch (error) {
+      console.error("Error searching:", error);
+      res.status(500).json({ message: "Search failed" });
+    }
+  });
+
+  // Notification routes
+  app.get('/api/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const limit = parseInt(req.query.limit as string) || 20;
+      
+      const notifications = await storage.getUserNotifications(userId, limit);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get('/api/notifications/unread-count', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const count = await storage.getUnreadNotificationCount(userId);
+      res.json(count);
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.post('/api/notifications/:notificationId/read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { notificationId } = req.params;
+      
+      await storage.markNotificationAsRead(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.post('/api/notifications/mark-all-read', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.markAllNotificationsAsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark all notifications as read" });
+    }
+  });
+
+  // User routes
+  app.get('/api/users/:userId', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   app.get('/api/users/:userId/stats', async (req, res) => {
     try {
       const { userId } = req.params;
@@ -278,6 +395,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
+    }
+  });
+
+  app.get('/api/users/:userId/posts', async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const limit = parseInt(req.query.limit as string) || 20;
+      
+      const posts = await storage.getUserPosts(userId, limit);
+      
+      // Get engagement counts for each post
+      const postsWithEngagements = await Promise.all(
+        posts.map(async (post) => {
+          const engagements = await storage.getPostEngagements(post.id);
+          return { ...post, engagements };
+        })
+      );
+      
+      res.json(postsWithEngagements);
+    } catch (error) {
+      console.error("Error fetching user posts:", error);
+      res.status(500).json({ message: "Failed to fetch user posts" });
     }
   });
 

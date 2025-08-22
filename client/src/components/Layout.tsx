@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Sidebar from "./Sidebar";
 import OracleSidebar from "./OracleSidebar";
+import SearchModal from "./SearchModal";
+import NotificationsModal from "./NotificationsModal";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
@@ -11,6 +16,15 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+
+  // Get unread notifications count
+  const { data: unreadCount } = useQuery({
+    queryKey: ["/api/notifications/unread-count"],
+    enabled: !!(user as any)?.id,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -31,20 +45,58 @@ export default function Layout({ children }: LayoutProps) {
             {/* Search Bar - Hidden on mobile */}
             {!isMobile && (
               <div className="flex-1 max-w-md mx-8">
-                <div className="relative w-full">
+                <div 
+                  className="relative w-full cursor-pointer"
+                  onClick={() => setIsSearchOpen(true)}
+                >
                   <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <input 
-                    type="text" 
-                    placeholder="Search posts, users, or spiritual content..." 
-                    className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
-                    data-testid="input-search"
-                  />
+                  <div 
+                    className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-gray-400 hover:border-primary/50 transition-colors duration-200"
+                    data-testid="search-trigger"
+                  >
+                    Search posts, users, or spiritual content...
+                  </div>
                 </div>
               </div>
             )}
 
+            {/* Mobile Search Button */}
+            {isMobile && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setIsSearchOpen(true)}
+                className="text-gray-400 hover:text-primary"
+                data-testid="button-search-mobile"
+              >
+                <i className="fas fa-search"></i>
+              </Button>
+            )}
+
             {/* User Menu and Energy Indicator */}
             <div className="flex items-center space-x-4">
+              {/* Notifications Bell */}
+              <div className="relative">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setIsNotificationsOpen(true)}
+                  className="text-gray-400 hover:text-primary relative"
+                  data-testid="button-notifications"
+                >
+                  <i className="fas fa-bell"></i>
+                  {unreadCount && unreadCount > 0 && (
+                    <Badge 
+                      variant="destructive" 
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs p-0 bg-red-500 text-white border-0 min-w-[20px]"
+                      data-testid="notification-badge"
+                    >
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Badge>
+                  )}
+                </Button>
+              </div>
+
               {/* Energy Indicator - Hidden on mobile */}
               {!isMobile && (user as any) && (
                 <div className="flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
@@ -131,6 +183,12 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </nav>
       )}
+
+      {/* Search Modal */}
+      <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+      
+      {/* Notifications Modal */}
+      <NotificationsModal isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} />
     </div>
   );
 }

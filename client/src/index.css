@@ -42,7 +42,7 @@
   /* Spiritual/Mystical Colors */
   --cosmic: hsl(245, 58%, 10%);
   --cosmic-light: hsl(245, 35%, 15%);
-  --accent-light: hsl(0, 0%, 80%);
+  --accent-light: hsl(340, 82%, 70%);
   
   /* Chakra Colors */
   --chakra-root: hsl(0, 100%, 50%);
@@ -82,7 +82,7 @@
   --secondary: hsl(277, 48%, 58%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --muted: hsl(245, 35%, 15%);
-  --muted-foreground: hsl(210, 3.3898%, 46.2745%);
+  --muted-foreground: hsl(210, 3.3898%, 70%);
   --accent: hsl(245, 35%, 20%);
   --accent-foreground: hsl(232, 100%, 67%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
@@ -173,8 +173,9 @@
 
   /* Sigil Container */
   .sigil-container {
-    background: hsl(232, 100%, 67%);
+    background: linear-gradient(135deg, hsl(232, 100%, 67%), hsl(277, 48%, 58%));
     border: 1px solid hsl(232, 100%, 67%, 0.5);
+    overflow: hidden;
   }
 
   /* Animated Elements */
@@ -376,15 +377,37 @@
     max-width: 88rem;
   }
 
+  /* Scrollbar Styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thumb-primary\/30::-webkit-scrollbar-thumb {
+    background-color: hsl(232, 100%, 67%, 0.3);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
   /* Responsive Typography */
   @media (max-width: 640px) {
     .text-7xl {
-      font-size: 4rem;
+      font-size: 3rem;
       line-height: 1;
     }
     .text-8xl {
-      font-size: 5rem;
+      font-size: 4rem;
       line-height: 1;
+    }
+    .text-6xl {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+    .text-5xl {
+      font-size: 2rem;
+      line-height: 1.2;
     }
   }
 }

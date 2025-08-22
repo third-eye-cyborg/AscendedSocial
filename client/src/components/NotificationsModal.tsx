@@ -44,7 +44,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
 
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId: string) => 
-      apiRequest(`/api/notifications/${notificationId}/read`, { method: "POST" }),
+      apiRequest(`/api/notifications/${notificationId}/read`, "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
@@ -58,7 +58,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
   });
 
   const markAllReadMutation = useMutation({
-    mutationFn: () => apiRequest("/api/notifications/mark-all-read", { method: "POST" }),
+    mutationFn: () => apiRequest("/api/notifications/mark-all-read", "POST"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
       toast({

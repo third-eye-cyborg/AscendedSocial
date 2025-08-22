@@ -14,16 +14,16 @@ export default function Sidebar() {
   if (!user) return null;
 
   return (
-    <aside className="w-64 fixed left-0 top-16 h-screen bg-cosmic-light/50 border-r border-primary/30 p-4 overflow-y-auto">
+    <aside className="w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-r border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
       {/* User Aura Profile */}
       <Card className="bg-cosmic-light rounded-xl mb-6 aura-visualization border border-primary/30 hover-lift animate-slide-up">
         <CardContent className="p-4">
           <div className="flex items-center space-x-3 mb-3">
             <div className="sigil-container w-12 h-12 rounded-full p-0.5">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
                 {(user as any)?.sigil ? (
-                  <span className="text-sm text-white font-mono" data-testid="text-sidebar-sigil">
-                    {(user as any)?.sigil}
+                  <span className="text-xs text-white font-mono break-all text-center" data-testid="text-sidebar-sigil">
+                    {((user as any)?.sigil as string).slice(0, 3)}
                   </span>
                 ) : (
                   <i className="fas fa-om text-white text-lg"></i>

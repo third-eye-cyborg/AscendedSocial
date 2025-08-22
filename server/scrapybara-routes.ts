@@ -2,18 +2,107 @@ import type { Express } from "express";
 import { scrapybaraService } from "./scrapybara-service";
 
 export function registerScrapybaraRoutes(app: Express) {
+  // Start browser instance for auth setup
+  app.post('/api/scrapybara/start-browser', async (req, res) => {
+    try {
+      const instanceId = await scrapybaraService.startBrowserInstance();
+      
+      res.json({
+        success: true,
+        instanceId,
+        message: 'Browser instance started successfully'
+      });
+    } catch (error: any) {
+      console.error('Failed to start browser instance:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+  });
+
+  // Setup manual authentication and save auth state
+  app.post('/api/scrapybara/setup-auth', async (req, res) => {
+    try {
+      const { baseUrl = 'http://localhost:5000', authStateName = 'default' } = req.body;
+      
+      const result = await scrapybaraService.manualAuthAndSave(baseUrl, authStateName);
+      
+      res.json({
+        success: true,
+        authStateId: result.authStateId,
+        streamUrl: result.streamUrl,
+        message: `Auth state saved as: ${authStateName}`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Failed to setup auth:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+  });
+
+  // Authenticate using saved auth state
+  app.post('/api/scrapybara/authenticate-saved', async (req, res) => {
+    try {
+      const { authStateName = 'default' } = req.body;
+      
+      const authenticated = await scrapybaraService.authenticateWithSavedState(authStateName);
+      
+      res.json({
+        success: true,
+        authenticated,
+        message: `Authenticated using saved state: ${authStateName}`,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Failed to authenticate with saved state:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+  });
+
+  // Get saved auth states
+  app.get('/api/scrapybara/auth-states', (req, res) => {
+    try {
+      const authStates = scrapybaraService.getSavedAuthStates();
+      res.json({
+        success: true,
+        authStates,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('Failed to get auth states:', error);
+      res.status(500).json({ 
+        success: false,
+        error: error.message 
+      });
+    }
+  });
+
   // Start instance and capture authenticated app
   app.post('/api/scrapybara/capture-app', async (req, res) => {
     try {
-      const { baseUrl = 'http://localhost:5000', pages = ['/'] } = req.body;
+      const { 
+        baseUrl = 'http://localhost:5000', 
+        pages = ['/'],
+        useAuth = true,
+        authStateName = 'default'
+      } = req.body;
       
-      console.log('Starting app capture with Scrapybara SDK 2.0...');
-      const screenshots = await scrapybaraService.captureAppPages(baseUrl, pages);
+      console.log('Starting authenticated app capture...');
+      const screenshots = await scrapybaraService.captureAppPages(baseUrl, pages, useAuth, authStateName);
       
       res.json({
         success: true,
         screenshots,
         capturedPages: Object.keys(screenshots),
+        useAuth,
+        authStateName,
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {

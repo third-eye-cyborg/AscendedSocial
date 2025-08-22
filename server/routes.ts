@@ -17,7 +17,6 @@ import {
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
-import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import Stripe from "stripe";
 
 // Stripe setup
@@ -575,8 +574,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Register Scrapybara routes
-  registerScrapybaraRoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;

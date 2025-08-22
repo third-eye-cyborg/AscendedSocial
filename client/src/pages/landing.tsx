@@ -3,100 +3,231 @@ import { Button } from "@/components/ui/button";
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-cosmic text-white">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-cosmic/90 backdrop-blur-lg border-b border-primary/30">
-        <div className="max-w-6xl mx-auto px-4 py-3">
+    <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic text-white relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse-slow"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-secondary/15 rounded-full blur-3xl animate-pulse-slow" style={{animationDelay: '1s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-chakra-crown/10 rounded-full blur-2xl animate-float"></div>
+      </div>
+      
+      {/* Starfield Effect */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-white rounded-full animate-pulse opacity-60"></div>
+        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse opacity-40" style={{animationDelay: '0.5s'}}></div>
+        <div className="absolute top-2/3 left-1/6 w-1 h-1 bg-white rounded-full animate-pulse opacity-80" style={{animationDelay: '1.2s'}}></div>
+        <div className="absolute bottom-1/4 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse opacity-50" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/6 right-1/6 w-1 h-1 bg-white rounded-full animate-pulse opacity-70" style={{animationDelay: '0.8s'}}></div>
+      </div>
+
+      {/* Premium Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-cosmic/80 backdrop-blur-2xl border-b border-primary/20 shadow-xl">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <i className="fas fa-lotus text-white text-lg"></i>
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md animate-pulse"></div>
+                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+                  <i className="fas fa-lotus text-white text-xl"></i>
+                </div>
               </div>
-              <h1 className="text-xl font-display font-bold text-primary">
-                Ascended Social
-              </h1>
+              <div>
+                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Ascended Social
+                </h1>
+                <p className="text-xs text-gray-400 font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
+              </div>
             </div>
             
-            <Button 
-              onClick={() => window.location.href = '/api/login'}
-              className="bg-primary hover:bg-primary/80 transition-colors duration-200"
-              data-testid="button-login"
-            >
-              Enter the Realm
-            </Button>
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost"
+                className="text-gray-300 hover:text-white transition-colors duration-300"
+                data-testid="button-about"
+              >
+                About
+              </Button>
+              <Button 
+                variant="ghost"
+                className="text-gray-300 hover:text-white transition-colors duration-300"
+                data-testid="button-features"
+              >
+                Features
+              </Button>
+              <Button 
+                onClick={() => window.location.href = '/api/login'}
+                className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/25 hover:shadow-xl"
+                data-testid="button-login"
+              >
+                <span className="relative z-10">Enter the Realm</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main className="pt-20">
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <div className="aura-visualization rounded-3xl p-12 mb-12 animate-fade-in">
-            <h2 className="text-5xl font-display font-bold mb-6 text-white">
-              Ascend Your Social Experience
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 leading-relaxed">
-              A mystical social platform where spirituality meets technology. 
-              Connect with like-minded souls, share your journey, and discover your true potential.
-            </p>
+      <main className="relative pt-24">
+        <div className="max-w-8xl mx-auto px-6 py-20 text-center relative z-10">
+          {/* Premium Hero Content */}
+          <div className="relative">
+            {/* Floating Elements */}
+            <div className="absolute -top-20 left-1/4 w-2 h-2 bg-primary rounded-full animate-float opacity-60"></div>
+            <div className="absolute -top-10 right-1/3 w-1.5 h-1.5 bg-secondary rounded-full animate-float opacity-80" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-32 left-1/6 w-1 h-1 bg-chakra-heart rounded-full animate-float opacity-70" style={{animationDelay: '2s'}}></div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {/* Main Hero Text */}
+            <div className="mb-8 animate-fade-in">
+              <div className="inline-block px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium mb-6 backdrop-blur-sm">
+                ✨ The Future of Spiritual Connection
+              </div>
+              <h2 className="text-7xl lg:text-8xl font-display font-bold mb-8 leading-none">
+                <span className="bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent animate-gradient-x">
+                  Ascend Your
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-secondary via-chakra-crown to-primary bg-clip-text text-transparent">
+                  Social Reality
+                </span>
+              </h2>
+              <p className="text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto font-light">
+                Where ancient wisdom meets cutting-edge technology. Connect with enlightened souls,
+                <br className="hidden lg:block" />
+                share your spiritual journey, and unlock your highest potential in a sacred digital space.
+              </p>
+            </div>
+            
+            {/* Premium CTA Buttons */}
+            <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16 animate-slide-up">
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = '/api/login'}
-                className="bg-primary hover:bg-primary/80 text-white font-semibold px-8 py-3"
+                className="group relative bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold px-12 py-4 rounded-2xl text-lg transition-all duration-500 shadow-2xl hover:shadow-primary/30 hover:scale-105 min-w-[280px]"
                 data-testid="button-join"
               >
-                Begin Your Ascension
+                <span className="relative z-10 flex items-center gap-3">
+                  Begin Your Ascension
+                  <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
               </Button>
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary text-primary hover:bg-primary/10 transition-colors duration-200"
+                className="group border-2 border-white/20 text-white hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold min-w-[280px]"
                 data-testid="button-learn"
               >
-                Learn More
+                <span className="flex items-center gap-3">
+                  <i className="fas fa-play-circle"></i>
+                  Watch Demo
+                </span>
               </Button>
+            </div>
+            
+            {/* Trust Indicators */}
+            <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-sm text-gray-400 animate-fade-in" style={{animationDelay: '0.5s'}}>
+              <div className="flex items-center gap-2">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">A</div>
+                  <div className="w-8 h-8 bg-gradient-to-br from-chakra-heart to-chakra-crown rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">S</div>
+                  <div className="w-8 h-8 bg-gradient-to-br from-secondary to-chakra-throat rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">M</div>
+                </div>
+                <span className="font-medium">1,247+ Enlightened Users</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex text-yellow-400">
+                  {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star text-sm"></i>)}
+                </div>
+                <span className="font-medium">4.9/5 Spiritual Rating</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <i className="fas fa-shield-alt text-primary"></i>
+                <span className="font-medium">Sacred & Secure</span>
+              </div>
             </div>
           </div>
 
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16 animate-slide-up">
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-heart hover-lift">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-4 bg-chakra-heart rounded-full flex items-center justify-center">
-                  <i className="fas fa-user-circle text-white text-xl"></i>
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-chakra-heart">AI-Generated Sigils</h3>
-                <p className="text-gray-300">
-                  Receive your unique mystical sigil that represents your spiritual essence and energy signature.
-                </p>
-              </CardContent>
-            </Card>
+          {/* Premium Features Grid */}
+          <div className="mt-32 mb-32">
+            <div className="text-center mb-16 animate-fade-in">
+              <h3 className="text-5xl font-display font-bold mb-6">
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Mystical Features
+                </span>
+              </h3>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                Harness the power of AI-enhanced spirituality to elevate your consciousness and connect with your tribe.
+              </p>
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-12 max-w-7xl mx-auto animate-slide-up">
+              {/* Feature 1 */}
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-chakra-heart/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-chakra-heart/30"></div>
+                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-chakra-heart/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-heart/20">
+                  <CardContent className="p-10 text-center relative">
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-chakra-heart/20 rounded-2xl blur-md animate-pulse"></div>
+                      <div className="relative w-16 h-16 mx-auto bg-gradient-to-br from-chakra-heart to-chakra-heart/80 rounded-2xl flex items-center justify-center shadow-xl">
+                        <i className="fas fa-magic text-white text-2xl"></i>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-display font-bold mb-4 text-chakra-heart">AI-Generated Sigils</h3>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                      Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
+                    </p>
+                    <div className="mt-6 inline-flex items-center text-chakra-heart text-sm font-semibold">
+                      Learn More <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-crown hover-lift">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-4 bg-chakra-crown rounded-full flex items-center justify-center">
-                  <i className="fas fa-eye text-white text-xl"></i>
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-chakra-crown">Chakra Categorization</h3>
-                <p className="text-gray-300">
-                  AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map.
-                </p>
-              </CardContent>
-            </Card>
+              {/* Feature 2 */}
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-chakra-crown/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-chakra-crown/30"></div>
+                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-chakra-crown/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-crown/20">
+                  <CardContent className="p-10 text-center relative">
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-chakra-crown/20 rounded-2xl blur-md animate-pulse"></div>
+                      <div className="relative w-16 h-16 mx-auto bg-gradient-to-br from-chakra-crown to-chakra-crown/80 rounded-2xl flex items-center justify-center shadow-xl">
+                        <i className="fas fa-eye text-white text-2xl"></i>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Chakra Intelligence</h3>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                      AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
+                    </p>
+                    <div className="mt-6 inline-flex items-center text-chakra-crown text-sm font-semibold">
+                      Explore System <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-throat hover-lift">
-              <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
-                  <i className="fas fa-bolt text-cosmic text-xl"></i>
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-accent-light">Energy System</h3>
-                <p className="text-gray-300">
-                  Engage with content using a unique three-tier system: votes, likes, and spiritual energy.
-                </p>
-              </CardContent>
-            </Card>
+              {/* Feature 3 */}
+              <div className="group relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-primary/30"></div>
+                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-primary/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-primary/20">
+                  <CardContent className="p-10 text-center relative">
+                    <div className="relative mb-8">
+                      <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-md animate-pulse"></div>
+                      <div className="relative w-16 h-16 mx-auto bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-xl">
+                        <i className="fas fa-bolt text-white text-2xl"></i>
+                      </div>
+                    </div>
+                    <h3 className="text-2xl font-display font-bold mb-4 text-primary">Sacred Energy System</h3>
+                    <p className="text-gray-300 leading-relaxed text-lg">
+                      Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
+                    </p>
+                    <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">
+                      Experience Energy <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
 
           {/* Spiritual Features */}
@@ -160,23 +291,86 @@ export default function Landing() {
         </div>
       </main>
 
-      {/* Call to Action */}
-      <section className="bg-cosmic-light py-16 border-t border-primary/30">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h3 className="text-3xl font-display font-bold mb-4">
-            Ready to Transform Your Social Experience?
-          </h3>
-          <p className="text-xl text-gray-300 mb-8">
-            Join thousands of spiritual seekers on their journey of ascension.
-          </p>
-          <Button 
-            size="lg"
-            onClick={() => window.location.href = '/api/login'}
-            className="bg-primary hover:bg-primary/80 text-white font-semibold px-12 py-4 text-lg"
-            data-testid="button-cta"
-          >
-            Start Your Journey
-          </Button>
+      {/* Premium Call to Action */}
+      <section className="relative py-24 overflow-hidden">
+        {/* Premium Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cosmic via-cosmic-light/50 to-cosmic"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-secondary/5"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-20 left-1/4 w-3 h-3 bg-primary/40 rounded-full animate-bounce-slow opacity-60"></div>
+        <div className="absolute bottom-20 right-1/3 w-2 h-2 bg-secondary/50 rounded-full animate-float opacity-80"></div>
+        <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-chakra-heart/60 rounded-full animate-pulse"></div>
+        
+        <div className="relative max-w-6xl mx-auto px-6 text-center">
+          <div className="mb-8">
+            <div className="inline-block px-6 py-2 bg-primary/20 border border-primary/30 rounded-full text-primary text-sm font-medium mb-8 backdrop-blur-sm animate-fade-in">
+              ✨ Join the Ascended Community
+            </div>
+            
+            <h3 className="text-6xl font-display font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent">
+                Ready to Transform
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-secondary via-chakra-crown to-primary bg-clip-text text-transparent">
+                Your Reality?
+              </span>
+            </h3>
+            
+            <p className="text-2xl text-gray-300 mb-12 leading-relaxed max-w-4xl mx-auto">
+              Join thousands of awakened souls on their journey of spiritual ascension. 
+              <br className="hidden lg:block" />
+              Your transformation begins with a single conscious choice.
+            </p>
+          </div>
+          
+          <div className="flex flex-col lg:flex-row gap-6 justify-center items-center animate-slide-up">
+            <Button 
+              size="lg"
+              onClick={() => window.location.href = '/api/login'}
+              className="group relative bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold px-16 py-6 rounded-2xl text-xl transition-all duration-500 shadow-2xl hover:shadow-primary/40 hover:scale-105 min-w-[320px]"
+              data-testid="button-cta"
+            >
+              <span className="relative z-10 flex items-center gap-4">
+                Begin Your Ascension
+                <i className="fas fa-rocket group-hover:translate-x-2 group-hover:-translate-y-1 transition-transform duration-500"></i>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+            </Button>
+            
+            <Button 
+              size="lg"
+              variant="outline"
+              className="group border-2 border-white/30 text-white hover:border-primary hover:text-primary hover:bg-primary/10 transition-all duration-300 backdrop-blur-sm px-16 py-6 rounded-2xl text-xl font-semibold min-w-[320px]"
+              data-testid="button-contact"
+            >
+              <span className="flex items-center gap-4">
+                <i className="fas fa-comments"></i>
+                Connect with Us
+              </span>
+            </Button>
+          </div>
+          
+          {/* Trust badges */}
+          <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-gray-400 text-sm animate-fade-in" style={{animationDelay: '0.8s'}}>
+            <div className="flex items-center gap-2">
+              <i className="fas fa-lock text-green-400"></i>
+              <span>256-bit Encrypted</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <i className="fas fa-users text-primary"></i>
+              <span>10,000+ Members</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <i className="fas fa-star text-yellow-400"></i>
+              <span>98% Satisfaction</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <i className="fas fa-globe text-secondary"></i>
+              <span>Global Community</span>
+            </div>
+          </div>
         </div>
       </section>
     </div>

@@ -60,13 +60,13 @@ export default function Sidebar() {
               <div className="text-accent-light font-semibold" data-testid="text-positive-energy">
                 {(userStats as any)?.positiveEnergy || 0}
               </div>
-              <div className="text-secondary">Positive Energy</div>
+              <div className="text-gray-300">Positive Energy</div>
             </div>
             <div className="text-center">
               <div className="text-primary font-semibold" data-testid="text-insights">
                 {(userStats as any)?.totalPosts || 0}
               </div>
-              <div className="text-secondary">Insights Shared</div>
+              <div className="text-gray-300">Insights Shared</div>
             </div>
           </div>
         </CardContent>
@@ -126,21 +126,21 @@ export default function Sidebar() {
           <div className="space-y-2 text-sm">
             <a 
               href="#" 
-              className="block hover:text-accent-light transition-colors duration-200"
+              className="block text-white hover:text-accent-light transition-colors duration-200"
               data-testid="link-tarot"
             >
               <i className="fas fa-cards-blank mr-2"></i>AI Tarot Readings
             </a>
             <a 
               href="#" 
-              className="block hover:text-accent-light transition-colors duration-200"
+              className="block text-white hover:text-accent-light transition-colors duration-200"
               data-testid="link-streaming"
             >
               <i className="fas fa-broadcast-tower mr-2"></i>Live Streaming
             </a>
             <a 
               href="#" 
-              className="block hover:text-accent-light transition-colors duration-200"
+              className="block text-white hover:text-accent-light transition-colors duration-200"
               data-testid="link-sigils"
             >
               <i className="fas fa-crystal-ball mr-2"></i>Custom Sigils

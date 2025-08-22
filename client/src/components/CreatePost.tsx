@@ -174,7 +174,7 @@ export default function CreatePost() {
                     <div className="bg-cosmic rounded-lg p-4 border border-primary/30">
                       <div className="flex items-center space-x-2">
                         <i className="fas fa-video text-primary"></i>
-                        <span className="text-sm text-gray-300">Video uploaded</span>
+                        <span className="text-sm text-white">Video uploaded</span>
                       </div>
                     </div>
                   )}
@@ -221,8 +221,8 @@ export default function CreatePost() {
                     </div>
                   </button>
                   
-                  <div className="flex items-center text-xs text-primary/60 ml-2">
-                    <i className="fas fa-sparkles mr-1"></i>
+                  <div className="flex items-center text-xs text-white/80 ml-2">
+                    <i className="fas fa-sparkles mr-1 text-primary"></i>
                     <span>Share your wisdom</span>
                   </div>
                 </div>

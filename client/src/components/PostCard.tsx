@@ -158,13 +158,13 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
             <div>
               <h4 
-                className="font-semibold cursor-pointer hover:text-primary transition-colors duration-200" 
+                className="font-semibold text-white cursor-pointer hover:text-primary transition-colors duration-200" 
                 onClick={() => window.location.href = `/profile/${post.author.id}`}
                 data-testid={`text-author-${post.id}`}
               >
                 {post.author.username || post.author.email || 'Anonymous'}
               </h4>
-              <p className="text-sm text-muted" data-testid={`text-time-${post.id}`}>
+              <p className="text-sm text-white/70" data-testid={`text-time-${post.id}`}>
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
               </p>
             </div>

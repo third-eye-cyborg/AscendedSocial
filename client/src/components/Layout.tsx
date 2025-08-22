@@ -47,26 +47,24 @@ export default function Layout({ children }: LayoutProps) {
               </h1>
             </div>
 
-            {/* Search Bar - Hidden on mobile */}
-            {!isMobile && (
-              <div className="flex-1 max-w-md mx-8">
+            {/* Search Bar - Hidden on mobile and small tablets */}
+            <div className="hidden lg:block flex-1 max-w-md mx-8">
+              <div 
+                className="relative w-full cursor-pointer"
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 <div 
-                  className="relative w-full cursor-pointer"
-                  onClick={() => setIsSearchOpen(true)}
+                  className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-gray-300 hover:border-primary/50 transition-colors duration-200"
+                  data-testid="search-trigger"
                 >
-                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                  <div 
-                    className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-gray-300 hover:border-primary/50 transition-colors duration-200"
-                    data-testid="search-trigger"
-                  >
-                    Search posts, users, or spiritual content...
-                  </div>
+                  Search posts, users, or spiritual content...
                 </div>
               </div>
-            )}
+            </div>
 
-            {/* Mobile Search Button */}
-            {isMobile && (
+            {/* Mobile/Tablet Search Button */}
+            <div className="lg:hidden">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -76,7 +74,7 @@ export default function Layout({ children }: LayoutProps) {
               >
                 <i className="fas fa-search"></i>
               </Button>
-            )}
+            </div>
 
             {/* User Menu and Energy Indicator */}
             <div className="flex items-center space-x-4">
@@ -102,9 +100,9 @@ export default function Layout({ children }: LayoutProps) {
                 </Button>
               </div>
 
-              {/* Energy Indicator - Hidden on mobile */}
-              {!isMobile && (user as any) && (
-                <div className="flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
+              {/* Energy Indicator - Hidden on mobile and tablet */}
+              {(user as any) && (
+                <div className="hidden xl:flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
                   <i className="fas fa-bolt text-accent-light"></i>
                   <span className="text-sm font-medium" data-testid="text-energy">{(user as any)?.energy || 1000}</span>
                   <span className="text-xs text-gray-300">Energy</span>
@@ -124,8 +122,8 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </div>
 
-              {/* Logout Button - Hidden on mobile */}
-              {!isMobile && (
+              {/* Logout Button - Hidden on mobile and tablet */}
+              <div className="hidden xl:block">
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -135,7 +133,7 @@ export default function Layout({ children }: LayoutProps) {
                 >
                   <i className="fas fa-sign-out-alt"></i>
                 </Button>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -143,20 +141,24 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main Layout */}
       <main className="pt-16 flex">
-        {/* Left Sidebar - Hidden on mobile */}
-        {!isMobile && <Sidebar />}
+        {/* Left Sidebar - Hidden on mobile and tablet */}
+        <div className="hidden xl:block">
+          <Sidebar />
+        </div>
 
         {/* Main Content */}
-        <div className={`flex-1 ${!isMobile ? 'lg:ml-64 lg:mr-80' : ''}`}>
+        <div className="flex-1 xl:ml-64 2xl:mr-80">
           {children}
         </div>
 
-        {/* Right Sidebar - Hidden on mobile */}
-        {!isMobile && <OracleSidebar />}
+        {/* Right Sidebar - Hidden on mobile, tablet, and smaller desktop */}
+        <div className="hidden 2xl:block">
+          <OracleSidebar />
+        </div>
       </main>
 
-      {/* Mobile Navigation */}
-      {isMobile && (
+      {/* Mobile/Tablet Navigation */}
+      <div className="xl:hidden">
         <nav className="fixed bottom-0 left-0 right-0 bg-cosmic-light border-t border-primary/30 px-4 py-2 z-50">
           <div className="flex items-center justify-around">
             <button className="flex flex-col items-center space-y-1 text-primary" data-testid="button-home">
@@ -189,7 +191,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
           </div>
         </nav>
-      )}
+      </div>
 
       {/* Search Modal */}
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />

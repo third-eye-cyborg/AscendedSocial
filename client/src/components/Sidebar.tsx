@@ -16,7 +16,7 @@ export default function Sidebar() {
   if (!user) return null;
 
   return (
-    <aside className="w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-r border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+    <aside className="w-64 fixed left-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-r border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent z-40">
       {/* User Aura Profile */}
       <Card className="bg-cosmic-light rounded-xl mb-6 aura-visualization border border-primary/30 hover-lift animate-slide-up">
         <CardContent className="p-4">

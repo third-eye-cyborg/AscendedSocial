@@ -40,6 +40,7 @@ export default function PostCard({ post }: PostCardProps) {
   const queryClient = useQueryClient();
   const [userEngagements, setUserEngagements] = useState<string[]>([]);
   const [showComments, setShowComments] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const engageMutation = useMutation({
     mutationFn: async ({ type, remove }: { type: string; remove?: boolean }) => {
@@ -90,6 +91,49 @@ export default function PostCard({ post }: PostCardProps) {
     } else {
       setUserEngagements(prev => [...prev, type]);
     }
+  };
+
+  const handleShare = () => {
+    const postUrl = `${window.location.origin}/?post=${post.id}`;
+    const shareText = `Check out this spiritual insight from ${post.author.username || post.author.email || 'a fellow seeker'} on Ascended Social:\n\n"${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"\n\n${postUrl}`;
+    
+    if (navigator.share) {
+      // Use native sharing on mobile devices
+      navigator.share({
+        title: 'Spiritual Insight from Ascended Social',
+        text: shareText,
+        url: postUrl,
+      }).catch((error) => {
+        console.log('Error sharing:', error);
+        fallbackShare(shareText);
+      });
+    } else {
+      fallbackShare(shareText);
+    }
+  };
+
+  const fallbackShare = (text: string) => {
+    // Copy to clipboard as fallback
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: "📋 Copied to clipboard!",
+        description: "Share this spiritual insight with others",
+      });
+    }).catch(() => {
+      // Last resort: show the text in an alert
+      alert(`Share this post:\n\n${text}`);
+    });
+  };
+
+  const handleSave = () => {
+    // Toggle saved state (this would integrate with backend saved posts)
+    setIsSaved(!isSaved);
+    toast({
+      title: isSaved ? "🔖 Post unsaved" : "💾 Post saved!",
+      description: isSaved ? 
+        "Removed from your spiritual collection" : 
+        "Added to your spiritual collection",
+    });
   };
 
   const chakraColor = getChakraColor(post.chakra);
@@ -271,6 +315,8 @@ export default function PostCard({ post }: PostCardProps) {
               variant="ghost"
               size="sm"
               className="text-muted hover:text-primary transition-colors duration-200"
+              onClick={handleShare}
+              title="Share this spiritual insight"
               data-testid={`button-share-${post.id}`}
             >
               <i className="fas fa-share"></i>
@@ -278,10 +324,12 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted hover:text-accent-light transition-colors duration-200"
+              className={`transition-colors duration-200 ${isSaved ? 'text-accent-light' : 'text-muted hover:text-accent-light'}`}
+              onClick={handleSave}
+              title={isSaved ? "Remove from saved posts" : "Save to spiritual collection"}
               data-testid={`button-save-${post.id}`}
             >
-              <i className="fas fa-bookmark"></i>
+              <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
             </Button>
           </div>
         </div>

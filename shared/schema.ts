@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   username: varchar("username").unique(),
+  bio: text("bio"), // User biography/spiritual journey
   sigil: text("sigil"), // AI-generated unique sigil
   aura: integer("aura").default(0), // Spiritual aura points
   energy: integer("energy").default(1000), // Monthly energy allocation

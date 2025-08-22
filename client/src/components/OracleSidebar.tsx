@@ -1,11 +1,14 @@
 import { useAuth } from "@/hooks/useAuth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "wouter";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function OracleSidebar() {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: dailyReading, isLoading: readingLoading } = useQuery({
     queryKey: ["/api/readings/daily"],
@@ -15,6 +18,28 @@ export default function OracleSidebar() {
   const { data: recommendations, isLoading: recsLoading } = useQuery({
     queryKey: ["/api/oracle/recommendations"],
     enabled: !!user,
+  });
+
+  // Mutation to generate new daily reading
+  const newReadingMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/readings/daily");
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/readings/daily"] });
+    },
+  });
+
+  // Mutation to refresh oracle recommendations
+  const refreshOracleMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/oracle/recommendations");
+      return await response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/oracle/recommendations"] });
+    },
   });
 
   if (!user) return null;
@@ -60,9 +85,18 @@ export default function OracleSidebar() {
 
               <Button 
                 className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-primary font-medium transition-colors duration-200"
+                onClick={() => newReadingMutation.mutate()}
+                disabled={newReadingMutation.isPending}
                 data-testid="button-new-reading"
               >
-                Get New Reading
+                {newReadingMutation.isPending ? (
+                  <>
+                    <i className="fas fa-spinner animate-spin mr-2"></i>
+                    Channeling...
+                  </>
+                ) : (
+                  "Get New Reading"
+                )}
               </Button>
             </>
           ) : (
@@ -126,10 +160,12 @@ export default function OracleSidebar() {
 
           <Button 
             className="w-full mt-3 text-primary text-sm font-medium hover:text-primary/80 bg-transparent border-none p-0"
+            onClick={() => refreshOracleMutation.mutate()}
+            disabled={refreshOracleMutation.isPending}
             data-testid="button-refresh-oracle"
           >
-            <i className="fas fa-sync-alt mr-1"></i>
-            Refresh Oracle
+            <i className={`fas ${refreshOracleMutation.isPending ? 'fa-spinner animate-spin' : 'fa-sync-alt'} mr-1`}></i>
+            {refreshOracleMutation.isPending ? 'Channeling...' : 'Refresh Oracle'}
           </Button>
         </CardContent>
       </Card>
@@ -200,31 +236,27 @@ export default function OracleSidebar() {
               Create Post
             </Button>
             
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
-              onClick={() => {
-                // Scroll to the community section or show find friends modal
-                window.location.hash = '#community';
-              }}
-              data-testid="button-explore-users"
-            >
-              <i className="fas fa-users mr-2 text-primary"></i>
-              Find Spiritual Friends
-            </Button>
+            <Link href="/community">
+              <Button
+                variant="ghost"
+                className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+                data-testid="button-explore-users"
+              >
+                <i className="fas fa-users mr-2 text-primary"></i>
+                Find Spiritual Friends
+              </Button>
+            </Link>
             
-            <Button
-              variant="ghost"
-              className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
-              onClick={() => {
-                // Navigate to community page or show join modal
-                alert('Joining Sacred Circle - this would navigate to community features!');
-              }}
-              data-testid="button-join-community"
-            >
-              <i className="fas fa-circle mr-2 text-green-400"></i>
-              Join Sacred Circle
-            </Button>
+            <Link href="/community">
+              <Button
+                variant="ghost"
+                className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+                data-testid="button-join-community"
+              >
+                <i className="fas fa-circle mr-2 text-green-400"></i>
+                Join Sacred Circle
+              </Button>
+            </Link>
             
             <Button
               variant="ghost"

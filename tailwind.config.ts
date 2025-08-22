@@ -31,7 +31,7 @@ export default {
         },
         muted: {
           DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          foreground: "hsl(0, 0%, 95%)",
         },
         accent: {
           DEFAULT: "var(--accent)",
@@ -71,8 +71,14 @@ export default {
         "text-muted": "hsl(0, 0%, 85%)",
         "text-subtle": "hsl(0, 0%, 90%)",
         "text-secondary": "hsl(0, 0%, 95%)",
-        "high-contrast": "hsl(0, 0%, 95%)",
-        "medium-contrast": "hsl(0, 0%, 85%)",
+        "high-contrast": "hsl(0, 0%, 98%)",
+        "medium-contrast": "hsl(0, 0%, 90%)",
+        "low-contrast": "hsl(0, 0%, 80%)",
+        gray: {
+          400: "hsl(0, 0%, 85%)",
+          500: "hsl(0, 0%, 80%)",
+          600: "hsl(0, 0%, 75%)",
+        },
         // Chakra Colors
         chakra: {
           root: "#FF0000",      // Red

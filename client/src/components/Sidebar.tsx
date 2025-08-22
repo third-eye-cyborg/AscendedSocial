@@ -109,22 +109,6 @@ export default function Sidebar() {
             <span>Sparks</span>
           </button>
         </Link>
-        <button 
-          onClick={() => {
-            // Scroll to oracle reading in right sidebar
-            const oracleSection = document.querySelector('[data-testid="text-daily-reading"]');
-            if (oracleSection) {
-              oracleSection.scrollIntoView({ behavior: 'smooth' });
-            } else {
-              alert('Oracle readings available in the right sidebar! 🔮');
-            }
-          }}
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-white hover:text-accent-light transition-colors w-full text-left"
-          data-testid="link-oracle"
-        >
-          <i className="fas fa-eye"></i>
-          <span>The Oracle</span>
-        </button>
         <Link href="/community">
           <button 
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${

@@ -84,6 +84,8 @@ export function ObjectUploader({
         uppy={uppy}
         open={showModal}
         onRequestClose={() => setShowModal(false)}
+        closeModalOnClickOutside={true}
+        closeAfterFinish={true}
         proudlyDisplayPoweredByUppy={false}
       />
     </div>

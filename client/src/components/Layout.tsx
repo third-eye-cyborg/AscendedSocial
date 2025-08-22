@@ -161,22 +161,38 @@ export default function Layout({ children }: LayoutProps) {
       <div className="xl:hidden">
         <nav className="fixed bottom-0 left-0 right-0 bg-cosmic-light border-t border-primary/30 px-4 py-2 z-50">
           <div className="flex items-center justify-around">
-            <button className="flex flex-col items-center space-y-1 text-primary" data-testid="button-home">
+            <button 
+              className="flex flex-col items-center space-y-1 text-primary" 
+              onClick={() => window.location.href = '/'}
+              data-testid="button-home"
+            >
               <i className="fas fa-home"></i>
               <span className="text-xs">Feed</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-300" data-testid="button-videos">
+            <button 
+              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
+              onClick={() => window.location.href = '/visions'}
+              data-testid="button-videos"
+            >
               <i className="fas fa-video"></i>
               <span className="text-xs">Videos</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-300" data-testid="button-oracle">
+            <button 
+              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
+              onClick={() => window.location.href = '/oracle'}
+              data-testid="button-oracle"
+            >
               <i className="fas fa-eye"></i>
               <span className="text-xs">Oracle</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-300" data-testid="button-energy">
+            <button 
+              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
+              onClick={() => alert('Energy System - Track your spiritual energy and connections! ⚡️✨')}
+              data-testid="button-energy"
+            >
               <i className="fas fa-bolt"></i>
               <span className="text-xs">Energy</span>
             </button>

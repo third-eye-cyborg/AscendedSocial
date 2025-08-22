@@ -127,7 +127,7 @@ export default function Sidebar() {
             }`}
             data-testid="link-oracle"
           >
-            <i className="fas fa-crystal-ball"></i>
+            <i className="fas fa-eye"></i>
             <span>Oracle</span>
           </button>
         </Link>

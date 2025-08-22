@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
+import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -34,10 +35,14 @@ export default function Layout({ children }: LayoutProps) {
           <div className="flex items-center justify-between">
             {/* Logo and Brand */}
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <i className="fas fa-lotus text-white text-lg"></i>
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 p-1 shadow-lg">
+                <img 
+                  src={logoPath} 
+                  alt="Ascended Social" 
+                  className="w-full h-full object-contain filter drop-shadow-md"
+                />
               </div>
-              <h1 className="text-xl font-display font-bold text-primary">
+              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                 Ascended Social
               </h1>
             </div>

@@ -149,16 +149,28 @@ export default function Profile() {
               <CardHeader>
                 <div className="flex flex-col items-center text-center">
                   {/* Profile Sigil */}
-                  <div className="sigil-container w-24 h-24 rounded-full p-1 mb-4">
-                    <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center border-2 border-primary/30">
-                      {profile?.sigil ? (
-                        <span className="text-2xl text-white font-mono" data-testid="text-profile-sigil">
-                          {profile.sigil}
-                        </span>
-                      ) : (
-                        <i className="fas fa-user text-2xl text-muted"></i>
-                      )}
+                  <div className="relative group mb-4">
+                    <div className="sigil-container w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 p-1 shadow-2xl">
+                      <div className="w-full h-full bg-gradient-to-br from-cosmic to-cosmic-light rounded-full flex items-center justify-center border-2 border-primary/40 overflow-hidden">
+                        {profile?.profileImageUrl ? (
+                          <img 
+                            src={profile.profileImageUrl} 
+                            alt={profile?.username || 'User'} 
+                            className="w-full h-full object-cover"
+                            data-testid="img-profile-avatar"
+                          />
+                        ) : profile?.sigil ? (
+                          <span className="text-2xl text-white font-mono drop-shadow-xl" data-testid="text-profile-sigil">
+                            {profile.sigil}
+                          </span>
+                        ) : (
+                          <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                            <i className="fas fa-user text-2xl text-white drop-shadow-lg"></i>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                   </div>
 
                   {/* User Info */}

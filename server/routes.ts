@@ -7,7 +7,8 @@ import {
   generateDailyReading, 
   generateTarotReading,
   generateUserSigil,
-  generateOracleRecommendations 
+  generateOracleRecommendations,
+  generateSpirit
 } from "./openai";
 import { 
   insertPostSchema, 
@@ -650,6 +651,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     });
   }
+
+  // Onboarding endpoints
+  app.post('/api/onboarding/complete', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, birthDate, astrologySign } = req.body;
+      
+      // Update user with onboarding info
+      await storage.updateUser(userId, {
+        hasCompletedOnboarding: true,
+        astrologySign,
+        birthDate: birthDate ? new Date(birthDate) : null
+      });
+
+      // Generate AI Spirit based on answers
+      const spiritData = await generateSpirit({
+        isReligious,
+        isSpiritual,
+        religion,
+        spiritualPath,
+        beliefs,
+        offerings,
+        astrologySign
+      });
+
+      // Create spirit in database
+      await storage.createSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element,
+        questionnaire: {
+          isReligious,
+          isSpiritual,
+          religion,
+          spiritualPath,
+          beliefs,
+          offerings,
+          astrologySign,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      res.json({ success: true, spirit: spiritData });
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      res.status(500).json({ message: "Failed to complete onboarding" });
+    }
+  });
+
+  // Get user's spirit
+  app.get('/api/spirits/my-spirit', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const spirit = await storage.getUserSpirit(userId);
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error fetching spirit:", error);
+      res.status(500).json({ message: "Failed to fetch spirit" });
+    }
+  });
+
+  // Connection requests
+  app.post('/api/connections/request', isAuthenticated, async (req: any, res) => {
+    try {
+      const requesterId = req.user.claims.sub;
+      const { receiverId } = req.body;
+      
+      if (requesterId === receiverId) {
+        return res.status(400).json({ message: "Cannot connect to yourself" });
+      }
+
+      const connection = await storage.createConnection(requesterId, receiverId);
+      res.json(connection);
+    } catch (error) {
+      console.error("Error creating connection request:", error);
+      res.status(500).json({ message: "Failed to send connection request" });
+    }
+  });
+
+  // Accept/decline connection
+  app.put('/api/connections/:connectionId', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { connectionId } = req.params;
+      const { status } = req.body;
+      
+      const connection = await storage.updateConnection(connectionId, userId, status);
+      res.json(connection);
+    } catch (error) {
+      console.error("Error updating connection:", error);
+      res.status(500).json({ message: "Failed to update connection" });
+    }
+  });
 
   // Register Scrapybara routes for authenticated screenshot testing
   registerScrapybaraRoutes(app);

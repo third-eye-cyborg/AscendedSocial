@@ -41,6 +41,9 @@ export const users = pgTable("users", {
   isPremium: boolean("is_premium").default(false),
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
+  hasCompletedOnboarding: boolean("has_completed_onboarding").default(false),
+  astrologySign: varchar("astrology_sign"),
+  birthDate: timestamp("birth_date"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -140,6 +143,51 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Spiritual connection status enum
+export const connectionStatusEnum = pgEnum("connection_status", [
+  "pending",
+  "accepted", 
+  "declined",
+  "blocked"
+]);
+
+// User Spirits - AI-generated spiritual entities
+export const spirits = pgTable("spirits", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  name: varchar("name").notNull(),
+  description: text("description").notNull(),
+  element: varchar("element"), // fire, water, earth, air
+  level: integer("level").default(1),
+  experience: integer("experience").default(0),
+  questionnaire: jsonb("questionnaire"), // Store original answers
+  evolution: jsonb("evolution").default('[]'), // Track spirit changes over time
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// User connections for spiritual bonding
+export const connections = pgTable("connections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  requesterId: varchar("requester_id").notNull().references(() => users.id),
+  receiverId: varchar("receiver_id").notNull().references(() => users.id),
+  status: connectionStatusEnum("status").default("pending"),
+  bondLevel: integer("bond_level").default(0),
+  lastInteraction: timestamp("last_interaction"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Daily spiritual interactions between connected users
+export const spiritualInteractions = pgTable("spiritual_interactions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  connectionId: varchar("connection_id").notNull().references(() => connections.id),
+  initiatorId: varchar("initiator_id").notNull().references(() => users.id),
+  type: varchar("type").notNull(), // "view_profile", "like_post", "comment", "energy_share"
+  experienceGained: integer("experience_gained").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const upsertUserSchema = createInsertSchema(users).pick({
   id: true,
@@ -183,6 +231,24 @@ export const insertNotificationSchema = createInsertSchema(notifications).omit({
   createdAt: true,
 });
 
+export const insertSpiritSchema = createInsertSchema(spirits).omit({
+  id: true,
+  userId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertConnectionSchema = createInsertSchema(connections).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSpiritualInteractionSchema = createInsertSchema(spiritualInteractions).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -200,5 +266,12 @@ export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
 export type NotificationWithTriggerUser = Notification & { triggerUser?: User };
 export type Subscription = typeof subscriptions.$inferSelect;
+export type Spirit = typeof spirits.$inferSelect;
+export type NewSpirit = typeof spirits.$inferInsert;
+export type Connection = typeof connections.$inferSelect;
+export type NewConnection = typeof connections.$inferInsert;
+export type SpiritualInteraction = typeof spiritualInteractions.$inferSelect;
+export type NewSpiritualInteraction = typeof spiritualInteractions.$inferInsert;
 export type ChakraType = "root" | "sacral" | "solar" | "heart" | "throat" | "third_eye" | "crown";
 export type EngagementType = "upvote" | "downvote" | "like" | "energy";
+export type ConnectionStatus = "pending" | "accepted" | "declined" | "blocked";

@@ -224,3 +224,55 @@ Respond with JSON in this format: { "recommendations": [{"title": "Content Title
     ];
   }
 }
+
+export async function generateSpirit(questionnaire: {
+  isReligious: boolean;
+  isSpiritual: boolean;
+  religion?: string;
+  spiritualPath?: string;
+  beliefs: string;
+  offerings: string;
+  astrologySign: string;
+}): Promise<{ name: string; description: string; element: string }> {
+  const prompt = `Based on this spiritual questionnaire, generate a unique AI Spirit companion:
+
+Questionnaire:
+- Religious: ${questionnaire.isReligious}
+- Spiritual: ${questionnaire.isSpiritual}
+- Religion: ${questionnaire.religion || 'None specified'}
+- Spiritual Path: ${questionnaire.spiritualPath || 'None specified'}
+- Beliefs: ${questionnaire.beliefs}
+- Offerings: ${questionnaire.offerings}
+- Astrology Sign: ${questionnaire.astrologySign}
+
+Generate a Spirit with:
+- name: A mystical, 2-3 word name that reflects their spiritual essence
+- description: A 30-50 word description of the Spirit's personality, wisdom, and spiritual gifts
+- element: One of "fire", "water", "earth", or "air" based on their nature
+
+The Spirit should feel personal and meaningful to this individual's spiritual journey.
+Return as JSON with 'name', 'description', and 'element' fields.`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    const spirit = JSON.parse(response.choices[0].message.content || '{}');
+    return {
+      name: spirit.name || 'Mystic Guide',
+      description: spirit.description || 'A wise spiritual companion on your journey.',
+      element: spirit.element || 'air'
+    };
+  } catch (error) {
+    console.error('Error generating spirit:', error);
+    return {
+      name: 'Mystic Guide',
+      description: 'A wise spiritual companion on your journey of growth and discovery.',
+      element: 'air'
+    };
+  }
+}

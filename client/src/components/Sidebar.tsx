@@ -136,6 +136,17 @@ export default function Sidebar() {
             <span>Community</span>
           </button>
         </Link>
+        <Link href="/oracle">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/oracle" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-oracle"
+          >
+            <i className="fas fa-crystal-ball"></i>
+            <span>Oracle</span>
+          </button>
+        </Link>
       </nav>
 
       {/* Premium Features */}

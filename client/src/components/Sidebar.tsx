@@ -33,7 +33,7 @@ export default function Sidebar() {
               </div>
             </div>
             <div>
-              <h3 className="font-semibold" data-testid="text-sidebar-username">
+              <h3 className="font-semibold text-white" data-testid="text-sidebar-username">
                 {(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}
               </h3>
               <p className="text-sm text-primary">Ascending Soul</p>
@@ -43,7 +43,7 @@ export default function Sidebar() {
           {/* Aura Level */}
           <div className="mb-3">
             <div className="flex justify-between text-sm mb-1">
-              <span>Aura Level</span>
+              <span className="text-white">Aura Level</span>
               <span className="text-accent-light" data-testid="text-aura-level">
                 Level {(userStats as any)?.auraLevel || 1}
               </span>
@@ -62,13 +62,13 @@ export default function Sidebar() {
               <div className="text-accent-light font-semibold" data-testid="text-positive-energy">
                 {(userStats as any)?.positiveEnergy || 0}
               </div>
-              <div className="text-gray-300">Positive Energy</div>
+              <div className="text-white/90">Positive Energy</div>
             </div>
             <div className="text-center">
               <div className="text-primary font-semibold" data-testid="text-insights">
                 {(userStats as any)?.totalPosts || 0}
               </div>
-              <div className="text-gray-300">Insights Shared</div>
+              <div className="text-white/90">Insights Shared</div>
             </div>
           </div>
         </CardContent>

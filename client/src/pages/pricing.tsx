@@ -130,7 +130,7 @@ export default function Pricing() {
             </Card>
 
             {/* Mystic Plan - Popular */}
-            <Card className="bg-gradient-to-br from-cosmic/90 to-cosmic/70 border-2 border-primary/60 glass-effect shadow-2xl rounded-3xl overflow-hidden hover-lift relative">
+            <Card className="bg-gradient-to-br from-cosmic/90 to-cosmic/70 border-2 border-primary/60 glass-effect shadow-2xl rounded-3xl hover-lift relative">
               {/* Popular Badge */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-primary to-secondary px-6 py-2 rounded-full text-white font-bold text-sm shadow-lg">
                 Most Popular

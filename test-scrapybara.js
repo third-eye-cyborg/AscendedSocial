@@ -42,9 +42,5 @@ async function testScrapybaraIntegration() {
   }
 }
 
-// Run test if called directly
-if (require.main === module) {
-  testScrapybaraIntegration();
-}
-
-module.exports = { testScrapybaraIntegration };
+// Run test if called directly  
+testScrapybaraIntegration();

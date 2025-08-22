@@ -38,7 +38,7 @@ class ScrapybaraService {
 
     try {
       console.log('Starting new Scrapybara instance...');
-      this.currentInstance = await this.client.createInstance() as UbuntuInstance;
+      this.currentInstance = await this.client.startUbuntu();
       console.log('Instance started:', this.currentInstance.id);
       return this.currentInstance.id;
     } catch (error) {
@@ -54,7 +54,7 @@ class ScrapybaraService {
     }
 
     try {
-      const screenshot = await instance.screenshot();
+      const screenshot = await this.client!.get(instance.id).screenshot();
       return screenshot;
     } catch (error) {
       console.error('Failed to take screenshot:', error);
@@ -69,7 +69,7 @@ class ScrapybaraService {
     }
 
     try {
-      await instance.act(`Navigate to ${url} and wait for the page to load`);
+      await this.client!.act(instance.id, `Navigate to ${url} and wait for the page to load`);
     } catch (error) {
       console.error('Failed to navigate:', error);
       throw error;
@@ -93,16 +93,17 @@ class ScrapybaraService {
       screenshots.push(initialScreenshot);
 
       // Check if we need to authenticate
-      const needsAuth = await this.currentInstance.act(
+      const needsAuth = await this.client!.act(
+        this.currentInstance.id,
         'Check if there is a login button or sign-in option visible on the page. Return "yes" if login is needed, "no" if already authenticated.'
       );
 
       if (needsAuth.includes('yes')) {
         // Perform authentication
-        await this.currentInstance.act('Click on the login or sign-in button');
+        await this.client!.act(this.currentInstance.id, 'Click on the login or sign-in button');
         
         // Wait for auth redirect and completion
-        await this.currentInstance.act('Wait for authentication to complete and redirect back to the application');
+        await this.client!.act(this.currentInstance.id, 'Wait for authentication to complete and redirect back to the application');
         
         // Take post-auth screenshot
         const authScreenshot = await this.takeScreenshot();
@@ -129,7 +130,7 @@ class ScrapybaraService {
         console.log(`Capturing screenshot for: ${fullUrl}`);
         
         await this.navigateToUrl(fullUrl);
-        await this.currentInstance.act('Wait for the page to fully load');
+        await this.client!.act(this.currentInstance!.id, 'Wait for the page to fully load');
         
         const screenshot = await this.takeScreenshot();
         screenshots[page] = screenshot;
@@ -150,7 +151,7 @@ class ScrapybaraService {
         console.log(`Testing: ${testCase.name}`);
         
         const beforeScreenshot = await this.takeScreenshot();
-        const result = await this.currentInstance.act(testCase.action);
+        const result = await this.client!.act(this.currentInstance!.id, testCase.action);
         const afterScreenshot = await this.takeScreenshot();
 
         results[testCase.name] = {
@@ -178,7 +179,7 @@ class ScrapybaraService {
     }
 
     try {
-      await instance.stop();
+      await this.client!.get(instance.id).stop();
       if (instance === this.currentInstance) {
         this.currentInstance = null;
       }

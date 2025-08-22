@@ -43,7 +43,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/about'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-about"
               >
                 About
@@ -51,7 +51,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/features'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-features"
               >
                 Features
@@ -59,7 +59,7 @@ export default function Landing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
               >
                 Pricing
@@ -109,7 +109,7 @@ export default function Landing() {
             </div>
             
             {/* Premium CTA Buttons */}
-            <div className="flex flex-col lg:flex-row gap-6 justify-center items-center mb-16 animate-slide-up">
+            <div className="flex justify-center items-center mb-16 animate-slide-up">
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = '/api/login'}
@@ -121,17 +121,6 @@ export default function Landing() {
                   <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="group border-2 border-white/20 text-white hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold min-w-[280px]"
-                data-testid="button-learn"
-              >
-                <span className="flex items-center gap-3">
-                  <i className="fas fa-play-circle"></i>
-                  Watch Demo
-                </span>
               </Button>
             </div>
             

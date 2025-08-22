@@ -34,7 +34,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-home"
               >
                 Home
@@ -42,7 +42,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/features'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-features"
               >
                 Features
@@ -50,7 +50,7 @@ export default function About() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
-                className="text-gray-300 hover:text-white transition-colors duration-300"
+                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
               >
                 Pricing

@@ -81,7 +81,7 @@ export async function setupAuth(app: Express) {
     try {
       const claims = tokens.claims();
       const dbUser = await upsertUser(claims);
-      const user = { ...dbUser };
+      const user = { ...dbUser } as any;
       updateUserSession(user, tokens);
       verified(null, user);
     } catch (error) {

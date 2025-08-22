@@ -18,11 +18,15 @@ import {
   type InsertEngagement,
   type SpiritualReading,
   type InsertReading,
+  type Notification,
+  type NotificationWithTriggerUser,
+  type InsertNotification,
   type ChakraType,
   type EngagementType,
+  notifications,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count } from "drizzle-orm";
+import { eq, desc, sql, and, count, ilike, or } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -40,6 +44,10 @@ export interface IStorage {
   getUserPosts(userId: string, limit?: number): Promise<PostWithAuthor[]>;
   updatePostChakra(postId: string, chakra: ChakraType): Promise<Post>;
   
+  // Search operations
+  searchPosts(query: string, limit?: number): Promise<PostWithAuthor[]>;
+  searchUsers(query: string, limit?: number): Promise<User[]>;
+  
   // Engagement operations
   createEngagement(engagement: InsertEngagement, userId: string): Promise<Engagement>;
   removeEngagement(postId: string, userId: string, type: EngagementType): Promise<void>;
@@ -54,6 +62,13 @@ export interface IStorage {
   createReading(reading: InsertReading, userId: string): Promise<SpiritualReading>;
   getUserDailyReading(userId: string): Promise<SpiritualReading | undefined>;
   
+  // Notification operations
+  createNotification(notification: InsertNotification, userId: string): Promise<Notification>;
+  getUserNotifications(userId: string, limit?: number): Promise<NotificationWithTriggerUser[]>;
+  markNotificationAsRead(notificationId: string, userId: string): Promise<void>;
+  markAllNotificationsAsRead(userId: string): Promise<void>;
+  getUnreadNotificationCount(userId: string): Promise<number>;
+
   // Stats operations
   getUserStats(userId: string): Promise<{
     totalPosts: number;
@@ -208,6 +223,45 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(posts.authorId, users.id))
       .where(eq(posts.authorId, userId))
       .orderBy(desc(posts.createdAt))
+      .limit(limit);
+    return result;
+  }
+
+  async searchPosts(query: string, limit = 10): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        authorId: posts.authorId,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isPremium: posts.isPremium,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+        author: users,
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .where(ilike(posts.content, `%${query}%`))
+      .orderBy(desc(posts.createdAt))
+      .limit(limit);
+    return result;
+  }
+
+  async searchUsers(query: string, limit = 10): Promise<User[]> {
+    const result = await db
+      .select()
+      .from(users)
+      .where(
+        or(
+          ilike(users.username, `%${query}%`),
+          ilike(users.email, `%${query}%`)
+        )
+      )
+      .orderBy(desc(users.createdAt))
       .limit(limit);
     return result;
   }
@@ -372,6 +426,70 @@ export class DatabaseStorage implements IStorage {
       .limit(1);
     
     return reading;
+  }
+
+  // Notification operations
+  async createNotification(notification: InsertNotification, userId: string): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values({ ...notification, userId })
+      .returning();
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string, limit = 20): Promise<NotificationWithTriggerUser[]> {
+    const result = await db
+      .select({
+        id: notifications.id,
+        userId: notifications.userId,
+        type: notifications.type,
+        title: notifications.title,
+        message: notifications.message,
+        isRead: notifications.isRead,
+        relatedId: notifications.relatedId,
+        relatedType: notifications.relatedType,
+        triggerUserId: notifications.triggerUserId,
+        createdAt: notifications.createdAt,
+        triggerUser: users,
+      })
+      .from(notifications)
+      .leftJoin(users, eq(notifications.triggerUserId, users.id))
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(limit);
+    return result;
+  }
+
+  async markNotificationAsRead(notificationId: string, userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(
+        and(
+          eq(notifications.id, notificationId),
+          eq(notifications.userId, userId)
+        )
+      );
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.userId, userId));
+  }
+
+  async getUnreadNotificationCount(userId: string): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(notifications)
+      .where(
+        and(
+          eq(notifications.userId, userId),
+          eq(notifications.isRead, false)
+        )
+      );
+    return result.count;
   }
 
   // Stats operations

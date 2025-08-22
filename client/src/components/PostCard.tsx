@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
+import Comments from "./Comments";
 
 interface PostCardProps {
   post: {
@@ -38,6 +39,7 @@ export default function PostCard({ post }: PostCardProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [userEngagements, setUserEngagements] = useState<string[]>([]);
+  const [showComments, setShowComments] = useState(false);
 
   const engageMutation = useMutation({
     mutationFn: async ({ type, remove }: { type: string; remove?: boolean }) => {
@@ -111,7 +113,11 @@ export default function PostCard({ post }: PostCardProps) {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold" data-testid={`text-author-${post.id}`}>
+              <h4 
+                className="font-semibold cursor-pointer hover:text-primary transition-colors duration-200" 
+                onClick={() => window.location.href = `/profile/${post.author.id}`}
+                data-testid={`text-author-${post.id}`}
+              >
                 {post.author.username || post.author.email || 'Anonymous'}
               </h4>
               <p className="text-sm text-gray-400" data-testid={`text-time-${post.id}`}>
@@ -250,11 +256,12 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center space-x-1 text-gray-400 hover:text-primary transition-colors duration-200"
+              className={`flex items-center space-x-1 transition-colors duration-200 ${showComments ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}
+              onClick={() => setShowComments(!showComments)}
               data-testid={`button-comment-${post.id}`}
             >
               <i className="fas fa-comment"></i>
-              <span className="text-sm">0</span>
+              <span className="text-sm">Comment</span>
             </Button>
           </div>
 
@@ -278,6 +285,9 @@ export default function PostCard({ post }: PostCardProps) {
             </Button>
           </div>
         </div>
+
+        {/* Comments Section */}
+        <Comments postId={post.id} isVisible={showComments} />
       </div>
     </Card>
   );

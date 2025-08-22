@@ -126,6 +126,19 @@ export const subscriptions = pgTable("subscriptions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  type: varchar("type").notNull(), // 'comment', 'engagement', 'oracle', 'profile_view'
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  relatedId: varchar("related_id"), // post id, user id, comment id, etc.
+  relatedType: varchar("related_type"), // 'post', 'user', 'comment'
+  triggerUserId: varchar("trigger_user_id").references(() => users.id), // who triggered the notification
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Insert schemas
 export const upsertUserSchema = createInsertSchema(users).pick({
   id: true,
@@ -163,6 +176,12 @@ export const insertReadingSchema = createInsertSchema(spiritualReadings).omit({
   createdAt: true,
 });
 
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  userId: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -176,6 +195,9 @@ export type InsertEngagement = z.infer<typeof insertEngagementSchema>;
 export type Engagement = typeof postEngagements.$inferSelect;
 export type InsertReading = z.infer<typeof insertReadingSchema>;
 export type SpiritualReading = typeof spiritualReadings.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
+export type NotificationWithTriggerUser = Notification & { triggerUser?: User };
 export type Subscription = typeof subscriptions.$inferSelect;
 export type ChakraType = "root" | "sacral" | "solar" | "heart" | "throat" | "third_eye" | "crown";
 export type EngagementType = "upvote" | "downvote" | "like" | "energy";

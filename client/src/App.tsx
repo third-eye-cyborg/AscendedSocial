@@ -11,6 +11,7 @@ import Subscribe from "@/pages/subscribe";
 import About from "@/pages/about";
 import Features from "@/pages/features";
 import Pricing from "@/pages/pricing";
+import Profile from "@/pages/profile";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -28,6 +29,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/profile/:userId" component={Profile} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />
           <Route path="/pricing" component={Pricing} />

@@ -42,7 +42,12 @@
   /* Spiritual/Mystical Colors */
   --cosmic: hsl(245, 58%, 10%);
   --cosmic-light: hsl(245, 35%, 15%);
-  --accent-light: hsl(340, 82%, 70%);
+  --accent-light: hsl(340, 82%, 85%);
+  
+  /* Better contrast grays */
+  --text-light: hsl(0, 0%, 90%);
+  --text-medium: hsl(0, 0%, 80%);
+  --text-muted: hsl(0, 0%, 70%);
   
   /* Chakra Colors */
   --chakra-root: hsl(0, 100%, 50%);
@@ -82,7 +87,7 @@
   --secondary: hsl(277, 48%, 58%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --muted: hsl(245, 35%, 15%);
-  --muted-foreground: hsl(210, 3.3898%, 70%);
+  --muted-foreground: hsl(210, 3.3898%, 80%);
   --accent: hsl(245, 35%, 20%);
   --accent-foreground: hsl(232, 100%, 67%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);

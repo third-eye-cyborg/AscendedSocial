@@ -102,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
                   <i className="fas fa-bolt text-accent-light"></i>
                   <span className="text-sm font-medium" data-testid="text-energy">{(user as any)?.energy || 1000}</span>
-                  <span className="text-xs text-gray-400">Energy</span>
+                  <span className="text-xs text-gray-300">Energy</span>
                 </div>
               )}
               

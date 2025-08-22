@@ -22,7 +22,7 @@ export default function OracleSidebar() {
   return (
     <aside className="w-80 fixed right-0 top-16 h-screen bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto">
       {/* Daily Oracle Reading */}
-      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
+      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30 hover-lift animate-scale-in">
         <CardHeader>
           <CardTitle className="font-display font-semibold text-accent-light flex items-center">
             <i className="fas fa-crystal-ball mr-2 animate-pulse"></i>
@@ -40,7 +40,7 @@ export default function OracleSidebar() {
             <>
               <div className="mb-4">
                 <div className="w-full h-32 bg-cosmic rounded-lg flex items-center justify-center border border-primary/30">
-                  <i className="fas fa-moon text-4xl text-accent-light"></i>
+                  <i className="fas fa-moon text-4xl text-accent-light animate-gentle-pulse"></i>
                 </div>
               </div>
 
@@ -59,7 +59,7 @@ export default function OracleSidebar() {
               </div>
 
               <Button 
-                className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-primary font-medium"
+                className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-primary font-medium transition-colors duration-200"
                 data-testid="button-new-reading"
               >
                 Get New Reading
@@ -74,7 +74,7 @@ export default function OracleSidebar() {
       </Card>
 
       {/* The Oracle Recommendations */}
-      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
+      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30 hover-lift animate-scale-in">
         <CardHeader>
           <CardTitle className="font-display font-semibold text-primary flex items-center">
             <i className="fas fa-eye mr-2"></i>

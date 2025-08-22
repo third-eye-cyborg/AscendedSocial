@@ -19,7 +19,7 @@ export default function Landing() {
             
             <Button 
               onClick={() => window.location.href = '/api/login'}
-              className="bg-primary hover:bg-primary/80"
+              className="bg-primary hover:bg-primary/80 transition-colors duration-200"
               data-testid="button-login"
             >
               Enter the Realm
@@ -31,7 +31,7 @@ export default function Landing() {
       {/* Hero Section */}
       <main className="pt-20">
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
-          <div className="aura-visualization rounded-3xl p-12 mb-12">
+          <div className="aura-visualization rounded-3xl p-12 mb-12 animate-fade-in">
             <h2 className="text-5xl font-display font-bold mb-6 text-white">
               Ascend Your Social Experience
             </h2>
@@ -52,7 +52,7 @@ export default function Landing() {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-primary text-primary hover:bg-primary/10"
+                className="border-primary text-primary hover:bg-primary/10 transition-colors duration-200"
                 data-testid="button-learn"
               >
                 Learn More
@@ -61,8 +61,8 @@ export default function Landing() {
           </div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-heart">
+          <div className="grid md:grid-cols-3 gap-8 mb-16 animate-slide-up">
+            <Card className="bg-cosmic-light border-primary/30 chakra-glow-heart hover-lift">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 mx-auto mb-4 bg-chakra-heart rounded-full flex items-center justify-center">
                   <i className="fas fa-user-circle text-white text-xl"></i>
@@ -74,7 +74,7 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-crown">
+            <Card className="bg-cosmic-light border-primary/30 chakra-glow-crown hover-lift">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 mx-auto mb-4 bg-chakra-crown rounded-full flex items-center justify-center">
                   <i className="fas fa-eye text-white text-xl"></i>
@@ -86,7 +86,7 @@ export default function Landing() {
               </CardContent>
             </Card>
 
-            <Card className="bg-cosmic-light border-primary/30 chakra-glow-throat">
+            <Card className="bg-cosmic-light border-primary/30 chakra-glow-throat hover-lift">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
                   <i className="fas fa-bolt text-cosmic text-xl"></i>

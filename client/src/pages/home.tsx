@@ -58,7 +58,7 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto px-4 py-6">
+      <div className="max-w-2xl mx-auto px-4 py-6 xl:px-6 2xl:px-4">
         {/* Post Creation */}
         <CreatePost />
 

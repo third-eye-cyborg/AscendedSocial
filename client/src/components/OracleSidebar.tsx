@@ -45,7 +45,7 @@ export default function OracleSidebar() {
   if (!user) return null;
 
   return (
-    <aside className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+    <aside className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent z-40">
       {/* Daily Oracle Reading */}
       <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30 hover-lift animate-scale-in">
         <CardHeader>

@@ -143,7 +143,7 @@ export default function OracleSidebar() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-heart)'}}></div>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 <span className="text-sm text-white">Heart Chakra</span>
               </div>
               <span className="text-xs text-gray-300">847 posts</span>
@@ -151,7 +151,7 @@ export default function OracleSidebar() {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-crown)'}}></div>
+                <div className="w-3 h-3 rounded-full bg-purple-600"></div>
                 <span className="text-sm text-white">Crown Chakra</span>
               </div>
               <span className="text-xs text-gray-300">623 posts</span>
@@ -159,7 +159,7 @@ export default function OracleSidebar() {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-throat)'}}></div>
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
                 <span className="text-sm text-white">Throat Chakra</span>
               </div>
               <span className="text-xs text-gray-300">591 posts</span>
@@ -167,7 +167,7 @@ export default function OracleSidebar() {
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-third)'}}></div>
+                <div className="w-3 h-3 rounded-full bg-indigo-700"></div>
                 <span className="text-sm text-white">Third Eye</span>
               </div>
               <span className="text-xs text-gray-300">472 posts</span>
@@ -186,6 +186,14 @@ export default function OracleSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+              onClick={() => {
+                // Focus on the create post form
+                const createPostInput = document.querySelector('[data-testid="textarea-content"]') as HTMLTextAreaElement;
+                if (createPostInput) {
+                  createPostInput.focus();
+                  createPostInput.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
               data-testid="button-create-post"
             >
               <i className="fas fa-feather mr-2 text-accent-light"></i>
@@ -195,6 +203,10 @@ export default function OracleSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+              onClick={() => {
+                // Scroll to the community section or show find friends modal
+                window.location.hash = '#community';
+              }}
               data-testid="button-explore-users"
             >
               <i className="fas fa-users mr-2 text-primary"></i>
@@ -204,6 +216,10 @@ export default function OracleSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+              onClick={() => {
+                // Navigate to community page or show join modal
+                alert('Joining Sacred Circle - this would navigate to community features!');
+              }}
               data-testid="button-join-community"
             >
               <i className="fas fa-circle mr-2 text-green-400"></i>
@@ -213,6 +229,18 @@ export default function OracleSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+              onClick={() => {
+                // Show daily affirmation modal or navigate to affirmation page
+                const affirmations = [
+                  'I am aligned with my highest purpose and spiritual truth.',
+                  'Divine energy flows through me, bringing peace and clarity.',
+                  'I trust the universe to guide me on my spiritual journey.',
+                  'My chakras are balanced, and my energy radiates love.',
+                  'I am connected to the infinite wisdom within me.'
+                ];
+                const randomAffirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+                alert(`✨ Daily Affirmation ✨\n\n${randomAffirmation}`);
+              }}
               data-testid="button-daily-affirmation"
             >
               <i className="fas fa-heart mr-2 text-pink-400"></i>

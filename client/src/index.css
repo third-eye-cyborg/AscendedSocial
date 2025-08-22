@@ -42,7 +42,7 @@
   /* Spiritual/Mystical Colors */
   --cosmic: hsl(245, 58%, 10%);
   --cosmic-light: hsl(245, 35%, 15%);
-  --golden: hsl(51, 100%, 50%);
+  --accent-light: hsl(0, 0%, 80%);
   
   /* Chakra Colors */
   --chakra-root: hsl(0, 100%, 50%);
@@ -125,7 +125,7 @@
 
   body {
     @apply font-sans antialiased bg-cosmic text-white;
-    background: linear-gradient(135deg, hsl(245, 58%, 10%) 0%, hsl(245, 35%, 15%) 100%);
+    background: hsl(245, 58%, 10%);
     overflow-x: hidden;
   }
   
@@ -167,19 +167,19 @@
 
   /* Aura Visualization */
   .aura-visualization {
-    background: radial-gradient(circle, hsl(232, 100%, 67%, 0.3) 0%, hsl(277, 48%, 58%, 0.2) 50%, transparent 100%);
+    background: hsl(245, 35%, 15%);
+    border: 1px solid hsl(232, 100%, 67%, 0.3);
   }
 
-  /* Sigil Container with Gradient Animation */
+  /* Sigil Container */
   .sigil-container {
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
-    background-size: 200% 200%;
-    animation: gradient-shift 3s ease infinite;
+    background: hsl(232, 100%, 67%);
+    border: 1px solid hsl(232, 100%, 67%, 0.5);
   }
 
   /* Animated Elements */
   .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
+    border: 1px solid hsl(232, 100%, 67%, 0.5);
   }
 
   .animate-float {
@@ -231,12 +231,12 @@
     background-color: var(--cosmic-light);
   }
 
-  .text-golden {
-    color: var(--golden);
+  .text-accent-light {
+    color: var(--accent-light);
   }
 
-  .bg-golden {
-    background-color: var(--golden);
+  .bg-accent-light {
+    background-color: var(--accent-light);
   }
 
   /* Chakra Color Utilities */

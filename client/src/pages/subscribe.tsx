@@ -50,7 +50,7 @@ const SubscribeForm = () => {
   return (
     <Card className="w-full max-w-md mx-auto bg-cosmic-light border-primary/30">
       <CardHeader>
-        <CardTitle className="text-golden text-center">Complete Your Ascension</CardTitle>
+        <CardTitle className="text-accent-light text-center">Complete Your Ascension</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +58,7 @@ const SubscribeForm = () => {
           <Button 
             type="submit" 
             disabled={!stripe}
-            className="w-full bg-golden text-cosmic hover:bg-golden/90 font-semibold"
+            className="w-full bg-primary text-white hover:bg-primary/90 font-semibold"
             data-testid="button-subscribe"
           >
             Subscribe to Premium
@@ -143,7 +143,7 @@ export default function Subscribe() {
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <i className="fas fa-lotus text-white"></i>
             </div>
-            <span className="text-lg font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-lg font-display font-bold text-primary">
               Ascended Social
             </span>
           </div>
@@ -163,7 +163,7 @@ export default function Subscribe() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-display font-bold mb-4">
-            <span className="bg-gradient-to-r from-golden to-primary bg-clip-text text-transparent">
+            <span className="text-accent-light">
               Ascended Social Premium
             </span>
           </h1>
@@ -174,10 +174,10 @@ export default function Subscribe() {
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <div>
-            <h2 className="text-2xl font-semibold mb-6 text-golden">Premium Features</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-accent-light">Premium Features</h2>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-golden rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
                 </div>
                 <div>
@@ -187,7 +187,7 @@ export default function Subscribe() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-golden rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
                 </div>
                 <div>
@@ -197,7 +197,7 @@ export default function Subscribe() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-golden rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
                 </div>
                 <div>
@@ -207,7 +207,7 @@ export default function Subscribe() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-golden rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
                 </div>
                 <div>
@@ -217,7 +217,7 @@ export default function Subscribe() {
               </div>
 
               <div className="flex items-start space-x-3">
-                <div className="w-6 h-6 bg-golden rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
                 </div>
                 <div>
@@ -236,8 +236,8 @@ export default function Subscribe() {
         </div>
 
         {/* Pricing */}
-        <div className="text-center bg-cosmic-light rounded-xl p-6 border border-golden/30">
-          <div className="text-3xl font-bold text-golden mb-2">$9.99/month</div>
+        <div className="text-center bg-cosmic-light rounded-xl p-6 border border-primary/30">
+          <div className="text-3xl font-bold text-accent-light mb-2">$9.99/month</div>
           <p className="text-gray-400">Cancel anytime • Start your 7-day free trial</p>
         </div>
       </div>

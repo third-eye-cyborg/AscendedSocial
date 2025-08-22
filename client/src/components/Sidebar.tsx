@@ -32,8 +32,8 @@ export default function Sidebar() {
                 )}
               </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-white" data-testid="text-sidebar-username">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-white truncate" data-testid="text-sidebar-username">
                 {(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}
               </h3>
               <p className="text-sm text-primary">Ascending Soul</p>

@@ -143,34 +143,34 @@ export default function OracleSidebar() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-chakra-heart"></div>
+                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-heart)'}}></div>
                 <span className="text-sm text-white">Heart Chakra</span>
               </div>
-              <span className="text-xs text-gray-300">2.4k posts</span>
+              <span className="text-xs text-gray-300">847 posts</span>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-chakra-crown"></div>
+                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-crown)'}}></div>
                 <span className="text-sm text-white">Crown Chakra</span>
               </div>
-              <span className="text-xs text-gray-300">1.8k posts</span>
+              <span className="text-xs text-gray-300">623 posts</span>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-chakra-throat"></div>
+                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-throat)'}}></div>
                 <span className="text-sm text-white">Throat Chakra</span>
               </div>
-              <span className="text-xs text-gray-300">1.5k posts</span>
+              <span className="text-xs text-gray-300">591 posts</span>
             </div>
             
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 rounded-full bg-chakra-third"></div>
+                <div className="w-3 h-3 rounded-full" style={{backgroundColor: 'var(--chakra-third)'}}></div>
                 <span className="text-sm text-white">Third Eye</span>
               </div>
-              <span className="text-xs text-gray-300">1.2k posts</span>
+              <span className="text-xs text-gray-300">472 posts</span>
             </div>
           </div>
         </CardContent>
@@ -186,28 +186,37 @@ export default function OracleSidebar() {
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
-              data-testid="button-generate-sigil"
+              data-testid="button-create-post"
             >
-              <i className="fas fa-magic mr-2 text-accent-light"></i>
-              Generate New Sigil
+              <i className="fas fa-feather mr-2 text-accent-light"></i>
+              Create Post
             </Button>
             
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
-              data-testid="button-meditation-timer"
+              data-testid="button-explore-users"
             >
-              <i className="fas fa-clock mr-2 text-primary"></i>
-              Meditation Timer
+              <i className="fas fa-users mr-2 text-primary"></i>
+              Find Spiritual Friends
             </Button>
             
             <Button
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
-              data-testid="button-chakra-test"
+              data-testid="button-join-community"
             >
-              <i className="fas fa-vial mr-2 text-secondary"></i>
-              Chakra Assessment
+              <i className="fas fa-circle mr-2 text-green-400"></i>
+              Join Sacred Circle
+            </Button>
+            
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
+              data-testid="button-daily-affirmation"
+            >
+              <i className="fas fa-heart mr-2 text-pink-400"></i>
+              Daily Affirmation
             </Button>
           </div>
         </CardContent>

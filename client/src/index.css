@@ -5,6 +5,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Uppy Modal Contrast Fixes */
+.uppy-Root {
+  color: white !important;
+}
+
+.uppy-Dashboard-inner {
+  background-color: hsl(280, 100%, 8%) !important;
+  color: white !important;
+  border: 1px solid hsl(280, 50%, 20%) !important;
+}
+
+.uppy-Dashboard-dropFilesHereHint {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.uppy-Dashboard-browse {
+  color: hsl(280, 100%, 70%) !important;
+}
+
+.uppy-Dashboard-AddFiles-title {
+  color: white !important;
+}
+
+.uppy-size--md .uppy-Dashboard-AddFiles-title {
+  color: white !important;
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(210, 25%, 7.8431%);

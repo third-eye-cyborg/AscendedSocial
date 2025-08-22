@@ -304,7 +304,7 @@ export default function Features() {
                     size="lg"
                     variant="outline"
                     onClick={() => window.location.href = '/pricing'}
-                    className="group border-2 border-white/30 text-white hover:border-primary hover:text-primary hover:bg-primary/10 transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold"
+                    className="group border-2 border-white/50 text-white bg-white/10 hover:border-primary hover:text-white hover:bg-primary transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold"
                     data-testid="button-pricing"
                   >
                     <span className="flex items-center gap-3">

@@ -27,7 +27,7 @@ export default function Features() {
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Ascended Social
                 </h1>
-                <p className="text-xs text-gray-400 font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-muted font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
               </div>
             </div>
             
@@ -35,7 +35,7 @@ export default function Features() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-home"
               >
                 Home
@@ -43,7 +43,7 @@ export default function Features() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/about'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-about"
               >
                 About
@@ -51,7 +51,7 @@ export default function Features() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
-                className="text-gray-300 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
               >
                 Pricing
@@ -79,7 +79,7 @@ export default function Features() {
                 Platform Features
               </span>
             </h2>
-            <p className="text-2xl text-gray-300 mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-2xl text-subtle mb-8 leading-relaxed max-w-4xl mx-auto">
               Discover the revolutionary tools designed to elevate your spiritual journey and connect you with like-minded souls.
             </p>
           </div>
@@ -103,10 +103,10 @@ export default function Features() {
                     </div>
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-chakra-heart">AI-Generated Sigils</h4>
-                  <p className="text-gray-200 leading-relaxed mb-4">
+                  <p className="text-secondary leading-relaxed mb-4">
                     Receive a unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-2">
+                  <ul className="text-subtle text-sm space-y-2">
                     <li className="flex items-center"><i className="fas fa-check text-chakra-heart mr-2"></i>Personalized spiritual symbols</li>
                     <li className="flex items-center"><i className="fas fa-check text-chakra-heart mr-2"></i>AI-powered energy analysis</li>
                     <li className="flex items-center"><i className="fas fa-check text-chakra-heart mr-2"></i>Evolution tracking over time</li>
@@ -124,10 +124,10 @@ export default function Features() {
                     </div>
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Chakra Intelligence</h4>
-                  <p className="text-gray-200 leading-relaxed mb-4">
+                  <p className="text-secondary leading-relaxed mb-4">
                     AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-2">
+                  <ul className="text-subtle text-sm space-y-2">
                     <li className="flex items-center"><i className="fas fa-check text-chakra-crown mr-2"></i>Automatic content categorization</li>
                     <li className="flex items-center"><i className="fas fa-check text-chakra-crown mr-2"></i>Energy balance insights</li>
                     <li className="flex items-center"><i className="fas fa-check text-chakra-crown mr-2"></i>Growth visualization</li>
@@ -145,10 +145,10 @@ export default function Features() {
                     </div>
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-primary">Sacred Energy System</h4>
-                  <p className="text-gray-200 leading-relaxed mb-4">
+                  <p className="text-secondary leading-relaxed mb-4">
                     Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                   </p>
-                  <ul className="text-gray-300 text-sm space-y-2">
+                  <ul className="text-subtle text-sm space-y-2">
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i>Three interaction levels</li>
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i>Energy-based engagement</li>
                     <li className="flex items-center"><i className="fas fa-check text-primary mr-2"></i>Community resonance tracking</li>
@@ -177,7 +177,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-primary mb-2">Daily Oracle Readings</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Receive personalized spiritual guidance and wisdom each day through AI-powered oracle readings tailored to your energy signature.
                         </p>
                       </div>
@@ -194,7 +194,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-chakra-heart mb-2">Sparks & Visions</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Share quick spiritual insights (Sparks) or longer-form wisdom videos (Visions) to inspire and connect with your community.
                         </p>
                       </div>
@@ -211,7 +211,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-chakra-crown mb-2">Aura Tracking</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Monitor your spiritual growth through an intelligent aura system that evolves with your consciousness and community interactions.
                         </p>
                       </div>
@@ -230,7 +230,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-secondary mb-2">AI Tarot Readings</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Access deep tarot insights generated by advanced AI consciousness, providing personalized guidance for your spiritual path.
                         </p>
                       </div>
@@ -247,7 +247,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-primary mb-2">Sacred Circles</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Join or create intimate spiritual communities focused on specific practices, traditions, or growth themes.
                         </p>
                       </div>
@@ -264,7 +264,7 @@ export default function Features() {
                       </div>
                       <div>
                         <h4 className="text-xl font-display font-bold text-chakra-heart mb-2">Energy Analytics</h4>
-                        <p className="text-gray-200 leading-relaxed">
+                        <p className="text-secondary leading-relaxed">
                           Track your spiritual growth patterns, energy fluctuations, and community impact through detailed analytics and insights.
                         </p>
                       </div>
@@ -284,7 +284,7 @@ export default function Features() {
                     Experience the Magic
                   </span>
                 </h3>
-                <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
                   Join thousands of awakened souls using these transformative features to elevate their consciousness and connect with their spiritual tribe.
                 </p>
                 <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">

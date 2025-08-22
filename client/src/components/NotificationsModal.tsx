@@ -103,7 +103,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
       case 'profile_view':
         return <i className="fas fa-user text-green-400"></i>;
       default:
-        return <i className="fas fa-bell text-gray-400"></i>;
+        return <i className="fas fa-bell text-muted"></i>;
     }
   };
 
@@ -161,7 +161,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 size="sm"
                 onClick={() => markAllReadMutation.mutate()}
                 disabled={markAllReadMutation.isPending}
-                className="text-gray-400 hover:text-white"
+                className="text-muted hover:text-white"
                 data-testid="button-mark-all-read"
               >
                 <i className="fas fa-check-double mr-2"></i>
@@ -195,7 +195,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 <div className="w-12 h-12 mx-auto mb-4 bg-red-500/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-exclamation-triangle text-red-400 text-xl"></i>
                 </div>
-                <p className="text-gray-400">Failed to load notifications</p>
+                <p className="text-muted">Failed to load notifications</p>
               </div>
             ) : filteredNotifications.length > 0 ? (
               filteredNotifications.map((notification) => (
@@ -224,7 +224,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                               {notification.triggerUser.sigil}
                             </span>
                           ) : (
-                            <i className="fas fa-user text-xs text-gray-400"></i>
+                            <i className="fas fa-user text-xs text-muted"></i>
                           )}
                         </div>
                       </div>
@@ -241,11 +241,11 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                         )}
                       </div>
                       
-                      <p className="text-sm text-gray-300 mb-2" data-testid={`notification-message-${notification.id}`}>
+                      <p className="text-sm text-subtle mb-2" data-testid={`notification-message-${notification.id}`}>
                         {notification.message}
                       </p>
 
-                      <div className="flex items-center justify-between text-xs text-gray-400">
+                      <div className="flex items-center justify-between text-xs text-muted">
                         <span>{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}</span>
                         
                         <div className="flex items-center space-x-2">
@@ -269,10 +269,10 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-bell text-primary text-2xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-300 mb-2">
+                <h3 className="text-lg font-semibold text-subtle mb-2">
                   {filter === "unread" ? "All caught up!" : "No notifications yet"}
                 </h3>
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted text-sm">
                   {filter === "unread" 
                     ? "You've read all your notifications" 
                     : "Your spiritual journey notifications will appear here"}
@@ -283,7 +283,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
 
           {/* Action Buttons */}
           <div className="border-t border-primary/20 pt-4 flex justify-between items-center">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted">
               Notifications help you stay connected to your spiritual community
             </p>
             <Button

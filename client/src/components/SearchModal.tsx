@@ -123,7 +123,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   <i className="fas fa-search text-primary text-2xl"></i>
                 </div>
                 <h3 className="text-lg font-semibold text-subtle mb-2">Search the spiritual realm</h3>
-                <p className="text-gray-400 text-sm">Enter at least 2 characters to begin your search</p>
+                <p className="text-muted text-sm">Enter at least 2 characters to begin your search</p>
               </div>
             ) : isLoading ? (
               <div className="space-y-3">
@@ -148,7 +148,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <div className="w-12 h-12 mx-auto mb-4 bg-red-500/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-exclamation-triangle text-red-400 text-xl"></i>
                 </div>
-                <p className="text-gray-400">Search encountered an error</p>
+                <p className="text-muted">Search encountered an error</p>
               </div>
             ) : searchResults && Array.isArray(searchResults) && searchResults.length > 0 ? (
               (searchResults as SearchResult[]).map((result, index) => (
@@ -168,7 +168,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               {result.author.sigil}
                             </span>
                           ) : (
-                            <i className="fas fa-user text-xs text-gray-400"></i>
+                            <i className="fas fa-user text-xs text-muted"></i>
                           )}
                         </div>
                       ) : (
@@ -200,11 +200,11 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                         )}
                       </div>
                       
-                      <p className="text-sm text-gray-300 line-clamp-2 mb-2" data-testid={`search-content-${result.id}`}>
+                      <p className="text-sm text-subtle line-clamp-2 mb-2" data-testid={`search-content-${result.id}`}>
                         {result.content}
                       </p>
 
-                      <div className="flex items-center justify-between text-xs text-gray-400">
+                      <div className="flex items-center justify-between text-xs text-muted">
                         {result.type === 'post' && result.author && (
                           <span>by {result.author.username || result.author.email || 'Anonymous'}</span>
                         )}
@@ -224,8 +224,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <div className="w-12 h-12 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-search text-primary text-xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-300 mb-2">No results found</h3>
-                <p className="text-gray-400 text-sm">
+                <h3 className="text-lg font-semibold text-subtle mb-2">No results found</h3>
+                <p className="text-muted text-sm">
                   Try searching with different keywords or explore the spiritual realm differently
                 </p>
               </div>
@@ -235,8 +235,8 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
           {/* Search Tips */}
           {searchQuery.length < 2 && (
             <div className="border-t border-primary/20 pt-4">
-              <h4 className="text-sm font-medium text-gray-300 mb-2">Search tips:</h4>
-              <ul className="text-xs text-gray-400 space-y-1">
+              <h4 className="text-sm font-medium text-subtle mb-2">Search tips:</h4>
+              <ul className="text-xs text-muted space-y-1">
                 <li>• Search for spiritual concepts: "meditation", "chakras", "awakening"</li>
                 <li>• Find users by username or spiritual interests</li>
                 <li>• Use quotes for exact phrases: "inner peace"</li>

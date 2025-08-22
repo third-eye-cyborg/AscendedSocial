@@ -91,8 +91,8 @@ export default function Home() {
               <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
                 <i className="fas fa-feather text-primary text-2xl"></i>
               </div>
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">No posts yet</h3>
-              <p className="text-gray-400">Be the first to share your spiritual insight!</p>
+              <h3 className="text-xl font-semibold text-subtle mb-2">No posts yet</h3>
+              <p className="text-muted">Be the first to share your spiritual insight!</p>
             </div>
           )}
         </div>

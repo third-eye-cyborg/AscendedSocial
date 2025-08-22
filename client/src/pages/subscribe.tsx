@@ -95,7 +95,7 @@ export default function Subscribe() {
               <i className="fas fa-exclamation-triangle text-destructive text-2xl"></i>
             </div>
             <h2 className="text-xl font-semibold mb-2">Payment Error</h2>
-            <p className="text-gray-400 mb-4">{error}</p>
+            <p className="text-muted mb-4">{error}</p>
             <Button 
               onClick={() => window.location.href = '/'}
               variant="outline"
@@ -115,7 +115,7 @@ export default function Subscribe() {
       <div className="min-h-screen bg-cosmic text-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400">Preparing your ascension...</p>
+          <p className="text-muted">Preparing your ascension...</p>
         </div>
       </div>
     );
@@ -127,7 +127,7 @@ export default function Subscribe() {
         <Card className="w-full max-w-md bg-cosmic-light border-destructive/50">
           <CardContent className="p-6 text-center">
             <h2 className="text-xl font-semibold mb-2">Payment Unavailable</h2>
-            <p className="text-gray-400">Payment processing is not available at this time.</p>
+            <p className="text-muted">Payment processing is not available at this time.</p>
           </CardContent>
         </Card>
       </div>
@@ -150,7 +150,7 @@ export default function Subscribe() {
           <Button 
             variant="ghost" 
             onClick={() => window.location.href = '/'}
-            className="text-gray-400 hover:text-white"
+            className="text-muted hover:text-white"
             data-testid="button-back"
           >
             <i className="fas fa-arrow-left mr-2"></i>
@@ -167,7 +167,7 @@ export default function Subscribe() {
               Ascended Social Premium
             </span>
           </h1>
-          <p className="text-xl text-gray-300">
+          <p className="text-xl text-subtle">
             Unlock the full power of your spiritual journey
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function Subscribe() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">AI Tarot Readings</h3>
-                  <p className="text-gray-400 text-sm">Unlimited personalized tarot consultations</p>
+                  <p className="text-muted text-sm">Unlimited personalized tarot consultations</p>
                 </div>
               </div>
 
@@ -192,7 +192,7 @@ export default function Subscribe() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Enhanced Energy Pool</h3>
-                  <p className="text-gray-400 text-sm">5x more monthly energy allocation</p>
+                  <p className="text-muted text-sm">5x more monthly energy allocation</p>
                 </div>
               </div>
 
@@ -202,7 +202,7 @@ export default function Subscribe() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Custom Sigil Generation</h3>
-                  <p className="text-gray-400 text-sm">Create unlimited unique mystical sigils</p>
+                  <p className="text-muted text-sm">Create unlimited unique mystical sigils</p>
                 </div>
               </div>
 
@@ -212,7 +212,7 @@ export default function Subscribe() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Premium Content Creation</h3>
-                  <p className="text-gray-400 text-sm">Monetize your wisdom with subscriber tiers</p>
+                  <p className="text-muted text-sm">Monetize your wisdom with subscriber tiers</p>
                 </div>
               </div>
 
@@ -222,7 +222,7 @@ export default function Subscribe() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">Live Streaming</h3>
-                  <p className="text-gray-400 text-sm">Host live spiritual sessions and workshops</p>
+                  <p className="text-muted text-sm">Host live spiritual sessions and workshops</p>
                 </div>
               </div>
             </div>
@@ -238,7 +238,7 @@ export default function Subscribe() {
         {/* Pricing */}
         <div className="text-center bg-cosmic-light rounded-xl p-6 border border-primary/30">
           <div className="text-3xl font-bold text-accent-light mb-2">$9.99/month</div>
-          <p className="text-gray-400">Cancel anytime • Start your 7-day free trial</p>
+          <p className="text-muted">Cancel anytime • Start your 7-day free trial</p>
         </div>
       </div>
     </div>

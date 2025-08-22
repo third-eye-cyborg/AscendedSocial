@@ -70,8 +70,8 @@ export default function Profile() {
             <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
               <i className="fas fa-user-slash text-primary text-2xl"></i>
             </div>
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">User not found</h3>
-            <p className="text-gray-400">This spiritual seeker seems to have vanished into the ether.</p>
+            <h3 className="text-xl font-semibold text-subtle mb-2">User not found</h3>
+            <p className="text-muted">This spiritual seeker seems to have vanished into the ether.</p>
           </div>
         </div>
       </Layout>
@@ -98,7 +98,7 @@ export default function Profile() {
                           {profile.sigil}
                         </span>
                       ) : (
-                        <i className="fas fa-user text-2xl text-gray-400"></i>
+                        <i className="fas fa-user text-2xl text-muted"></i>
                       )}
                     </div>
                   </div>
@@ -107,7 +107,7 @@ export default function Profile() {
                   <h2 className="text-xl font-semibold text-white mb-1" data-testid="text-profile-name">
                     {profile?.username || profile?.email || 'Spiritual Seeker'}
                   </h2>
-                  <p className="text-sm text-gray-400 mb-3">
+                  <p className="text-sm text-muted mb-3">
                     Joined {formatDistanceToNow(new Date(profile?.createdAt || Date.now()), { addSuffix: true })}
                   </p>
 
@@ -136,13 +136,13 @@ export default function Profile() {
                     <div className="text-lg font-semibold text-primary" data-testid="text-profile-posts">
                       {stats?.totalPosts || 0}
                     </div>
-                    <div className="text-xs text-gray-400">Posts</div>
+                    <div className="text-xs text-muted">Posts</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-semibold text-accent-light" data-testid="text-profile-energy">
                       {stats?.totalEngagements || 0}
                     </div>
-                    <div className="text-xs text-gray-400">Engagements</div>
+                    <div className="text-xs text-muted">Engagements</div>
                   </div>
                 </div>
 
@@ -151,7 +151,7 @@ export default function Profile() {
                   <div className="text-center py-3 px-4 bg-gradient-to-r from-primary/20 to-accent-light/20 rounded-lg border border-primary/30">
                     <i className="fas fa-crown text-accent-light mb-2"></i>
                     <p className="text-sm font-medium text-accent-light">Premium Member</p>
-                    <p className="text-xs text-gray-400">Ascended Soul</p>
+                    <p className="text-xs text-muted">Ascended Soul</p>
                   </div>
                 )}
 
@@ -198,7 +198,7 @@ export default function Profile() {
               <h3 className="text-2xl font-display font-semibold text-white">
                 {isOwnProfile ? 'Your' : `${profile?.username || 'Their'}'s`} Posts
               </h3>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-muted">
                 {stats?.totalPosts || 0} spiritual insights shared
               </div>
             </div>
@@ -234,10 +234,10 @@ export default function Profile() {
                   <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
                     <i className="fas fa-feather text-primary text-2xl"></i>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-300 mb-2">
+                  <h3 className="text-xl font-semibold text-subtle mb-2">
                     {isOwnProfile ? "You haven't posted yet" : "No posts yet"}
                   </h3>
-                  <p className="text-gray-400 mb-4">
+                  <p className="text-muted mb-4">
                     {isOwnProfile 
                       ? "Share your spiritual journey with the community" 
                       : "This seeker hasn't shared their insights yet"

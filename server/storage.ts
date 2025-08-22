@@ -6,6 +6,8 @@ import {
   commentEngagements,
   spiritualReadings,
   subscriptions,
+  spirits,
+  connections,
   type User,
   type UpsertUser,
   type Post,
@@ -32,6 +34,7 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUser(userId: string, updates: Partial<User>): Promise<User>;
   updateUserSigil(userId: string, sigil: string): Promise<User>;
   updateUserEnergy(userId: string, energy: number): Promise<User>;
   updateUserAura(userId: string, aura: number): Promise<User>;
@@ -76,6 +79,16 @@ export interface IStorage {
     positiveEnergy: number;
     auraLevel: number;
   }>;
+
+  // Spirits
+  createSpirit(userId: string, spiritData: { name: string; description: string; element: string; questionnaire: any }): Promise<any>;
+  getUserSpirit(userId: string): Promise<any | null>;
+  updateSpiritLevel(spiritId: string, level: number, experience: number): Promise<any>;
+
+  // Connections  
+  createConnection(requesterId: string, receiverId: string): Promise<any>;
+  updateConnection(connectionId: string, userId: string, status: 'accepted' | 'declined'): Promise<any>;
+  getUserConnections(userId: string): Promise<any[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -96,6 +109,15 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date(),
         },
       })
+      .returning();
+    return user;
+  }
+
+  async updateUser(userId: string, updates: Partial<User>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, userId))
       .returning();
     return user;
   }
@@ -526,6 +548,80 @@ export class DatabaseStorage implements IStorage {
       positiveEnergy: user?.aura || 0,
       auraLevel: Math.floor((user?.aura || 0) / 1000) + 1,
     };
+  }
+
+  // Spirit operations
+  async createSpirit(userId: string, spiritData: { name: string; description: string; element: string; questionnaire: any }): Promise<any> {
+    const [spirit] = await db
+      .insert(spirits)
+      .values({
+        userId,
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element as 'fire' | 'water' | 'earth' | 'air',
+        questionnaire: spiritData.questionnaire,
+        level: 1,
+        experience: 0,
+      })
+      .returning();
+    return spirit;
+  }
+
+  async getUserSpirit(userId: string): Promise<any | null> {
+    const [spirit] = await db
+      .select()
+      .from(spirits)
+      .where(eq(spirits.userId, userId));
+    return spirit || null;
+  }
+
+  async updateSpiritLevel(spiritId: string, level: number, experience: number): Promise<any> {
+    const [spirit] = await db
+      .update(spirits)
+      .set({ level, experience, updatedAt: new Date() })
+      .where(eq(spirits.id, spiritId))
+      .returning();
+    return spirit;
+  }
+
+  // Connection operations
+  async createConnection(requesterId: string, receiverId: string): Promise<any> {
+    const [connection] = await db
+      .insert(connections)
+      .values({
+        requesterId,
+        receiverId,
+        status: 'pending',
+      })
+      .returning();
+    return connection;
+  }
+
+  async updateConnection(connectionId: string, userId: string, status: 'accepted' | 'declined'): Promise<any> {
+    const [connection] = await db
+      .update(connections)
+      .set({ status, updatedAt: new Date() })
+      .where(
+        and(
+          eq(connections.id, connectionId),
+          eq(connections.receiverId, userId)
+        )
+      )
+      .returning();
+    return connection;
+  }
+
+  async getUserConnections(userId: string): Promise<any[]> {
+    const connections = await db
+      .select()
+      .from(connections)
+      .where(
+        or(
+          eq(connections.requesterId, userId),
+          eq(connections.receiverId, userId)
+        )
+      );
+    return connections;
   }
 }
 

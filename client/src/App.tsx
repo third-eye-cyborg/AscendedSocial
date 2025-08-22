@@ -16,6 +16,8 @@ import ProfileSettings from "@/pages/profileSettings";
 import Visions from "@/pages/visions";
 import Sparks from "@/pages/sparks";
 import Community from "@/pages/community";
+import Oracle from "@/pages/oracle";
+import Onboarding from "@/pages/onboarding";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -38,6 +40,8 @@ function Router() {
           <Route path="/visions" component={Visions} />
           <Route path="/sparks" component={Sparks} />
           <Route path="/community" component={Community} />
+          <Route path="/oracle" component={Oracle} />
+          <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />
           <Route path="/pricing" component={Pricing} />

@@ -22,9 +22,9 @@ export default function OracleSidebar() {
   return (
     <aside className="w-80 fixed right-0 top-16 h-screen bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto">
       {/* Daily Oracle Reading */}
-      <Card className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl mb-6 border border-primary/30">
+      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
         <CardHeader>
-          <CardTitle className="font-display font-semibold text-golden flex items-center">
+          <CardTitle className="font-display font-semibold text-accent-light flex items-center">
             <i className="fas fa-crystal-ball mr-2 animate-pulse"></i>
             Daily Oracle Reading
           </CardTitle>
@@ -39,8 +39,8 @@ export default function OracleSidebar() {
           ) : dailyReading ? (
             <>
               <div className="mb-4">
-                <div className="w-full h-32 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-lg flex items-center justify-center">
-                  <i className="fas fa-moon text-4xl text-golden"></i>
+                <div className="w-full h-32 bg-cosmic rounded-lg flex items-center justify-center border border-primary/30">
+                  <i className="fas fa-moon text-4xl text-accent-light"></i>
                 </div>
               </div>
 
@@ -188,7 +188,7 @@ export default function OracleSidebar() {
               className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
               data-testid="button-generate-sigil"
             >
-              <i className="fas fa-magic mr-2 text-golden"></i>
+              <i className="fas fa-magic mr-2 text-accent-light"></i>
               Generate New Sigil
             </Button>
             

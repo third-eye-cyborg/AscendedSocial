@@ -16,7 +16,7 @@ export default function Sidebar() {
   return (
     <aside className="w-64 fixed left-0 top-16 h-screen bg-cosmic-light/50 border-r border-primary/30 p-4 overflow-y-auto">
       {/* User Aura Profile */}
-      <Card className="bg-gradient-to-br from-cosmic-light to-primary/10 rounded-xl mb-6 aura-visualization border border-primary/30">
+      <Card className="bg-cosmic-light rounded-xl mb-6 aura-visualization border border-primary/30">
         <CardContent className="p-4">
           <div className="flex items-center space-x-3 mb-3">
             <div className="sigil-container w-12 h-12 rounded-full p-0.5">
@@ -42,13 +42,13 @@ export default function Sidebar() {
           <div className="mb-3">
             <div className="flex justify-between text-sm mb-1">
               <span>Aura Level</span>
-              <span className="text-golden" data-testid="text-aura-level">
+              <span className="text-accent-light" data-testid="text-aura-level">
                 Level {(userStats as any)?.auraLevel || 1}
               </span>
             </div>
             <div className="w-full bg-cosmic rounded-full h-2">
               <div 
-                className="bg-gradient-to-r from-primary to-golden h-2 rounded-full animate-glow"
+                className="bg-primary h-2 rounded-full"
                 style={{ width: `${Math.min(100, (((userStats as any)?.auraLevel || 1) * 10))}%` }}
               ></div>
             </div>
@@ -57,7 +57,7 @@ export default function Sidebar() {
           {/* Spiritual Stats */}
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="text-center">
-              <div className="text-golden font-semibold" data-testid="text-positive-energy">
+              <div className="text-accent-light font-semibold" data-testid="text-positive-energy">
                 {(userStats as any)?.positiveEnergy || 0}
               </div>
               <div className="text-gray-400">Positive Energy</div>
@@ -117,37 +117,37 @@ export default function Sidebar() {
       </nav>
 
       {/* Premium Features */}
-      <Card className="bg-gradient-to-br from-golden/20 to-primary/20 rounded-xl border border-golden/30">
+      <Card className="bg-cosmic-light rounded-xl border border-primary/30">
         <CardContent className="p-4">
-          <h4 className="font-semibold text-golden mb-2 flex items-center">
+          <h4 className="font-semibold text-accent-light mb-2 flex items-center">
             <i className="fas fa-crown mr-2"></i>
             Premium Tools
           </h4>
           <div className="space-y-2 text-sm">
             <a 
               href="#" 
-              className="block hover:text-golden transition-colors"
+              className="block hover:text-accent-light transition-colors"
               data-testid="link-tarot"
             >
               <i className="fas fa-cards-blank mr-2"></i>AI Tarot Readings
             </a>
             <a 
               href="#" 
-              className="block hover:text-golden transition-colors"
+              className="block hover:text-accent-light transition-colors"
               data-testid="link-streaming"
             >
               <i className="fas fa-broadcast-tower mr-2"></i>Live Streaming
             </a>
             <a 
               href="#" 
-              className="block hover:text-golden transition-colors"
+              className="block hover:text-accent-light transition-colors"
               data-testid="link-sigils"
             >
               <i className="fas fa-crystal-ball mr-2"></i>Custom Sigils
             </a>
           </div>
           <Button 
-            className="w-full mt-3 bg-golden text-cosmic font-semibold hover:bg-golden/90"
+            className="w-full mt-3 bg-primary text-white font-semibold hover:bg-primary/90"
             onClick={() => window.location.href = '/subscribe'}
             data-testid="button-upgrade"
           >

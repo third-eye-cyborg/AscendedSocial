@@ -66,7 +66,7 @@ export default {
           DEFAULT: "#0F0F23",
           light: "#1A1A3A",
         },
-        golden: "#FFD700",
+        "accent-light": "#CCCCCC",
         // Chakra Colors
         chakra: {
           root: "#FF0000",      // Red
@@ -124,9 +124,7 @@ export default {
         "gradient-shift": "gradient-shift 3s ease infinite",
       },
       backgroundImage: {
-        "cosmic-gradient": "linear-gradient(135deg, #0F0F23 0%, #1A1A3A 100%)",
-        "aura-gradient": "radial-gradient(circle, rgba(87,113,255,0.3) 0%, rgba(155,89,182,0.2) 50%, transparent 100%)",
-        "sigil-gradient": "linear-gradient(45deg, #5771FF, #9B59B6)",
+        "cosmic-gradient": "#0F0F23",
       },
       backdropBlur: {
         xs: "2px",

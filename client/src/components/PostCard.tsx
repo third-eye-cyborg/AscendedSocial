@@ -234,7 +234,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 ${userEngagements.includes('energy') ? 'text-golden' : 'text-gray-400 hover:text-golden'}`}
+              className={`flex items-center space-x-1 ${userEngagements.includes('energy') ? 'text-accent-light' : 'text-gray-400 hover:text-accent-light'}`}
               onClick={() => handleEngagement('energy')}
               disabled={engageMutation.isPending}
               title="Send Energy (Uses 10 energy points)"
@@ -271,7 +271,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-400 hover:text-golden"
+              className="text-gray-400 hover:text-accent-light"
               data-testid={`button-save-${post.id}`}
             >
               <i className="fas fa-bookmark"></i>

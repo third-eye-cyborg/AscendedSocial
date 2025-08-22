@@ -23,7 +23,7 @@ export default function Layout({ children }: LayoutProps) {
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <i className="fas fa-lotus text-white text-lg"></i>
               </div>
-              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h1 className="text-xl font-display font-bold text-primary">
                 Ascended Social
               </h1>
             </div>
@@ -48,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
               {/* Energy Indicator - Hidden on mobile */}
               {!isMobile && (user as any) && (
                 <div className="flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
-                  <i className="fas fa-bolt text-golden animate-pulse"></i>
+                  <i className="fas fa-bolt text-accent-light"></i>
                   <span className="text-sm font-medium" data-testid="text-energy">{(user as any)?.energy || 1000}</span>
                   <span className="text-xs text-gray-400">Energy</span>
                 </div>

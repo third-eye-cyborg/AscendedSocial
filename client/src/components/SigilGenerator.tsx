@@ -38,7 +38,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
   return (
     <Card className="bg-cosmic-light border border-primary/30">
       <CardHeader>
-        <CardTitle className="text-golden flex items-center">
+        <CardTitle className="text-accent-light flex items-center">
           <i className="fas fa-magic mr-2"></i>
           Sigil Generator
         </CardTitle>
@@ -76,7 +76,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
             <Button
               onClick={() => generateSigilMutation.mutate()}
               disabled={generateSigilMutation.isPending}
-              className="bg-golden text-cosmic hover:bg-golden/90"
+              className="bg-primary text-white hover:bg-primary/90"
               data-testid="button-generate"
             >
               {generateSigilMutation.isPending ? (

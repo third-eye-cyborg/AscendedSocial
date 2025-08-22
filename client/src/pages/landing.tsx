@@ -12,7 +12,7 @@ export default function Landing() {
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <i className="fas fa-lotus text-white text-lg"></i>
               </div>
-              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <h1 className="text-xl font-display font-bold text-primary">
                 Ascended Social
               </h1>
             </div>
@@ -32,7 +32,7 @@ export default function Landing() {
       <main className="pt-20">
         <div className="max-w-4xl mx-auto px-4 py-16 text-center">
           <div className="aura-visualization rounded-3xl p-12 mb-12">
-            <h2 className="text-5xl font-display font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-golden bg-clip-text text-transparent">
+            <h2 className="text-5xl font-display font-bold mb-6 text-white">
               Ascend Your Social Experience
             </h2>
             <p className="text-xl text-gray-300 mb-8 leading-relaxed">
@@ -44,7 +44,7 @@ export default function Landing() {
               <Button 
                 size="lg" 
                 onClick={() => window.location.href = '/api/login'}
-                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold px-8 py-3"
+                className="bg-primary hover:bg-primary/80 text-white font-semibold px-8 py-3"
                 data-testid="button-join"
               >
                 Begin Your Ascension
@@ -88,10 +88,10 @@ export default function Landing() {
 
             <Card className="bg-cosmic-light border-primary/30 chakra-glow-throat">
               <CardContent className="p-6 text-center">
-                <div className="w-12 h-12 mx-auto mb-4 bg-golden rounded-full flex items-center justify-center">
+                <div className="w-12 h-12 mx-auto mb-4 bg-primary rounded-full flex items-center justify-center">
                   <i className="fas fa-bolt text-cosmic text-xl"></i>
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-golden">Energy System</h3>
+                <h3 className="text-xl font-semibold mb-2 text-accent-light">Energy System</h3>
                 <p className="text-gray-300">
                   Engage with content using a unique three-tier system: votes, likes, and spiritual energy.
                 </p>
@@ -102,7 +102,7 @@ export default function Landing() {
           {/* Spiritual Features */}
           <div className="bg-cosmic-light rounded-2xl p-8 border border-primary/30">
             <h3 className="text-3xl font-display font-bold mb-6 text-center">
-              <span className="bg-gradient-to-r from-golden to-primary bg-clip-text text-transparent">
+              <span className="text-accent-light">
                 Mystical Features
               </span>
             </h3>
@@ -133,11 +133,11 @@ export default function Landing() {
               </div>
 
               <div className="flex items-start space-x-4">
-                <div className="w-8 h-8 bg-golden rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                   <i className="fas fa-video text-cosmic"></i>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-golden mb-1">Sparks & Visions</h4>
+                  <h4 className="font-semibold text-accent-light mb-1">Sparks & Visions</h4>
                   <p className="text-gray-300 text-sm">
                     Share short spiritual moments (Sparks) and longer wisdom videos (Visions).
                   </p>
@@ -161,7 +161,7 @@ export default function Landing() {
       </main>
 
       {/* Call to Action */}
-      <section className="bg-gradient-to-r from-primary/20 to-secondary/20 py-16 border-t border-primary/30">
+      <section className="bg-cosmic-light py-16 border-t border-primary/30">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h3 className="text-3xl font-display font-bold mb-4">
             Ready to Transform Your Social Experience?
@@ -172,7 +172,7 @@ export default function Landing() {
           <Button 
             size="lg"
             onClick={() => window.location.href = '/api/login'}
-            className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-white font-semibold px-12 py-4 text-lg"
+            className="bg-primary hover:bg-primary/80 text-white font-semibold px-12 py-4 text-lg"
             data-testid="button-cta"
           >
             Start Your Journey

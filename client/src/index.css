@@ -45,9 +45,9 @@
   --accent-light: hsl(340, 82%, 70%);
   
   /* Improved contrast colors for accessibility */
-  --text-muted: hsl(210, 15%, 75%);
-  --text-subtle: hsl(210, 10%, 85%);
-  --text-secondary: hsl(210, 8%, 90%);
+  --text-muted: hsl(0, 0%, 85%);
+  --text-subtle: hsl(0, 0%, 90%);
+  --text-secondary: hsl(0, 0%, 95%);
   
   /* Chakra Colors */
   --chakra-root: hsl(0, 100%, 50%);
@@ -87,7 +87,7 @@
   --secondary: hsl(277, 48%, 58%);
   --secondary-foreground: hsl(0, 0%, 100%);
   --muted: hsl(245, 35%, 15%);
-  --muted-foreground: hsl(210, 3.3898%, 70%);
+  --muted-foreground: hsl(0, 0%, 85%);
   --accent: hsl(245, 35%, 20%);
   --accent-foreground: hsl(232, 100%, 67%);
   --destructive: hsl(356.3033, 90.5579%, 54.3137%);
@@ -317,6 +317,15 @@
   /* Font Utilities */
   .font-display {
     font-family: var(--font-display);
+  }
+
+  /* High Contrast Text Utilities */
+  .text-high-contrast {
+    color: hsl(0, 0%, 95%);
+  }
+
+  .text-medium-contrast {
+    color: hsl(0, 0%, 85%);
   }
 
   /* Spiritual Color Utilities */

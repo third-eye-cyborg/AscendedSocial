@@ -68,9 +68,11 @@ export default {
         },
         "accent-light": "#CCCCCC",
         // Improved contrast colors for accessibility
-        "text-muted": "hsl(210, 15%, 75%)",
-        "text-subtle": "hsl(210, 10%, 85%)",
-        "text-secondary": "hsl(210, 8%, 90%)",
+        "text-muted": "hsl(0, 0%, 85%)",
+        "text-subtle": "hsl(0, 0%, 90%)",
+        "text-secondary": "hsl(0, 0%, 95%)",
+        "high-contrast": "hsl(0, 0%, 95%)",
+        "medium-contrast": "hsl(0, 0%, 85%)",
         // Chakra Colors
         chakra: {
           root: "#FF0000",      // Red

@@ -213,6 +213,7 @@ export default function CreatePost() {
                   <button 
                     type="button" 
                     className="group relative p-2 rounded-full bg-accent/10 hover:bg-accent/20 transition-all duration-300 shadow-md hover:shadow-lg"
+                    onClick={() => alert('Spiritual Analytics - Coming soon! Track your post resonance, chakra alignment, and community impact 📊🔮')}
                     data-testid="button-add-poll"
                   >
                     <div className="relative">
@@ -230,18 +231,18 @@ export default function CreatePost() {
                 <Button 
                   type="submit"
                   disabled={!content.trim() || createPostMutation.isPending}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 px-8 py-3 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 px-8 py-3 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-white border-2 border-white/20"
                   data-testid="button-share"
                 >
                   {createPostMutation.isPending ? (
                     <div className="flex items-center space-x-2">
                       <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Ascending...</span>
+                      <span className="text-white drop-shadow-lg">Ascending...</span>
                     </div>
                   ) : (
                     <div className="flex items-center space-x-2">
-                      <i className="fas fa-paper-plane"></i>
-                      <span>Ascend</span>
+                      <i className="fas fa-paper-plane text-white drop-shadow-lg"></i>
+                      <span className="text-white drop-shadow-lg">Ascend</span>
                     </div>
                   )}
                 </Button>

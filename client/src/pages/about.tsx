@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 
 export default function About() {
   return (
@@ -19,7 +20,7 @@ export default function About() {
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md animate-pulse"></div>
                 <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                  <i className="fas fa-lotus text-white text-xl"></i>
+                  <img src={logoImage} alt="Ascended Social Logo" className="w-8 h-8" />
                 </div>
               </div>
               <div>
@@ -113,7 +114,7 @@ export default function About() {
               <Card className="bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-chakra-heart/40 glass-effect shadow-xl rounded-3xl overflow-hidden hover-lift">
                 <CardContent className="p-8 text-center">
                   <div className="w-12 h-12 mx-auto bg-gradient-to-br from-chakra-heart to-chakra-heart/80 rounded-xl flex items-center justify-center shadow-lg mb-6">
-                    <i className="fas fa-lotus text-white text-xl"></i>
+                    <img src={logoImage} alt="Ascended Social Logo" className="w-8 h-8" />
                   </div>
                   <h4 className="text-2xl font-display font-bold mb-4 text-chakra-heart">Authentic Connection</h4>
                   <p className="text-gray-200 leading-relaxed">

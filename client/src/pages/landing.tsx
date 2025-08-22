@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 
 export default function Landing() {
   return (
@@ -28,7 +29,7 @@ export default function Landing() {
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md animate-pulse"></div>
                 <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                  <i className="fas fa-lotus text-white text-xl"></i>
+                  <img src={logoImage} alt="Ascended Social Logo" className="w-8 h-8" />
                 </div>
               </div>
               <div>
@@ -354,7 +355,7 @@ export default function Landing() {
           {/* Trust badges */}
           <div className="mt-16 flex flex-wrap justify-center items-center gap-8 text-gray-400 text-sm animate-fade-in" style={{animationDelay: '0.8s'}}>
             <div className="flex items-center gap-2">
-              <i className="fas fa-lock text-green-400"></i>
+              <i className="fas fa-lock text-primary"></i>
               <span>256-bit Encrypted</span>
             </div>
             <div className="flex items-center gap-2">

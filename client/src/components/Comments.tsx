@@ -173,10 +173,10 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
         <form onSubmit={handleSubmitComment} className="border-t border-primary/10 pt-4">
           <div className="flex space-x-3">
             <div className="flex-shrink-0">
-              <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center overflow-hidden">
                 {(user as any)?.sigil ? (
-                  <span className="text-xs text-white font-mono" data-testid="text-user-sigil-comment">
-                    {(user as any).sigil}
+                  <span className="text-[10px] text-white font-mono text-center break-all" data-testid="text-user-sigil-comment">
+                    {((user as any)?.sigil as string).slice(0, 3)}
                   </span>
                 ) : (
                   <i className="fas fa-user text-xs text-muted"></i>

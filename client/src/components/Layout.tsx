@@ -110,7 +110,11 @@ export default function Layout({ children }: LayoutProps) {
               )}
               
               {/* User Sigil/Avatar */}
-              <div className="sigil-container w-10 h-10 rounded-full p-0.5 animate-glow">
+              <button 
+                onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
+                className="sigil-container w-10 h-10 rounded-full p-0.5 animate-glow hover:scale-110 transition-transform duration-200 cursor-pointer"
+                data-testid="button-profile"
+              >
                 <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
                   {(user as any)?.sigil ? (
                     <span className="text-[10px] text-white font-mono break-all text-center" data-testid="text-sigil">
@@ -120,7 +124,7 @@ export default function Layout({ children }: LayoutProps) {
                     <i className="fas fa-lotus text-white text-lg"></i>
                   )}
                 </div>
-              </div>
+              </button>
 
               {/* Logout Button - Hidden on mobile and tablet */}
               <div className="hidden xl:block">
@@ -190,15 +194,15 @@ export default function Layout({ children }: LayoutProps) {
             
             <button 
               className="flex flex-col items-center space-y-1 text-gray-300 hover:text-primary transition-colors" 
-              onClick={() => alert('Energy System - Track your spiritual energy and connections! ⚡️✨')}
-              data-testid="button-energy"
+              onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
+              data-testid="button-profile-mobile"
             >
-              <i className="fas fa-bolt"></i>
-              <span className="text-xs">Energy</span>
+              <i className="fas fa-user"></i>
+              <span className="text-xs">Profile</span>
             </button>
             
             <button 
-              className="flex flex-col items-center space-y-1 text-gray-300"
+              className="flex flex-col items-center space-y-1 text-gray-300 hover:text-red-400 transition-colors"
               onClick={() => window.location.href = '/api/logout'}
               data-testid="button-logout-mobile"
             >

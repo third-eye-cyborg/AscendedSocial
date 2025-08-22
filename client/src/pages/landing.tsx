@@ -42,6 +42,7 @@ export default function Landing() {
             <div className="flex items-center space-x-4">
               <Button 
                 variant="ghost"
+                onClick={() => window.location.href = '/about'}
                 className="text-gray-300 hover:text-white transition-colors duration-300"
                 data-testid="button-about"
               >
@@ -49,10 +50,19 @@ export default function Landing() {
               </Button>
               <Button 
                 variant="ghost"
+                onClick={() => window.location.href = '/features'}
                 className="text-gray-300 hover:text-white transition-colors duration-300"
                 data-testid="button-features"
               >
                 Features
+              </Button>
+              <Button 
+                variant="ghost"
+                onClick={() => window.location.href = '/pricing'}
+                className="text-gray-300 hover:text-white transition-colors duration-300"
+                data-testid="button-pricing"
+              >
+                Pricing
               </Button>
               <Button 
                 onClick={() => window.location.href = '/api/login'}
@@ -133,13 +143,13 @@ export default function Landing() {
                   <div className="w-8 h-8 bg-gradient-to-br from-chakra-heart to-chakra-crown rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">S</div>
                   <div className="w-8 h-8 bg-gradient-to-br from-secondary to-chakra-throat rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">M</div>
                 </div>
-                <span className="font-medium">1,247+ Enlightened Users</span>
+                <span className="font-medium">Join the Community</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex text-yellow-400">
                   {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star text-sm"></i>)}
                 </div>
-                <span className="font-medium">4.9/5 Spiritual Rating</span>
+                <span className="font-medium">Premium Experience</span>
               </div>
               <div className="flex items-center gap-2">
                 <i className="fas fa-shield-alt text-primary"></i>
@@ -165,7 +175,7 @@ export default function Landing() {
               {/* Feature 1 */}
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-chakra-heart/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-chakra-heart/30"></div>
-                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-chakra-heart/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-heart/20">
+                <Card className="relative bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-chakra-heart/40 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-heart/30 glass-effect">
                   <CardContent className="p-10 text-center relative">
                     <div className="relative mb-8">
                       <div className="absolute inset-0 bg-chakra-heart/20 rounded-2xl blur-md animate-pulse"></div>
@@ -174,7 +184,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-chakra-heart">AI-Generated Sigils</h3>
-                    <p className="text-gray-300 leading-relaxed text-lg">
+                    <p className="text-gray-200 leading-relaxed text-lg">
                       Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-heart text-sm font-semibold">
@@ -187,7 +197,7 @@ export default function Landing() {
               {/* Feature 2 */}
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-chakra-crown/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-chakra-crown/30"></div>
-                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-chakra-crown/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-crown/20">
+                <Card className="relative bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-chakra-crown/40 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-chakra-crown/30 glass-effect">
                   <CardContent className="p-10 text-center relative">
                     <div className="relative mb-8">
                       <div className="absolute inset-0 bg-chakra-crown/20 rounded-2xl blur-md animate-pulse"></div>
@@ -196,7 +206,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Chakra Intelligence</h3>
-                    <p className="text-gray-300 leading-relaxed text-lg">
+                    <p className="text-gray-200 leading-relaxed text-lg">
                       AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-crown text-sm font-semibold">
@@ -209,7 +219,7 @@ export default function Landing() {
               {/* Feature 3 */}
               <div className="group relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent rounded-3xl blur-xl transition-all duration-500 group-hover:blur-2xl group-hover:from-primary/30"></div>
-                <Card className="relative bg-gradient-to-br from-cosmic-light/50 to-cosmic-light/30 border border-primary/30 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-primary/20">
+                <Card className="relative bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-primary/40 backdrop-blur-xl rounded-3xl overflow-hidden hover-lift shadow-2xl group-hover:shadow-primary/30 glass-effect">
                   <CardContent className="p-10 text-center relative">
                     <div className="relative mb-8">
                       <div className="absolute inset-0 bg-primary/20 rounded-2xl blur-md animate-pulse"></div>
@@ -218,7 +228,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-primary">Sacred Energy System</h3>
-                    <p className="text-gray-300 leading-relaxed text-lg">
+                    <p className="text-gray-200 leading-relaxed text-lg">
                       Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                     </p>
                     <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">
@@ -231,7 +241,7 @@ export default function Landing() {
           </div>
 
           {/* Spiritual Features */}
-          <div className="bg-cosmic-light rounded-2xl p-8 border border-primary/30">
+          <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 rounded-2xl p-8 border border-primary/40 glass-effect shadow-xl">
             <h3 className="text-3xl font-display font-bold mb-6 text-center">
               <span className="text-accent-light">
                 Mystical Features
@@ -360,11 +370,11 @@ export default function Landing() {
             </div>
             <div className="flex items-center gap-2">
               <i className="fas fa-users text-primary"></i>
-              <span>10,000+ Members</span>
+              <span>Growing Community</span>
             </div>
             <div className="flex items-center gap-2">
               <i className="fas fa-star text-yellow-400"></i>
-              <span>98% Satisfaction</span>
+              <span>Premium Quality</span>
             </div>
             <div className="flex items-center gap-2">
               <i className="fas fa-globe text-secondary"></i>

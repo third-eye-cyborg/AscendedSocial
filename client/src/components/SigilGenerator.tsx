@@ -1,0 +1,96 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+interface SigilGeneratorProps {
+  onSigilGenerated?: (sigil: string) => void;
+}
+
+export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps) {
+  const [generatedSigil, setGeneratedSigil] = useState<string>("");
+  const { toast } = useToast();
+
+  const generateSigilMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/generate-sigil");
+    },
+    onSuccess: async (response) => {
+      const data = await response.json();
+      setGeneratedSigil(data.sigil);
+      onSigilGenerated?.(data.sigil);
+      toast({
+        title: "Sigil Generated",
+        description: "Your unique spiritual sigil has been created",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  return (
+    <Card className="bg-cosmic-light border border-primary/30">
+      <CardHeader>
+        <CardTitle className="text-golden flex items-center">
+          <i className="fas fa-magic mr-2"></i>
+          Sigil Generator
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {generatedSigil ? (
+          <div className="text-center">
+            <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
+              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+                <span className="text-2xl text-white font-mono" data-testid="text-generated-sigil">
+                  {generatedSigil}
+                </span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-300 mb-4">
+              Your unique spiritual signature has been generated. This sigil represents your energy and essence.
+            </p>
+            <Button
+              onClick={() => generateSigilMutation.mutate()}
+              disabled={generateSigilMutation.isPending}
+              className="bg-primary hover:bg-primary/80"
+              data-testid="button-regenerate"
+            >
+              Generate New Sigil
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <div className="w-24 h-24 mx-auto bg-cosmic/50 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-primary/30">
+              <i className="fas fa-magic text-primary text-2xl"></i>
+            </div>
+            <p className="text-sm text-gray-400 mb-4">
+              Generate your unique AI-powered spiritual sigil
+            </p>
+            <Button
+              onClick={() => generateSigilMutation.mutate()}
+              disabled={generateSigilMutation.isPending}
+              className="bg-golden text-cosmic hover:bg-golden/90"
+              data-testid="button-generate"
+            >
+              {generateSigilMutation.isPending ? (
+                <div className="flex items-center space-x-2">
+                  <div className="w-4 h-4 border-2 border-cosmic border-t-transparent rounded-full animate-spin"></div>
+                  <span>Generating...</span>
+                </div>
+              ) : (
+                "Generate Sigil"
+              )}
+            </Button>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}

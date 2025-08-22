@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(210, 25%, 7.8431%);
+  --card: hsl(180, 6.6667%, 97.0588%);
+  --card-foreground: hsl(210, 25%, 7.8431%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(210, 25%, 7.8431%);
+  --primary: hsl(232, 100%, 67%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(277, 48%, 58%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(240, 1.9608%, 90%);
+  --muted-foreground: hsl(210, 25%, 7.8431%);
+  --accent: hsl(211.5789, 51.3514%, 92.7451%);
+  --accent-foreground: hsl(203.8863, 88.2845%, 53.1373%);
+  --destructive: hsl(356.3033, 90.5579%, 54.3137%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(201.4286, 30.4348%, 90.9804%);
+  --input: hsl(200, 23.0769%, 97.4510%);
+  --ring: hsl(202.8169, 89.1213%, 53.1373%);
+  --chart-1: hsl(203.8863, 88.2845%, 53.1373%);
+  --chart-2: hsl(159.7826, 100%, 36.0784%);
+  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
+  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
+  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
+  --sidebar: hsl(180, 6.6667%, 97.0588%);
+  --sidebar-foreground: hsl(210, 25%, 7.8431%);
+  --sidebar-primary: hsl(203.8863, 88.2845%, 53.1373%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(211.5789, 51.3514%, 92.7451%);
+  --sidebar-accent-foreground: hsl(203.8863, 88.2845%, 53.1373%);
+  --sidebar-border: hsl(205.0000, 25.0000%, 90.5882%);
+  --sidebar-ring: hsl(202.8169, 89.1213%, 53.1373%);
+  
+  /* Spiritual/Mystical Colors */
+  --cosmic: hsl(245, 58%, 10%);
+  --cosmic-light: hsl(245, 35%, 15%);
+  --golden: hsl(51, 100%, 50%);
+  
+  /* Chakra Colors */
+  --chakra-root: hsl(0, 100%, 50%);
+  --chakra-sacral: hsl(30, 100%, 50%);
+  --chakra-solar: hsl(60, 100%, 50%);
+  --chakra-heart: hsl(120, 100%, 50%);
+  --chakra-throat: hsl(240, 100%, 50%);
+  --chakra-third: hsl(260, 100%, 25%);
+  --chakra-crown: hsl(280, 100%, 41%);
+  
+  --font-sans: 'Inter', 'Open Sans', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --font-display: 'Poppins', 'Inter', sans-serif;
+  --radius: 1.3rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 2px 4px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 4px 6px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 8px 10px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+.dark {
+  --background: hsl(245, 58%, 10%);
+  --foreground: hsl(0, 0%, 100%);
+  --card: hsl(245, 35%, 15%);
+  --card-foreground: hsl(0, 0%, 85.0980%);
+  --popover: hsl(245, 58%, 10%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --primary: hsl(232, 100%, 67%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(277, 48%, 58%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(245, 35%, 15%);
+  --muted-foreground: hsl(210, 3.3898%, 46.2745%);
+  --accent: hsl(245, 35%, 20%);
+  --accent-foreground: hsl(232, 100%, 67%);
+  --destructive: hsl(356.3033, 90.5579%, 54.3137%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(245, 20%, 25%);
+  --input: hsl(245, 35%, 20%);
+  --ring: hsl(232, 100%, 67%);
+  --chart-1: hsl(203.8863, 88.2845%, 53.1373%);
+  --chart-2: hsl(159.7826, 100%, 36.0784%);
+  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
+  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
+  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
+  --sidebar: hsl(245, 35%, 15%);
+  --sidebar-foreground: hsl(0, 0%, 85.0980%);
+  --sidebar-primary: hsl(232, 100%, 67%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(245, 35%, 20%);
+  --sidebar-accent-foreground: hsl(232, 100%, 67%);
+  --sidebar-border: hsl(245, 20%, 30%);
+  --sidebar-ring: hsl(232, 100%, 67%);
+  --font-sans: 'Inter', 'Open Sans', sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --font-display: 'Poppins', 'Inter', sans-serif;
+  --radius: 1.3rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 1px 2px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 2px 4px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 4px 6px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00), 0px 8px 10px -1px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169, 89.1213%, 53.1373%, 0.00);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-cosmic text-white;
+    background: linear-gradient(135deg, hsl(245, 58%, 10%) 0%, hsl(245, 35%, 15%) 100%);
+    overflow-x: hidden;
+  }
+  
+  html {
+    @apply dark;
+  }
+}
+
+@layer components {
+  /* Chakra Glow Effects */
+  .chakra-glow-root { 
+    box-shadow: 0 0 15px var(--chakra-root), inset 0 0 15px hsl(0, 100%, 50%, 0.1);
+    border-color: var(--chakra-root);
+  }
+  .chakra-glow-sacral { 
+    box-shadow: 0 0 15px var(--chakra-sacral), inset 0 0 15px hsl(30, 100%, 50%, 0.1);
+    border-color: var(--chakra-sacral);
+  }
+  .chakra-glow-solar { 
+    box-shadow: 0 0 15px var(--chakra-solar), inset 0 0 15px hsl(60, 100%, 50%, 0.1);
+    border-color: var(--chakra-solar);
+  }
+  .chakra-glow-heart { 
+    box-shadow: 0 0 15px var(--chakra-heart), inset 0 0 15px hsl(120, 100%, 50%, 0.1);
+    border-color: var(--chakra-heart);
+  }
+  .chakra-glow-throat { 
+    box-shadow: 0 0 15px var(--chakra-throat), inset 0 0 15px hsl(240, 100%, 50%, 0.1);
+    border-color: var(--chakra-throat);
+  }
+  .chakra-glow-third { 
+    box-shadow: 0 0 15px var(--chakra-third), inset 0 0 15px hsl(260, 100%, 25%, 0.1);
+    border-color: var(--chakra-third);
+  }
+  .chakra-glow-crown { 
+    box-shadow: 0 0 15px var(--chakra-crown), inset 0 0 15px hsl(280, 100%, 41%, 0.1);
+    border-color: var(--chakra-crown);
+  }
+
+  /* Aura Visualization */
+  .aura-visualization {
+    background: radial-gradient(circle, hsl(232, 100%, 67%, 0.3) 0%, hsl(277, 48%, 58%, 0.2) 50%, transparent 100%);
+  }
+
+  /* Sigil Container with Gradient Animation */
+  .sigil-container {
+    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  /* Animated Elements */
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@layer utilities {
+  /* Custom Animations */
+  @keyframes glow {
+    0% { box-shadow: 0 0 5px currentColor; }
+    100% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Font Utilities */
+  .font-display {
+    font-family: var(--font-display);
+  }
+
+  /* Spiritual Color Utilities */
+  .text-cosmic {
+    color: var(--cosmic);
+  }
+
+  .bg-cosmic {
+    background-color: var(--cosmic);
+  }
+
+  .text-cosmic-light {
+    color: var(--cosmic-light);
+  }
+
+  .bg-cosmic-light {
+    background-color: var(--cosmic-light);
+  }
+
+  .text-golden {
+    color: var(--golden);
+  }
+
+  .bg-golden {
+    background-color: var(--golden);
+  }
+
+  /* Chakra Color Utilities */
+  .text-chakra-root { color: var(--chakra-root); }
+  .bg-chakra-root { background-color: var(--chakra-root); }
+  .text-chakra-sacral { color: var(--chakra-sacral); }
+  .bg-chakra-sacral { background-color: var(--chakra-sacral); }
+  .text-chakra-solar { color: var(--chakra-solar); }
+  .bg-chakra-solar { background-color: var(--chakra-solar); }
+  .text-chakra-heart { color: var(--chakra-heart); }
+  .bg-chakra-heart { background-color: var(--chakra-heart); }
+  .text-chakra-throat { color: var(--chakra-throat); }
+  .bg-chakra-throat { background-color: var(--chakra-throat); }
+  .text-chakra-third { color: var(--chakra-third); }
+  .bg-chakra-third { background-color: var(--chakra-third); }
+  .text-chakra-crown { color: var(--chakra-crown); }
+  .bg-chakra-crown { background-color: var(--chakra-crown); }
+}

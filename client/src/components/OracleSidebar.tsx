@@ -1,0 +1,217 @@
+import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+
+export default function OracleSidebar() {
+  const { user } = useAuth();
+
+  const { data: dailyReading, isLoading: readingLoading } = useQuery({
+    queryKey: ["/api/readings/daily"],
+    enabled: !!user,
+  });
+
+  const { data: recommendations, isLoading: recsLoading } = useQuery({
+    queryKey: ["/api/oracle/recommendations"],
+    enabled: !!user,
+  });
+
+  if (!user) return null;
+
+  return (
+    <aside className="w-80 fixed right-0 top-16 h-screen bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto">
+      {/* Daily Oracle Reading */}
+      <Card className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl mb-6 border border-primary/30">
+        <CardHeader>
+          <CardTitle className="font-display font-semibold text-golden flex items-center">
+            <i className="fas fa-crystal-ball mr-2 animate-pulse"></i>
+            Daily Oracle Reading
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {readingLoading ? (
+            <div className="space-y-3">
+              <Skeleton className="h-32 w-full rounded-lg" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+            </div>
+          ) : dailyReading ? (
+            <>
+              <div className="mb-4">
+                <div className="w-full h-32 bg-gradient-to-br from-primary/30 to-secondary/30 rounded-lg flex items-center justify-center">
+                  <i className="fas fa-moon text-4xl text-golden"></i>
+                </div>
+              </div>
+
+              <div 
+                className="text-sm text-gray-300 leading-relaxed mb-3"
+                data-testid="text-daily-reading"
+              >
+                {(dailyReading as any)?.content}
+              </div>
+
+              <div className="flex items-center justify-between text-xs text-gray-400">
+                <span data-testid="text-reading-title">
+                  {(dailyReading as any)?.metadata?.title || 'Daily Wisdom'}
+                </span>
+                <span>Today</span>
+              </div>
+
+              <Button 
+                className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-primary font-medium"
+                data-testid="button-new-reading"
+              >
+                Get New Reading
+              </Button>
+            </>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-400 text-sm">No reading available</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* The Oracle Recommendations */}
+      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
+        <CardHeader>
+          <CardTitle className="font-display font-semibold text-primary flex items-center">
+            <i className="fas fa-eye mr-2"></i>
+            The Oracle Suggests
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {recsLoading ? (
+            <div className="space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-start space-x-3">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <div className="flex-1 space-y-1">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : recommendations && Array.isArray(recommendations) && recommendations.length > 0 ? (
+            <div className="space-y-3">
+              {(recommendations as any[]).map((rec: any, index: number) => (
+                <div 
+                  key={index}
+                  className="flex items-start space-x-3 p-2 rounded-lg hover:bg-cosmic-light/50 cursor-pointer transition-colors"
+                  data-testid={`recommendation-${index}`}
+                >
+                  <div className="sigil-container w-8 h-8 rounded-full p-0.5 flex-shrink-0">
+                    <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+                      <i className="fas fa-mandala text-white text-xs"></i>
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium text-white truncate">
+                      {rec.title}
+                    </h4>
+                    <p className="text-xs text-gray-400">
+                      {rec.type} • {rec.reason}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-400 text-sm">No recommendations available</p>
+            </div>
+          )}
+
+          <Button 
+            className="w-full mt-3 text-primary text-sm font-medium hover:text-primary/80 bg-transparent border-none p-0"
+            data-testid="button-refresh-oracle"
+          >
+            <i className="fas fa-sync-alt mr-1"></i>
+            Refresh Oracle
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Trending Chakras */}
+      <Card className="bg-cosmic-light rounded-xl mb-6 border border-primary/30">
+        <CardHeader>
+          <CardTitle className="font-display font-semibold text-white">Trending Chakras</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-chakra-heart"></div>
+                <span className="text-sm">Heart Chakra</span>
+              </div>
+              <span className="text-xs text-gray-400">2.4k posts</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-chakra-crown"></div>
+                <span className="text-sm">Crown Chakra</span>
+              </div>
+              <span className="text-xs text-gray-400">1.8k posts</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-chakra-throat"></div>
+                <span className="text-sm">Throat Chakra</span>
+              </div>
+              <span className="text-xs text-gray-400">1.5k posts</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-chakra-third"></div>
+                <span className="text-sm">Third Eye</span>
+              </div>
+              <span className="text-xs text-gray-400">1.2k posts</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <Card className="bg-cosmic-light rounded-xl border border-primary/30">
+        <CardHeader>
+          <CardTitle className="font-display font-semibold text-white">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              data-testid="button-generate-sigil"
+            >
+              <i className="fas fa-magic mr-2 text-golden"></i>
+              Generate New Sigil
+            </Button>
+            
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              data-testid="button-meditation-timer"
+            >
+              <i className="fas fa-clock mr-2 text-primary"></i>
+              Meditation Timer
+            </Button>
+            
+            <Button
+              variant="ghost"
+              className="w-full justify-start px-3 py-2 text-gray-300 hover:text-white hover:bg-cosmic-light"
+              data-testid="button-chakra-test"
+            >
+              <i className="fas fa-vial mr-2 text-secondary"></i>
+              Chakra Assessment
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </aside>
+  );
+}

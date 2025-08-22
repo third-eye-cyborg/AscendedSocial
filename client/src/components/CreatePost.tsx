@@ -140,7 +140,7 @@ export default function CreatePost() {
                 placeholder="Share your spiritual insight..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full bg-transparent border-none resize-none text-white placeholder-gray-400 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[80px]"
+                className="w-full bg-transparent border-none resize-none text-white placeholder-gray-300 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[80px]"
                 data-testid="textarea-content"
               />
               
@@ -180,7 +180,7 @@ export default function CreatePost() {
               
               {/* Actions */}
               <div className="flex items-center justify-between mt-3">
-                <div className="flex items-center space-x-4 text-gray-400">
+                <div className="flex items-center space-x-4 text-gray-300">
                   <ObjectUploader
                     maxNumberOfFiles={1}
                     maxFileSize={50 * 1024 * 1024} // 50MB

@@ -103,7 +103,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
       case 'profile_view':
         return <i className="fas fa-user text-green-400"></i>;
       default:
-        return <i className="fas fa-bell text-gray-300"></i>;
+        return <i className="fas fa-bell text-gray-400"></i>;
     }
   };
 
@@ -161,7 +161,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 size="sm"
                 onClick={() => markAllReadMutation.mutate()}
                 disabled={markAllReadMutation.isPending}
-                className="text-gray-300 hover:text-white"
+                className="text-gray-400 hover:text-white"
                 data-testid="button-mark-all-read"
               >
                 <i className="fas fa-check-double mr-2"></i>
@@ -195,7 +195,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 <div className="w-12 h-12 mx-auto mb-4 bg-red-500/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-exclamation-triangle text-red-400 text-xl"></i>
                 </div>
-                <p className="text-gray-300">Failed to load notifications</p>
+                <p className="text-gray-400">Failed to load notifications</p>
               </div>
             ) : filteredNotifications.length > 0 ? (
               filteredNotifications.map((notification) => (

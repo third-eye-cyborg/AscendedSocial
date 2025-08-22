@@ -102,13 +102,13 @@ export default function PostCard({ post }: PostCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="sigil-container w-10 h-10 rounded-full p-0.5">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
                 {post.author.sigil ? (
-                  <span className="text-xs text-white font-mono" data-testid={`text-author-sigil-${post.id}`}>
-                    {post.author.sigil}
+                  <span className="text-[10px] text-white font-mono break-all text-center" data-testid={`text-author-sigil-${post.id}`}>
+                    {(post.author.sigil as string).slice(0, 3)}
                   </span>
                 ) : (
-                  <i className="fas fa-user text-white"></i>
+                  <i className="fas fa-user text-white text-xs"></i>
                 )}
               </div>
             </div>

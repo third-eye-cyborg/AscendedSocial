@@ -371,6 +371,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User routes
+  app.post('/api/users/regenerate-sigil', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Generate new sigil (6 random characters)
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()+=[]{}|;:,.<>?';
+      let newSigil = '';
+      for (let i = 0; i < 6; i++) {
+        newSigil += characters.charAt(Math.floor(Math.random() * characters.length));
+      }
+      
+      const updatedUser = await storage.updateUser(userId, { sigil: newSigil });
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error regenerating sigil:", error);
+      res.status(500).json({ message: "Failed to regenerate sigil" });
+    }
+  });
+
+  app.post('/api/users/update-username', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { username } = req.body;
+      
+      if (!username || username.trim().length < 3) {
+        return res.status(400).json({ message: "Username must be at least 3 characters" });
+      }
+      
+      const updatedUser = await storage.updateUser(userId, { username: username.trim() });
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating username:", error);
+      res.status(500).json({ message: "Failed to update username" });
+    }
+  });
+
   app.get('/api/users/:userId', async (req, res) => {
     try {
       const { userId } = req.params;

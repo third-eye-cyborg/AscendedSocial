@@ -12,6 +12,7 @@ import About from "@/pages/about";
 import Features from "@/pages/features";
 import Pricing from "@/pages/pricing";
 import Profile from "@/pages/profile";
+import ProfileSettings from "@/pages/profileSettings";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -30,6 +31,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/profile/:userId" component={Profile} />
+          <Route path="/settings" component={ProfileSettings} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />
           <Route path="/pricing" component={Pricing} />

@@ -108,9 +108,11 @@ export default function Layout({ children }: LayoutProps) {
               
               {/* User Sigil/Avatar */}
               <div className="sigil-container w-10 h-10 rounded-full p-0.5 animate-glow">
-                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
                   {(user as any)?.sigil ? (
-                    <span className="text-xs text-white font-mono" data-testid="text-sigil">{(user as any)?.sigil}</span>
+                    <span className="text-[10px] text-white font-mono break-all text-center" data-testid="text-sigil">
+                      {((user as any)?.sigil as string).slice(0, 3)}
+                    </span>
                   ) : (
                     <i className="fas fa-lotus text-white text-lg"></i>
                   )}

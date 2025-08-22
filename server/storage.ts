@@ -266,6 +266,15 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
+  async updateUser(userId: string, updates: Partial<User>): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, userId))
+      .returning();
+    return updatedUser;
+  }
+
   async updatePostChakra(postId: string, chakra: ChakraType): Promise<Post> {
     const [post] = await db
       .update(posts)

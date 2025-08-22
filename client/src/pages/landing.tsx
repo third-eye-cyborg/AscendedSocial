@@ -36,7 +36,7 @@ export default function Landing() {
                 <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Ascended Social
                 </h1>
-                <p className="text-xs text-gray-400 font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-muted font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
               </div>
             </div>
             

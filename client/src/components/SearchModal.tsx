@@ -70,7 +70,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Search for posts, users, spiritual insights..."
-              className="flex-1 bg-cosmic border-primary/30 text-white placeholder-gray-400 focus:border-primary"
+              className="flex-1 bg-cosmic border-primary/30 text-white placeholder:text-muted focus:border-primary"
               data-testid="input-search"
               autoFocus
             />
@@ -122,7 +122,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
                   <i className="fas fa-search text-primary text-2xl"></i>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-300 mb-2">Search the spiritual realm</h3>
+                <h3 className="text-lg font-semibold text-subtle mb-2">Search the spiritual realm</h3>
                 <p className="text-gray-400 text-sm">Enter at least 2 characters to begin your search</p>
               </div>
             ) : isLoading ? (

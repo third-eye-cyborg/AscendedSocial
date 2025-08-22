@@ -20,7 +20,7 @@ export default function Layout({ children }: LayoutProps) {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   // Get unread notifications count
-  const { data: unreadCount } = useQuery({
+  const { data: unreadCount } = useQuery<number>({
     queryKey: ["/api/notifications/unread-count"],
     enabled: !!(user as any)?.id,
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -49,9 +49,9 @@ export default function Layout({ children }: LayoutProps) {
                   className="relative w-full cursor-pointer"
                   onClick={() => setIsSearchOpen(true)}
                 >
-                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-muted"></i>
                   <div 
-                    className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-gray-400 hover:border-primary/50 transition-colors duration-200"
+                    className="w-full bg-cosmic-light border border-primary/30 rounded-lg pl-10 pr-4 py-2 text-muted hover:border-primary/50 transition-colors duration-200"
                     data-testid="search-trigger"
                   >
                     Search posts, users, or spiritual content...
@@ -66,7 +66,7 @@ export default function Layout({ children }: LayoutProps) {
                 variant="ghost" 
                 size="sm"
                 onClick={() => setIsSearchOpen(true)}
-                className="text-gray-400 hover:text-primary"
+                className="text-muted hover:text-primary"
                 data-testid="button-search-mobile"
               >
                 <i className="fas fa-search"></i>
@@ -81,7 +81,7 @@ export default function Layout({ children }: LayoutProps) {
                   variant="ghost" 
                   size="sm"
                   onClick={() => setIsNotificationsOpen(true)}
-                  className="text-gray-400 hover:text-primary relative"
+                  className="text-muted hover:text-primary relative"
                   data-testid="button-notifications"
                 >
                   <i className="fas fa-bell"></i>
@@ -102,7 +102,7 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="flex items-center space-x-2 bg-cosmic-light rounded-lg px-3 py-2">
                   <i className="fas fa-bolt text-accent-light"></i>
                   <span className="text-sm font-medium" data-testid="text-energy">{(user as any)?.energy || 1000}</span>
-                  <span className="text-xs text-gray-400">Energy</span>
+                  <span className="text-xs text-muted">Energy</span>
                 </div>
               )}
               
@@ -125,7 +125,7 @@ export default function Layout({ children }: LayoutProps) {
                   variant="ghost" 
                   size="sm"
                   onClick={() => window.location.href = '/api/logout'}
-                  className="text-gray-400 hover:text-white"
+                  className="text-muted hover:text-white"
                   data-testid="button-logout"
                 >
                   <i className="fas fa-sign-out-alt"></i>
@@ -159,28 +159,28 @@ export default function Layout({ children }: LayoutProps) {
               <span className="text-xs">Feed</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-400" data-testid="button-videos">
+            <button className="flex flex-col items-center space-y-1 text-muted" data-testid="button-videos">
               <i className="fas fa-video"></i>
               <span className="text-xs">Videos</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-400" data-testid="button-oracle">
+            <button className="flex flex-col items-center space-y-1 text-muted" data-testid="button-oracle">
               <i className="fas fa-eye"></i>
               <span className="text-xs">Oracle</span>
             </button>
             
-            <button className="flex flex-col items-center space-y-1 text-gray-400" data-testid="button-energy">
+            <button className="flex flex-col items-center space-y-1 text-muted" data-testid="button-energy">
               <i className="fas fa-bolt"></i>
               <span className="text-xs">Energy</span>
             </button>
             
             <button 
-              className="flex flex-col items-center space-y-1 text-gray-400"
+              className="flex flex-col items-center space-y-1 text-muted"
               onClick={() => window.location.href = '/api/logout'}
-              data-testid="button-profile"
+              data-testid="button-logout-mobile"
             >
-              <i className="fas fa-user"></i>
-              <span className="text-xs">Profile</span>
+              <i className="fas fa-sign-out-alt"></i>
+              <span className="text-xs">Logout</span>
             </button>
           </div>
         </nav>

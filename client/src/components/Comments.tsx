@@ -31,7 +31,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
 
-  const { data: comments, isLoading } = useQuery({
+  const { data: comments, isLoading } = useQuery<Comment[]>({
     queryKey: ["/api/posts", postId, "comments"],
     enabled: isVisible,
   });
@@ -112,7 +112,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                       {comment.author.sigil}
                     </span>
                   ) : (
-                    <i className="fas fa-user text-xs text-gray-400"></i>
+                    <i className="fas fa-user text-xs text-muted"></i>
                   )}
                 </div>
               </div>
@@ -120,14 +120,14 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
               {/* Comment Content */}
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-sm font-medium text-gray-300" data-testid={`text-comment-author-${comment.id}`}>
+                  <span className="text-sm font-medium text-subtle" data-testid={`text-comment-author-${comment.id}`}>
                     {comment.author?.username || comment.author?.email || 'Spiritual Seeker'}
                   </span>
-                  <span className="text-xs text-gray-500" data-testid={`text-comment-time-${comment.id}`}>
+                  <span className="text-xs text-muted" data-testid={`text-comment-time-${comment.id}`}>
                     {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                   </span>
                 </div>
-                <p className="text-sm text-gray-300 leading-relaxed" data-testid={`text-comment-content-${comment.id}`}>
+                <p className="text-sm text-subtle leading-relaxed" data-testid={`text-comment-content-${comment.id}`}>
                   {comment.content}
                 </p>
                 
@@ -136,7 +136,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-gray-400 hover:text-primary text-xs p-1 h-auto"
+                    className="text-muted hover:text-primary text-xs p-1 h-auto"
                     data-testid={`button-comment-like-${comment.id}`}
                   >
                     <i className="fas fa-heart mr-1"></i>
@@ -145,7 +145,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-gray-400 hover:text-secondary text-xs p-1 h-auto"
+                    className="text-muted hover:text-secondary text-xs p-1 h-auto"
                     data-testid={`button-comment-reply-${comment.id}`}
                   >
                     <i className="fas fa-reply mr-1"></i>
@@ -162,8 +162,8 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
             <div className="w-12 h-12 mx-auto mb-3 bg-primary/10 rounded-full flex items-center justify-center">
               <i className="fas fa-comments text-primary text-xl"></i>
             </div>
-            <p className="text-sm text-gray-400">No comments yet</p>
-            <p className="text-xs text-gray-500 mt-1">Be the first to share your thoughts</p>
+            <p className="text-sm text-muted">No comments yet</p>
+            <p className="text-xs text-muted mt-1">Be the first to share your thoughts</p>
           </div>
         )}
       </div>
@@ -179,7 +179,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                     {(user as any).sigil}
                   </span>
                 ) : (
-                  <i className="fas fa-user text-xs text-gray-400"></i>
+                  <i className="fas fa-user text-xs text-muted"></i>
                 )}
               </div>
             </div>
@@ -188,11 +188,11 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Share your spiritual insight..."
-                className="bg-cosmic-light border-primary/30 text-white placeholder-gray-400 resize-none min-h-20"
+                className="bg-cosmic-light border-primary/30 text-white placeholder:text-muted resize-none min-h-20"
                 data-testid="textarea-new-comment"
               />
               <div className="flex justify-between items-center mt-2">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted">
                   {newComment.length}/500 characters
                 </span>
                 <div className="flex space-x-2">
@@ -201,7 +201,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setNewComment("")}
-                    className="text-gray-400 hover:text-white"
+                    className="text-muted hover:text-white"
                     data-testid="button-cancel-comment"
                   >
                     Cancel
@@ -232,7 +232,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
       {/* Login prompt for non-authenticated users */}
       {!user && (
         <div className="border-t border-primary/10 pt-4 text-center">
-          <p className="text-sm text-gray-400 mb-3">Join the spiritual conversation</p>
+          <p className="text-sm text-muted mb-3">Join the spiritual conversation</p>
           <Button
             onClick={() => window.location.href = "/api/login"}
             className="bg-primary hover:bg-primary/80 text-white"

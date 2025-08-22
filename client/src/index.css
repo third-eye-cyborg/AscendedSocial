@@ -44,6 +44,11 @@
   --cosmic-light: hsl(245, 35%, 15%);
   --accent-light: hsl(340, 82%, 70%);
   
+  /* Improved contrast colors for accessibility */
+  --text-muted: hsl(210, 15%, 75%);
+  --text-subtle: hsl(210, 10%, 85%);
+  --text-secondary: hsl(210, 8%, 90%);
+  
   /* Chakra Colors */
   --chakra-root: hsl(0, 100%, 50%);
   --chakra-sacral: hsl(30, 100%, 50%);

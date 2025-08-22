@@ -120,7 +120,7 @@ export default function PostCard({ post }: PostCardProps) {
               >
                 {post.author.username || post.author.email || 'Anonymous'}
               </h4>
-              <p className="text-sm text-gray-400" data-testid={`text-time-${post.id}`}>
+              <p className="text-sm text-muted" data-testid={`text-time-${post.id}`}>
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
               </p>
             </div>
@@ -194,7 +194,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('upvote') ? 'text-green-400' : 'text-gray-400 hover:text-green-400'}`}
+                className={`p-1 transition-colors duration-200 ${userEngagements.includes('upvote') ? 'text-green-400' : 'text-muted hover:text-green-400'}`}
                 onClick={() => handleEngagement('upvote')}
                 disabled={engageMutation.isPending}
                 title="Upvote (Positive Frequency)"
@@ -211,7 +211,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('downvote') ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`}
+                className={`p-1 transition-colors duration-200 ${userEngagements.includes('downvote') ? 'text-red-400' : 'text-muted hover:text-red-400'}`}
                 onClick={() => handleEngagement('downvote')}
                 disabled={engageMutation.isPending}
                 title="Downvote (Negative Frequency)"
@@ -225,7 +225,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('like') ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('like') ? 'text-red-500' : 'text-muted hover:text-red-500'}`}
               onClick={() => handleEngagement('like')}
               disabled={engageMutation.isPending}
               data-testid={`button-like-${post.id}`}
@@ -240,7 +240,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('energy') ? 'text-accent-light' : 'text-gray-400 hover:text-accent-light'}`}
+              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('energy') ? 'text-accent-light' : 'text-muted hover:text-accent-light'}`}
               onClick={() => handleEngagement('energy')}
               disabled={engageMutation.isPending}
               title="Send Energy (Uses 10 energy points)"
@@ -256,7 +256,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${showComments ? 'text-primary' : 'text-gray-400 hover:text-primary'}`}
+              className={`flex items-center space-x-1 transition-colors duration-200 ${showComments ? 'text-primary' : 'text-muted hover:text-primary'}`}
               onClick={() => setShowComments(!showComments)}
               data-testid={`button-comment-${post.id}`}
             >
@@ -270,7 +270,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-400 hover:text-primary transition-colors duration-200"
+              className="text-muted hover:text-primary transition-colors duration-200"
               data-testid={`button-share-${post.id}`}
             >
               <i className="fas fa-share"></i>
@@ -278,7 +278,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="text-gray-400 hover:text-accent-light transition-colors duration-200"
+              className="text-muted hover:text-accent-light transition-colors duration-200"
               data-testid={`button-save-${post.id}`}
             >
               <i className="fas fa-bookmark"></i>

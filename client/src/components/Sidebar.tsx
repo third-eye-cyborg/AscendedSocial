@@ -60,13 +60,13 @@ export default function Sidebar() {
               <div className="text-accent-light font-semibold" data-testid="text-positive-energy">
                 {(userStats as any)?.positiveEnergy || 0}
               </div>
-              <div className="text-gray-400">Positive Energy</div>
+              <div className="text-muted">Positive Energy</div>
             </div>
             <div className="text-center">
               <div className="text-primary font-semibold" data-testid="text-insights">
                 {(userStats as any)?.totalPosts || 0}
               </div>
-              <div className="text-gray-400">Insights Shared</div>
+              <div className="text-muted">Insights Shared</div>
             </div>
           </div>
         </CardContent>
@@ -84,7 +84,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-gray-300 hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-subtle hover:text-white transition-colors"
           data-testid="link-visions"
         >
           <i className="fas fa-video"></i>
@@ -92,7 +92,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-gray-300 hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-subtle hover:text-white transition-colors"
           data-testid="link-sparks"
         >
           <i className="fas fa-bolt"></i>
@@ -100,7 +100,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-gray-300 hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-subtle hover:text-white transition-colors"
           data-testid="link-oracle"
         >
           <i className="fas fa-eye"></i>
@@ -108,7 +108,7 @@ export default function Sidebar() {
         </a>
         <a 
           href="#" 
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-gray-300 hover:text-white transition-colors"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-cosmic-light text-subtle hover:text-white transition-colors"
           data-testid="link-community"
         >
           <i className="fas fa-users"></i>

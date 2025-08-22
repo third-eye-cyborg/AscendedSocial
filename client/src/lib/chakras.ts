@@ -4,7 +4,7 @@ export const chakraColors: Record<ChakraType, string> = {
   root: "#FF0000",      // Red
   sacral: "#FF7F00",    // Orange  
   solar: "#FFFF00",     // Yellow
-  heart: "#00FF00",     // Green
+  heart: "#E91E63",     // Pink
   throat: "#0000FF",    // Blue
   third_eye: "#4B0082", // Indigo
   crown: "#9400D3"      // Violet

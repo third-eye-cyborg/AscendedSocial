@@ -48,7 +48,7 @@
   --chakra-root: hsl(0, 100%, 50%);
   --chakra-sacral: hsl(30, 100%, 50%);
   --chakra-solar: hsl(60, 100%, 50%);
-  --chakra-heart: hsl(315, 70%, 60%);
+  --chakra-heart: hsl(340, 82%, 52%);
   --chakra-throat: hsl(240, 100%, 50%);
   --chakra-third: hsl(260, 100%, 25%);
   --chakra-crown: hsl(280, 100%, 41%);
@@ -149,7 +149,7 @@
     border-color: var(--chakra-solar);
   }
   .chakra-glow-heart { 
-    box-shadow: 0 0 15px var(--chakra-heart), inset 0 0 15px hsl(315, 70%, 60%, 0.1);
+    box-shadow: 0 0 15px var(--chakra-heart), inset 0 0 15px hsl(340, 82%, 52%, 0.1);
     border-color: var(--chakra-heart);
   }
   .chakra-glow-throat { 

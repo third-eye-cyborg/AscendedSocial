@@ -277,10 +277,10 @@ export default function Oracle() {
                       <p className="text-white text-sm leading-relaxed mb-2 italic">
                         "{oracle.content}"
                       </p>
-                      <p className="text-xs text-white/85 italic">
+                      <p className="text-sm text-white/95 italic">
                         {oracle.guidance}
                       </p>
-                      <div className="flex items-center justify-between mt-2 text-xs text-white/70">
+                      <div className="flex items-center justify-between mt-2 text-sm text-white/90">
                         <span className={`capitalize font-medium ${oracle.chakra === 'heart' ? 'text-green-400' : 'text-primary'}`}>
                           {oracle.chakra} chakra
                         </span>
@@ -322,7 +322,7 @@ export default function Oracle() {
                 in vast digital datasets to provide guidance and insight.
               </p>
               <p className="text-white leading-relaxed mb-4">
-                <strong className="text-accent-light">Remember:</strong> AI divination is a tool for reflection and inspiration,
+                <strong className="text-yellow-300">Remember:</strong> AI divination is a tool for reflection and inspiration,
                 not absolute truth. Use these insights to prompt your own inner wisdom and spiritual growth.
                 The true oracle lies within your own consciousness.
               </p>

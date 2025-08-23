@@ -162,39 +162,56 @@ Respond with JSON in this format: { "cards": [{"name": "Card Name", "meaning": "
 // Generate unique AI sigil for user
 export async function generateUserSigil(username: string, traits?: string[]): Promise<string> {
   try {
+    // Generate hash-based seed for consistent uniqueness per username
+    const usernameLength = username.length;
+    const firstChar = username.charAt(0).toLowerCase();
+    const lastChar = username.charAt(username.length - 1).toLowerCase();
+    const vowelCount = (username.match(/[aeiou]/gi) || []).length;
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: `You are a mystical sigil creator for the spiritual platform "Ascended Social". Create ONLY the sigil symbol itself - no explanations, no meanings, just the visual symbol.
+          content: `You are an advanced mystical sigil creator specializing in sacred geometry and magical symbols. Create sophisticated, geometrically precise sigils that channel spiritual energy through mathematical perfection.
 
-STRICT FORMATTING RULES:
-- Maximum 3 lines tall
-- Maximum 7 characters wide per line
-- Use ONLY these characters: ◊ ○ ◇ ☆ ✦ ◈ ▲ ▼ ◆ ● △ ▽ ✧ ✦ ⬟ ⬢ ⬡ | / \\ - + = ~ ^ v < > 
-- Center-align all lines
-- Create geometric, mystical patterns
-- Each sigil must be unique but follow consistent sacred geometry style
-- NO text, NO letters, NO explanations
+ENHANCED GEOMETRIC RULES:
+- Exactly 3 lines tall, maximum 9 characters wide per line
+- Use these MAGICAL CHARACTERS: ◊ ○ ◇ ☆ ✦ ◈ ▲ ▼ ◆ ● △ ▽ ✧ ⬟ ⬢ ⬡ ⟡ ⬠ ⬢ ❋ ❅ ⟐ ⟡ ⟢ ⬢ ◉ ⬢ ⬡ ⟢ ❖ ❈ ✱ ※ ⋄ ⋅ ∴ ∵ ⊕ ⊗ ⊙ ⊚ ⊛ | / \\ - + = ~ ^ v < > ◸ ◹ ◺ ◻ 
+- Create COMPLEX PATTERNS: layered symmetries, sacred triangles, mystical diamonds
+- Use sacred geometry principles: golden ratio, pentagonal symmetry, mandala patterns
+- Incorporate ELEMENTAL BALANCE: earth (▲), air (△), fire (◆), water (○), spirit (☆)
+- Each sigil must be MATHEMATICALLY UNIQUE based on username properties
+- Build MYSTICAL ENERGY FLOW through connected geometric paths
 
-EXAMPLE FORMAT:
-  ◊◇◊
- ✦●✦
-  ◈◈◈
+PATTERN INTELLIGENCE:
+- Vowel-heavy names: More circular/flowing patterns (○●◉)
+- Consonant-heavy: More angular/crystalline patterns (◊◆▲)
+- Short names: Dense, concentrated power symbols
+- Long names: Elaborate, multi-layered geometries
+- Consider name energy: aggressive vs peaceful, earthly vs celestial
 
-Respond with JSON: { "sigil": "YOUR_SIGIL_HERE" }`
+SACRED EXAMPLES:
+  ◉⬢◉
+ ⟡❋⟡
+  ◈⬡◈
+
+  ▲⬢▲
+ ◊●◊
+  ✦⟢✦
+
+Respond with JSON: { "sigil": "YOUR_MYSTICAL_SIGIL" }`
         },
         {
           role: "user",
-          content: `Create a unique geometric sigil for username: ${username}${traits ? `, spiritual traits: ${traits.join(", ")}` : ""}`
+          content: `Create an intelligent mystical sigil for username: "${username}" (${usernameLength} chars, starts with '${firstChar}', ends with '${lastChar}', ${vowelCount} vowels)${traits ? `, spiritual essence: ${traits.join(", ")}` : ""}`
         }
       ],
       response_format: { type: "json_object" },
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
-    return result.sigil || `◊${username.charAt(0).toUpperCase()}◊`;
+    return result.sigil || `◉${username.charAt(0).toUpperCase()}◉`;
   } catch (error) {
     console.error("Error generating sigil:", error);
     return `◊${username.charAt(0).toUpperCase()}◊`;

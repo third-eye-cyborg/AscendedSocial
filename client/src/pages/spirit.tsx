@@ -62,7 +62,11 @@ export default function SpiritPage() {
             <p className="text-gray-300 mb-4">
               Complete your onboarding journey to discover your unique spirit guide
             </p>
-            <Button className="bg-primary hover:bg-primary/90 text-black font-semibold">
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-black font-semibold"
+              onClick={() => window.location.href = '/onboarding'}
+              data-testid="button-begin-journey"
+            >
               Begin Spiritual Journey
             </Button>
           </CardContent>

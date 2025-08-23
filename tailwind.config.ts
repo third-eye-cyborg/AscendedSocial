@@ -146,9 +146,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        glow: "glow 1120s ease-in-out infinite alternate",
+        glow: "glow 3600s ease-in-out infinite alternate",
         float: "float 3s ease-in-out infinite",
-        pulse: "pulse 1120s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        pulse: "pulse 3600s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
         "gradient-shift": "gradient-shift 3s ease infinite",
         "fade-in": "fade-in 0.6s ease-out",

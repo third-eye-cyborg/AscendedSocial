@@ -43,8 +43,8 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
   });
 
   const setAsProfileMutation = useMutation({
-    mutationFn: async (sigil: string) => {
-      return apiRequest("PUT", "/api/set-sigil-as-profile", { sigil });
+    mutationFn: async (imageUrl: string) => {
+      return apiRequest("PUT", "/api/set-sigil-image-as-profile", { imageUrl });
     },
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
@@ -95,9 +95,9 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
             </p>
             <div className="flex flex-col space-y-2">
               <Button
-                onClick={() => setAsProfileMutation.mutate(generatedSigil)}
-                disabled={setAsProfileMutation.isPending}
-                className="bg-green-600 hover:bg-green-700 text-white"
+                onClick={() => setAsProfileMutation.mutate(generatedSigilImage)}
+                disabled={setAsProfileMutation.isPending || !generatedSigilImage}
+                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                 data-testid="button-set-as-profile"
               >
                 {setAsProfileMutation.isPending ? "Setting..." : "Set as Profile Image"}

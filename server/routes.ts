@@ -7,6 +7,7 @@ import {
   generateDailyReading, 
   generateTarotReading,
   generateUserSigil,
+  generateSigilImage,
   generateOracleRecommendations,
   generateSpirit
 } from "./openai";
@@ -47,8 +48,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate sigil if user doesn't have one
       if (!user.sigil) {
         const sigil = await generateUserSigil(user.username || user.email || userId);
-        await storage.updateUserSigil(userId, sigil);
+        const sigilImageUrl = await generateSigilImage({ beliefs: 'spiritual growth', astrologySign: user.astrologySign || 'universal' });
+        await storage.updateUserSigil(userId, sigil, sigilImageUrl);
         user.sigil = sigil;
+        user.sigilImageUrl = sigilImageUrl;
       }
 
       res.json(user);
@@ -617,8 +620,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Generate AI-powered sigil using username and traits
       const sigil = await generateUserSigil(user.username || user.email || userId);
+      const sigilImageUrl = await generateSigilImage({ 
+        beliefs: 'spiritual growth', 
+        astrologySign: user.astrologySign || 'universal',
+        spiritualPath: 'mystical journey'
+      });
       
-      res.json({ sigil });
+      res.json({ sigil, sigilImageUrl });
     } catch (error) {
       console.error("Error generating sigil:", error);
       res.status(500).json({ message: "Failed to generate sigil" });
@@ -909,6 +917,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: spiritData.name,
         description: spiritData.description,
         element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
         questionnaire: {
           isReligious,
           isSpiritual,
@@ -985,6 +994,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: spiritData.name,
         description: spiritData.description,
         element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
         questionnaire: {
           isReligious,
           isSpiritual,
@@ -1036,6 +1046,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: spiritData.name,
         description: spiritData.description,
         element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
         level: (existingSpirit as any).level || 1,
         experience: (existingSpirit as any).experience || 0,
         questionnaire: {
@@ -1090,6 +1101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: spiritData.name,
         description: spiritData.description,
         element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
         questionnaire: {
           isReligious,
           isSpiritual,

@@ -34,7 +34,8 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   username: varchar("username").unique(),
   bio: text("bio"), // User biography/spiritual journey
-  sigil: text("sigil"), // AI-generated unique sigil
+  sigil: text("sigil"), // AI-generated unique sigil (text format)
+  sigilImageUrl: varchar("sigil_image_url"), // AI-generated sigil image
   aura: integer("aura").default(0), // Spiritual aura points
   energy: integer("energy").default(1000), // Monthly energy allocation
   energyLastReset: timestamp("energy_last_reset").defaultNow(),
@@ -159,6 +160,7 @@ export const spirits = pgTable("spirits", {
   name: varchar("name").notNull(),
   description: text("description").notNull(),
   element: varchar("element"), // fire, water, earth, air
+  imageUrl: varchar("image_url"), // AI-generated spirit image
   level: integer("level").default(1),
   experience: integer("experience").default(0),
   questionnaire: jsonb("questionnaire"), // Store original answers

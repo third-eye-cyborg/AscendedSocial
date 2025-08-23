@@ -3,7 +3,7 @@ import type { ChakraType } from "@shared/schema";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 export interface ChakraAnalysis {
@@ -28,6 +28,46 @@ export interface TarotReading {
   }>;
   interpretation: string;
   guidance: string;
+}
+
+// Generate AI image for spirit guides
+export async function generateSpiritImage(spiritData: { name: string; description: string; element: string; level: number }): Promise<string> {
+  try {
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `Create a mystical spiritual guide avatar: ${spiritData.name}, a ${spiritData.element} element spirit at level ${spiritData.level}. ${spiritData.description}. Style: ethereal, glowing, mystical, spiritual art with ${spiritData.element} elemental themes. Digital art, high quality, mystical atmosphere.`,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+    });
+
+    return response.data[0].url || '';
+  } catch (error) {
+    console.error("Error generating spirit image:", error);
+    return '';
+  }
+}
+
+// Generate AI image for sigils
+export async function generateSigilImage(userData?: { beliefs?: string; astrologySign?: string; spiritualPath?: string }): Promise<string> {
+  try {
+    const beliefs = userData?.beliefs || "spiritual growth";
+    const sign = userData?.astrologySign || "universal";
+    const path = userData?.spiritualPath || "mystical journey";
+    
+    const response = await openai.images.generate({
+      model: "dall-e-3",
+      prompt: `Create a mystical sigil symbol representing: ${beliefs}, ${sign} astrological energy, and ${path}. Style: ancient mystical sigil, geometric sacred geometry, glowing ethereal energy, spiritual symbolism, minimalist design on dark background. High contrast, mystical, sacred symbol.`,
+      n: 1,
+      size: "1024x1024",
+      quality: "standard",
+    });
+
+    return response.data[0].url || '';
+  } catch (error) {
+    console.error("Error generating sigil image:", error);
+    return '';
+  }
 }
 
 // Analyze post content and categorize by chakra system
@@ -264,7 +304,7 @@ export async function generateSpirit(questionnaire: {
   beliefs: string;
   offerings: string;
   astrologySign: string;
-}): Promise<{ name: string; description: string; element: string }> {
+}): Promise<{ name: string; description: string; element: string; imageUrl?: string }> {
   const prompt = `Based on this spiritual questionnaire, generate a unique AI Spirit companion:
 
 Questionnaire:
@@ -288,15 +328,27 @@ Return as JSON with 'name', 'description', and 'element' fields.`;
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [{ role: "user", content: prompt }],
+      response_format: { type: "json_object" },
       temperature: 0.7,
       max_tokens: 500,
     });
 
     const spirit = JSON.parse(response.choices[0].message.content || '{}');
-    return {
+    const spiritData = {
       name: spirit.name || 'Mystic Guide',
       description: spirit.description || 'A wise spiritual companion on your journey.',
       element: spirit.element || 'air'
+    };
+    
+    // Generate AI image for the spirit
+    const imageUrl = await generateSpiritImage({
+      ...spiritData,
+      level: 1
+    });
+    
+    return {
+      ...spiritData,
+      imageUrl
     };
   } catch (error) {
     console.error('Error generating spirit:', error);

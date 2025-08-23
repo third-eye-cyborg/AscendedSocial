@@ -290,223 +290,233 @@ export default function PostCard({ post }: PostCardProps) {
 
       {/* Enhanced Engagement Bar */}
       <div className="p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
-        <div className="flex items-center justify-between">
-          {/* Spiritual Engagement System */}
-          <div className="flex items-center space-x-4">
-            {/* Frequency Voting System */}
-            <div className="flex items-center bg-black/30 rounded-full p-1 border border-primary/20">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`relative p-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                  userEngagements.includes('upvote') 
-                    ? 'text-green-300 bg-green-900/40 shadow-lg shadow-green-400/20' 
-                    : 'text-white/70 hover:text-green-300 hover:bg-green-900/20'
-                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
-                onClick={() => handleEngagement('upvote')}
-                disabled={engageMutation.isPending}
-                title="✨ Raise Spiritual Frequency"
-                data-testid={`button-upvote-${post.id}`}
-              >
-                <ChevronUp className="w-4 h-4" />
-                {userEngagements.includes('upvote') && (
-                  <div className="absolute inset-0 bg-green-400/20 rounded-full animate-ping"></div>
-                )}
-              </Button>
-              
-              <div className="px-3">
-                <span 
-                  className={`text-sm font-semibold transition-colors duration-300 ${
-                    ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
-                      ? 'text-green-300 drop-shadow-sm' 
-                      : 'text-red-300 drop-shadow-sm'
-                  }`}
-                  data-testid={`votes-${post.id}`}
-                >
-                  {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
-                </span>
-                <div className="text-xs text-white/50 text-center">freq</div>
-              </div>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`relative p-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                  userEngagements.includes('downvote') 
-                    ? 'text-red-200 bg-red-800/60 shadow-lg shadow-red-300/30' 
-                    : 'text-white/70 hover:text-red-300 hover:bg-red-900/20'
-                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
-                onClick={() => handleEngagement('downvote')}
-                disabled={engageMutation.isPending}
-                title="🌊 Provide Constructive Balance"
-                data-testid={`button-downvote-${post.id}`}
-              >
-                <ChevronDown className="w-4 h-4" />
-                {userEngagements.includes('downvote') && (
-                  <div className="absolute inset-0 bg-red-300/30 rounded-full animate-ping"></div>
-                )}
-              </Button>
-            </div>
-
-            {/* Heart Resonance */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
-                userEngagements.includes('like') 
-                  ? 'text-pink-200 bg-pink-800/60 shadow-lg shadow-pink-300/30' 
-                  : 'text-white/70 hover:text-pink-300 hover:bg-pink-900/20'
-              } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
-              onClick={() => handleEngagement('like')}
-              disabled={engageMutation.isPending}
-              title="💖 Send Heart Resonance"
-              data-testid={`button-like-${post.id}`}
-            >
-              <Heart className={`w-4 h-4 transition-transform duration-200 ${
-                userEngagements.includes('like') ? 'scale-110 fill-current animate-pulse' : 'hover:scale-110'
-              }`} />
-              <span className="text-sm font-medium" data-testid={`likes-${post.id}`}>
-                {post.engagements?.like || 0}
-              </span>
-              {userEngagements.includes('like') && (
-                <div className="absolute inset-0 bg-pink-300/30 rounded-full animate-ping"></div>
-              )}
-            </Button>
-
-            {/* Spiritual Energy Transfer */}
-            <Popover open={energyPopoverOpen} onOpenChange={setEnergyPopoverOpen}>
-              <PopoverTrigger asChild>
+        <div className="flex flex-col space-y-3">
+          {/* Main Engagement Actions */}
+          <div className="flex items-center justify-between">
+            {/* Spiritual Frequency Voting */}
+            <div className="flex items-center bg-black/40 rounded-xl p-2 border border-primary/30 shadow-lg">
+              <div className="flex items-center">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
-                    userEngagements.includes('energy') 
-                      ? 'text-yellow-200 bg-yellow-800/60 shadow-lg shadow-yellow-300/30' 
-                      : 'text-white/70 hover:text-yellow-300 hover:bg-yellow-900/20'
+                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                    userEngagements.includes('upvote') 
+                      ? 'text-green-200 bg-green-800/60 shadow-lg shadow-green-400/30' 
+                      : 'text-white/80 hover:text-green-300 hover:bg-green-900/30'
                   } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
-                  disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
-                  title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
-                  data-testid={`button-energy-${post.id}`}
+                  onClick={() => handleEngagement('upvote')}
+                  disabled={engageMutation.isPending}
+                  title="✨ Raise Spiritual Frequency"
+                  data-testid={`button-upvote-${post.id}`}
                 >
-                  <Zap className={`w-4 h-4 transition-transform duration-200 ${
-                    userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
-                  }`} />
-                  <span className="text-sm font-medium" data-testid={`energy-${post.id}`}>
-                    {post.engagements?.energy || 0}
-                  </span>
-                  <Settings className="w-3 h-3 ml-1 opacity-60" />
-                  {((user as any)?.energy || 0) < energyAmount && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  )}
-                  {userEngagements.includes('energy') && (
-                    <>
-                      <div className="absolute inset-0 bg-yellow-300/30 rounded-full animate-ping"></div>
-                      <div className="absolute inset-0 overflow-hidden rounded-full">
-                        <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-300/40 to-transparent animate-pulse"></div>
-                      </div>
-                    </>
+                  <ChevronUp className="w-5 h-5" />
+                  {userEngagements.includes('upvote') && (
+                    <div className="absolute inset-0 bg-green-400/30 rounded-lg animate-ping"></div>
                   )}
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 bg-cosmic-dark/95 backdrop-blur border border-yellow-500/30" align="start">
-                <div className="space-y-4 p-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-yellow-300 font-semibold text-sm">⚡ Energy Transfer</h4>
-                    <span className="text-xs text-white/60">
-                      Available: {(user as any)?.energy || 0} energy
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-white/80 text-sm">Energy Amount:</span>
-                      <span className="text-yellow-300 font-bold">{energyAmount} points</span>
-                    </div>
-                    
-                    <Slider
-                      value={[energyAmount]}
-                      onValueChange={([value]) => setEnergyAmount(value)}
-                      max={Math.min(50, (user as any)?.energy || 0)}
-                      min={1}
-                      step={1}
-                      className="w-full"
-                    />
-                    
-                    <div className="flex justify-between text-xs text-white/60">
-                      <span>1 point</span>
-                      <span>{Math.min(50, (user as any)?.energy || 0)} points</span>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-yellow-900/20 rounded-lg p-3 text-xs text-yellow-200/80">
-                    <p>✨ Higher energy amounts provide more spiritual impact and experience points.</p>
-                  </div>
-                  
-                  <Button 
-                    className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold"
-                    onClick={() => handleEngagement('energy')}
-                    disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
-                    data-testid={`confirm-energy-${post.id}`}
+                
+                <div className="px-4 text-center">
+                  <div 
+                    className={`text-lg font-bold transition-colors duration-300 ${
+                      ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
+                        ? 'text-green-200 drop-shadow-lg' 
+                        : 'text-red-200 drop-shadow-lg'
+                    }`}
+                    data-testid={`votes-${post.id}`}
                   >
-                    {engageMutation.isPending ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                        <span>Transferring...</span>
-                      </div>
-                    ) : (
-                      `⚡ Transfer ${energyAmount} Energy`
-                    )}
-                  </Button>
+                    {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
+                  </div>
+                  <div className="text-xs text-white/70 font-medium tracking-wide">FREQUENCY</div>
                 </div>
-              </PopoverContent>
-            </Popover>
+                
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                    userEngagements.includes('downvote') 
+                      ? 'text-red-200 bg-red-800/60 shadow-lg shadow-red-400/30' 
+                      : 'text-white/80 hover:text-red-300 hover:bg-red-900/30'
+                  } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                  onClick={() => handleEngagement('downvote')}
+                  disabled={engageMutation.isPending}
+                  title="🌊 Provide Constructive Balance"
+                  data-testid={`button-downvote-${post.id}`}
+                >
+                  <ChevronDown className="w-5 h-5" />
+                  {userEngagements.includes('downvote') && (
+                    <div className="absolute inset-0 bg-red-300/30 rounded-lg animate-ping"></div>
+                  )}
+                </Button>
+              </div>
+            </div>
 
-            {/* Mystical Comments */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
-                showComments 
-                  ? 'text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-400/20' 
-                  : 'text-white/70 hover:text-purple-300 hover:bg-purple-900/20'
-              }`}
-              onClick={() => setShowComments(!showComments)}
-              title="💬 Join the Sacred Discussion"
-              data-testid={`button-comment-${post.id}`}
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span className="text-sm font-medium" data-testid={`comments-${post.id}`}>
-                {post.engagements?.comments || 0}
-              </span>
-            </Button>
+            {/* Secondary Actions */}
+            <div className="flex items-center space-x-2">
+              {/* Mystical Comments */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 ${
+                  showComments 
+                    ? 'text-purple-200 bg-purple-800/60 shadow-lg shadow-purple-400/30' 
+                    : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
+                }`}
+                onClick={() => setShowComments(!showComments)}
+                title="💬 Join the Sacred Discussion"
+                data-testid={`button-comment-${post.id}`}
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="text-sm font-semibold" data-testid={`comments-${post.id}`}>
+                  0
+                </span>
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-xl text-white/80 hover:text-cyan-300 hover:bg-cyan-900/30 transition-all duration-300 hover:scale-110"
+                onClick={handleShare}
+                title="🔗 Share Sacred Wisdom"
+                data-testid={`button-share-${post.id}`}
+              >
+                <Share2 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                  isSaved 
+                    ? 'text-amber-200 hover:text-amber-300 bg-amber-900/30' 
+                    : 'text-white/80 hover:text-amber-300 hover:bg-amber-900/30'
+                }`}
+                onClick={handleSave}
+                title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
+                data-testid={`button-save-${post.id}`}
+              >
+                {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+              </Button>
+            </div>
           </div>
 
-          {/* Mystical Actions */}
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-2 rounded-full text-white/70 hover:text-cyan-300 hover:bg-cyan-900/20 transition-all duration-300 hover:scale-110"
-              onClick={handleShare}
-              title="🔗 Share Sacred Wisdom"
-              data-testid={`button-share-${post.id}`}
-            >
-              <Share2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
-                isSaved 
-                  ? 'text-amber-300 hover:text-amber-400 bg-amber-900/20' 
-                  : 'text-white/70 hover:text-amber-300 hover:bg-amber-900/20'
-              }`}
-              onClick={handleSave}
-              title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
-              data-testid={`button-save-${post.id}`}
-            >
-              {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-            </Button>
+          {/* Resonance & Energy Row */}
+          <div className="flex items-center space-x-3">
+            {/* Heart Resonance */}
+            <div className="flex items-center bg-black/40 rounded-xl px-3 py-2 border border-pink-500/30">
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-300 hover:scale-105 ${
+                  userEngagements.includes('like') 
+                    ? 'text-pink-200 bg-pink-800/40' 
+                    : 'text-white/80 hover:text-pink-300'
+                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                onClick={() => handleEngagement('like')}
+                disabled={engageMutation.isPending}
+                title="💖 Send Heart Resonance"
+                data-testid={`button-like-${post.id}`}
+              >
+                <Heart className={`w-4 h-4 transition-transform duration-200 ${
+                  userEngagements.includes('like') ? 'scale-110 fill-current animate-pulse' : 'hover:scale-110'
+                }`} />
+                {userEngagements.includes('like') && (
+                  <div className="absolute inset-0 bg-pink-300/30 rounded-lg animate-ping"></div>
+                )}
+              </Button>
+              <div className="flex items-center space-x-1 ml-2">
+                <span className="text-sm font-bold text-pink-200" data-testid={`likes-${post.id}`}>
+                  {post.engagements?.like || 0}
+                </span>
+                <span className="text-xs text-white/70 font-medium">HEARTS</span>
+              </div>
+            </div>
+
+            {/* Spiritual Energy Transfer */}
+            <div className="flex items-center bg-black/40 rounded-xl px-3 py-2 border border-yellow-500/30">
+              <Popover open={energyPopoverOpen} onOpenChange={setEnergyPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-300 hover:scale-105 ${
+                      userEngagements.includes('energy') 
+                        ? 'text-yellow-200 bg-yellow-800/40' 
+                        : 'text-white/80 hover:text-yellow-300'
+                    } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                    disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
+                    title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
+                    data-testid={`button-energy-${post.id}`}
+                  >
+                    <Zap className={`w-4 h-4 transition-transform duration-200 ${
+                      userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
+                    }`} />
+                    <Settings className="w-3 h-3 opacity-60" />
+                    {((user as any)?.energy || 0) < energyAmount && (
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                    )}
+                    {userEngagements.includes('energy') && (
+                      <div className="absolute inset-0 bg-yellow-300/30 rounded-lg animate-ping"></div>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 bg-cosmic-dark/95 backdrop-blur border border-yellow-500/30" align="start">
+                  <div className="space-y-4 p-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-yellow-300 font-semibold text-sm">⚡ Energy Transfer</h4>
+                      <span className="text-xs text-white/60">
+                        Available: {(user as any)?.energy || 0} energy
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/80 text-sm">Energy Amount:</span>
+                        <span className="text-yellow-300 font-bold">{energyAmount} points</span>
+                      </div>
+                      
+                      <Slider
+                        value={[energyAmount]}
+                        onValueChange={([value]) => setEnergyAmount(value)}
+                        max={Math.min(50, (user as any)?.energy || 0)}
+                        min={1}
+                        step={1}
+                        className="w-full"
+                      />
+                      
+                      <div className="flex justify-between text-xs text-white/60">
+                        <span>1 point</span>
+                        <span>{Math.min(50, (user as any)?.energy || 0)} points</span>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-yellow-900/20 rounded-lg p-3 text-xs text-yellow-200/80">
+                      <p>✨ Higher energy amounts provide more spiritual impact and experience points.</p>
+                    </div>
+                    
+                    <Button 
+                      className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold"
+                      onClick={() => handleEngagement('energy')}
+                      disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
+                      data-testid={`confirm-energy-${post.id}`}
+                    >
+                      {engageMutation.isPending ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                          <span>Transferring...</span>
+                        </div>
+                      ) : (
+                        `⚡ Transfer ${energyAmount} Energy`
+                      )}
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <div className="flex items-center space-x-1 ml-2">
+                <span className="text-sm font-bold text-yellow-200" data-testid={`energy-${post.id}`}>
+                  {post.engagements?.energy || 0}
+                </span>
+                <span className="text-xs text-white/70 font-medium">ENERGY</span>
+              </div>
+            </div>
           </div>
         </div>
 

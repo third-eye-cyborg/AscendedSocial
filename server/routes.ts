@@ -593,6 +593,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/users/regenerate-sigil', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Check energy cost first
+      const sigilCost = 100;
+      if ((user.energy || 0) < sigilCost) {
+        return res.status(400).json({ message: `Sigil regeneration requires ${sigilCost} energy. You have ${user.energy || 0} energy.` });
+      }
+      
+      // Deduct energy cost
+      await storage.updateUserEnergy(userId, (user.energy || 0) - sigilCost);
       
       // Generate new sigil (6 random characters)
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()+=[]{}|;:,.<>?';
@@ -617,6 +631,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
+      
+      // Check energy cost first
+      const sigilCost = 100;
+      if ((user.energy || 0) < sigilCost) {
+        return res.status(400).json({ message: `Sigil regeneration requires ${sigilCost} energy. You have ${user.energy || 0} energy.` });
+      }
+      
+      // Deduct energy cost
+      await storage.updateUserEnergy(userId, (user.energy || 0) - sigilCost);
       
       // Generate AI-powered sigil using username and traits
       const sigil = await generateUserSigil(user.username || user.email || userId);

@@ -94,7 +94,7 @@ export default function ProfileSettings() {
               <Button
                 onClick={handleRegenerateSigil}
                 disabled={regenerateSigilMutation.isPending}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 text-black font-semibold"
                 data-testid="button-regenerate-sigil"
               >
                 <i className="fas fa-sync-alt mr-2"></i>
@@ -125,7 +125,7 @@ export default function ProfileSettings() {
               <Button
                 onClick={handleUpdateUsername}
                 disabled={updateUsernameMutation.isPending || !username.trim()}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 text-black font-semibold"
                 data-testid="button-update-username"
               >
                 <i className="fas fa-save mr-2"></i>

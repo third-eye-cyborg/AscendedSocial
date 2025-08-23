@@ -146,7 +146,7 @@ export default function Oracle() {
                   <Button
                     onClick={() => newReadingMutation.mutate()}
                     disabled={newReadingMutation.isPending}
-                    className="bg-primary hover:bg-primary/80"
+                    className="bg-primary hover:bg-primary/80 text-black font-semibold"
                   >
                     Generate Daily Reading
                   </Button>
@@ -209,7 +209,7 @@ export default function Oracle() {
                   <Button
                     onClick={() => refreshOracleMutation.mutate()}
                     disabled={refreshOracleMutation.isPending}
-                    className="bg-primary hover:bg-primary/80"
+                    className="bg-primary hover:bg-primary/80 text-black font-semibold"
                   >
                     Seek Guidance
                   </Button>
@@ -296,7 +296,7 @@ export default function Oracle() {
                   <Button
                     onClick={() => refreshCommunityMutation.mutate()}
                     disabled={refreshCommunityMutation.isPending}
-                    className="bg-primary hover:bg-primary/80"
+                    className="bg-primary hover:bg-primary/80 text-black font-semibold"
                   >
                     Seek Community Wisdom
                   </Button>

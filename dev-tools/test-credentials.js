@@ -6,7 +6,7 @@ console.log('🔍 Testing API Credentials...\n');
 // Test environment variables
 console.log('📋 Environment Check:');
 console.log(`TRELLO_API_KEY: ${process.env.TRELLO_API_KEY ? `${process.env.TRELLO_API_KEY.substring(0, 8)}...` : 'MISSING'}`);
-console.log(`TRELLO_TOKEN: ${process.env.TRELLO_TOKEN ? `${process.env.TRELLO_TOKEN.substring(0, 8)}...` : 'MISSING'}`);
+console.log(`TRELLO_SECRET: ${process.env.TRELLO_SECRET ? `${process.env.TRELLO_SECRET.substring(0, 8)}...` : 'MISSING'}`);
 console.log(`NOTION_INTEGRATION_SECRET: ${process.env.NOTION_INTEGRATION_SECRET ? `${process.env.NOTION_INTEGRATION_SECRET.substring(0, 8)}...` : 'MISSING'}`);
 console.log(`NOTION_PAGE_URL: ${process.env.NOTION_PAGE_URL || 'MISSING'}\n`);
 
@@ -14,13 +14,13 @@ console.log(`NOTION_PAGE_URL: ${process.env.NOTION_PAGE_URL || 'MISSING'}\n`);
 async function testTrello() {
     console.log('🔧 Testing Trello API...');
     
-    if (!process.env.TRELLO_API_KEY || !process.env.TRELLO_TOKEN) {
+    if (!process.env.TRELLO_API_KEY || !process.env.TRELLO_SECRET) {
         console.log('❌ Missing Trello credentials');
         return;
     }
     
     try {
-        const url = `https://api.trello.com/1/members/me?key=${process.env.TRELLO_API_KEY}&token=${process.env.TRELLO_TOKEN}`;
+        const url = `https://api.trello.com/1/members/me?key=${process.env.TRELLO_API_KEY}&token=${process.env.TRELLO_SECRET}`;
         const response = await fetch(url);
         const status = response.status;
         

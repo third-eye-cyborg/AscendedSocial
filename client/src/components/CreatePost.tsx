@@ -233,7 +233,7 @@ export default function CreatePost() {
                   />
                   <label 
                     htmlFor="file-upload"
-                    className="cursor-pointer inline-flex items-center space-x-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-primary hover:text-white text-sm"
+                    className="cursor-pointer inline-flex items-center space-x-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-white text-sm"
                     data-testid="button-add-media"
                   >
                     <i className="fas fa-image"></i>

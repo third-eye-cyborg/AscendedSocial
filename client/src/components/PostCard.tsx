@@ -9,6 +9,7 @@ import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
+import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck } from "lucide-react";
 
 interface PostCardProps {
   post: {
@@ -83,8 +84,8 @@ export default function PostCard({ post }: PostCardProps) {
   const handleEngagement = (type: string) => {
     if (!user) {
       toast({
-        title: "Login Required",
-        description: "Please log in to engage with posts",
+        title: "🔮 Mystical Access Required",
+        description: "Please enter the spiritual realm to engage with posts",
         variant: "destructive",
       });
       return;
@@ -94,11 +95,30 @@ export default function PostCard({ post }: PostCardProps) {
     
     if (type === 'energy' && !isEngaged && ((user as any)?.energy || 0) < 10) {
       toast({
-        title: "Insufficient Energy",
-        description: "You need at least 10 energy points to send energy",
+        title: "⚡ Energy Depleted",
+        description: "Your spiritual energy is too low. Meditate to restore 10 energy points.",
         variant: "destructive",
       });
       return;
+    }
+
+    // Visual feedback for successful engagement
+    if (!isEngaged) {
+      const successMessages = {
+        upvote: { title: "✨ Positive Vibrations Sent", description: "Your spiritual approval raises the post's frequency" },
+        downvote: { title: "🌊 Constructive Energy Shared", description: "Your feedback helps balance the cosmic harmony" },
+        like: { title: "💖 Love Resonance Activated", description: "Your heart chakra connects with this soul" },
+        energy: { title: "⚡ Spiritual Energy Transferred", description: "10 energy points sent to amplify this wisdom" }
+      };
+      
+      const message = successMessages[type as keyof typeof successMessages];
+      if (message) {
+        toast({
+          title: message.title,
+          description: message.description,
+          duration: 3000,
+        });
+      }
     }
 
     engageMutation.mutate({ type, remove: isEngaged });
@@ -125,12 +145,12 @@ export default function PostCard({ post }: PostCardProps) {
 
   const handleShare = () => {
     const postUrl = `${window.location.origin}/?post=${post.id}`;
-    const shareText = `Check out this spiritual insight from ${post.author.username || post.author.email || 'a fellow seeker'} on Ascended Social:\n\n"${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"\n\n${postUrl}`;
+    const shareText = `🔮 Sacred wisdom from ${post.author.username || post.author.email || 'a mystical soul'} on Ascended Social:\n\n"${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"\n\nEmbark on this spiritual journey: ${postUrl} ✨`;
     
     if (navigator.share) {
       // Use native sharing on mobile devices
       navigator.share({
-        title: 'Spiritual Insight from Ascended Social',
+        title: '🌟 Sacred Wisdom from Ascended Social',
         text: shareText,
         url: postUrl,
       }).catch((error) => {
@@ -146,12 +166,12 @@ export default function PostCard({ post }: PostCardProps) {
     // Copy to clipboard as fallback
     navigator.clipboard.writeText(text).then(() => {
       toast({
-        title: "📋 Copied to clipboard!",
-        description: "Share this spiritual insight with others",
+        title: "🔗 Sacred Link Copied!",
+        description: "Spread this mystical wisdom to fellow seekers",
       });
     }).catch(() => {
       // Last resort: show the text in an alert
-      alert(`Share this post:\n\n${text}`);
+      alert(`Share this sacred wisdom:\n\n${text}`);
     });
   };
 
@@ -159,10 +179,11 @@ export default function PostCard({ post }: PostCardProps) {
     // Toggle saved state (this would integrate with backend saved posts)
     setIsSaved(!isSaved);
     toast({
-      title: isSaved ? "🔖 Post unsaved" : "💾 Post saved!",
+      title: isSaved ? "📜 Removed from Sacred Collection" : "🏛️ Added to Sacred Collection!",
       description: isSaved ? 
-        "Removed from your spiritual collection" : 
-        "Added to your spiritual collection",
+        "This wisdom has been released from your spiritual library" : 
+        "This sacred knowledge is now preserved in your mystical archives",
+      duration: 2500,
     });
   };
 
@@ -253,112 +274,167 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       )}
 
-      {/* Engagement Bar */}
-      <div className="p-4 border-t border-primary/20">
+      {/* Enhanced Engagement Bar */}
+      <div className="p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
         <div className="flex items-center justify-between">
-          {/* Three-tier engagement system */}
-          <div className="flex items-center space-x-6">
-            {/* Vote System */}
-            <div className="flex items-center space-x-1">
+          {/* Spiritual Engagement System */}
+          <div className="flex items-center space-x-4">
+            {/* Frequency Voting System */}
+            <div className="flex items-center bg-black/30 rounded-full p-1 border border-primary/20">
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('upvote') ? 'text-green-300 bg-green-900/20' : 'text-white/90 hover:text-green-300'}`}
+                className={`relative p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                  userEngagements.includes('upvote') 
+                    ? 'text-green-300 bg-green-900/40 shadow-lg shadow-green-400/20' 
+                    : 'text-white/70 hover:text-green-300 hover:bg-green-900/20'
+                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
                 onClick={() => handleEngagement('upvote')}
                 disabled={engageMutation.isPending}
-                title="Upvote (Positive Frequency)"
+                title="✨ Raise Spiritual Frequency"
                 data-testid={`button-upvote-${post.id}`}
               >
-                <i className="fas fa-chevron-up"></i>
+                <ChevronUp className="w-4 h-4" />
+                {userEngagements.includes('upvote') && (
+                  <div className="absolute inset-0 bg-green-400/20 rounded-full animate-ping"></div>
+                )}
               </Button>
-              <span 
-                className={`text-sm font-medium ${
-                  ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
-                    ? 'text-green-300' 
-                    : 'text-red-300'
-                }`}
-                data-testid={`votes-${post.id}`}
-              >
-                {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
-              </span>
+              
+              <div className="px-3">
+                <span 
+                  className={`text-sm font-semibold transition-colors duration-300 ${
+                    ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
+                      ? 'text-green-300 drop-shadow-sm' 
+                      : 'text-red-300 drop-shadow-sm'
+                  }`}
+                  data-testid={`votes-${post.id}`}
+                >
+                  {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
+                </span>
+                <div className="text-xs text-white/50 text-center">freq</div>
+              </div>
+              
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('downvote') ? 'text-red-300 bg-red-900/20' : 'text-white/90 hover:text-red-300'}`}
+                className={`relative p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                  userEngagements.includes('downvote') 
+                    ? 'text-red-300 bg-red-900/40 shadow-lg shadow-red-400/20' 
+                    : 'text-white/70 hover:text-red-300 hover:bg-red-900/20'
+                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
                 onClick={() => handleEngagement('downvote')}
                 disabled={engageMutation.isPending}
-                title="Downvote (Negative Frequency)"
+                title="🌊 Provide Constructive Balance"
                 data-testid={`button-downvote-${post.id}`}
               >
-                <i className="fas fa-chevron-down"></i>
+                <ChevronDown className="w-4 h-4" />
+                {userEngagements.includes('downvote') && (
+                  <div className="absolute inset-0 bg-red-400/20 rounded-full animate-ping"></div>
+                )}
               </Button>
             </div>
 
-            {/* Like System */}
+            {/* Heart Resonance */}
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('like') ? 'text-pink-300 bg-pink-900/20' : 'text-white/90 hover:text-pink-300'}`}
+              className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
+                userEngagements.includes('like') 
+                  ? 'text-pink-300 bg-pink-900/40 shadow-lg shadow-pink-400/20' 
+                  : 'text-white/70 hover:text-pink-300 hover:bg-pink-900/20'
+              } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
               onClick={() => handleEngagement('like')}
               disabled={engageMutation.isPending}
+              title="💖 Send Heart Resonance"
               data-testid={`button-like-${post.id}`}
             >
-              <i className="fas fa-heart"></i>
-              <span className="text-sm" data-testid={`likes-${post.id}`}>
+              <Heart className={`w-4 h-4 transition-transform duration-200 ${
+                userEngagements.includes('like') ? 'scale-110 fill-current animate-pulse' : 'hover:scale-110'
+              }`} />
+              <span className="text-sm font-medium" data-testid={`likes-${post.id}`}>
                 {post.engagements?.like || 0}
               </span>
+              {userEngagements.includes('like') && (
+                <div className="absolute inset-0 bg-pink-400/20 rounded-full animate-ping"></div>
+              )}
             </Button>
 
-            {/* Energy System */}
+            {/* Spiritual Energy Transfer */}
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('energy') ? 'text-yellow-300 bg-yellow-900/20' : 'text-white/90 hover:text-yellow-300'}`}
+              className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
+                userEngagements.includes('energy') 
+                  ? 'text-yellow-300 bg-yellow-900/40 shadow-lg shadow-yellow-400/20' 
+                  : 'text-white/70 hover:text-yellow-300 hover:bg-yellow-900/20'
+              } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
               onClick={() => handleEngagement('energy')}
-              disabled={engageMutation.isPending}
-              title="Send Energy (Uses 10 energy points)"
+              disabled={engageMutation.isPending || ((user as any)?.energy || 0) < 10}
+              title={`⚡ Transfer Spiritual Energy (-10 energy) | Your Energy: ${(user as any)?.energy || 0}`}
               data-testid={`button-energy-${post.id}`}
             >
-              <i className="fas fa-bolt"></i>
-              <span className="text-sm" data-testid={`energy-${post.id}`}>
+              <Zap className={`w-4 h-4 transition-transform duration-200 ${
+                userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
+              }`} />
+              <span className="text-sm font-medium" data-testid={`energy-${post.id}`}>
                 {post.engagements?.energy || 0}
               </span>
+              {((user as any)?.energy || 0) < 10 && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              )}
+              {userEngagements.includes('energy') && (
+                <>
+                  <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping"></div>
+                  <div className="absolute inset-0 overflow-hidden rounded-full">
+                    <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent animate-pulse"></div>
+                  </div>
+                </>
+              )}
             </Button>
 
-            {/* Comments */}
+            {/* Mystical Comments */}
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${showComments ? 'text-primary' : 'text-muted hover:text-primary'}`}
+              className={`flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
+                showComments 
+                  ? 'text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-400/20' 
+                  : 'text-white/70 hover:text-purple-300 hover:bg-purple-900/20'
+              }`}
               onClick={() => setShowComments(!showComments)}
+              title="💬 Join the Sacred Discussion"
               data-testid={`button-comment-${post.id}`}
             >
-              <i className="fas fa-comment"></i>
-              <span className="text-sm">Comment</span>
+              <MessageCircle className="w-4 h-4" />
+              <span className="text-sm">Discuss</span>
             </Button>
           </div>
 
-          {/* Share & Save */}
-          <div className="flex items-center space-x-3">
+          {/* Mystical Actions */}
+          <div className="flex items-center space-x-2">
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted hover:text-primary transition-colors duration-200"
+              className="p-2 rounded-full text-white/70 hover:text-cyan-300 hover:bg-cyan-900/20 transition-all duration-300 hover:scale-110"
               onClick={handleShare}
-              title="Share this spiritual insight"
+              title="🔗 Share Sacred Wisdom"
               data-testid={`button-share-${post.id}`}
             >
-              <i className="fas fa-share"></i>
+              <Share2 className="w-4 h-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className={`transition-colors duration-200 ${isSaved ? 'text-accent-light' : 'text-muted hover:text-accent-light'}`}
+              className={`p-2 rounded-full transition-all duration-300 hover:scale-110 ${
+                isSaved 
+                  ? 'text-amber-300 hover:text-amber-400 bg-amber-900/20' 
+                  : 'text-white/70 hover:text-amber-300 hover:bg-amber-900/20'
+              }`}
               onClick={handleSave}
-              title={isSaved ? "Remove from saved posts" : "Save to spiritual collection"}
+              title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
               data-testid={`button-save-${post.id}`}
             >
-              <i className={`fas ${isSaved ? 'fa-bookmark' : 'fa-bookmark-o'}`}></i>
+              {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
             </Button>
           </div>
         </div>

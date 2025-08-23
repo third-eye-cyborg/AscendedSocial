@@ -23,10 +23,19 @@ export default function Sidebar() {
           <div className="flex items-center space-x-3 mb-3">
             <div className="sigil-container w-12 h-12 rounded-full p-0.5 flex-shrink-0">
               <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
-                {(user as any)?.sigil ? (
-                  <span className="text-xs text-white font-mono break-all text-center" data-testid="text-sidebar-sigil">
-                    {((user as any)?.sigil as string).slice(0, 3)}
-                  </span>
+                {(user as any)?.profileImageUrl ? (
+                  <img 
+                    src={(user as any).profileImageUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover rounded-full"
+                    data-testid="img-sidebar-profile"
+                  />
+                ) : (user as any)?.sigil ? (
+                  <div className="text-center leading-none p-1">
+                    <pre className="text-[6px] text-white font-mono whitespace-pre-wrap break-words" data-testid="text-sidebar-sigil">
+                      {(user as any).sigil}
+                    </pre>
+                  </div>
                 ) : (
                   <i className="fas fa-om text-white text-lg"></i>
                 )}

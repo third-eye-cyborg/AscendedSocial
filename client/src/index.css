@@ -213,7 +213,11 @@
 
   /* Animated Elements */
   .animate-glow {
-    border: 1px solid hsl(232, 100%, 67%, 0.5);
+    border: 2px solid hsl(232, 100%, 67%, 0.6);
+    box-shadow: 0 0 20px hsl(232, 100%, 67%, 0.4), 
+                0 0 40px hsl(232, 100%, 67%, 0.2),
+                inset 0 0 15px hsl(232, 100%, 67%, 0.1);
+    animation: glow-pulse 2s ease-in-out infinite alternate;
   }
 
   .animate-fade-in {
@@ -271,6 +275,19 @@
 
 @layer utilities {
   /* Custom Animations */
+  @keyframes glow-pulse {
+    0% {
+      box-shadow: 0 0 15px hsl(232, 100%, 67%, 0.4), 
+                  0 0 30px hsl(232, 100%, 67%, 0.2),
+                  inset 0 0 10px hsl(232, 100%, 67%, 0.1);
+    }
+    100% {
+      box-shadow: 0 0 25px hsl(232, 100%, 67%, 0.6), 
+                  0 0 50px hsl(232, 100%, 67%, 0.3),
+                  inset 0 0 20px hsl(232, 100%, 67%, 0.15);
+    }
+  }
+  
   @keyframes glow {
     0% { box-shadow: 0 0 5px currentColor; }
     100% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }

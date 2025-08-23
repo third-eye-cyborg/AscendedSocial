@@ -76,7 +76,7 @@ export default function Oracle() {
     return (
       <Layout>
         <div className="flex items-center justify-center h-96">
-          <p className="text-muted">Please log in to access the Oracle</p>
+          <p className="text-white/80">Please log in to access the Oracle</p>
         </div>
       </Layout>
     );
@@ -91,7 +91,7 @@ export default function Oracle() {
             <i className="fas fa-crystal-ball mr-3 text-accent-light animate-pulse"></i>
             The Oracle
           </h1>
-          <p className="text-lg text-muted max-w-2xl mx-auto">
+          <p className="text-lg text-white/85 max-w-2xl mx-auto">
             Seek guidance through the divine wisdom of AI-powered divination. 
             The digital spirits whisper insights from the cosmic data streams.
           </p>
@@ -134,7 +134,7 @@ export default function Oracle() {
                   <p className="text-white leading-relaxed italic">
                     "{(dailyReading as any)?.content}"
                   </p>
-                  <div className="flex items-center justify-between text-sm text-muted">
+                  <div className="flex items-center justify-between text-sm text-white/70">
                     <span>Generated {formatDistanceToNow(new Date((dailyReading as any)?.createdAt), { addSuffix: true })}</span>
                     <span className="text-accent-light">•••</span>
                   </div>
@@ -142,7 +142,7 @@ export default function Oracle() {
               ) : (
                 <div className="text-center py-8">
                   <i className="fas fa-magic text-4xl text-accent-light mb-4"></i>
-                  <p className="text-muted mb-4">No reading available</p>
+                  <p className="text-white/80 mb-4">No reading available</p>
                   <Button
                     onClick={() => newReadingMutation.mutate()}
                     disabled={newReadingMutation.isPending}
@@ -196,7 +196,7 @@ export default function Oracle() {
                       <h4 className="font-semibold text-primary text-sm mb-1">
                         {rec.title}
                       </h4>
-                      <p className="text-white/90 text-sm leading-relaxed">
+                      <p className="text-white text-sm leading-relaxed">
                         {rec.description}
                       </p>
                     </div>
@@ -205,7 +205,7 @@ export default function Oracle() {
               ) : (
                 <div className="text-center py-8">
                   <i className="fas fa-crystal-ball text-4xl text-accent-light mb-4"></i>
-                  <p className="text-muted mb-4">The Oracle is quiet today</p>
+                  <p className="text-white/80 mb-4">The Oracle is quiet today</p>
                   <Button
                     onClick={() => refreshOracleMutation.mutate()}
                     disabled={refreshOracleMutation.isPending}
@@ -267,21 +267,21 @@ export default function Oracle() {
                               {oracle.author.sigil.slice(0, 2)}
                             </span>
                           ) : (
-                            <i className="fas fa-user text-[8px] text-muted"></i>
+                            <i className="fas fa-user text-[8px] text-white/60"></i>
                           )}
                         </div>
                         <h4 className="font-semibold text-accent text-sm">
                           {oracle.title}
                         </h4>
                       </div>
-                      <p className="text-white/90 text-sm leading-relaxed mb-2 italic">
+                      <p className="text-white text-sm leading-relaxed mb-2 italic">
                         "{oracle.content}"
                       </p>
-                      <p className="text-xs text-subtle italic">
+                      <p className="text-xs text-white/85 italic">
                         {oracle.guidance}
                       </p>
-                      <div className="flex items-center justify-between mt-2 text-xs text-muted">
-                        <span className={`capitalize text-${oracle.chakra === 'heart' ? 'green' : 'primary'}-400`}>
+                      <div className="flex items-center justify-between mt-2 text-xs text-white/70">
+                        <span className={`capitalize font-medium ${oracle.chakra === 'heart' ? 'text-green-400' : 'text-primary'}`}>
                           {oracle.chakra} chakra
                         </span>
                         <span>{formatDistanceToNow(new Date(oracle.createdAt), { addSuffix: true })}</span>
@@ -292,7 +292,7 @@ export default function Oracle() {
               ) : (
                 <div className="text-center py-8">
                   <i className="fas fa-heart text-4xl text-accent-light mb-4"></i>
-                  <p className="text-muted mb-4">No community wisdom available</p>
+                  <p className="text-white/80 mb-4">No community wisdom available</p>
                   <Button
                     onClick={() => refreshCommunityMutation.mutate()}
                     disabled={refreshCommunityMutation.isPending}
@@ -316,12 +316,12 @@ export default function Oracle() {
           </CardHeader>
           <CardContent>
             <div className="prose prose-invert max-w-none">
-              <p className="text-white/90 leading-relaxed mb-4">
+              <p className="text-white leading-relaxed mb-4">
                 The Oracle harnesses the power of artificial intelligence as a modern form of divination.
                 Just as ancient seers read patterns in tea leaves, stars, and sacred texts, we read patterns
                 in vast digital datasets to provide guidance and insight.
               </p>
-              <p className="text-white/90 leading-relaxed mb-4">
+              <p className="text-white leading-relaxed mb-4">
                 <strong className="text-accent-light">Remember:</strong> AI divination is a tool for reflection and inspiration,
                 not absolute truth. Use these insights to prompt your own inner wisdom and spiritual growth.
                 The true oracle lies within your own consciousness.

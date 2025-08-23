@@ -264,7 +264,28 @@ function StarmapScene() {
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
-    queryKey: ['/api/starmap/users', filters],
+    queryKey: ['/api/starmap/users', JSON.stringify(filters)],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      
+      // Only add non-empty filter parameters
+      if (filters.chakra) params.append('chakra', filters.chakra);
+      if (filters.astrologySign) params.append('astrologySign', filters.astrologySign);
+      if (filters.minAura !== undefined) params.append('minAura', filters.minAura.toString());
+      if (filters.maxAura !== undefined) params.append('maxAura', filters.maxAura.toString());
+      if (filters.minEnergy !== undefined) params.append('minEnergy', filters.minEnergy.toString());
+      if (filters.maxEnergy !== undefined) params.append('maxEnergy', filters.maxEnergy.toString());
+      
+      const queryString = params.toString();
+      const url = `/api/starmap/users${queryString ? '?' + queryString : ''}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch starmap users: ${response.status}`);
+      }
+      
+      return response.json();
+    },
     retry: 2,
     onError: () => {
       toast({
@@ -363,12 +384,12 @@ function StarmapScene() {
               <div className="space-y-3">
                 <div>
                   <label className="text-xs text-purple-300 mb-1 block">Chakra Energy</label>
-                  <Select onValueChange={(chakra) => setFilters((f) => ({ ...f, chakra }))}>
+                  <Select onValueChange={(chakra) => setFilters((f) => ({ ...f, chakra: chakra === 'all' ? undefined : chakra }))}>
                     <SelectTrigger className="h-8 text-xs bg-black/40 border-purple-400/30">
                       <SelectValue placeholder="All Chakras" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/90 backdrop-blur-md border-purple-500/30">
-                      <SelectItem value="">All Chakras</SelectItem>
+                      <SelectItem value="all">All Chakras</SelectItem>
                       {Object.entries(chakraColors).map(([chakra, color]) => (
                         <SelectItem key={chakra} value={chakra}>
                           <div className="flex items-center">
@@ -386,12 +407,12 @@ function StarmapScene() {
 
                 <div>
                   <label className="text-xs text-purple-300 mb-1 block">Astrology Sign</label>
-                  <Select onValueChange={(sign) => setFilters((f) => ({ ...f, astrologySign: sign }))}>
+                  <Select onValueChange={(sign) => setFilters((f) => ({ ...f, astrologySign: sign === 'all' ? undefined : sign }))}>
                     <SelectTrigger className="h-8 text-xs bg-black/40 border-purple-400/30">
                       <SelectValue placeholder="All Signs" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/90 backdrop-blur-md border-purple-500/30">
-                      <SelectItem value="">All Signs</SelectItem>
+                      <SelectItem value="all">All Signs</SelectItem>
                       {['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'].map(sign => (
                         <SelectItem key={sign} value={sign}>
                           <span className="capitalize">♦ {sign}</span>

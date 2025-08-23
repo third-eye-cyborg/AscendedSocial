@@ -71,14 +71,15 @@ export default function SpiritGenerator() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/spirit"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user data for energy
       toast({
-        title: "✨ Spirit Regenerated!",
+        title: "✨ Spirit Evolved!",
         description: "Your spiritual companion has evolved into a new form",
       });
     },
     onError: (error) => {
       toast({
-        title: "Regeneration Failed",
+        title: "Evolution Failed",
         description: error.message,
         variant: "destructive",
       });
@@ -155,23 +156,34 @@ export default function SpiritGenerator() {
               </div>
             )}
             
+            {/* Energy Cost Display */}
+            <div className="mb-4 text-center">
+              <p className="text-xs text-gray-400 mb-1">Evolution Cost: 100 Energy</p>
+              <p className={`text-xs ${((user as any)?.energy || 0) >= 100 ? 'text-green-400' : 'text-red-400'}`}>
+                Your Energy: {(user as any)?.energy || 0}
+              </p>
+              {((user as any)?.energy || 0) < 100 && (
+                <p className="text-xs text-red-400 mt-1">Insufficient energy to evolve</p>
+              )}
+            </div>
+            
             {/* Evolve Button - More Prominent */}
             <Button
               onClick={() => regenerateSpiritMutation.mutate()}
-              disabled={regenerateSpiritMutation.isPending}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25"
+              disabled={regenerateSpiritMutation.isPending || ((user as any)?.energy || 0) < 100}
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
               size="default"
               data-testid="button-regenerate-spirit"
             >
               {regenerateSpiritMutation.isPending ? (
                 <>
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Regenerating Spiritual Guide...
+                  Evolving...
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Regenerate Spiritual Guide
+                  Evolve
                 </>
               )}
             </Button>

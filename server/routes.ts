@@ -1121,15 +1121,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Regenerate existing spirit
+  // Evolve existing spirit (costs energy)
   app.post("/api/spirit/regenerate", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       
+      // Check user energy first
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const evolutionCost = 100;
+      if ((user.energy || 0) < evolutionCost) {
+        return res.status(400).json({ message: `Evolution requires ${evolutionCost} energy. You have ${user.energy || 0} energy.` });
+      }
+      
       // Get existing spirit
       const existingSpirit = await storage.getUserSpirit(userId);
       if (!existingSpirit) {
-        return res.status(404).json({ message: "No spirit found to regenerate" });
+        return res.status(404).json({ message: "No spirit found to evolve" });
       }
 
       // Use existing questionnaire data for regeneration
@@ -1146,16 +1157,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         astrologySign: questionnaire.astrologySign || "Aquarius"
       });
 
-      // Update existing spirit preserving level and experience
-      await storage.updateSpirit(userId, {
+      // Deduct energy cost
+      await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
+      
+      // Delete old spirit and create new one with preserved level/experience
+      await storage.deleteUserSpirit(userId);
+      
+      const newSpirit = await storage.createSpirit(userId, {
         name: spiritData.name,
         description: spiritData.description,
-        element: spiritData.element
+        element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
+        level: (existingSpirit as any).level || 1,
+        experience: (existingSpirit as any).experience || 0,
+        questionnaire: {
+          ...questionnaire,
+          regeneratedAt: new Date().toISOString()
+        }
       });
 
-      // Get updated spirit
-      const updatedSpirit = await storage.getUserSpirit(userId);
-      res.json(updatedSpirit);
+      res.json(newSpirit);
     } catch (error) {
       console.error("Error regenerating spirit:", error);
       res.status(500).json({ message: "Failed to regenerate spirit" });

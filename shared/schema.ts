@@ -88,6 +88,7 @@ export const postEngagements = pgTable("post_engagements", {
   postId: varchar("post_id").notNull().references(() => posts.id),
   userId: varchar("user_id").notNull().references(() => users.id),
   type: engagementTypeEnum("type").notNull(),
+  energyAmount: integer("energy_amount").default(1), // Amount of energy spent (1-50 for energy type)
   createdAt: timestamp("created_at").defaultNow(),
 });
 

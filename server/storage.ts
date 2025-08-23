@@ -28,7 +28,7 @@ import {
   notifications,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count, ilike, or, ne } from "drizzle-orm";
+import { eq, desc, sql, and, count, ilike, or, ne, sum } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -348,7 +348,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Engagement operations
-  async createEngagement(engagement: InsertEngagement, userId: string): Promise<Engagement> {
+  async createEngagement(engagement: InsertEngagement, userId: string, energyAmount?: number): Promise<Engagement> {
     // Remove existing engagement of same type if exists
     await db
       .delete(postEngagements)
@@ -359,6 +359,23 @@ export class DatabaseStorage implements IStorage {
           eq(postEngagements.type, engagement.type)
         )
       );
+
+    // Handle energy deduction for energy type
+    if (engagement.type === 'energy') {
+      const user = await this.getUser(userId);
+      const requiredEnergy = energyAmount || 10;
+      
+      if (!user || (user.energy || 0) < requiredEnergy) {
+        throw new Error(`Insufficient energy. You have ${user?.energy || 0} energy but need ${requiredEnergy}.`);
+      }
+      
+      // Ensure energy amount is within valid range
+      if (requiredEnergy < 1 || requiredEnergy > 50) {
+        throw new Error("Energy amount must be between 1 and 50 points.");
+      }
+      
+      await this.updateUserEnergy(userId, (user.energy || 0) - requiredEnergy);
+    }
 
     // Handle mutual exclusion for upvote/downvote
     if (engagement.type === 'upvote') {
@@ -385,7 +402,11 @@ export class DatabaseStorage implements IStorage {
 
     const [newEngagement] = await db
       .insert(postEngagements)
-      .values({ ...engagement, userId })
+      .values({ 
+        ...engagement, 
+        userId,
+        energyAmount: engagement.type === 'energy' ? (energyAmount || 10) : 1
+      })
       .returning();
 
     // Update post frequency
@@ -447,8 +468,21 @@ export class DatabaseStorage implements IStorage {
 
   private async updatePostFrequency(postId: string): Promise<void> {
     const engagements = await this.getPostEngagements(postId);
+    
+    // Get total energy amount from all energy engagements
+    const totalEnergyAmount = await db
+      .select({ totalEnergy: sum(postEngagements.energyAmount) })
+      .from(postEngagements)
+      .where(
+        and(
+          eq(postEngagements.postId, postId),
+          eq(postEngagements.type, 'energy')
+        )
+      );
+    
+    const energySum = Number(totalEnergyAmount[0]?.totalEnergy || 0);
     const frequency = engagements.upvote - engagements.downvote + 
-                     engagements.like + (engagements.energy * 2);
+                     engagements.like + Math.floor(energySum * 0.2); // Energy worth 0.2 frequency per point
     
     await db
       .update(posts)

@@ -778,10 +778,18 @@ function StarmapScene() {
               gl={{ 
                 antialias: true, 
                 alpha: false,
-                powerPreference: "high-performance"
+                powerPreference: "default",
+                preserveDrawingBuffer: false,
+                stencil: false,
+                depth: true
               }}
-              onCreated={({ gl }) => {
-                gl.setClearColor('#000000');
+              onCreated={({ gl, scene, camera }) => {
+                try {
+                  gl.setClearColor('#000000');
+                  gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                } catch (error) {
+                  console.warn('WebGL setup warning:', error);
+                }
               }}
             >
               <Suspense fallback={null}>

@@ -212,7 +212,7 @@ export default function PostCard({ post }: PostCardProps) {
   const chakraGlow = getChakraGlow(post.chakra);
 
   return (
-    <Card className={`bg-cosmic-light rounded-xl overflow-hidden border-2 ${chakraGlow} hover-lift animate-fade-in`}>
+    <Card className={`bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 rounded-xl overflow-hidden border-2 ${chakraGlow} hover-lift animate-fade-in`}>
       {/* Post Header */}
       <div className="p-4">
         <div className="flex items-center justify-between">

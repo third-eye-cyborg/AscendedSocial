@@ -68,7 +68,7 @@ export default function Community() {
                         <p className="text-gray-300 text-sm mb-2">{circle.description}</p>
                         <div className="flex items-center space-x-4 text-xs text-gray-400">
                           <span><i className="fas fa-users mr-1"></i>{circle.members} members</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs text-white">
                             {circle.type}
                           </Badge>
                         </div>

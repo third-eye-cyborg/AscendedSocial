@@ -190,6 +190,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { postId, type: type as EngagementType },
         userId
       );
+
+      // Update spirit experience based on engagement type
+      let expGain = 0;
+      switch (type) {
+        case 'like':
+          expGain = 5;
+          break;
+        case 'upvote':
+          expGain = 10;
+          break;
+        case 'energy':
+          expGain = 20; // Higher XP for spending energy
+          break;
+        case 'downvote':
+          expGain = 2; // Small XP even for downvotes (participation)
+          break;
+      }
+
+      if (expGain > 0) {
+        await storage.updateSpiritExperience(userId, expGain, `${type}_engagement`);
+      }
       
       res.json(engagement);
     } catch (error) {
@@ -234,6 +255,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const commentData = insertCommentSchema.parse({ ...req.body, postId });
       
       const comment = await storage.createComment(commentData, userId);
+      
+      // Award spirit experience for commenting (community engagement)
+      await storage.updateSpiritExperience(userId, 8, 'comment_creation');
+      
       res.json(comment);
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -249,6 +274,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching comments:", error);
       res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Spirit routes
+  app.get('/api/spirit', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const spirit = await storage.getUserSpirit(userId);
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error fetching spirit:", error);
+      res.status(500).json({ message: "Failed to fetch spirit" });
     }
   });
 

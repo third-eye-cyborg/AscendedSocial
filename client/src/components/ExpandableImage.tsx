@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 interface ExpandableImageProps {
@@ -21,10 +21,12 @@ export default function ExpandableImage({ src, alt, className, children, title }
         </div>
       </DialogTrigger>
       <DialogContent className="max-w-2xl bg-slate-900 border border-slate-700">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-white text-center">
+            {title || "Image"}
+          </DialogTitle>
+        </DialogHeader>
         <div className="space-y-4">
-          {title && (
-            <h3 className="text-xl font-semibold text-white text-center">{title}</h3>
-          )}
           <div className="flex justify-center">
             <img 
               src={src}

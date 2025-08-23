@@ -101,15 +101,23 @@ export default function ProfilePictureChanger() {
         throw new Error(`Upload failed: ${uploadFileResponse.status} ${uploadFileResponse.statusText}`);
       }
       
-      // The uploadURL itself is the media URL for the uploaded file
-      const mediaURL = uploadURL.split('?')[0]; // Remove query parameters
+      // The uploadURL without query parameters is the media URL
+      const baseURL = uploadURL.split('?')[0];
+      console.log("Upload successful, base URL:", baseURL);
       
       // Set media as public in Replit storage
-      const mediaResponse = await apiRequest("PUT", "/api/media", { mediaURL });
-      const mediaData = await mediaResponse.json();
+      const mediaResponse = await apiRequest("PUT", "/api/media", { mediaURL: baseURL });
+      console.log("Media response status:", mediaResponse.status);
       
-      // Use the objectPath returned from media API
-      const finalImageURL = mediaData.objectPath;
+      if (!mediaResponse.ok) {
+        throw new Error(`Media API failed: ${mediaResponse.status}`);
+      }
+      
+      const mediaData = await mediaResponse.json();
+      console.log("Media data:", mediaData);
+      
+      // Use the objectPath returned from media API, or fallback to baseURL
+      const finalImageURL = mediaData.objectPath || baseURL;
       
       // Update user profile with new image URL
       await changeProfilePictureMutation.mutateAsync(finalImageURL);
@@ -118,9 +126,10 @@ export default function ProfilePictureChanger() {
       event.target.value = '';
       
     } catch (error) {
+      console.error("Upload error details:", error);
       toast({
         title: "Upload Failed",
-        description: "Failed to upload image. Please try again.",
+        description: `Failed to upload image: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     } finally {

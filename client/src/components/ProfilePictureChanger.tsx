@@ -195,7 +195,7 @@ export default function ProfilePictureChanger() {
               onClick={() => removeProfilePictureMutation.mutate()}
               disabled={removeProfilePictureMutation.isPending}
               variant="outline"
-              className="w-full bg-transparent border-red-600/50 text-red-400 hover:bg-red-600/20"
+              className="w-full bg-transparent border-red-500/60 text-red-300 hover:bg-red-600/20 hover:text-red-200"
               data-testid="button-remove-picture"
             >
               {removeProfilePictureMutation.isPending ? "Removing..." : "Remove Picture"}

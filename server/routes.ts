@@ -58,6 +58,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Object storage routes for profile images
+  app.get('/objects/:objectPath(*)', async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error('Error checking object access:', error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  app.post('/api/objects/upload', isAuthenticated, async (req, res) => {
+    const objectStorageService = new ObjectStorageService();
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    res.json({ uploadURL });
+  });
+
+  app.put('/api/profile-image', isAuthenticated, async (req: any, res) => {
+    if (!req.body.imageUrl) {
+      return res.status(400).json({ error: 'imageUrl is required' });
+    }
+
+    try {
+      const userId = req.user.claims.sub;
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(
+        req.body.imageUrl
+      );
+
+      // Update user's profile image URL in database
+      const user = await storage.updateUser(userId, {
+        profileImageUrl: objectPath
+      });
+
+      res.status(200).json({
+        objectPath: objectPath,
+        user: user
+      });
+    } catch (error) {
+      console.error('Error setting profile image:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // Post routes
   app.post('/api/posts', isAuthenticated, async (req: any, res) => {
     try {
@@ -471,6 +519,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error generating sigil:", error);
       res.status(500).json({ message: "Failed to generate sigil" });
+    }
+  });
+
+  // Set sigil as profile image route
+  app.put('/api/set-sigil-as-profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { sigil } = req.body;
+      
+      if (!sigil) {
+        return res.status(400).json({ error: 'sigil is required' });
+      }
+
+      // Update user's sigil and clear profile image URL to use sigil instead
+      const user = await storage.updateUser(userId, {
+        sigil: sigil,
+        profileImageUrl: null
+      });
+
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error('Error setting sigil as profile:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 

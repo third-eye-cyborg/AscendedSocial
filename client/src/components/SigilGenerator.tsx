@@ -22,6 +22,9 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
   const displaySigil = generatedSigil || user?.sigil;
   const displaySigilImage = generatedSigilImage || user?.sigilImageUrl;
   const isGeneratedSigil = !!generatedSigil;
+  
+  // Always prioritize showing the image if it exists
+  const shouldShowImage = displaySigilImage && displaySigilImage.trim() !== '';
 
   const generateSigilMutation = useMutation({
     mutationFn: async () => {
@@ -82,10 +85,10 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
         {displaySigil ? (
           <div className="text-center">
             <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
-              {displaySigilImage ? (
+              {shouldShowImage ? (
                 <img 
                   src={displaySigilImage}
-                  alt={isGeneratedSigil ? "Generated Sigil" : "Your Sigil"}
+                  alt={isGeneratedSigil ? "Generated Sigil" : "Your Saved Sigil"}
                   className="w-full h-full object-cover rounded-full"
                   data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
                   onError={() => {
@@ -116,15 +119,34 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                   {saveSigilMutation.isPending ? "Saving..." : "Save Sigil"}
                 </Button>
               )}
-              <Button
-                onClick={() => generateSigilMutation.mutate()}
-                disabled={generateSigilMutation.isPending}
-                variant="outline"
-                className="bg-transparent border-primary/30 text-white hover:bg-primary/20"
-                data-testid="button-regenerate"
-              >
-                {isGeneratedSigil ? "Generate New Sigil" : "Generate Different Sigil"}
-              </Button>
+              <div className="space-y-2">
+                {/* Energy Cost Display for regeneration */}
+                <div className="text-center">
+                  <p className="text-xs text-gray-400 mb-1">Generation Cost: 100 Energy</p>
+                  <p className={`text-xs ${((user as any)?.energy || 0) >= 100 ? 'text-green-400' : 'text-red-400'}`}>
+                    Your Energy: {(user as any)?.energy || 0}
+                  </p>
+                  {((user as any)?.energy || 0) < 100 && (
+                    <p className="text-xs text-red-400 mt-1">Insufficient energy to generate</p>
+                  )}
+                </div>
+                <Button
+                  onClick={() => generateSigilMutation.mutate()}
+                  disabled={generateSigilMutation.isPending || ((user as any)?.energy || 0) < 100}
+                  variant="outline"
+                  className="bg-transparent border-primary/30 text-white hover:bg-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="button-regenerate"
+                >
+                  {generateSigilMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-cosmic border-t-transparent rounded-full animate-spin"></div>
+                      <span>Generating...</span>
+                    </div>
+                  ) : (
+                    isGeneratedSigil ? "Generate New Sigil" : "Generate Different Sigil"
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         ) : (

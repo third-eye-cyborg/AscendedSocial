@@ -69,8 +69,13 @@ class ScrapybaraService {
   }
 
   public async takeScreenshot(): Promise<ScreenshotResult> {
-    if (!this.currentBrowserInstance || !this.client) {
-      throw new Error('No active browser instance found');
+    if (!this.client) {
+      throw new Error('Scrapybara client not initialized. Please provide API key.');
+    }
+
+    // Start browser instance if not active
+    if (!this.currentBrowserInstance) {
+      await this.startBrowserInstance();
     }
 
     try {

@@ -303,7 +303,7 @@ export default function PostCard({ post }: PostCardProps) {
                     userEngagements.includes('upvote') 
                       ? 'text-green-200 bg-green-800/60 shadow-lg shadow-green-400/30' 
                       : 'text-white/80 hover:text-green-300 hover:bg-green-900/30'
-                  } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                  } ${engageMutation.isPending ? 'opacity-75' : ''}`}
                   onClick={() => handleEngagement('upvote')}
                   disabled={engageMutation.isPending}
                   title="✨ Raise Spiritual Frequency"
@@ -311,7 +311,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronUp className="w-5 h-5" />
                   {userEngagements.includes('upvote') && (
-                    <div className="absolute inset-0 bg-green-400/30 rounded-lg animate-ping"></div>
+                    <div className="absolute inset-0 bg-green-400/20 rounded-lg"></div>
                   )}
                 </Button>
                 
@@ -336,7 +336,7 @@ export default function PostCard({ post }: PostCardProps) {
                     userEngagements.includes('downvote') 
                       ? 'text-red-200 bg-red-800/60 shadow-lg shadow-red-400/30' 
                       : 'text-white/80 hover:text-red-300 hover:bg-red-900/30'
-                  } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                  } ${engageMutation.isPending ? 'opacity-75' : ''}`}
                   onClick={() => handleEngagement('downvote')}
                   disabled={engageMutation.isPending}
                   title="🌊 Provide Constructive Balance"
@@ -344,7 +344,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronDown className="w-5 h-5" />
                   {userEngagements.includes('downvote') && (
-                    <div className="absolute inset-0 bg-red-300/30 rounded-lg animate-ping"></div>
+                    <div className="absolute inset-0 bg-red-300/20 rounded-lg"></div>
                   )}
                 </Button>
               </div>
@@ -416,10 +416,10 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`button-like-${post.id}`}
               >
                 <Heart className={`w-4 h-4 transition-transform duration-200 ${
-                  userEngagements.includes('like') ? 'scale-110 fill-current animate-pulse' : 'hover:scale-110'
+                  userEngagements.includes('like') ? 'scale-110 fill-current' : 'hover:scale-110'
                 }`} />
                 {userEngagements.includes('like') && (
-                  <div className="absolute inset-0 bg-pink-300/30 rounded-lg animate-ping"></div>
+                  <div className="absolute inset-0 bg-pink-300/20 rounded-lg"></div>
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
@@ -441,20 +441,20 @@ export default function PostCard({ post }: PostCardProps) {
                       userEngagements.includes('energy') 
                         ? 'text-yellow-200 bg-yellow-800/40' 
                         : 'text-white/80 hover:text-yellow-300'
-                    } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                    } ${engageMutation.isPending ? 'opacity-75' : ''}`}
                     disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
                     title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
                     data-testid={`button-energy-${post.id}`}
                   >
                     <Zap className={`w-4 h-4 transition-transform duration-200 ${
-                      userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
+                      userEngagements.includes('energy') ? 'scale-110' : 'hover:scale-110'
                     }`} />
                     <Settings className="w-3 h-3 opacity-60" />
                     {((user as any)?.energy || 0) < energyAmount && (
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-80"></div>
                     )}
                     {userEngagements.includes('energy') && (
-                      <div className="absolute inset-0 bg-yellow-300/30 rounded-lg animate-ping"></div>
+                      <div className="absolute inset-0 bg-yellow-300/20 rounded-lg"></div>
                     )}
                   </Button>
                 </PopoverTrigger>

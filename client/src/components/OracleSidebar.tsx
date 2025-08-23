@@ -47,7 +47,7 @@ export default function OracleSidebar() {
   return (
     <aside className="w-80 fixed right-0 top-16 h-[calc(100vh-4rem)] bg-cosmic-light/50 border-l border-primary/30 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent z-40">
       {/* Daily Oracle Reading */}
-      <Card className="bg-card border border-border shadow-lg rounded-xl mb-6 hover-lift animate-scale-in">
+      <Card className="bg-slate-900 border border-slate-700 shadow-lg rounded-xl mb-6 hover-lift animate-scale-in">
         <CardHeader>
           <CardTitle className="font-display font-semibold text-accent-light flex items-center">
             <i className="fas fa-crystal-ball mr-2 animate-pulse"></i>
@@ -108,7 +108,7 @@ export default function OracleSidebar() {
       </Card>
 
       {/* The Oracle Recommendations */}
-      <Card className="bg-card border border-border shadow-lg rounded-xl mb-6 hover-lift animate-scale-in">
+      <Card className="bg-slate-900 border border-slate-700 shadow-lg rounded-xl mb-6 hover-lift animate-scale-in">
         <CardHeader>
           <CardTitle className="font-display font-semibold text-primary flex items-center">
             <i className="fas fa-eye mr-2"></i>

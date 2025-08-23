@@ -120,8 +120,10 @@ The project uses Notion as a comprehensive development management system for tra
 
 #### Development Databases
 1. **Development Tasks**: Features, bugs, and improvements tracked with status, priority, and assignments
-2. **Change Log**: Automatic documentation of all significant project updates and modifications
-3. **Project Documentation**: Centralized knowledge base with technical specifications and user guides
+2. **Mobile Development**: Mobile app features and backend synchronization tracking with auth integration status
+3. **Project Task Management**: General project coordination with time tracking and technical notes  
+4. **Change Log**: Automatic documentation of all significant project updates and modifications
+5. **Project Documentation**: Centralized knowledge base with technical specifications and user guides
 
 #### Development Workflow Process
 1. **Task Creation**: New features, bugs, or improvements are created in the Development Tasks database

@@ -29,7 +29,7 @@ export function ProfileIcon({
   onClick, 
   testId 
 }: ProfileIconProps) {
-  const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-all duration-300`;
+  const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-transform duration-300`;
   const glowClasses = showGlow ? 'animate-glow hover:scale-110' : 'hover:scale-105';
   const containerClasses = `${baseClasses} ${glowClasses} ${className}`;
 

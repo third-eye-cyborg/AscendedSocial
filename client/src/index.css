@@ -213,8 +213,8 @@
 
   /* Animated Elements */
   .animate-glow {
-    border: 1px solid hsl(232, 100%, 67%, 0.15);
-    animation: glow-pulse 20s ease-in-out infinite;
+    border: 1px solid hsl(232, 100%, 67%, 0.08);
+    animation: glow-pulse 60s ease-in-out infinite;
   }
 
   .animate-fade-in {
@@ -274,14 +274,14 @@
   /* Custom Animations */
   @keyframes glow-pulse {
     0% {
-      box-shadow: 0 0 6px hsl(232, 100%, 67%, 0.08), 
-                  0 0 12px hsl(232, 100%, 67%, 0.03),
-                  inset 0 0 6px hsl(232, 100%, 67%, 0.02);
+      box-shadow: 0 0 4px hsl(232, 100%, 67%, 0.03), 
+                  0 0 8px hsl(232, 100%, 67%, 0.01),
+                  inset 0 0 4px hsl(232, 100%, 67%, 0.01);
     }
     50% {
-      box-shadow: 0 0 8px hsl(232, 100%, 67%, 0.12), 
-                  0 0 16px hsl(232, 100%, 67%, 0.05),
-                  inset 0 0 8px hsl(232, 100%, 67%, 0.03);
+      box-shadow: 0 0 5px hsl(232, 100%, 67%, 0.04), 
+                  0 0 10px hsl(232, 100%, 67%, 0.015),
+                  inset 0 0 5px hsl(232, 100%, 67%, 0.015);
     }
     100% {
       box-shadow: 0 0 8px hsl(232, 100%, 67%, 0.3), 

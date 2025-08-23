@@ -193,7 +193,7 @@ export default function Oracle() {
                 <div className="space-y-4">
                   {(recommendations as any[])?.slice(0, 5).map((rec, index) => (
                     <div key={index} className="border-l-2 border-primary/30 pl-4 py-2">
-                      <h4 className="font-semibold text-primary text-sm mb-1">
+                      <h4 className="font-semibold text-yellow-300 text-sm mb-1">
                         {rec.title}
                       </h4>
                       <p className="text-white text-sm leading-relaxed">
@@ -326,7 +326,7 @@ export default function Oracle() {
                 not absolute truth. Use these insights to prompt your own inner wisdom and spiritual growth.
                 The true oracle lies within your own consciousness.
               </p>
-              <div className="flex items-center space-x-6 text-sm text-primary mt-6">
+              <div className="flex items-center space-x-6 text-sm text-green-300 mt-6">
                 <div className="flex items-center">
                   <i className="fas fa-check-circle mr-2"></i>
                   For personal reflection

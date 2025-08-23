@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import SigilGenerator from "@/components/SigilGenerator";
+import ProfilePictureChanger from "@/components/ProfilePictureChanger";
 
 export default function ProfileSettings() {
   const { user } = useAuth();
@@ -67,10 +69,20 @@ export default function ProfileSettings() {
       <div className="max-w-4xl mx-auto p-4 md:p-6 pt-20">
         <h1 className="text-3xl font-display font-bold mb-6 text-white">Profile Settings</h1>
 
+        {/* Profile Picture Section */}
+        <div className="mb-6">
+          <ProfilePictureChanger />
+        </div>
+
         {/* Sigil Section */}
+        <div className="mb-6">
+          <SigilGenerator />
+        </div>
+
+        {/* Username Section */}
         <Card className="bg-cosmic-light border-primary/30 mb-6">
           <CardHeader>
-            <CardTitle className="text-white">Spiritual Sigil</CardTitle>
+            <CardTitle className="text-white">Username</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">

@@ -53,7 +53,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                 </span>
               </div>
             </div>
-            <p className="text-sm text-subtle mb-4">
+            <p className="text-sm text-white/90 mb-4">
               Your unique spiritual signature has been generated. This sigil represents your energy and essence.
             </p>
             <Button

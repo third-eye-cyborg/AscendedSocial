@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getChakraColor, getChakraGlow } from "@/lib/chakras";
@@ -41,6 +41,23 @@ export default function PostCard({ post }: PostCardProps) {
   const [userEngagements, setUserEngagements] = useState<string[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+
+  // Fetch user engagement status for this post
+  const { data: userEngagementData } = useQuery({
+    queryKey: ["/api/posts", post.id, "engage/user"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/posts/${post.id}/engage/user`);
+      return response.json();
+    },
+    enabled: !!user,
+  });
+
+  // Set initial engagement state when data is fetched
+  useEffect(() => {
+    if (userEngagementData?.engagements) {
+      setUserEngagements(userEngagementData.engagements);
+    }
+  }, [userEngagementData]);
 
   const engageMutation = useMutation({
     mutationFn: async ({ type, remove }: { type: string; remove?: boolean }) => {

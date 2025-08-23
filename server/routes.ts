@@ -163,6 +163,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/posts/:postId/engage/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { postId } = req.params;
+      
+      const engagements = await storage.getUserEngagement(postId, userId);
+      const userEngagementTypes = engagements.map(engagement => engagement.type);
+      
+      res.json({ engagements: userEngagementTypes });
+    } catch (error) {
+      console.error("Error fetching user engagements:", error);
+      res.status(500).json({ message: "Failed to fetch user engagements" });
+    }
+  });
+
   // Comment routes
   app.post('/api/posts/:postId/comments', isAuthenticated, async (req: any, res) => {
     try {

@@ -430,7 +430,7 @@ export class DatabaseStorage implements IStorage {
     await this.updatePostFrequency(postId);
   }
 
-  async getPostEngagements(postId: string): Promise<{ [key in EngagementType]: number }> {
+  async getPostEngagements(postId: string): Promise<{ [key in EngagementType]: number } & { comments: number }> {
     const engagements = await db
       .select({
         type: postEngagements.type,
@@ -440,11 +440,18 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postEngagements.postId, postId))
       .groupBy(postEngagements.type);
 
+    // Get comment count separately
+    const [{ count: commentCount }] = await db
+      .select({ count: count() })
+      .from(comments)
+      .where(eq(comments.postId, postId));
+
     const result = {
       upvote: 0,
       downvote: 0,
       like: 0,
       energy: 0,
+      comments: commentCount || 0,
     };
 
     engagements.forEach(({ type, count }) => {

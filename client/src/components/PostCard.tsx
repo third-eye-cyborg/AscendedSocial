@@ -475,7 +475,9 @@ export default function PostCard({ post }: PostCardProps) {
               data-testid={`button-comment-${post.id}`}
             >
               <MessageCircle className="w-4 h-4" />
-              <span className="text-sm">Discuss</span>
+              <span className="text-sm font-medium" data-testid={`comments-${post.id}`}>
+                {post.engagements?.comments || 0}
+              </span>
             </Button>
           </div>
 

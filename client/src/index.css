@@ -5,32 +5,158 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Uppy Modal Contrast Fixes */
+/* Uppy Modal Complete Styling */
 .uppy-Root {
   color: white !important;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .uppy-Dashboard-inner {
-  background-color: hsl(280, 100%, 8%) !important;
+  background-color: hsl(245, 35%, 15%) !important;
   color: white !important;
-  border: 1px solid hsl(280, 50%, 20%) !important;
+  border: 1px solid hsl(232, 100%, 67%, 0.3) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(87, 113, 255, 0.2) !important;
 }
 
+.uppy-Dashboard-overlay {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+/* Close/Exit Button */
+.uppy-Dashboard-close {
+  background: hsl(245, 35%, 20%) !important;
+  border: 1px solid hsl(232, 100%, 67%, 0.5) !important;
+  color: white !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  z-index: 1000 !important;
+  position: relative !important;
+}
+
+.uppy-Dashboard-close:hover {
+  background: hsl(232, 100%, 67%) !important;
+  transform: scale(1.05) !important;
+  box-shadow: 0 0 12px rgba(87, 113, 255, 0.4) !important;
+}
+
+.uppy-Dashboard-close:before {
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+/* Drop zone styling */
 .uppy-Dashboard-dropFilesHereHint {
   color: white !important;
   font-weight: 600 !important;
+  font-size: 18px !important;
 }
 
 .uppy-Dashboard-browse {
-  color: hsl(280, 100%, 70%) !important;
+  color: hsl(232, 100%, 67%) !important;
+  text-decoration: underline !important;
+  font-weight: 500 !important;
+}
+
+.uppy-Dashboard-browse:hover {
+  color: hsl(232, 100%, 75%) !important;
 }
 
 .uppy-Dashboard-AddFiles-title {
   color: white !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
 }
 
 .uppy-size--md .uppy-Dashboard-AddFiles-title {
   color: white !important;
+}
+
+/* Upload button styling */
+.uppy-StatusBar-actionBtn--upload {
+  background: linear-gradient(135deg, hsl(232, 100%, 67%), hsl(277, 48%, 58%)) !important;
+  border: none !important;
+  color: white !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+.uppy-StatusBar-actionBtn--upload:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(87, 113, 255, 0.3) !important;
+}
+
+.uppy-StatusBar-actionBtn--upload:disabled {
+  background: hsl(245, 35%, 25%) !important;
+  color: hsl(0, 0%, 60%) !important;
+  cursor: not-allowed !important;
+}
+
+/* Progress bar */
+.uppy-StatusBar-progress {
+  background: hsl(245, 35%, 25%) !important;
+  border-radius: 4px !important;
+}
+
+.uppy-StatusBar-progressBarFill {
+  background: linear-gradient(90deg, hsl(232, 100%, 67%), hsl(277, 48%, 58%)) !important;
+  border-radius: 4px !important;
+}
+
+/* File items */
+.uppy-Dashboard-Item {
+  background: hsl(245, 35%, 18%) !important;
+  border: 1px solid hsl(245, 20%, 30%) !important;
+  border-radius: 8px !important;
+}
+
+.uppy-Dashboard-Item-name {
+  color: white !important;
+}
+
+.uppy-Dashboard-Item-status {
+  color: hsl(0, 0%, 80%) !important;
+}
+
+/* Status bar */
+.uppy-StatusBar {
+  background: hsl(245, 35%, 18%) !important;
+  border-top: 1px solid hsl(245, 20%, 30%) !important;
+  border-radius: 0 0 12px 12px !important;
+}
+
+.uppy-StatusBar-content {
+  color: white !important;
+}
+
+/* Add Files area */
+.uppy-Dashboard-AddFiles {
+  border: 2px dashed hsl(232, 100%, 67%, 0.3) !important;
+  border-radius: 12px !important;
+  background: hsl(245, 35%, 12%) !important;
+  transition: all 0.2s ease !important;
+}
+
+.uppy-Dashboard-AddFiles:hover {
+  border-color: hsl(232, 100%, 67%, 0.5) !important;
+  background: hsl(245, 35%, 14%) !important;
+}
+
+.uppy-Dashboard-AddFiles-list {
+  color: hsl(0, 0%, 85%) !important;
+}
+
+/* Header */
+.uppy-Dashboard-title {
+  color: white !important;
+  font-weight: 600 !important;
 }
 
 :root {

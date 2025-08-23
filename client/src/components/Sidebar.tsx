@@ -168,6 +168,17 @@ export default function Sidebar() {
             <span>Starmap</span>
           </button>
         </Link>
+        <Link href="/tasks">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/tasks" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-tasks"
+          >
+            <i className="fas fa-tasks"></i>
+            <span>Tasks</span>
+          </button>
+        </Link>
         <Link href={`/profile/${(user as any)?.id}`}>
           <button 
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${

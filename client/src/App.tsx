@@ -21,6 +21,7 @@ import Onboarding from "@/pages/onboarding";
 import SpiritPage from "@/pages/spirit";
 import EnergyPage from "@/pages/energy";
 import StarmapPage from "@/pages/starmap";
+import Tasks from "@/pages/tasks";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -47,6 +48,7 @@ function Router() {
           <Route path="/spirit" component={SpiritPage} />
           <Route path="/energy" component={EnergyPage} />
           <Route path="/starmap" component={StarmapPage} />
+          <Route path="/tasks" component={Tasks} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />

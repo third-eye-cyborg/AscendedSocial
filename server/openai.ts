@@ -35,7 +35,7 @@ export async function generateSpiritImage(spiritData: { name: string; descriptio
   try {
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Create a mystical spiritual guide avatar: ${spiritData.name}, a ${spiritData.element} element spirit at level ${spiritData.level}. ${spiritData.description}. Style: ethereal, glowing, mystical, spiritual art with ${spiritData.element} elemental themes. Digital art, high quality, mystical atmosphere.`,
+      prompt: `Create a mystical spiritual guide avatar: ${spiritData.name}, a ${spiritData.element} element spirit at level ${spiritData.level}. ${spiritData.description}. Style: ethereal, glowing, mystical, spiritual art with ${spiritData.element} elemental themes. Digital art, high quality, mystical atmosphere. IMPORTANT: No text, letters, words, or writing of any kind should appear in the image. Pure visual representation only.`,
       n: 1,
       size: "1024x1024",
       quality: "standard",

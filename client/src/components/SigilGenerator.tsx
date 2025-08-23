@@ -61,7 +61,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
   });
 
   return (
-    <Card className="bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 border-2 border-purple-500/30 shadow-xl">
+    <Card className="bg-card border border-border shadow-lg">
       <CardHeader>
         <CardTitle className="text-accent-light flex items-center">
           <i className="fas fa-magic mr-2"></i>

@@ -107,7 +107,7 @@ export default function SpiritGenerator() {
     <div className="space-y-3">
       {/* Current Spirit Display */}
       {currentSpirit ? (
-        <Card className="bg-gradient-to-br from-slate-900 via-purple-900/40 to-slate-900 border-2 border-purple-500/30 shadow-xl overflow-hidden relative">
+        <Card className="bg-card border border-border shadow-xl overflow-hidden relative">
           {/* Animated background effect */}
           <div className="absolute inset-0 bg-gradient-to-t from-purple-600/10 via-transparent to-transparent opacity-50" />
           

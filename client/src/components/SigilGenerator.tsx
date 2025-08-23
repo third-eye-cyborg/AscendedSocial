@@ -15,8 +15,13 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
-  // Get user data for energy display
+  // Get user data for energy display and saved sigil
   const { data: user } = useQuery({ queryKey: ["/api/auth/user"] });
+  
+  // Show saved sigil if no new one is generated
+  const displaySigil = generatedSigil || user?.sigil;
+  const displaySigilImage = generatedSigilImage || user?.sigilImageUrl;
+  const isGeneratedSigil = !!generatedSigil;
 
   const generateSigilMutation = useMutation({
     mutationFn: async () => {
@@ -42,15 +47,18 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
     },
   });
 
-  const setAsProfileMutation = useMutation({
-    mutationFn: async (imageUrl: string) => {
-      return apiRequest("PUT", "/api/set-sigil-image-as-profile", { imageUrl });
+  const saveSigilMutation = useMutation({
+    mutationFn: async (data: { sigil: string; imageUrl: string }) => {
+      return apiRequest("PUT", "/api/save-sigil", data);
     },
     onSuccess: async () => {
+      // Clear generated sigil to show saved one
+      setGeneratedSigil("");
+      setGeneratedSigilImage("");
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: "Profile Updated",
-        description: "Your sigil has been set as your profile image",
+        title: "Sigil Saved",
+        description: "Your spiritual sigil has been saved to your profile",
       });
     },
     onError: (error) => {
@@ -71,37 +79,43 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {generatedSigil ? (
+        {displaySigil ? (
           <div className="text-center">
             <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
-              {generatedSigilImage ? (
+              {displaySigilImage ? (
                 <img 
-                  src={generatedSigilImage}
-                  alt="Generated Sigil"
+                  src={displaySigilImage}
+                  alt={isGeneratedSigil ? "Generated Sigil" : "Your Sigil"}
                   className="w-full h-full object-cover rounded-full"
-                  data-testid="img-generated-sigil"
-                  onError={() => setGeneratedSigilImage("")}
+                  data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
+                  onError={() => {
+                    if (isGeneratedSigil) {
+                      setGeneratedSigilImage("");
+                    }
+                  }}
                 />
               ) : (
                 <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
-                  <span className="text-2xl text-white font-mono" data-testid="text-generated-sigil">
-                    {generatedSigil}
+                  <span className="text-2xl text-white font-mono" data-testid={isGeneratedSigil ? "text-generated-sigil" : "text-saved-sigil"}>
+                    {displaySigil}
                   </span>
                 </div>
               )}
             </div>
             <p className="text-sm text-white/90 mb-4">
-              Your unique spiritual signature has been generated. This sigil represents your energy and essence.
+              {isGeneratedSigil ? "Your unique spiritual signature has been generated. This sigil represents your energy and essence." : "This is your saved spiritual sigil. It represents your energy and essence."}
             </p>
             <div className="flex flex-col space-y-2">
-              <Button
-                onClick={() => setAsProfileMutation.mutate(generatedSigilImage)}
-                disabled={setAsProfileMutation.isPending || !generatedSigilImage}
-                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                data-testid="button-set-as-profile"
-              >
-                {setAsProfileMutation.isPending ? "Setting..." : "Set as Profile Image"}
-              </Button>
+              {isGeneratedSigil && (
+                <Button
+                  onClick={() => saveSigilMutation.mutate({ sigil: generatedSigil, imageUrl: generatedSigilImage })}
+                  disabled={saveSigilMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="button-save-sigil"
+                >
+                  {saveSigilMutation.isPending ? "Saving..." : "Save Sigil"}
+                </Button>
+              )}
               <Button
                 onClick={() => generateSigilMutation.mutate()}
                 disabled={generateSigilMutation.isPending}
@@ -109,7 +123,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                 className="bg-transparent border-primary/30 text-white hover:bg-primary/20"
                 data-testid="button-regenerate"
               >
-                Generate New Sigil
+                {isGeneratedSigil ? "Generate New Sigil" : "Generate Different Sigil"}
               </Button>
             </div>
           </div>

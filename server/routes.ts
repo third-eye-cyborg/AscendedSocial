@@ -657,6 +657,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Set sigil as profile image route
+  // Save sigil to user profile (separate from profile picture)
+  app.put('/api/save-sigil', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { sigil, imageUrl } = req.body;
+      
+      if (!sigil || !imageUrl) {
+        return res.status(400).json({ error: 'Both sigil and imageUrl are required' });
+      }
+
+      // Update user's sigil and sigil image separately from profile picture
+      const user = await storage.updateUser(userId, {
+        sigil: sigil,
+        sigilImageUrl: imageUrl
+      });
+
+      res.status(200).json({ user });
+    } catch (error) {
+      console.error('Error saving sigil:', error);
+      res.status(500).json({ error: 'Failed to save sigil' });
+    }
+  });
+
   // Set sigil image as profile image route (for AI-generated images)
   app.put('/api/set-sigil-image-as-profile', isAuthenticated, async (req: any, res) => {
     try {

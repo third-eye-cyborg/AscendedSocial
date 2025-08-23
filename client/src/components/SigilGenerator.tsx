@@ -90,7 +90,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                 onClick={() => generateSigilMutation.mutate()}
                 disabled={generateSigilMutation.isPending}
                 variant="outline"
-                className="border-primary/30 text-white hover:bg-primary/20"
+                className="bg-transparent border-primary/30 text-white hover:bg-primary/20"
                 data-testid="button-regenerate"
               >
                 Generate New Sigil

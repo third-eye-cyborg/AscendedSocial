@@ -2,7 +2,15 @@
 
 ## Overview
 
-Ascended Social is a mystical social media platform that combines spirituality with modern technology. The application allows users to share posts, engage with content through a spiritual lens, and receive personalized oracle readings and recommendations. The platform implements a chakra-based categorization system for content and includes features like user sigils, aura levels, energy systems, and premium subscriptions.
+Ascended Social is a mystical social media platform that combines spirituality with modern technology. The application allows users to share posts, engage with content through a spiritual lens, and receive personalized oracle readings and recommendations. The platform implements a chakra-based categorization system for content and includes features like user sigils, aura levels, energy systems, premium subscriptions, and an immersive 3D Starmap Visualizer for community exploration.
+
+## Recent Changes
+
+### December 2024 - Enhanced User Experience
+- **3D Starmap Visualizer**: Completed full implementation with dual visualization modes (cosmic starfield and fungal mycelium network), displaying users as interactive stars/mushrooms with real-time spiritual data
+- **Enhanced Post Voting System**: Redesigned engagement interface with mystical theming, animated feedback, spiritual messaging, and improved visual hierarchy
+- **Live Data Integration**: Fixed API query handling to ensure both starmap modes use dynamic user data including connections, chakra information, and spiritual statistics
+- **Visual Polish**: Added professional lighting, enhanced materials, gradient backgrounds, and smooth animations throughout the user interface
 
 ## User Preferences
 
@@ -26,7 +34,15 @@ Authentication is handled through Replit Auth using OpenID Connect with Passport
 Posts are automatically categorized using OpenAI's GPT-4 model into seven chakra types (root, sacral, solar, heart, throat, third_eye, crown). Each post receives a spiritual frequency score and chakra classification. The system supports text, image, and video content with automatic content analysis.
 
 ### Engagement System
-The platform implements a spiritual-themed engagement system with actions like upvote, downvote, like, and energy sharing. Users have energy points that refresh monthly and can be spent on high-impact engagements. The system tracks engagement statistics and user interactions across posts and comments.
+The platform implements a polished spiritual-themed engagement system with actions like upvote, downvote, like, and energy sharing. The interface features mystical design language with animated hover effects, glowing buttons, and contextual spiritual messaging. Users have energy points that refresh monthly and can be spent on high-impact engagements. The system tracks engagement statistics and user interactions across posts and comments with real-time visual feedback and success notifications.
+
+### 3D Starmap Visualization System
+The application features an immersive 3D starmap that visualizes the spiritual community as an interactive cosmic experience. Users appear as glowing stars clustered by chakra energy, aura levels, and spiritual connections. The system supports dual visualization modes:
+- **Cosmic Starfield Mode**: Overview of all souls as stars in a mystical night sky with chakra-based clustering
+- **Fungal Network Mode**: Detailed view showing mushroom-like nodes connected by spiritual bonds and relationships
+- **Real-time Data**: Live user information including dominant chakras, aura/energy levels, connection counts, and spiritual statistics
+- **Interactive Features**: Clickable profiles, advanced filtering by spiritual attributes, smooth 3D navigation, and contextual tooltips
+- **Professional Polish**: Enhanced lighting, atmospheric effects, animated materials, and responsive design
 
 ### Oracle System
 The application features an AI-powered oracle system that provides daily spiritual readings, personalized recommendations, and tarot-style guidance. This system uses OpenAI's API to generate contextual spiritual content based on user behavior and preferences.
@@ -83,8 +99,10 @@ Premium subscriptions are managed through Stripe with support for recurring paym
 
 ### UI Components
 - **Radix UI**: Accessible component primitives
-- **shadcn/ui**: Pre-built component library with mystical customizations
-- **Lucide React**: Icon library for UI elements
+- **shadcn/ui**: Pre-built component library with mystical customizations and enhanced spiritual theming
+- **Lucide React**: Icon library for UI elements and enhanced voting interface
+- **React Three Fiber**: 3D rendering library for the immersive starmap visualization
+- **Three.js**: WebGL-powered 3D graphics engine for cosmic and network visualizations
 
 ### Documentation and Change Management
 - **Notion API**: Documentation synchronization and content management

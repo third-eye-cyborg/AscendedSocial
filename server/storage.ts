@@ -619,6 +619,47 @@ export class DatabaseStorage implements IStorage {
     return spirit || null;
   }
 
+  async updateSpiritExperience(userId: string, experienceGain: number, action: string): Promise<any | null> {
+    // Get current spirit
+    const currentSpirit = await this.getUserSpirit(userId);
+    if (!currentSpirit) return null;
+
+    const newExperience = currentSpirit.experience + experienceGain;
+    const newLevel = Math.floor(newExperience / 100) + 1; // Level up every 100 XP
+    const hasLeveledUp = newLevel > currentSpirit.level;
+    
+    // Create evolution entry
+    const evolutionEntry = {
+      timestamp: new Date().toISOString(),
+      action: action,
+      experienceGain: experienceGain,
+      newExperience: newExperience,
+      newLevel: newLevel,
+      leveledUp: hasLeveledUp
+    };
+
+    // Update evolution history
+    const newEvolution = [...(currentSpirit.evolution || []), evolutionEntry];
+
+    const [updatedSpirit] = await db
+      .update(spirits)
+      .set({ 
+        experience: newExperience,
+        level: newLevel,
+        evolution: newEvolution,
+        updatedAt: new Date()
+      })
+      .where(eq(spirits.userId, userId))
+      .returning();
+
+    return updatedSpirit;
+  }
+
+  async getSpiritLevel(userId: string): Promise<number> {
+    const spirit = await this.getUserSpirit(userId);
+    return spirit?.level || 1;
+  }
+
   async updateSpiritLevel(spiritId: string, level: number, experience: number): Promise<any> {
     const [spirit] = await db
       .update(spirits)

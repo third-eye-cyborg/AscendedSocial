@@ -4,10 +4,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { ProfileIcon } from "@/components/ProfileIcon";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import SigilGenerator from "@/components/SigilGenerator";
+import SpiritAvatar from "@/components/SpiritAvatar";
 
 export default function Sidebar() {
   const { user } = useAuth();
   const [location] = useLocation();
+  const [isSigilModalOpen, setIsSigilModalOpen] = useState(false);
 
   const { data: userStats } = useQuery({
     queryKey: ["/api/users", (user as any)?.id, "stats"],
@@ -53,7 +58,7 @@ export default function Sidebar() {
           </div>
 
           {/* Spiritual Stats */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-xs mb-4">
             <div className="text-center">
               <div className="text-accent-light font-semibold" data-testid="text-positive-energy">
                 {(userStats as any)?.positiveEnergy || 0}
@@ -66,6 +71,20 @@ export default function Sidebar() {
               </div>
               <div className="text-white/90">Insights Shared</div>
             </div>
+          </div>
+
+          {/* Spirit Avatar */}
+          <div className="border-t border-primary/20 pt-4">
+            <Link href="/spirit">
+              <div className="cursor-pointer hover:bg-cosmic-light/30 p-2 rounded-lg transition-colors">
+                <h4 className="text-xs font-semibold text-white mb-3 flex items-center">
+                  <i className="fas fa-sparkles mr-2 text-accent-light"></i>
+                  Spirit Guide
+                  <i className="fas fa-external-link-alt ml-auto text-xs text-primary"></i>
+                </h4>
+                <SpiritAvatar userId={(user as any)?.id} showDetails={false} size="sm" />
+              </div>
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -148,40 +167,51 @@ export default function Sidebar() {
             Premium Tools
           </h4>
           <div className="space-y-2 text-sm">
+            <Link href="/oracle">
+              <button 
+                className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
+                data-testid="link-tarot"
+              >
+                <i className="fas fa-cards-blank mr-2"></i>AI Tarot Readings
+              </button>
+            </Link>
+            <Link href="/visions">
+              <button 
+                className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
+                data-testid="link-streaming"
+              >
+                <i className="fas fa-broadcast-tower mr-2"></i>Live Streaming
+              </button>
+            </Link>
             <button 
-              onClick={() => alert('AI Tarot Readings - Premium feature coming soon! Unlock mystical insights with AI-powered tarot spreads 🃏✨')}
-              className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
-              data-testid="link-tarot"
-            >
-              <i className="fas fa-cards-blank mr-2"></i>AI Tarot Readings
-            </button>
-            <button 
-              onClick={() => alert('Live Streaming - Share your spiritual journey live! Premium meditation sessions and workshops 📡🧘‍♀️')}
-              className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
-              data-testid="link-streaming"
-            >
-              <i className="fas fa-broadcast-tower mr-2"></i>Live Streaming
-            </button>
-            <button 
-              onClick={() => alert('Custom Sigils - Generate personalized spiritual symbols! AI-created sigils based on your energy ⚡🎨')}
+              onClick={() => setIsSigilModalOpen(true)}
               className="block text-white hover:text-accent-light transition-colors duration-200 w-full text-left"
               data-testid="link-sigils"
             >
               <i className="fas fa-crystal-ball mr-2"></i>Custom Sigils
             </button>
           </div>
-          <Button 
-            className="w-full mt-3 bg-primary text-white font-semibold hover:bg-primary/90 transition-colors duration-200"
-            onClick={() => {
-              alert('✨ Premium Subscription ✨\n\nUnlock:\n• Unlimited energy points\n• Advanced oracle readings\n• Custom sigil generation\n• Priority support\n\nSubscription page coming soon!');
-            }}
-            data-testid="button-upgrade"
-          >
-            <i className="fas fa-crown mr-2"></i>
-            Upgrade Now
-          </Button>
+          <Link href="/subscribe">
+            <Button 
+              className="w-full mt-3 bg-primary text-white font-semibold hover:bg-primary/90 transition-colors duration-200"
+              data-testid="button-upgrade"
+            >
+              <i className="fas fa-crown mr-2"></i>
+              Upgrade Now
+            </Button>
+          </Link>
         </CardContent>
       </Card>
+
+      {/* Sigil Generator Modal */}
+      <Dialog open={isSigilModalOpen} onOpenChange={setIsSigilModalOpen}>
+        <DialogContent className="bg-cosmic-light border-primary/30 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white font-display">Custom Sigil Generator</DialogTitle>
+          </DialogHeader>
+          <SigilGenerator onSigilGenerated={() => setIsSigilModalOpen(false)} />
+        </DialogContent>
+      </Dialog>
     </aside>
   );
 }

@@ -18,6 +18,7 @@ import Sparks from "@/pages/sparks";
 import Community from "@/pages/community";
 import Oracle from "@/pages/oracle";
 import Onboarding from "@/pages/onboarding";
+import SpiritPage from "@/pages/spirit";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,6 +42,7 @@ function Router() {
           <Route path="/sparks" component={Sparks} />
           <Route path="/community" component={Community} />
           <Route path="/oracle" component={Oracle} />
+          <Route path="/spirit" component={SpiritPage} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />

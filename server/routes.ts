@@ -929,6 +929,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get user's spirit
+  app.get('/api/spirit', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const spirit = await storage.getUserSpirit(userId);
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error fetching spirit:", error);
+      res.status(500).json({ message: "Failed to fetch spirit" });
+    }
+  });
+
   app.get('/api/spirits/my-spirit', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -937,6 +948,205 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching spirit:", error);
       res.status(500).json({ message: "Failed to fetch spirit" });
+    }
+  });
+
+  // Generate new spirit
+  app.post("/api/spirit/generate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
+      
+      // Validate required fields
+      if (!beliefs || !astrologySign) {
+        return res.status(400).json({ message: "Beliefs and astrology sign are required" });
+      }
+
+      // Delete existing spirit if any
+      try {
+        await storage.deleteUserSpirit(userId);
+      } catch (error) {
+        // Spirit may not exist yet, that's okay
+      }
+
+      // Generate new spirit
+      const spiritData = await generateSpirit({
+        isReligious,
+        isSpiritual,
+        religion,
+        spiritualPath,
+        beliefs,
+        offerings,
+        astrologySign
+      });
+
+      // Create spirit in database
+      const spirit = await storage.createSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element,
+        questionnaire: {
+          isReligious,
+          isSpiritual,
+          religion,
+          spiritualPath,
+          beliefs,
+          offerings,
+          astrologySign,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error generating spirit:", error);
+      res.status(500).json({ message: "Failed to generate spirit" });
+    }
+  });
+
+  // Regenerate existing spirit
+  app.post("/api/spirit/regenerate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get existing spirit
+      const existingSpirit = await storage.getUserSpirit(userId);
+      if (!existingSpirit) {
+        return res.status(404).json({ message: "No spirit found to regenerate" });
+      }
+
+      // Use existing questionnaire data for regeneration
+      const questionnaire = (existingSpirit as any).questionnaire || {};
+      
+      // Generate new spirit with same questionnaire
+      const spiritData = await generateSpirit({
+        isReligious: questionnaire.isReligious || false,
+        isSpiritual: questionnaire.isSpiritual || true,
+        religion: questionnaire.religion || "",
+        spiritualPath: questionnaire.spiritualPath || "",
+        beliefs: questionnaire.beliefs || "Seeking spiritual growth",
+        offerings: questionnaire.offerings || "",
+        astrologySign: questionnaire.astrologySign || "Aquarius"
+      });
+
+      // Delete old spirit and create new one
+      await storage.deleteUserSpirit(userId);
+      
+      const newSpirit = await storage.createSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element,
+        level: (existingSpirit as any).level || 1,
+        experience: (existingSpirit as any).experience || 0,
+        questionnaire: {
+          ...questionnaire,
+          regeneratedAt: new Date().toISOString()
+        }
+      });
+
+      res.json(newSpirit);
+    } catch (error) {
+      console.error("Error regenerating spirit:", error);
+      res.status(500).json({ message: "Failed to regenerate spirit" });
+    }
+  });
+
+  // Get user spirit (alias endpoint)
+  app.get("/api/spirit", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const spirit = await storage.getUserSpirit(userId);
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error fetching spirit:", error);
+      res.status(500).json({ message: "Failed to fetch spirit" });
+    }
+  });
+
+  // Generate new spirit
+  app.post("/api/spirit/generate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
+      
+      // Validate required fields
+      if (!beliefs || !astrologySign) {
+        return res.status(400).json({ message: "Beliefs and astrology sign are required" });
+      }
+
+      // Generate new spirit
+      const spiritData = await generateSpirit({
+        isReligious,
+        isSpiritual,
+        religion,
+        spiritualPath,
+        beliefs,
+        offerings,
+        astrologySign
+      });
+
+      // Create spirit in database (replaces existing)
+      const spirit = await storage.createSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element,
+        questionnaire: {
+          isReligious,
+          isSpiritual,
+          religion,
+          spiritualPath,
+          beliefs,
+          offerings,
+          astrologySign,
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      res.json(spirit);
+    } catch (error) {
+      console.error("Error generating spirit:", error);
+      res.status(500).json({ message: "Failed to generate spirit" });
+    }
+  });
+
+  // Regenerate existing spirit
+  app.post("/api/spirit/regenerate", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get existing spirit
+      const existingSpirit = await storage.getUserSpirit(userId);
+      if (!existingSpirit) {
+        return res.status(404).json({ message: "No spirit found to regenerate" });
+      }
+
+      // Use existing questionnaire data for regeneration
+      const questionnaire = (existingSpirit as any).questionnaire || {};
+      
+      // Generate new spirit with same questionnaire
+      const spiritData = await generateSpirit({
+        isReligious: questionnaire.isReligious || false,
+        isSpiritual: questionnaire.isSpiritual || true,
+        religion: questionnaire.religion || "",
+        spiritualPath: questionnaire.spiritualPath || "",
+        beliefs: questionnaire.beliefs || "Seeking spiritual growth",
+        offerings: questionnaire.offerings || "",
+        astrologySign: questionnaire.astrologySign || "Aquarius"
+      });
+
+      // Update existing spirit preserving level and experience
+      await storage.updateSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element
+      });
+
+      // Get updated spirit
+      const updatedSpirit = await storage.getUserSpirit(userId);
+      res.json(updatedSpirit);
+    } catch (error) {
+      console.error("Error regenerating spirit:", error);
+      res.status(500).json({ message: "Failed to regenerate spirit" });
     }
   });
 

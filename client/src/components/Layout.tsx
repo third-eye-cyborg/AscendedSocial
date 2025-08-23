@@ -112,28 +112,36 @@ export default function Layout({ children }: LayoutProps) {
               )}
               
               {/* User Profile/Avatar */}
-              <button 
-                onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
-                className="w-10 h-10 rounded-full p-0.5 animate-glow hover:scale-110 transition-transform duration-200 cursor-pointer"
-                data-testid="button-profile"
-              >
-                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden border border-primary/30">
+              <div className="relative">
+                <button 
+                  onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
+                  className="w-10 h-10 rounded-full animate-glow hover:scale-110 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                  data-testid="button-profile"
+                >
                   {(user as any)?.profileImageUrl ? (
                     <img 
-                      src={(user as any).profileImageUrl} 
+                      src={(user as any).profileImageUrl.startsWith('/objects/') 
+                        ? (user as any).profileImageUrl 
+                        : (user as any).profileImageUrl} 
                       alt="Profile" 
                       className="w-full h-full object-cover rounded-full"
                       data-testid="img-profile"
                     />
                   ) : (user as any)?.sigil ? (
-                    <span className="text-[10px] text-white font-mono break-all text-center" data-testid="text-sigil">
-                      {((user as any)?.sigil as string).slice(0, 3)}
-                    </span>
+                    <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center p-1">
+                      <div className="text-center leading-none">
+                        <pre className="text-[6px] text-white font-mono whitespace-pre-wrap break-words" data-testid="text-sigil">
+                          {(user as any).sigil}
+                        </pre>
+                      </div>
+                    </div>
                   ) : (
-                    <i className="fas fa-lotus text-white text-lg"></i>
+                    <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+                      <i className="fas fa-lotus text-white text-lg"></i>
+                    </div>
                   )}
-                </div>
-              </button>
+                </button>
+              </div>
 
               {/* Logout Button - Hidden on mobile and tablet */}
               <div className="hidden xl:block">

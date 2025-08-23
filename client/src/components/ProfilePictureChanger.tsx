@@ -9,6 +9,7 @@ import { ProfileIcon } from "@/components/ProfileIcon";
 
 export default function ProfilePictureChanger() {
   const [imageUrl, setImageUrl] = useState<string>("");
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -56,6 +57,73 @@ export default function ProfilePictureChanger() {
     },
   });
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File Too Large",
+        description: "Please choose an image under 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid File Type",
+        description: "Please choose an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploading(true);
+    
+    try {
+      // Get upload URL
+      const uploadResponse = await apiRequest("POST", "/api/objects/upload");
+      const { uploadURL } = uploadResponse;
+      
+      // Upload file to object storage
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const uploadFileResponse = await fetch(uploadURL, {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!uploadFileResponse.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      const uploadData = await uploadFileResponse.json();
+      const mediaURL = uploadData.url;
+      
+      // Set media as public
+      await apiRequest("PUT", "/api/media", { mediaURL });
+      
+      // Update user profile with new image URL
+      await changeProfilePictureMutation.mutateAsync(mediaURL);
+      
+      // Clear file input
+      event.target.value = '';
+      
+    } catch (error) {
+      toast({
+        title: "Upload Failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   return (
     <Card className="bg-slate-900 border border-slate-700 shadow-lg">
       <CardHeader>
@@ -80,6 +148,28 @@ export default function ProfilePictureChanger() {
         </div>
 
         <div className="space-y-3">
+          {/* File Upload Option */}
+          <div className="flex flex-col space-y-2">
+            <label className="text-sm text-white/90 font-medium">Upload Image File</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="bg-slate-800 border border-slate-600 rounded-md p-2 text-white file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary file:text-black file:font-medium hover:file:bg-primary/80"
+              data-testid="input-file-upload"
+            />
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-600" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-slate-900 px-2 text-slate-400">Or use URL</span>
+            </div>
+          </div>
+
+          {/* URL Input Option */}
           <div className="flex flex-col space-y-2">
             <Input
               type="url"
@@ -91,7 +181,7 @@ export default function ProfilePictureChanger() {
             />
             <Button
               onClick={() => changeProfilePictureMutation.mutate(imageUrl)}
-              disabled={changeProfilePictureMutation.isPending || !imageUrl.trim()}
+              disabled={changeProfilePictureMutation.isPending || isUploading || !imageUrl.trim()}
               className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               data-testid="button-change-picture"
             >
@@ -113,7 +203,8 @@ export default function ProfilePictureChanger() {
         </div>
 
         <div className="text-xs text-gray-400 mt-3">
-          <p>• Use a direct image URL (ending in .jpg, .png, etc.)</p>
+          <p>• Upload files up to 5MB in size</p>
+          <p>• Or use a direct image URL (ending in .jpg, .png, etc.)</p>
           <p>• Removing your picture will show your sigil instead</p>
         </div>
       </CardContent>

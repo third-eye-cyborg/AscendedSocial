@@ -137,10 +137,10 @@ export default function SpiritGenerator() {
               </h3>
               
               <div className="flex items-center gap-2 mb-3">
-                <span className="px-3 py-1 bg-purple-500/20 text-purple-200 rounded-full text-sm font-medium capitalize">
+                <span className="px-3 py-1 bg-purple-500/50 text-white rounded-full text-sm font-medium capitalize border border-purple-400/60">
                   {(currentSpirit as any)?.element || "Unknown"}
                 </span>
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium">
+                <span className="px-3 py-1 bg-blue-500/50 text-white rounded-full text-sm font-medium border border-blue-400/60">
                   Level {(currentSpirit as any)?.level || 1}
                 </span>
               </div>

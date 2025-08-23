@@ -142,10 +142,10 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
               <h3 className="text-lg font-semibold text-white" data-testid="spirit-name">
                 {spirit.name || 'Unnamed Spirit'}
               </h3>
-              <Badge variant="secondary" className="bg-primary/20 text-primary-light">
+              <Badge variant="secondary" className="bg-primary/40 text-white border border-primary/60">
                 Level {spirit.level || 1}
               </Badge>
-              <Badge variant="outline" className="border-accent-light/30 text-accent-light capitalize">
+              <Badge variant="outline" className="border-accent-light/60 bg-accent/30 text-white capitalize">
                 {spirit.element || 'fire'}
               </Badge>
             </div>

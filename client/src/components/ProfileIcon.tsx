@@ -30,7 +30,7 @@ export function ProfileIcon({
   testId 
 }: ProfileIconProps) {
   const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-transform duration-500`;
-  const glowClasses = showGlow ? 'animate-glow hover:scale-110' : 'hover:scale-105';
+  const glowClasses = showGlow ? 'hover:scale-110' : 'hover:scale-105';
   const containerClasses = `${baseClasses} ${glowClasses} ${className}`;
 
   const content = (

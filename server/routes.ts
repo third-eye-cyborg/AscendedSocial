@@ -82,27 +82,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ uploadURL });
   });
 
+  // Simple profile image update - accepts any URL
   app.put('/api/profile-image', isAuthenticated, async (req: any, res) => {
-    if (!req.body.imageUrl) {
-      return res.status(400).json({ error: 'imageUrl is required' });
-    }
-
     try {
       const userId = req.user.claims.sub;
-      const objectStorageService = new ObjectStorageService();
-      const objectPath = objectStorageService.normalizeObjectEntityPath(
-        req.body.imageUrl
-      );
+      const { imageUrl } = req.body;
+      
+      // Allow null to remove profile picture
+      if (imageUrl !== null && (!imageUrl || typeof imageUrl !== 'string')) {
+        return res.status(400).json({ error: 'Valid imageUrl is required (or null to remove)' });
+      }
 
       // Update user's profile image URL in database
       const user = await storage.updateUser(userId, {
-        profileImageUrl: objectPath
+        profileImageUrl: imageUrl
       });
 
-      res.status(200).json({
-        objectPath: objectPath,
-        user: user
-      });
+      res.status(200).json({ user });
     } catch (error) {
       console.error('Error setting profile image:', error);
       res.status(500).json({ error: 'Internal server error' });

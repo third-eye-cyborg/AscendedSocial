@@ -342,7 +342,7 @@ export default function Landing() {
             <Button 
               size="lg"
               variant="outline"
-              className="group border-2 border-white/50 text-white bg-white/10 hover:border-primary hover:text-white hover:bg-primary transition-all duration-300 backdrop-blur-sm px-16 py-6 rounded-2xl text-xl font-semibold min-w-[320px]"
+              className="group border-2 border-white/50 text-white bg-cosmic/70 hover:border-primary hover:text-white hover:bg-primary transition-all duration-300 backdrop-blur-sm px-16 py-6 rounded-2xl text-xl font-semibold min-w-[320px]"
               data-testid="button-contact"
             >
               <span className="flex items-center gap-4">

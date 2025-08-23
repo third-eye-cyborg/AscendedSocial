@@ -84,31 +84,35 @@ export default function ProfilePictureChanger() {
     setIsUploading(true);
     
     try {
-      // Get upload URL
+      // Get upload URL from Replit object storage
       const uploadResponse = await apiRequest("POST", "/api/objects/upload");
       const { uploadURL } = uploadResponse;
       
-      // Upload file to object storage
-      const formData = new FormData();
-      formData.append('file', file);
-      
+      // Upload file directly to object storage using PUT method
       const uploadFileResponse = await fetch(uploadURL, {
-        method: 'POST',
-        body: formData,
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+        },
       });
       
       if (!uploadFileResponse.ok) {
-        throw new Error('Upload failed');
+        throw new Error(`Upload failed: ${uploadFileResponse.status} ${uploadFileResponse.statusText}`);
       }
       
-      const uploadData = await uploadFileResponse.json();
-      const mediaURL = uploadData.url;
+      // The uploadURL itself is the media URL for the uploaded file
+      const mediaURL = uploadURL.split('?')[0]; // Remove query parameters
       
-      // Set media as public
-      await apiRequest("PUT", "/api/media", { mediaURL });
+      // Set media as public in Replit storage
+      const mediaResponse = await apiRequest("PUT", "/api/media", { mediaURL });
+      const mediaData = await mediaResponse.json();
+      
+      // Use the objectPath returned from media API
+      const finalImageURL = mediaData.objectPath;
       
       // Update user profile with new image URL
-      await changeProfilePictureMutation.mutateAsync(mediaURL);
+      await changeProfilePictureMutation.mutateAsync(finalImageURL);
       
       // Clear file input
       event.target.value = '';

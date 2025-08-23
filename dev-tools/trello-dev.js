@@ -4,11 +4,12 @@
 // Usage: node dev-tools/trello-dev.js [command] [args]
 
 const TRELLO_API_KEY = process.env.TRELLO_API_KEY;
-const TRELLO_TOKEN = process.env.TRELLO_TOKEN;
+const TRELLO_TOKEN = process.env.TRELLO_SECRET;
 const BOARD_ID = '68a9ced99aed4ab60de0c985';
 
 if (!TRELLO_API_KEY || !TRELLO_TOKEN) {
   console.error('❌ Trello credentials not found in environment variables');
+  console.error('Expected: TRELLO_API_KEY and TRELLO_SECRET');
   process.exit(1);
 }
 

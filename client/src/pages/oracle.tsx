@@ -23,6 +23,11 @@ export default function Oracle() {
     enabled: !!user,
   });
 
+  const { data: communityOracle, isLoading: communityLoading } = useQuery({
+    queryKey: ["/api/oracle/community"],
+    enabled: !!user,
+  });
+
   // Mutation to generate new daily reading
   const newReadingMutation = useMutation({
     mutationFn: async () => {
@@ -53,6 +58,20 @@ export default function Oracle() {
     },
   });
 
+  // Mutation to refresh community oracle
+  const refreshCommunityMutation = useMutation({
+    mutationFn: async () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/oracle/community"] });
+      return true;
+    },
+    onSuccess: () => {
+      toast({
+        title: "🌌 Community Oracle Refreshed",
+        description: "The universe has guided new wisdom to your path",
+      });
+    },
+  });
+
   if (!user) {
     return (
       <Layout>
@@ -78,7 +97,7 @@ export default function Oracle() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Daily Oracle Reading */}
           <Card className="bg-cosmic-light rounded-xl border border-primary/30 hover-lift">
             <CardHeader>
@@ -193,6 +212,93 @@ export default function Oracle() {
                     className="bg-primary hover:bg-primary/80"
                   >
                     Seek Guidance
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Community Oracle - Random User Content */}
+          <Card className="bg-cosmic-light rounded-xl border border-primary/30 hover-lift">
+            <CardHeader>
+              <CardTitle className="font-display font-semibold text-accent-light flex items-center justify-between">
+                <div className="flex items-center">
+                  <i className="fas fa-users mr-2 animate-pulse"></i>
+                  Community Oracle
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => refreshCommunityMutation.mutate()}
+                  disabled={refreshCommunityMutation.isPending}
+                  className="text-primary hover:text-accent-light"
+                  data-testid="button-refresh-community"
+                >
+                  {refreshCommunityMutation.isPending ? (
+                    <i className="fas fa-spinner animate-spin"></i>
+                  ) : (
+                    <i className="fas fa-refresh"></i>
+                  )}
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {communityLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <div className="w-6 h-6 rounded-full bg-cosmic"></div>
+                        <div className="h-3 bg-cosmic rounded flex-1"></div>
+                      </div>
+                      <div className="h-4 bg-cosmic rounded w-full"></div>
+                      <div className="h-4 bg-cosmic rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : communityOracle && (communityOracle as any[])?.length > 0 ? (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {(communityOracle as any[])?.slice(0, 3).map((oracle, index) => (
+                    <div key={oracle.id} className="border-l-2 border-accent/30 pl-4 py-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="w-6 h-6 rounded-full bg-cosmic flex items-center justify-center">
+                          {oracle.author?.sigil ? (
+                            <span className="text-[8px] text-white font-mono">
+                              {oracle.author.sigil.slice(0, 2)}
+                            </span>
+                          ) : (
+                            <i className="fas fa-user text-[8px] text-muted"></i>
+                          )}
+                        </div>
+                        <h4 className="font-semibold text-accent text-sm">
+                          {oracle.title}
+                        </h4>
+                      </div>
+                      <p className="text-white/90 text-sm leading-relaxed mb-2 italic">
+                        "{oracle.content}"
+                      </p>
+                      <p className="text-xs text-subtle italic">
+                        {oracle.guidance}
+                      </p>
+                      <div className="flex items-center justify-between mt-2 text-xs text-muted">
+                        <span className={`capitalize text-${oracle.chakra === 'heart' ? 'green' : 'primary'}-400`}>
+                          {oracle.chakra} chakra
+                        </span>
+                        <span>{formatDistanceToNow(new Date(oracle.createdAt), { addSuffix: true })}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <i className="fas fa-heart text-4xl text-accent-light mb-4"></i>
+                  <p className="text-muted mb-4">No community wisdom available</p>
+                  <Button
+                    onClick={() => refreshCommunityMutation.mutate()}
+                    disabled={refreshCommunityMutation.isPending}
+                    className="bg-primary hover:bg-primary/80"
+                  >
+                    Seek Community Wisdom
                   </Button>
                 </div>
               )}

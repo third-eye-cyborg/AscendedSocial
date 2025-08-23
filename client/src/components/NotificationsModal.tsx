@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -218,15 +219,12 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                     {/* Trigger User Avatar (if applicable) */}
                     {notification.triggerUser && (
                       <div className="flex-shrink-0">
-                        <div className="w-8 h-8 rounded-full bg-cosmic-light border border-primary/30 flex items-center justify-center">
-                          {notification.triggerUser.sigil ? (
-                            <span className="text-xs text-white font-mono">
-                              {notification.triggerUser.sigil}
-                            </span>
-                          ) : (
-                            <i className="fas fa-user text-xs text-muted"></i>
-                          )}
-                        </div>
+                        <ProfileIcon 
+                          user={notification.triggerUser}
+                          size="sm"
+                          className="w-8 h-8"
+                          testId={`notification-user-${notification.id}`}
+                        />
                       </div>
                     )}
 

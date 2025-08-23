@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
 
 interface PostCardProps {
@@ -174,17 +175,12 @@ export default function PostCard({ post }: PostCardProps) {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="sigil-container w-10 h-10 rounded-full p-0.5">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
-                {post.author.sigil ? (
-                  <span className="text-[10px] text-white font-mono break-all text-center" data-testid={`text-author-sigil-${post.id}`}>
-                    {(post.author.sigil as string).slice(0, 3)}
-                  </span>
-                ) : (
-                  <i className="fas fa-user text-white text-xs"></i>
-                )}
-              </div>
-            </div>
+            <ProfileIcon 
+              user={post.author}
+              size="sm"
+              className="w-10 h-10 sigil-container"
+              testId={`post-author-${post.id}`}
+            />
             <div>
               <h4 
                 className="font-semibold text-white cursor-pointer hover:text-primary transition-colors duration-200" 

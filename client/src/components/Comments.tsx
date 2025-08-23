@@ -7,6 +7,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ProfileIcon } from "@/components/ProfileIcon";
 
 interface Comment {
   id: string;
@@ -104,17 +105,14 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
         {!isLoading && comments && Array.isArray(comments) && comments.length > 0 && 
           (comments as Comment[]).map((comment) => (
             <div key={comment.id} className="flex space-x-3" data-testid={`comment-${comment.id}`}>
-              {/* Comment Author Sigil */}
+              {/* Comment Author Avatar */}
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center overflow-hidden">
-                  {comment.author?.sigil ? (
-                    <span className="text-[10px] text-white font-mono text-center break-all" data-testid={`text-comment-sigil-${comment.id}`}>
-                      {(comment.author.sigil as string).slice(0, 3)}
-                    </span>
-                  ) : (
-                    <i className="fas fa-user text-xs text-muted"></i>
-                  )}
-                </div>
+                <ProfileIcon 
+                  user={comment.author}
+                  size="sm"
+                  className="w-8 h-8"
+                  testId={`comment-author-${comment.id}`}
+                />
               </div>
               
               {/* Comment Content */}

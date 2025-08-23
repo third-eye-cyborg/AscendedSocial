@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import { getChakraColor } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 
@@ -43,9 +44,22 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
     if (result.type === 'user') {
       window.location.href = `/profile/${result.id}`;
     } else if (result.type === 'post') {
-      // For now, just scroll to post or close modal
-      // In a more advanced implementation, we could have individual post pages
+      // Close modal and scroll to the post if it exists on the current page
       onClose();
+      setTimeout(() => {
+        const postElement = document.querySelector(`[data-testid="post-${result.id}"]`);
+        if (postElement) {
+          postElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Add a subtle highlight effect
+          postElement.classList.add('ring-2', 'ring-primary', 'ring-opacity-50');
+          setTimeout(() => {
+            postElement.classList.remove('ring-2', 'ring-primary', 'ring-opacity-50');
+          }, 3000);
+        } else {
+          // If post not found on current page, navigate to home page
+          window.location.href = `/`;
+        }
+      }, 300);
     }
   };
 
@@ -162,15 +176,12 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     {/* Result Icon/Avatar */}
                     <div className="flex-shrink-0">
                       {result.type === 'user' ? (
-                        <div className="w-8 h-8 rounded-full bg-cosmic-light border border-primary/30 flex items-center justify-center">
-                          {result.author?.sigil ? (
-                            <span className="text-xs text-white font-mono">
-                              {result.author.sigil}
-                            </span>
-                          ) : (
-                            <i className="fas fa-user text-xs text-muted"></i>
-                          )}
-                        </div>
+                        <ProfileIcon 
+                          user={result.author}
+                          size="sm"
+                          className="w-8 h-8"
+                          testId={`search-user-${result.id}`}
+                        />
                       ) : (
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${result.chakra ? `bg-${getChakraColor(result.chakra)}/20` : 'bg-primary/20'}`}>
                           <i className="fas fa-feather text-primary text-xs"></i>

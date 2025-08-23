@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "./ObjectUploader";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import type { UploadResult } from '@uppy/core';
 import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
 
@@ -122,28 +123,14 @@ export default function CreatePost() {
       <CardContent className="p-6">
         <form onSubmit={handleSubmit}>
           <div className="flex items-start space-x-4">
-            {/* Enhanced User Avatar */}
+            {/* User Avatar using ProfileIcon */}
             <div className="relative group">
-              <div className="sigil-container w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 p-0.5 flex-shrink-0 shadow-lg">
-                <div className="w-full h-full bg-gradient-to-br from-cosmic to-cosmic-light rounded-full flex items-center justify-center border border-primary/30">
-                  {(user as any)?.profileImageUrl ? (
-                    <img 
-                      src={(user as any).profileImageUrl} 
-                      alt={(user as any)?.username || 'User'} 
-                      className="w-full h-full rounded-full object-cover"
-                      data-testid="img-user-avatar"
-                    />
-                  ) : (user as any)?.sigil ? (
-                    <span className="text-xs text-white font-mono drop-shadow-lg" data-testid="text-user-sigil">
-                      {(user as any)?.sigil}
-                    </span>
-                  ) : (
-                    <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                      <i className="fas fa-lotus text-white text-sm drop-shadow-lg"></i>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <ProfileIcon 
+                user={user as any}
+                size="md"
+                className="sigil-container w-12 h-12 shadow-lg"
+                testId="create-post-avatar"
+              />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/0 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             

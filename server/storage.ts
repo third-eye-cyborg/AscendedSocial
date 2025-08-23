@@ -28,7 +28,7 @@ import {
   notifications,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count, ilike, or } from "drizzle-orm";
+import { eq, desc, sql, and, count, ilike, or, ne } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -285,6 +285,35 @@ export class DatabaseStorage implements IStorage {
       )
       .orderBy(desc(users.createdAt))
       .limit(limit);
+    return result;
+  }
+
+  async getRandomPosts(limit = 5, excludeUserId?: string): Promise<PostWithAuthor[]> {
+    const query = db
+      .select({
+        id: posts.id,
+        authorId: posts.authorId,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isPremium: posts.isPremium,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+        author: users,
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .orderBy(sql`RANDOM()`)
+      .limit(limit);
+
+    if (excludeUserId) {
+      query.where(ne(posts.authorId, excludeUserId));
+    }
+
+    const result = await query;
     return result;
   }
 

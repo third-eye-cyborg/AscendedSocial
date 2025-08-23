@@ -84,43 +84,31 @@ export default function ProfilePictureChanger() {
     setIsUploading(true);
     
     try {
-      // Get upload URL from Replit object storage
-      const uploadResponse = await apiRequest("POST", "/api/objects/upload");
-      const { uploadURL } = uploadResponse;
+      // Use server-side upload endpoint to avoid CORS issues
+      const formData = new FormData();
+      formData.append('image', file);
       
-      // Upload file directly to object storage using PUT method
-      const uploadFileResponse = await fetch(uploadURL, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        },
+      const uploadResponse = await fetch('/api/upload-profile-image', {
+        method: 'POST',
+        body: formData,
       });
       
-      if (!uploadFileResponse.ok) {
-        throw new Error(`Upload failed: ${uploadFileResponse.status} ${uploadFileResponse.statusText}`);
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.error || `Upload failed: ${uploadResponse.status}`);
       }
       
-      // The uploadURL without query parameters is the media URL
-      const baseURL = uploadURL.split('?')[0];
-      console.log("Upload successful, base URL:", baseURL);
+      const data = await uploadResponse.json();
+      console.log("Upload successful:", data);
       
-      // Set media as public in Replit storage
-      const mediaResponse = await apiRequest("PUT", "/api/media", { mediaURL: baseURL });
-      console.log("Media response status:", mediaResponse.status);
+      // The response includes the updated user with new profile image
+      // Refresh the cache to show the new image
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       
-      if (!mediaResponse.ok) {
-        throw new Error(`Media API failed: ${mediaResponse.status}`);
-      }
-      
-      const mediaData = await mediaResponse.json();
-      console.log("Media data:", mediaData);
-      
-      // Use the objectPath returned from media API, or fallback to baseURL
-      const finalImageURL = mediaData.objectPath || baseURL;
-      
-      // Update user profile with new image URL
-      await changeProfilePictureMutation.mutateAsync(finalImageURL);
+      toast({
+        title: "Upload Successful",
+        description: "Your profile picture has been updated",
+      });
       
       // Clear file input
       event.target.value = '';

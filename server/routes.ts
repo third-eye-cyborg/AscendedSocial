@@ -17,8 +17,23 @@ import {
   insertEngagementSchema,
   type EngagementType 
 } from "@shared/schema";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { ObjectStorageService, ObjectNotFoundError, parseObjectPath, objectStorageClient } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
+import { randomUUID } from "crypto";
+import multer from 'multer';
+
+// Multer setup for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import Stripe from "stripe";
 
@@ -80,6 +95,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const objectStorageService = new ObjectStorageService();
     const uploadURL = await objectStorageService.getObjectEntityUploadURL();
     res.json({ uploadURL });
+  });
+
+  // Profile image file upload endpoint
+  app.post('/api/upload-profile-image', isAuthenticated, upload.single('image'), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const file = req.file;
+      
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      // Use ObjectStorageService to upload the file
+      const objectStorageService = new ObjectStorageService();
+      const objectId = randomUUID();
+      const privateObjectDir = objectStorageService.getPrivateObjectDir();
+      const fullPath = `${privateObjectDir}/uploads/${objectId}`;
+      
+      const { bucketName, objectName } = parseObjectPath(fullPath);
+      const bucket = objectStorageClient.bucket(bucketName);
+      const bucketFile = bucket.file(objectName);
+      
+      // Upload the file buffer to Google Cloud Storage
+      await bucketFile.save(file.buffer, {
+        metadata: {
+          contentType: file.mimetype,
+        },
+      });
+      
+      // Set as public
+      const mediaURL = `https://storage.googleapis.com/${bucketName}/${objectName}`;
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        mediaURL,
+        {
+          owner: userId,
+          visibility: "public",
+        }
+      );
+      
+      // Update user's profile image
+      const user = await storage.updateUser(userId, {
+        profileImageUrl: objectPath
+      });
+      
+      res.status(200).json({ user, imageUrl: objectPath });
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      res.status(500).json({ error: 'Failed to upload image' });
+    }
   });
 
   // Simple profile image update - accepts any URL

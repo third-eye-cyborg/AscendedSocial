@@ -46,7 +46,7 @@ class CanvasErrorBoundary extends Component<
   }
 }
 
-// 2D Fallback Starmap when WebGL fails
+// 2D Fallback Starmap (no WebGL)
 function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
   const [filters, setFilters] = useState<{
     chakra?: string;
@@ -168,7 +168,7 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-          {users.map((user) => (
+          {users.filter(user => user?.id).map((user) => (
             <Card 
               key={user.id}
               className="p-4 bg-black/60 backdrop-blur-sm border border-purple-500/30 hover:border-purple-400/50 transition-all cursor-pointer group"
@@ -179,27 +179,27 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
                   <div 
                     className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform"
                     style={{ 
-                      backgroundColor: user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1',
-                      boxShadow: `0 0 20px ${user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1'}40`
+                      backgroundColor: user?.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1',
+                      boxShadow: `0 0 20px ${user?.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1'}40`
                     }}
                   >
-                    {user.username ? user.username.charAt(0).toUpperCase() : '✨'}
+                    {user?.username ? user.username.charAt(0).toUpperCase() : '✨'}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-semibold truncate">
-                      {user.username || 'Anonymous Soul'}
+                      {user?.username || 'Anonymous Soul'}
                     </h3>
                     <div className="flex items-center space-x-3 mt-2 text-xs">
                       <div className="flex items-center text-yellow-400">
                         <Zap className="w-3 h-3 mr-1" />
-                        {user.aura || 0}
+                        {user?.aura || 0}
                       </div>
                       <div className="flex items-center text-blue-400">
                         <Sparkles className="w-3 h-3 mr-1" />
-                        {user.energy || 0}
+                        {user?.energy || 0}
                       </div>
                     </div>
-                    {user.dominantChakra && (
+                    {user?.dominantChakra && (
                       <Badge 
                         variant="outline" 
                         className="text-xs mt-2 border-purple-300 text-purple-200 bg-purple-900/30"
@@ -447,20 +447,20 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
     return { positions: new Float32Array(lines), colors: new Float32Array(bondColors) };
   }, [users]);
 
-  if (positions.positions.length === 0) return null;
+  if (!positions.positions || positions.positions.length === 0) return null;
 
   return (
     <line>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={positions.positions.length / 3}
+          count={Math.floor(positions.positions.length / 3)}
           array={positions.positions}
           itemSize={3}
         />
         <bufferAttribute
           attach="attributes-color"
-          count={positions.colors.length / 3}
+          count={Math.floor(positions.colors.length / 3)}
           array={positions.colors}
           itemSize={3}
         />
@@ -750,77 +750,10 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* 3D Canvas with Error Boundary */}
-      <CanvasErrorBoundary onRetry={() => setRetryKey(k => k + 1)}>
-        {userPositions.length > 0 ? (
-          <Canvas
-            key={retryKey}
-            camera={{ position: [0, 5, 25], fov: 60 }}
-            className="bg-gradient-to-b from-black via-purple-950/20 to-black"
-            gl={{ 
-              antialias: true, 
-              alpha: false,
-              powerPreference: "high-performance"
-            }}
-            onCreated={({ gl }) => {
-              gl.setClearColor('#000000');
-            }}
-          >
-            <Suspense fallback={null}>
-            <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
-            <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
-            <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
-            
-            {mode === 'starmap' && (
-              <>
-                <Stars radius={100} depth={50} count={2000} factor={6} saturation={0.1} fade />
-                <fog attach="fog" args={['#000011', 30, 100]} />
-              </>
-            )}
-            
-            {mode === 'fungus' && (
-              <fog attach="fog" args={['#001122', 10, 40]} />
-            )}
-            
-            <CameraController onModeChange={setMode} />
-            
-            {userPositions.map(({ user, position }, index) => (
-              <StarUser
-                key={user.id}
-                user={user}
-                position={position}
-                mode={mode}
-                onClick={handleUserClick}
-              />
-            ))}
-            
-            {mode === 'fungus' && <ConnectionLines users={users} />}
-            
-            <OrbitControls
-              enableZoom
-              enablePan
-              enableRotate
-              zoomSpeed={1.5}
-              panSpeed={1.2}
-              rotateSpeed={0.8}
-              minDistance={3}
-              maxDistance={60}
-              dampingFactor={0.05}
-              enableDamping
-              autoRotate={mode === 'starmap'}
-              autoRotateSpeed={0.5}
-            />
-            </Suspense>
-          </Canvas>
-        ) : (
-          <div className="flex items-center justify-center h-full bg-gradient-to-b from-purple-900 via-black to-purple-900">
-            <div className="text-center text-white">
-              <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              <p>Loading spiritual cosmos...</p>
-            </div>
-          </div>
-        )}
-      </CanvasErrorBoundary>
+      {/* 2D Starmap (WebGL disabled to prevent errors) */}
+      <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full">
+        <Starmap2DFallback onRetry={() => setRetryKey(k => k + 1)} />
+      </div>
     </div>
   );
 }

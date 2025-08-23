@@ -45,7 +45,7 @@ export default function Layout({ children }: LayoutProps) {
                   className="w-full h-full object-contain filter drop-shadow-md"
                 />
               </div>
-              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-purple-400 via-violet-500 to-indigo-600 bg-clip-text text-transparent">
                 Ascended Social
               </h1>
             </div>

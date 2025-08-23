@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -9,7 +11,7 @@ import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
-import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck } from "lucide-react";
+import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings } from "lucide-react";
 
 interface PostCardProps {
   post: {
@@ -43,6 +45,8 @@ export default function PostCard({ post }: PostCardProps) {
   const [userEngagements, setUserEngagements] = useState<string[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [energyAmount, setEnergyAmount] = useState(10);
+  const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
 
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
@@ -62,15 +66,20 @@ export default function PostCard({ post }: PostCardProps) {
   }, [userEngagementData]);
 
   const engageMutation = useMutation({
-    mutationFn: async ({ type, remove }: { type: string; remove?: boolean }) => {
+    mutationFn: async ({ type, remove, energyAmount }: { type: string; remove?: boolean; energyAmount?: number }) => {
       if (remove) {
         return apiRequest("DELETE", `/api/posts/${post.id}/engage/${type}`);
       } else {
-        return apiRequest("POST", `/api/posts/${post.id}/engage`, { type });
+        return apiRequest("POST", `/api/posts/${post.id}/engage`, { 
+          type, 
+          ...(type === 'energy' ? { energyAmount } : {})
+        });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
+      if (energyPopoverOpen) setEnergyPopoverOpen(false);
     },
     onError: (error) => {
       toast({
@@ -81,7 +90,7 @@ export default function PostCard({ post }: PostCardProps) {
     },
   });
 
-  const handleEngagement = (type: string) => {
+  const handleEngagement = (type: string, energyAmountOverride?: number) => {
     if (!user) {
       toast({
         title: "🔮 Mystical Access Required",
@@ -92,11 +101,12 @@ export default function PostCard({ post }: PostCardProps) {
     }
 
     const isEngaged = userEngagements.includes(type);
+    const currentEnergyAmount = energyAmountOverride || energyAmount;
     
-    if (type === 'energy' && !isEngaged && ((user as any)?.energy || 0) < 10) {
+    if (type === 'energy' && !isEngaged && ((user as any)?.energy || 0) < currentEnergyAmount) {
       toast({
         title: "⚡ Energy Depleted",
-        description: "Your spiritual energy is too low. Meditate to restore 10 energy points.",
+        description: `Your spiritual energy is too low. You need ${currentEnergyAmount} energy points but have ${(user as any)?.energy || 0}.`,
         variant: "destructive",
       });
       return;
@@ -108,7 +118,7 @@ export default function PostCard({ post }: PostCardProps) {
         upvote: { title: "✨ Positive Vibrations Sent", description: "Your spiritual approval raises the post's frequency" },
         downvote: { title: "🌊 Constructive Energy Shared", description: "Your feedback helps balance the cosmic harmony" },
         like: { title: "💖 Love Resonance Activated", description: "Your heart chakra connects with this soul" },
-        energy: { title: "⚡ Spiritual Energy Transferred", description: "10 energy points sent to amplify this wisdom" }
+        energy: { title: "⚡ Spiritual Energy Transferred", description: `${currentEnergyAmount} energy points sent to amplify this wisdom` }
       };
       
       const message = successMessages[type as keyof typeof successMessages];
@@ -121,7 +131,11 @@ export default function PostCard({ post }: PostCardProps) {
       }
     }
 
-    engageMutation.mutate({ type, remove: isEngaged });
+    engageMutation.mutate({ 
+      type, 
+      remove: isEngaged,
+      energyAmount: type === 'energy' ? currentEnergyAmount : undefined
+    });
     
     // Optimistic update with mutual exclusion for votes
     if (isEngaged) {
@@ -360,37 +374,92 @@ export default function PostCard({ post }: PostCardProps) {
             </Button>
 
             {/* Spiritual Energy Transfer */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
-                userEngagements.includes('energy') 
-                  ? 'text-yellow-300 bg-yellow-900/40 shadow-lg shadow-yellow-400/20' 
-                  : 'text-white/70 hover:text-yellow-300 hover:bg-yellow-900/20'
-              } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
-              onClick={() => handleEngagement('energy')}
-              disabled={engageMutation.isPending || ((user as any)?.energy || 0) < 10}
-              title={`⚡ Transfer Spiritual Energy (-10 energy) | Your Energy: ${(user as any)?.energy || 0}`}
-              data-testid={`button-energy-${post.id}`}
-            >
-              <Zap className={`w-4 h-4 transition-transform duration-200 ${
-                userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
-              }`} />
-              <span className="text-sm font-medium" data-testid={`energy-${post.id}`}>
-                {post.engagements?.energy || 0}
-              </span>
-              {((user as any)?.energy || 0) < 10 && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-              )}
-              {userEngagements.includes('energy') && (
-                <>
-                  <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping"></div>
-                  <div className="absolute inset-0 overflow-hidden rounded-full">
-                    <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent animate-pulse"></div>
+            <Popover open={energyPopoverOpen} onOpenChange={setEnergyPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
+                    userEngagements.includes('energy') 
+                      ? 'text-yellow-300 bg-yellow-900/40 shadow-lg shadow-yellow-400/20' 
+                      : 'text-white/70 hover:text-yellow-300 hover:bg-yellow-900/20'
+                  } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                  disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
+                  title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
+                  data-testid={`button-energy-${post.id}`}
+                >
+                  <Zap className={`w-4 h-4 transition-transform duration-200 ${
+                    userEngagements.includes('energy') ? 'scale-110 animate-pulse' : 'hover:scale-110'
+                  }`} />
+                  <span className="text-sm font-medium" data-testid={`energy-${post.id}`}>
+                    {post.engagements?.energy || 0}
+                  </span>
+                  <Settings className="w-3 h-3 ml-1 opacity-60" />
+                  {((user as any)?.energy || 0) < energyAmount && (
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  )}
+                  {userEngagements.includes('energy') && (
+                    <>
+                      <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping"></div>
+                      <div className="absolute inset-0 overflow-hidden rounded-full">
+                        <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent animate-pulse"></div>
+                      </div>
+                    </>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 bg-cosmic-dark/95 backdrop-blur border border-yellow-500/30" align="start">
+                <div className="space-y-4 p-2">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-yellow-300 font-semibold text-sm">⚡ Energy Transfer</h4>
+                    <span className="text-xs text-white/60">
+                      Available: {(user as any)?.energy || 0} energy
+                    </span>
                   </div>
-                </>
-              )}
-            </Button>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-white/80 text-sm">Energy Amount:</span>
+                      <span className="text-yellow-300 font-bold">{energyAmount} points</span>
+                    </div>
+                    
+                    <Slider
+                      value={[energyAmount]}
+                      onValueChange={([value]) => setEnergyAmount(value)}
+                      max={Math.min(50, (user as any)?.energy || 0)}
+                      min={1}
+                      step={1}
+                      className="w-full"
+                    />
+                    
+                    <div className="flex justify-between text-xs text-white/60">
+                      <span>1 point</span>
+                      <span>{Math.min(50, (user as any)?.energy || 0)} points</span>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-900/20 rounded-lg p-3 text-xs text-yellow-200/80">
+                    <p>✨ Higher energy amounts provide more spiritual impact and experience points.</p>
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-semibold"
+                    onClick={() => handleEngagement('energy')}
+                    disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
+                    data-testid={`confirm-energy-${post.id}`}
+                  >
+                    {engageMutation.isPending ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
+                        <span>Transferring...</span>
+                      </div>
+                    ) : (
+                      `⚡ Transfer ${energyAmount} Energy`
+                    )}
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             {/* Mystical Comments */}
             <Button

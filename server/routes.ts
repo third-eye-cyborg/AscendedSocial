@@ -171,27 +171,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { postId } = req.params;
-      const { type } = req.body;
+      const { type, energyAmount } = req.body;
       
       if (!['upvote', 'downvote', 'like', 'energy'].includes(type)) {
         return res.status(400).json({ message: "Invalid engagement type" });
       }
 
-      // Check if user has enough energy for energy engagements
-      if (type === 'energy') {
-        const user = await storage.getUser(userId);
-        if (!user || (user.energy || 0) < 10) {
-          return res.status(400).json({ message: "Insufficient energy" });
-        }
-        await storage.updateUserEnergy(userId, (user.energy || 0) - 10);
-      }
-
       const engagement = await storage.createEngagement(
         { postId, type: type as EngagementType },
-        userId
+        userId,
+        type === 'energy' ? energyAmount : undefined
       );
 
-      // Update spirit experience based on engagement type
+      // Update spirit experience based on engagement type and energy amount
       let expGain = 0;
       switch (type) {
         case 'like':
@@ -201,7 +193,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           expGain = 10;
           break;
         case 'energy':
-          expGain = 20; // Higher XP for spending energy
+          // XP scales with energy amount (0.5 XP per energy point, minimum 10)
+          expGain = Math.max(10, Math.floor((energyAmount || 10) * 0.5));
           break;
         case 'downvote':
           expGain = 2; // Small XP even for downvotes (participation)
@@ -215,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(engagement);
     } catch (error) {
       console.error("Error creating engagement:", error);
-      res.status(500).json({ message: "Failed to create engagement" });
+      res.status(500).json({ message: error.message || "Failed to create engagement" });
     }
   });
 

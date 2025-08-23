@@ -111,24 +111,29 @@ Premium subscriptions are managed through Stripe with support for recurring paym
 
 ### Task Management and Development Workflow
 
-#### Trello Integration for Development
-The project uses Trello as a development task management system for tracking features, bugs, and improvements:
+#### Notion-Based Development Workflow
+The project uses Notion as a comprehensive development management system for tracking features, bugs, improvements, and project documentation:
 
-- **Development Board**: [Ascended Social Development](https://trello.com/b/68a9ced99aed4ab60de0c985)
-- **Purpose**: Internal development coordination between developers and AI assistant
-- **Integration**: Command-line tools for task creation, status updates, and progress tracking
+- **Workspace**: [Ascended Social Documentation](https://www.notion.so/Ascended-Social-Web-and-Mobile-Communication-Board-and-Documentation-Sync-257308ef03eb8039a843d972780228a5)
+- **Purpose**: Complete development coordination between developers and AI assistant with integrated documentation
+- **Integration**: Automated synchronization between code changes and project documentation
+
+#### Development Databases
+1. **Development Tasks**: Features, bugs, and improvements tracked with status, priority, and assignments
+2. **Change Log**: Automatic documentation of all significant project updates and modifications
+3. **Project Documentation**: Centralized knowledge base with technical specifications and user guides
 
 #### Development Workflow Process
-1. **Task Creation**: New features, bugs, or improvements are created as Trello cards
-2. **Planning**: Tasks are organized into appropriate lists (Backlog, To Do, In Progress, Review, Done)
-3. **Assignment**: Cards can be assigned to developers or flagged for AI assistance
-4. **Progress Tracking**: Cards move through workflow stages with status updates
-5. **Communication**: Technical details, code references, and implementation notes are added as card comments
-6. **Completion**: Finished tasks are moved to "Done" with links to relevant commits or deployments
+1. **Task Creation**: New features, bugs, or improvements are created in the Development Tasks database
+2. **Planning**: Tasks are organized with status (To Do, In Progress, Review, Done), priority levels, and assignments
+3. **Progress Tracking**: Task status updates synchronized with development progress
+4. **Documentation**: Technical details, implementation notes, and decisions tracked in linked documentation
+5. **Change Tracking**: All modifications automatically logged in the Change Log database
+6. **Completion**: Finished tasks marked complete with links to relevant commits and documentation
 
 #### Development Tools
-- **Trello CLI Tool**: `node dev-tools/trello-dev.js` for command-line task management
-- **Board Access**: Direct integration with development board for real-time updates
-- **Automated Sync**: Task creation and updates can be integrated with development workflows
+- **Notion API Integration**: `tsx server/sync-docs.ts` for automated documentation synchronization
+- **Database Access**: Direct integration with Notion databases for real-time updates
+- **Automated Sync**: Code changes and project updates automatically reflected in documentation
 
-This system enables efficient collaboration between human developers and AI assistants, ensuring all development work is tracked, organized, and properly documented.
+This unified system enables efficient collaboration between human developers and AI assistants while maintaining comprehensive project documentation and ensuring all development work is tracked, organized, and properly documented.

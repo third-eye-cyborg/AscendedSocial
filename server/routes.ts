@@ -440,6 +440,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/generate-sigil', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Generate AI-powered sigil using username and traits
+      const sigil = await generateUserSigil(user.username || user.email || userId);
+      
+      res.json({ sigil });
+    } catch (error) {
+      console.error("Error generating sigil:", error);
+      res.status(500).json({ message: "Failed to generate sigil" });
+    }
+  });
+
   app.post('/api/users/update-username', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

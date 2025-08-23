@@ -111,7 +111,7 @@ export default function Oracle() {
                   size="sm"
                   onClick={() => newReadingMutation.mutate()}
                   disabled={newReadingMutation.isPending}
-                  className="text-primary hover:text-accent-light"
+                  className="text-purple-300 hover:text-purple-200"
                   data-testid="button-new-reading"
                 >
                   {newReadingMutation.isPending ? (
@@ -168,7 +168,7 @@ export default function Oracle() {
                   size="sm"
                   onClick={() => refreshOracleMutation.mutate()}
                   disabled={refreshOracleMutation.isPending}
-                  className="text-primary hover:text-accent-light"
+                  className="text-purple-300 hover:text-purple-200"
                   data-testid="button-refresh-oracle"
                 >
                   {refreshOracleMutation.isPending ? (
@@ -196,7 +196,7 @@ export default function Oracle() {
                       <h4 className="font-semibold text-yellow-300 text-sm mb-1">
                         {rec.title}
                       </h4>
-                      <p className="text-gray-100 text-sm leading-relaxed" style={{ color: '#f3f4f6' }}>
+                      <p className="text-sm leading-relaxed" style={{ color: '#e5e7eb !important' }}>
                         {rec.description}
                       </p>
                     </div>
@@ -231,7 +231,7 @@ export default function Oracle() {
                   size="sm"
                   onClick={() => refreshCommunityMutation.mutate()}
                   disabled={refreshCommunityMutation.isPending}
-                  className="text-primary hover:text-accent-light"
+                  className="text-purple-300 hover:text-purple-200"
                   data-testid="button-refresh-community"
                 >
                   {refreshCommunityMutation.isPending ? (

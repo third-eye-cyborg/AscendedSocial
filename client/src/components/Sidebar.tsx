@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
+import { ProfileIcon } from "@/components/ProfileIcon";
 
 export default function Sidebar() {
   const { user } = useAuth();
@@ -21,26 +22,12 @@ export default function Sidebar() {
       <Card className="bg-cosmic-light rounded-xl mb-6 aura-visualization border border-primary/30 hover-lift animate-slide-up">
         <CardContent className="p-4">
           <div className="flex items-center space-x-3 mb-3">
-            <div className="sigil-container w-12 h-12 rounded-full p-0.5 flex-shrink-0">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
-                {(user as any)?.profileImageUrl ? (
-                  <img 
-                    src={(user as any).profileImageUrl} 
-                    alt="Profile" 
-                    className="w-full h-full object-cover rounded-full"
-                    data-testid="img-sidebar-profile"
-                  />
-                ) : (user as any)?.sigil ? (
-                  <div className="text-center leading-none p-1">
-                    <pre className="text-[6px] text-white font-mono whitespace-pre-wrap break-words" data-testid="text-sidebar-sigil">
-                      {(user as any).sigil}
-                    </pre>
-                  </div>
-                ) : (
-                  <i className="fas fa-om text-white text-lg"></i>
-                )}
-              </div>
-            </div>
+            <ProfileIcon 
+              user={user}
+              size="lg"
+              className="sigil-container"
+              testId="sidebar-profile"
+            />
             <div className="flex-1 min-w-0 overflow-hidden">
               <h3 className="font-semibold text-white text-sm truncate max-w-full" data-testid="text-sidebar-username" title={(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}>
                 {(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}

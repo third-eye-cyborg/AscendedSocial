@@ -214,7 +214,7 @@
   /* Animated Elements */
   .animate-glow {
     border: 1px solid hsl(232, 100%, 67%, 0.4);
-    animation: glow-pulse 4s ease-in-out infinite;
+    animation: glow-pulse 8s ease-in-out infinite;
   }
 
   .animate-fade-in {

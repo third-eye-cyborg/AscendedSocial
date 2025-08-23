@@ -108,7 +108,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
             <Button
               onClick={() => generateSigilMutation.mutate()}
               disabled={generateSigilMutation.isPending}
-              className="bg-primary text-white hover:bg-primary/90"
+              className="bg-cosmic text-white hover:bg-cosmic/80 border border-primary/30"
               data-testid="button-generate"
             >
               {generateSigilMutation.isPending ? (

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import ExpandableImage from "@/components/ExpandableImage";
 
 interface SigilGeneratorProps {
   onSigilGenerated?: (sigil: string) => void;
@@ -86,17 +87,23 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
           <div className="text-center">
             <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
               {shouldShowImage ? (
-                <img 
+                <ExpandableImage
                   src={displaySigilImage}
                   alt={isGeneratedSigil ? "Generated Sigil" : "Your Saved Sigil"}
-                  className="w-full h-full object-cover rounded-full"
-                  data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
-                  onError={() => {
-                    if (isGeneratedSigil) {
-                      setGeneratedSigilImage("");
-                    }
-                  }}
-                />
+                  title={`Your ${isGeneratedSigil ? "Generated" : "Saved"} Spiritual Sigil`}
+                >
+                  <img 
+                    src={displaySigilImage}
+                    alt={isGeneratedSigil ? "Generated Sigil" : "Your Saved Sigil"}
+                    className="w-full h-full object-cover rounded-full"
+                    data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
+                    onError={() => {
+                      if (isGeneratedSigil) {
+                        setGeneratedSigilImage("");
+                      }
+                    }}
+                  />
+                </ExpandableImage>
               ) : (
                 <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
                   <span className="text-2xl text-white font-mono" data-testid={isGeneratedSigil ? "text-generated-sigil" : "text-saved-sigil"}>

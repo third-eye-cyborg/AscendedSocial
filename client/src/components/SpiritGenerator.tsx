@@ -12,6 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Sparkles, Wand2, RefreshCw } from "lucide-react";
+import ExpandableImage from "@/components/ExpandableImage";
 
 export default function SpiritGenerator() {
   const { user } = useAuth();
@@ -117,7 +118,17 @@ export default function SpiritGenerator() {
               <div className="mb-4 relative">
                 {/* Glow effect behind avatar */}
                 <div className="absolute inset-0 blur-xl bg-purple-500/30 rounded-full" />
-                <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+                {currentSpirit?.imageUrl ? (
+                  <ExpandableImage
+                    src={currentSpirit.imageUrl}
+                    alt="Spirit Guide"
+                    title={`${currentSpirit.name || 'Your Spirit Guide'} - ${currentSpirit.type || 'Mystical Guardian'}`}
+                  >
+                    <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+                  </ExpandableImage>
+                ) : (
+                  <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+                )}
               </div>
               
               {/* Spirit Name and Info */}

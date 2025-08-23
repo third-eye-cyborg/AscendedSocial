@@ -110,6 +110,16 @@ export default function PostCard({ post }: PostCardProps) {
     const isEngaged = userEngagements.includes(type);
     const currentEnergyAmount = energyAmountOverride || energyAmount;
     
+    // Energy transfers are permanent - prevent attempts to remove them
+    if (type === 'energy' && isEngaged) {
+      toast({
+        title: "⚡ Energy Transfer is Permanent",
+        description: "Your spiritual energy has been permanently transferred to this post. This cannot be reversed.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     if (type === 'energy' && !isEngaged && ((user as any)?.energy || 0) < currentEnergyAmount) {
       toast({
         title: "⚡ Energy Depleted",
@@ -140,14 +150,15 @@ export default function PostCard({ post }: PostCardProps) {
 
     engageMutation.mutate({ 
       type, 
-      remove: isEngaged,
+      remove: isEngaged && type !== 'energy', // Never remove energy engagements
       energyAmount: type === 'energy' ? currentEnergyAmount : undefined
     });
     
     // Optimistic update with mutual exclusion for votes
-    if (isEngaged) {
+    // Energy engagements cannot be removed once made
+    if (isEngaged && type !== 'energy') {
       setUserEngagements(prev => prev.filter(e => e !== type));
-    } else {
+    } else if (!isEngaged) {
       setUserEngagements(prev => {
         let newEngagements = [...prev];
         

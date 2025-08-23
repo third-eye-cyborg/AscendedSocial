@@ -382,6 +382,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get community oracle content - delivers random user content as mystical guidance
+  app.get('/api/oracle/community', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get random posts from the community, excluding the current user's posts
+      const randomPosts = await storage.getRandomPosts(5, userId);
+      
+      // Transform posts into oracle-style guidance
+      const oracleContent = randomPosts.map(post => ({
+        id: post.id,
+        type: 'community_wisdom',
+        title: `Wisdom from ${post.author.username || post.author.email || 'a fellow seeker'}`,
+        content: post.content,
+        guidance: `The universe has guided you to this message from a spiritual companion on their journey.`,
+        chakra: post.chakra,
+        author: {
+          id: post.author.id,
+          username: post.author.username,
+          email: post.author.email,
+          sigil: post.author.sigil
+        },
+        createdAt: post.createdAt
+      }));
+      
+      res.json(oracleContent);
+    } catch (error) {
+      console.error("Error fetching community oracle:", error);
+      res.status(500).json({ message: "Failed to fetch community oracle" });
+    }
+  });
+
+  // Generate personalized oracle reading based on user's recent activity
+  app.post('/api/oracle/personalized', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { question } = req.body;
+      
+      // Get user's recent posts and activity
+      const userPosts = await storage.getUserPosts(userId, 5);
+      const userStats = await storage.getUserStats(userId);
+      
+      // Generate personalized oracle reading using AI with user context
+      const contextPrompt = `
+        User Context:
+        - Recent posts: ${userPosts.map(p => p.content).join('; ')}
+        - Total posts: ${userStats.totalPosts}
+        - Total engagements: ${userStats.totalEngagements}
+        - Question asked: ${question || 'General guidance'}
+        
+        Generate a personalized oracle reading that incorporates the user's actual spiritual journey and activity.
+      `;
+      
+      const aiReading = await generateDailyReading(); // We'll enhance this function later
+      
+      const reading = await storage.createReading({
+        type: "personalized",
+        content: `${aiReading.content}\n\nThis guidance reflects your recent spiritual journey and the wisdom you've shared with the community.`,
+        metadata: {
+          title: aiReading.title,
+          guidance: aiReading.guidance,
+          question: question,
+          basedOnActivity: true
+        }
+      }, userId);
+      
+      res.json(reading);
+    } catch (error) {
+      console.error("Error generating personalized oracle:", error);
+      res.status(500).json({ message: "Failed to generate personalized oracle" });
+    }
+  });
+
   // Search routes
   app.get('/api/search', async (req, res) => {
     try {

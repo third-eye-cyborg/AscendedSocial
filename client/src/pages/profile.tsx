@@ -257,7 +257,7 @@ export default function Profile() {
                               <Button
                                 variant="outline"
                                 onClick={() => setIsEditModalOpen(false)}
-                                className="flex-1 border-primary/50 text-white hover:bg-cosmic"
+                                className="flex-1 bg-transparent border-primary/50 text-white hover:bg-primary/20 hover:text-white"
                               >
                                 Cancel
                               </Button>

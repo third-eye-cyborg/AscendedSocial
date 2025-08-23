@@ -167,23 +167,37 @@ export async function generateUserSigil(username: string, traits?: string[]): Pr
       messages: [
         {
           role: "system",
-          content: `You are a mystical sigil creator. Create a unique text-based sigil representation for a user. A sigil should be a symbolic representation that captures the essence of the person. Create a simple ASCII art style sigil using basic characters that represents their spiritual energy.
+          content: `You are a mystical sigil creator for the spiritual platform "Ascended Social". Create ONLY the sigil symbol itself - no explanations, no meanings, just the visual symbol.
 
-Respond with JSON in this format: { "sigil": "ASCII art sigil", "meaning": "explanation of the sigil's meaning" }`
+STRICT FORMATTING RULES:
+- Maximum 3 lines tall
+- Maximum 7 characters wide per line
+- Use ONLY these characters: ◊ ○ ◇ ☆ ✦ ◈ ▲ ▼ ◆ ● △ ▽ ✧ ✦ ⬟ ⬢ ⬡ | / \\ - + = ~ ^ v < > 
+- Center-align all lines
+- Create geometric, mystical patterns
+- Each sigil must be unique but follow consistent sacred geometry style
+- NO text, NO letters, NO explanations
+
+EXAMPLE FORMAT:
+  ◊◇◊
+ ✦●✦
+  ◈◈◈
+
+Respond with JSON: { "sigil": "YOUR_SIGIL_HERE" }`
         },
         {
           role: "user",
-          content: `Create a unique sigil for username: ${username}${traits ? `, with traits: ${traits.join(", ")}` : ""}`
+          content: `Create a unique geometric sigil for username: ${username}${traits ? `, spiritual traits: ${traits.join(", ")}` : ""}`
         }
       ],
       response_format: { type: "json_object" },
     });
 
     const result = JSON.parse(response.choices[0].message.content || "{}");
-    return result.sigil || `◊ ${username.charAt(0).toUpperCase()} ◊`;
+    return result.sigil || `◊${username.charAt(0).toUpperCase()}◊`;
   } catch (error) {
     console.error("Error generating sigil:", error);
-    return `◊ ${username.charAt(0).toUpperCase()} ◊`;
+    return `◊${username.charAt(0).toUpperCase()}◊`;
   }
 }
 

@@ -288,14 +288,6 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async updateUser(userId: string, updates: Partial<User>): Promise<User> {
-    const [updatedUser] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, userId))
-      .returning();
-    return updatedUser;
-  }
 
   async updatePostChakra(postId: string, chakra: ChakraType): Promise<Post> {
     const [post] = await db
@@ -318,6 +310,29 @@ export class DatabaseStorage implements IStorage {
           eq(postEngagements.type, engagement.type)
         )
       );
+
+    // Handle mutual exclusion for upvote/downvote
+    if (engagement.type === 'upvote') {
+      await db
+        .delete(postEngagements)
+        .where(
+          and(
+            eq(postEngagements.postId, engagement.postId),
+            eq(postEngagements.userId, userId),
+            eq(postEngagements.type, 'downvote')
+          )
+        );
+    } else if (engagement.type === 'downvote') {
+      await db
+        .delete(postEngagements)
+        .where(
+          and(
+            eq(postEngagements.postId, engagement.postId),
+            eq(postEngagements.userId, userId),
+            eq(postEngagements.type, 'upvote')
+          )
+        );
+    }
 
     const [newEngagement] = await db
       .insert(postEngagements)

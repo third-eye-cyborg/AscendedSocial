@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,6 +12,7 @@ interface SigilGeneratorProps {
 export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps) {
   const [generatedSigil, setGeneratedSigil] = useState<string>("");
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const generateSigilMutation = useMutation({
     mutationFn: async () => {
@@ -24,6 +25,26 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
       toast({
         title: "Sigil Generated",
         description: "Your unique spiritual sigil has been created",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const setAsProfileMutation = useMutation({
+    mutationFn: async (sigil: string) => {
+      return apiRequest("PUT", "/api/set-sigil-as-profile", { sigil });
+    },
+    onSuccess: async () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Profile Updated",
+        description: "Your sigil has been set as your profile image",
       });
     },
     onError: (error) => {
@@ -56,14 +77,25 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
             <p className="text-sm text-white/90 mb-4">
               Your unique spiritual signature has been generated. This sigil represents your energy and essence.
             </p>
-            <Button
-              onClick={() => generateSigilMutation.mutate()}
-              disabled={generateSigilMutation.isPending}
-              className="bg-primary hover:bg-primary/80"
-              data-testid="button-regenerate"
-            >
-              Generate New Sigil
-            </Button>
+            <div className="flex flex-col space-y-2">
+              <Button
+                onClick={() => setAsProfileMutation.mutate(generatedSigil)}
+                disabled={setAsProfileMutation.isPending}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                data-testid="button-set-as-profile"
+              >
+                {setAsProfileMutation.isPending ? "Setting..." : "Set as Profile Image"}
+              </Button>
+              <Button
+                onClick={() => generateSigilMutation.mutate()}
+                disabled={generateSigilMutation.isPending}
+                variant="outline"
+                className="border-primary/30 text-white hover:bg-primary/20"
+                data-testid="button-regenerate"
+              >
+                Generate New Sigil
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="text-center">

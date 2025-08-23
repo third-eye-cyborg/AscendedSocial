@@ -102,11 +102,23 @@ export default function PostCard({ post }: PostCardProps) {
 
     engageMutation.mutate({ type, remove: isEngaged });
     
-    // Optimistic update
+    // Optimistic update with mutual exclusion for votes
     if (isEngaged) {
       setUserEngagements(prev => prev.filter(e => e !== type));
     } else {
-      setUserEngagements(prev => [...prev, type]);
+      setUserEngagements(prev => {
+        let newEngagements = [...prev];
+        
+        // Remove opposite vote for upvote/downvote mutual exclusion
+        if (type === 'upvote') {
+          newEngagements = newEngagements.filter(e => e !== 'downvote');
+        } else if (type === 'downvote') {
+          newEngagements = newEngagements.filter(e => e !== 'upvote');
+        }
+        
+        // Add the new engagement
+        return [...newEngagements, type];
+      });
     }
   };
 

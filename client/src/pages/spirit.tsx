@@ -27,7 +27,7 @@ export default function SpiritPage() {
           <CardContent className="p-8 text-center">
             <h2 className="text-xl font-bold text-white mb-4">Welcome to Spirit Realm</h2>
             <p className="text-gray-300 mb-4">Sign in to discover your spiritual companion</p>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 text-black font-semibold">
               Sign In
             </Button>
           </CardContent>
@@ -62,7 +62,7 @@ export default function SpiritPage() {
             <p className="text-gray-300 mb-4">
               Complete your onboarding journey to discover your unique spirit guide
             </p>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 text-black font-semibold">
               Begin Spiritual Journey
             </Button>
           </CardContent>

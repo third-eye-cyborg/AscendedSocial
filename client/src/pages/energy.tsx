@@ -32,7 +32,7 @@ export default function EnergyPage() {
             <Zap className="w-16 h-16 text-accent-light mx-auto mb-4" />
             <h2 className="text-xl font-bold text-white mb-4">Energy System</h2>
             <p className="text-gray-300 mb-4">Sign in to manage your spiritual energy</p>
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 text-black font-semibold">
               Sign In
             </Button>
           </CardContent>

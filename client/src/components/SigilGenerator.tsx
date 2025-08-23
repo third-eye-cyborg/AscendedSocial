@@ -105,6 +105,19 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                 </div>
               )}
             </div>
+            
+            {/* Energy Pattern Display - Show text sigil below AI image */}
+            {shouldShowImage && displaySigil && (
+              <div className="mb-4">
+                <p className="text-xs text-primary/80 mb-2 font-medium">Energy Pattern</p>
+                <div className="bg-cosmic-light/50 rounded-lg p-3 border border-primary/20 mx-auto max-w-[200px]">
+                  <pre className="text-xs text-primary/90 leading-tight font-mono whitespace-pre-wrap text-center">
+                    {displaySigil}
+                  </pre>
+                </div>
+              </div>
+            )}
+            
             <p className="text-sm text-white/90 mb-4">
               {isGeneratedSigil ? "Your unique spiritual signature has been generated. This sigil represents your energy and essence." : "This is your saved spiritual sigil. It represents your energy and essence."}
             </p>

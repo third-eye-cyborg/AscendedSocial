@@ -196,7 +196,7 @@ export default function Oracle() {
                       <h4 className="font-semibold text-yellow-300 text-sm mb-1">
                         {rec.title}
                       </h4>
-                      <p className="text-white text-sm leading-relaxed">
+                      <p className="text-gray-100 text-sm leading-relaxed" style={{ color: '#f3f4f6' }}>
                         {rec.description}
                       </p>
                     </div>

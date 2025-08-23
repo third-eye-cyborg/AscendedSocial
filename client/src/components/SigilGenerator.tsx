@@ -11,6 +11,7 @@ interface SigilGeneratorProps {
 
 export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps) {
   const [generatedSigil, setGeneratedSigil] = useState<string>("");
+  const [generatedSigilImage, setGeneratedSigilImage] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -24,6 +25,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
     onSuccess: async (response) => {
       const data = await response.json();
       setGeneratedSigil(data.sigil);
+      setGeneratedSigilImage(data.sigilImageUrl || "");
       onSigilGenerated?.(data.sigil);
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user data for energy
       toast({
@@ -72,11 +74,21 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
         {generatedSigil ? (
           <div className="text-center">
             <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
-              <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
-                <span className="text-2xl text-white font-mono" data-testid="text-generated-sigil">
-                  {generatedSigil}
-                </span>
-              </div>
+              {generatedSigilImage ? (
+                <img 
+                  src={generatedSigilImage}
+                  alt="Generated Sigil"
+                  className="w-full h-full object-cover rounded-full"
+                  data-testid="img-generated-sigil"
+                  onError={() => setGeneratedSigilImage("")}
+                />
+              ) : (
+                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
+                  <span className="text-2xl text-white font-mono" data-testid="text-generated-sigil">
+                    {generatedSigil}
+                  </span>
+                </div>
+              )}
             </div>
             <p className="text-sm text-white/90 mb-4">
               Your unique spiritual signature has been generated. This sigil represents your energy and essence.

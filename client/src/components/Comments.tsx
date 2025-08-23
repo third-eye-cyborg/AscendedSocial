@@ -98,7 +98,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                 <Skeleton className="h-12 w-full" />
               </div>
             </div>
-          ))
+          )) as React.ReactNode
         }
 
         {!isLoading && comments && Array.isArray(comments) && comments.length > 0 && 
@@ -107,14 +107,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
               {/* Comment Author Sigil */}
               <div className="flex-shrink-0">
                 <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center overflow-hidden">
-                  {comment.author?.profileImageUrl ? (
-                    <img 
-                      src={comment.author.profileImageUrl} 
-                      alt="Profile" 
-                      className="w-full h-full object-cover rounded-full"
-                      data-testid={`img-comment-profile-${comment.id}`}
-                    />
-                  ) : comment.author?.sigil ? (
+                  {comment.author?.sigil ? (
                     <span className="text-[10px] text-white font-mono text-center break-all" data-testid={`text-comment-sigil-${comment.id}`}>
                       {(comment.author.sigil as string).slice(0, 3)}
                     </span>
@@ -163,7 +156,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                 </div>
               </div>
             </div>
-          ))
+          )) as React.ReactNode
         }
 
         {!isLoading && (!comments || !Array.isArray(comments) || comments.length === 0) && (

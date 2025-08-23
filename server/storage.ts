@@ -89,6 +89,26 @@ export interface IStorage {
   createConnection(requesterId: string, receiverId: string): Promise<any>;
   updateConnection(connectionId: string, userId: string, status: 'accepted' | 'declined'): Promise<any>;
   getUserConnections(userId: string): Promise<any[]>;
+
+  // Starmap operations
+  getStarmapUsers(filters?: {
+    chakra?: string;
+    minAura?: number;
+    maxAura?: number;
+    minEnergy?: number;
+    maxEnergy?: number;
+    astrologySign?: string;
+  }): Promise<Array<{
+    id: string;
+    username: string | null;
+    profileImageUrl: string | null;
+    aura: number | null;
+    energy: number | null;
+    astrologySign: string | null;
+    connections: Array<{ id: string; username: string | null; bondLevel: number }>;
+    dominantChakra?: string;
+    postCount: number;
+  }>>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -707,6 +727,135 @@ export class DatabaseStorage implements IStorage {
         )
       );
     return userConnections;
+  }
+
+  async getStarmapUsers(filters?: {
+    chakra?: string;
+    minAura?: number;
+    maxAura?: number;
+    minEnergy?: number;
+    maxEnergy?: number;
+    astrologySign?: string;
+  }): Promise<Array<{
+    id: string;
+    username: string | null;
+    profileImageUrl: string | null;
+    aura: number | null;
+    energy: number | null;
+    astrologySign: string | null;
+    connections: Array<{ id: string; username: string | null; bondLevel: number }>;
+    dominantChakra?: string;
+    postCount: number;
+  }>> {
+    try {
+      // Build base query with user data
+      const query = db
+        .select({
+          id: users.id,
+          username: users.username,
+          profileImageUrl: users.profileImageUrl,
+          aura: users.aura,
+          energy: users.energy,
+          astrologySign: users.astrologySign,
+        })
+        .from(users);
+
+      // Apply filters if provided
+      const conditions = [];
+      if (filters?.minAura) {
+        conditions.push(sql`users.aura >= ${filters.minAura}`);
+      }
+      if (filters?.maxAura) {
+        conditions.push(sql`users.aura <= ${filters.maxAura}`);
+      }
+      if (filters?.minEnergy) {
+        conditions.push(sql`users.energy >= ${filters.minEnergy}`);
+      }
+      if (filters?.maxEnergy) {
+        conditions.push(sql`users.energy <= ${filters.maxEnergy}`);
+      }
+      if (filters?.astrologySign) {
+        conditions.push(eq(users.astrologySign, filters.astrologySign));
+      }
+
+      if (conditions.length > 0) {
+        query.where(and(...conditions));
+      }
+
+      const baseUsers = await query;
+
+      // Enrich user data with connections and dominant chakra
+      const enrichedUsers = await Promise.all(
+        baseUsers.map(async (user) => {
+          // Get user connections
+          const userConnections = await db
+            .select({
+              id: users.id,
+              username: users.username,
+              bondLevel: connections.bondLevel,
+            })
+            .from(connections)
+            .innerJoin(users, 
+              or(
+                and(eq(connections.requesterId, user.id), eq(users.id, connections.receiverId)),
+                and(eq(connections.receiverId, user.id), eq(users.id, connections.requesterId))
+              )
+            )
+            .where(
+              and(
+                or(
+                  eq(connections.requesterId, user.id),
+                  eq(connections.receiverId, user.id)
+                ),
+                eq(connections.status, 'accepted')
+              )
+            );
+
+          // Get dominant chakra from user's posts
+          const chakraStats = await db
+            .select({
+              chakra: posts.chakra,
+              count: count(posts.id)
+            })
+            .from(posts)
+            .where(eq(posts.authorId, user.id))
+            .groupBy(posts.chakra)
+            .orderBy(desc(count(posts.id)))
+            .limit(1);
+
+          // Get total post count
+          const [postCountResult] = await db
+            .select({ count: count(posts.id) })
+            .from(posts)
+            .where(eq(posts.authorId, user.id));
+
+          const dominantChakra = chakraStats[0]?.chakra;
+          const postCount = postCountResult?.count || 0;
+
+          // Apply chakra filter if specified
+          if (filters?.chakra && dominantChakra !== filters.chakra) {
+            return null;
+          }
+
+          return {
+            ...user,
+            connections: userConnections.map(conn => ({
+              id: conn.id,
+              username: conn.username,
+              bondLevel: conn.bondLevel || 0
+            })),
+            dominantChakra,
+            postCount
+          };
+        })
+      );
+
+      // Filter out null entries (filtered by chakra)
+      return enrichedUsers.filter(user => user !== null) as any[];
+    } catch (error) {
+      console.error('Error getting starmap users:', error);
+      throw error;
+    }
   }
 }
 

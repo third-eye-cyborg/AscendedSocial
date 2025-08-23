@@ -867,6 +867,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
+  // Starmap endpoints
+  app.get('/api/starmap/users', isAuthenticated, async (req: any, res) => {
+    try {
+      const filters: any = {};
+      
+      if (req.query.chakra) filters.chakra = req.query.chakra;
+      if (req.query.minAura) filters.minAura = parseInt(req.query.minAura);
+      if (req.query.maxAura) filters.maxAura = parseInt(req.query.maxAura);
+      if (req.query.minEnergy) filters.minEnergy = parseInt(req.query.minEnergy);
+      if (req.query.maxEnergy) filters.maxEnergy = parseInt(req.query.maxEnergy);
+      if (req.query.astrologySign) filters.astrologySign = req.query.astrologySign;
+
+      const starmapUsers = await storage.getStarmapUsers(filters);
+      res.json(starmapUsers);
+    } catch (error) {
+      console.error("Error fetching starmap users:", error);
+      res.status(500).json({ message: "Failed to fetch starmap users" });
+    }
+  });
+
   // Onboarding endpoints
   app.post('/api/onboarding/complete', isAuthenticated, async (req: any, res) => {
     try {

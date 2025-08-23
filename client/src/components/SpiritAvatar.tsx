@@ -23,14 +23,14 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
 
   const getSpiritVisual = (level: number, element: string) => {
     const baseStyle = {
-      sm: "w-8 h-8 text-lg",
-      md: "w-16 h-16 text-3xl", 
-      lg: "w-24 h-24 text-5xl"
+      sm: "w-12 h-12 text-2xl",
+      md: "w-20 h-20 text-4xl", 
+      lg: "w-32 h-32 text-6xl"
     }[size];
 
     const levelTier = Math.floor((level - 1) / 5) + 1; // Tiers: 1-5, 6-10, 11-15, etc.
     
-    // Element-based base symbols
+    // Element-based base symbols with more mystical options
     const elementSymbols = {
       fire: ["🔥", "🌋", "⭐", "☀️", "💫"],
       water: ["💧", "🌊", "🔮", "🌙", "✨"],
@@ -41,24 +41,66 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
     const symbols = elementSymbols[element as keyof typeof elementSymbols] || elementSymbols.fire;
     const symbol = symbols[Math.min(levelTier - 1, symbols.length - 1)];
 
-    const glowIntensity = Math.min(level * 2, 100);
+    const glowIntensity = Math.min(level * 3, 100);
+    
+    // Element-based color schemes
+    const elementColors = {
+      fire: { primary: "251, 146, 60", secondary: "239, 68, 68" }, // Orange to red
+      water: { primary: "59, 130, 246", secondary: "147, 51, 234" }, // Blue to purple
+      earth: { primary: "34, 197, 94", secondary: "168, 85, 247" }, // Green to purple
+      air: { primary: "168, 85, 247", secondary: "59, 130, 246" }  // Purple to blue
+    };
+    
+    const colors = elementColors[element as keyof typeof elementColors] || elementColors.air;
     
     return (
-      <div 
-        className={`${baseStyle} rounded-full flex items-center justify-center relative`}
-        style={{
-          background: `radial-gradient(circle, rgba(147, 51, 234, 0.${Math.floor(glowIntensity/10)}) 0%, rgba(79, 70, 229, 0.2) 100%)`,
-          boxShadow: `0 0 ${Math.min(level * 2, 20)}px rgba(147, 51, 234, 0.${Math.floor(glowIntensity/10)})`,
-          border: "2px solid rgba(147, 51, 234, 0.3)",
-        }}
-        data-testid={`spirit-avatar-${level}`}
-      >
-        <span className="drop-shadow-lg">{symbol}</span>
-        {level > 5 && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-xs text-white font-bold">{levelTier}</span>
-          </div>
-        )}
+      <div className="relative">
+        {/* Outer glow ring */}
+        <div 
+          className={`${baseStyle} absolute inset-0 rounded-full animate-pulse`}
+          style={{
+            background: `radial-gradient(circle, rgba(${colors.primary}, 0.2) 0%, transparent 70%)`,
+            filter: `blur(${size === 'lg' ? '20px' : '10px'})`,
+          }}
+        />
+        
+        {/* Main avatar */}
+        <div 
+          className={`${baseStyle} rounded-full flex items-center justify-center relative bg-gradient-to-br shadow-2xl`}
+          style={{
+            background: `linear-gradient(135deg, rgba(${colors.primary}, 0.3) 0%, rgba(${colors.secondary}, 0.2) 100%)`,
+            boxShadow: `
+              0 0 ${Math.min(level * 3, 30)}px rgba(${colors.primary}, 0.4),
+              inset 0 0 20px rgba(${colors.primary}, 0.2)
+            `,
+            border: `3px solid rgba(${colors.primary}, 0.4)`,
+            backdropFilter: 'blur(10px)',
+          }}
+          data-testid={`spirit-avatar-${level}`}
+        >
+          <span className="drop-shadow-2xl filter brightness-110">{symbol}</span>
+          
+          {/* Level indicator */}
+          {level > 5 && (
+            <div 
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
+              style={{
+                background: `linear-gradient(135deg, rgba(${colors.primary}, 0.9) 0%, rgba(${colors.secondary}, 0.9) 100%)`,
+              }}
+            >
+              <span className="text-xs text-white font-bold">{levelTier}</span>
+            </div>
+          )}
+          
+          {/* Sparkle effects for higher levels */}
+          {level > 10 && (
+            <>
+              <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-ping" />
+              <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-ping animation-delay-200" />
+              <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white rounded-full animate-ping animation-delay-400" />
+            </>
+          )}
+        </div>
       </div>
     );
   };

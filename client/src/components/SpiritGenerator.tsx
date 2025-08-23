@@ -106,38 +106,71 @@ export default function SpiritGenerator() {
     <div className="space-y-3">
       {/* Current Spirit Display */}
       {currentSpirit ? (
-        <Card className="bg-gradient-to-br from-purple-900/30 to-blue-900/20 border border-primary/30">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3 mb-3">
-              <SpiritAvatar userId={(user as any)?.id} size="sm" showDetails={false} />
-              <div>
-                <h4 className="font-semibold text-white text-sm">
-                  {(currentSpirit as any)?.name || "Your Spirit"}
-                </h4>
-                <p className="text-xs text-muted capitalize">
-                  {(currentSpirit as any)?.element} • Level {(currentSpirit as any)?.level || 1}
-                </p>
+        <Card className="bg-gradient-to-br from-slate-900 via-purple-900/40 to-slate-900 border-2 border-purple-500/30 shadow-xl overflow-hidden relative">
+          {/* Animated background effect */}
+          <div className="absolute inset-0 bg-gradient-to-t from-purple-600/10 via-transparent to-transparent opacity-50" />
+          
+          <CardContent className="p-6 relative z-10">
+            {/* Spirit Avatar - Centered and Larger */}
+            <div className="flex flex-col items-center text-center mb-4">
+              <div className="mb-4 relative">
+                {/* Glow effect behind avatar */}
+                <div className="absolute inset-0 blur-xl bg-purple-500/30 rounded-full" />
+                <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+              </div>
+              
+              {/* Spirit Name and Info */}
+              <h3 className="text-xl font-bold text-white mb-2">
+                {(currentSpirit as any)?.name || "Mystic Guide"}
+              </h3>
+              
+              <div className="flex items-center gap-2 mb-3">
+                <span className="px-3 py-1 bg-purple-500/20 text-purple-200 rounded-full text-sm font-medium capitalize">
+                  {(currentSpirit as any)?.element || "Unknown"}
+                </span>
+                <span className="px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium">
+                  Level {(currentSpirit as any)?.level || 1}
+                </span>
               </div>
             </div>
-            <p className="text-xs text-white/80 leading-relaxed mb-3">
-              {(currentSpirit as any)?.description}
+            
+            {/* Description with better contrast */}
+            <p className="text-sm text-gray-300 leading-relaxed mb-4 text-center italic">
+              {(currentSpirit as any)?.description || "A wise spiritual companion on your journey of growth and discovery."}
             </p>
+            
+            {/* Experience Bar */}
+            {(currentSpirit as any)?.experience !== undefined && (
+              <div className="mb-4">
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                  <span>Experience</span>
+                  <span>{(currentSpirit as any)?.experience || 0} XP</span>
+                </div>
+                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                    style={{ width: `${((currentSpirit as any)?.experience % 100) || 0}%` }}
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Evolve Button - More Prominent */}
             <Button
               onClick={() => regenerateSpiritMutation.mutate()}
               disabled={regenerateSpiritMutation.isPending}
-              variant="outline"
-              size="sm"
-              className="w-full border-primary/50 text-primary hover:bg-primary/10"
+              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25"
+              size="default"
               data-testid="button-regenerate-spirit"
             >
               {regenerateSpiritMutation.isPending ? (
                 <>
-                  <RefreshCw className="w-3 h-3 mr-2 animate-spin" />
-                  Evolving...
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  Evolving Spirit...
                 </>
               ) : (
                 <>
-                  <RefreshCw className="w-3 h-3 mr-2" />
+                  <Sparkles className="w-4 h-4 mr-2" />
                   Evolve Spirit
                 </>
               )}

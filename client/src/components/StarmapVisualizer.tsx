@@ -252,17 +252,22 @@ interface StarmapUser {
 
 // Get position based on spiritual attributes
 const getStarPosition = (user: StarmapUser, index: number): Vector3 => {
-  const chakraIndex = user.dominantChakra 
+  // Safe access to user properties with fallbacks
+  const chakraIndex = user?.dominantChakra 
     ? Object.keys(chakraColors).indexOf(user.dominantChakra)
-    : Math.random() * 7;
+    : (index % 7); // Use index for consistent positioning instead of random
   
-  const auraLevel = user.aura || 0;
-  const energyLevel = user.energy || 500;
+  const auraLevel = user?.aura || 0;
+  const energyLevel = user?.energy || 500;
   
-  // Create clustering based on spiritual attributes
-  const angle = (chakraIndex / 7) * Math.PI * 2 + (Math.random() - 0.5) * 0.5;
-  const radius = 10 + (auraLevel / 100) + Math.random() * 5;
-  const height = (energyLevel / 1000) * 10 + Math.random() * 5 - 2.5;
+  // Create clustering based on spiritual attributes with safety checks
+  const safeChakraIndex = Number.isFinite(chakraIndex) ? chakraIndex : (index % 7);
+  const safeAuraLevel = Number.isFinite(auraLevel) ? auraLevel : 0;
+  const safeEnergyLevel = Number.isFinite(energyLevel) ? energyLevel : 500;
+  
+  const angle = (safeChakraIndex / 7) * Math.PI * 2 + (Math.sin(index) * 0.5);
+  const radius = Math.max(5, 10 + (safeAuraLevel / 100) + (index % 5));
+  const height = Math.max(-5, Math.min(15, (safeEnergyLevel / 1000) * 10 + (Math.sin(index * 1.5) * 2.5)));
   
   return new Vector3(
     Math.cos(angle) * radius,
@@ -297,12 +302,12 @@ function StarUser({ user, position, mode, onClick }: {
   });
 
   // Defensive programming for user data
-  if (!user || !user.id) {
+  if (!user?.id) {
     return null;
   }
 
-  const color = user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#ffffff';
-  const auraIntensity = Math.min((user.aura || 0) / 1000, 1);
+  const color = (user?.dominantChakra && chakraColors[user.dominantChakra]) ? chakraColors[user.dominantChakra] : '#ffffff';
+  const auraIntensity = Math.min((user?.aura || 0) / 1000, 1);
   const size = mode === 'starmap' ? 0.2 + auraIntensity * 0.3 : 0.6 + auraIntensity * 0.4;
   
   return (
@@ -402,16 +407,18 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
     const bondColors: number[] = [];
     
     users.forEach((user, index) => {
-      if (user.connections && user.connections.length > 0) {
+      if (user?.connections && Array.isArray(user.connections) && user.connections.length > 0) {
         const userPos = getStarPosition(user, index);
-        const userColor = new Color(user.dominantChakra ? chakraColors[user.dominantChakra] : '#ffffff');
+        const userColor = new Color(user?.dominantChakra ? chakraColors[user.dominantChakra] : '#ffffff');
         
         user.connections.forEach((connection) => {
-          const connectedUserIndex = users.findIndex(u => u.id === connection.id);
+          if (!connection?.id) return;
+          const connectedUserIndex = users.findIndex(u => u?.id === connection.id);
           if (connectedUserIndex !== -1) {
             const connectedUser = users[connectedUserIndex];
+            if (!connectedUser?.id) return;
             const connectedPos = getStarPosition(connectedUser, connectedUserIndex);
-            const connectedColor = new Color(connectedUser.dominantChakra ? chakraColors[connectedUser.dominantChakra] : '#ffffff');
+            const connectedColor = new Color(connectedUser?.dominantChakra ? chakraColors[connectedUser.dominantChakra] : '#ffffff');
             
             // Create gradient effect between chakra colors
             const midColor = userColor.clone().lerp(connectedColor, 0.5);
@@ -422,10 +429,15 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
               connectedPos.x, connectedPos.y, connectedPos.z
             );
             
-            // Add color and bond strength data
+            // Add color and bond strength data with safety checks
+            const safeR = Number.isFinite(midColor.r) ? midColor.r : 1;
+            const safeG = Number.isFinite(midColor.g) ? midColor.g : 1;
+            const safeB = Number.isFinite(midColor.b) ? midColor.b : 1;
+            const safeBondStrength = Number.isFinite(bondStrength) ? bondStrength : 0.5;
+            
             bondColors.push(
-              midColor.r * bondStrength, midColor.g * bondStrength, midColor.b * bondStrength,
-              midColor.r * bondStrength, midColor.g * bondStrength, midColor.b * bondStrength
+              safeR * safeBondStrength, safeG * safeBondStrength, safeB * safeBondStrength,
+              safeR * safeBondStrength, safeG * safeBondStrength, safeB * safeBondStrength
             );
           }
         });
@@ -526,11 +538,13 @@ function StarmapScene() {
   }, [error, toast]);
 
   const userPositions = useMemo(() => {
-    if (!Array.isArray(users)) return [];
-    return users.map((user: StarmapUser, index: number) => ({
-      user,
-      position: getStarPosition(user, index)
-    }));
+    if (!Array.isArray(users) || users.length === 0) return [];
+    return users
+      .filter((user: StarmapUser) => user?.id) // Only include users with valid IDs
+      .map((user: StarmapUser, index: number) => ({
+        user,
+        position: getStarPosition(user, index)
+      }));
   }, [users]);
 
   const handleUserClick = (user: StarmapUser) => {
@@ -738,12 +752,21 @@ function StarmapScene() {
 
       {/* 3D Canvas with Error Boundary */}
       <CanvasErrorBoundary onRetry={() => setRetryKey(k => k + 1)}>
-        <Canvas
-          key={retryKey}
-          camera={{ position: [0, 5, 25], fov: 60 }}
-          className="bg-gradient-to-b from-black via-purple-950/20 to-black"
-        >
-          <Suspense fallback={null}>
+        {userPositions.length > 0 ? (
+          <Canvas
+            key={retryKey}
+            camera={{ position: [0, 5, 25], fov: 60 }}
+            className="bg-gradient-to-b from-black via-purple-950/20 to-black"
+            gl={{ 
+              antialias: true, 
+              alpha: false,
+              powerPreference: "high-performance"
+            }}
+            onCreated={({ gl }) => {
+              gl.setClearColor('#000000');
+            }}
+          >
+            <Suspense fallback={null}>
             <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
             <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
             <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
@@ -787,8 +810,16 @@ function StarmapScene() {
               autoRotate={mode === 'starmap'}
               autoRotateSpeed={0.5}
             />
-          </Suspense>
-        </Canvas>
+            </Suspense>
+          </Canvas>
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gradient-to-b from-purple-900 via-black to-purple-900">
+            <div className="text-center text-white">
+              <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+              <p>Loading spiritual cosmos...</p>
+            </div>
+          </div>
+        )}
       </CanvasErrorBoundary>
     </div>
   );

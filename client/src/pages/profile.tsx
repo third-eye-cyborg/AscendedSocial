@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Layout from "@/components/Layout";
 import PostCard from "@/components/PostCard";
 import SigilGenerator from "@/components/SigilGenerator";
+import SpiritGenerator from "@/components/SpiritGenerator";
 import { getChakraColor } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
@@ -283,6 +284,7 @@ export default function Profile() {
                         </DialogContent>
                       </Dialog>
                       <SigilGenerator />
+                      <SpiritGenerator />
                     </>
                   ) : (
                     <>

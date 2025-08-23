@@ -47,6 +47,7 @@ export default function PostCard({ post }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [energyAmount, setEnergyAmount] = useState(10);
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
+  const [clickEffects, setClickEffects] = useState<{[key: string]: boolean}>({});
 
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
@@ -80,6 +81,12 @@ export default function PostCard({ post }: PostCardProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
+      
+      // Trigger click effect
+      setClickEffects(prev => ({ ...prev, [variables.type]: true }));
+      setTimeout(() => {
+        setClickEffects(prev => ({ ...prev, [variables.type]: false }));
+      }, 600);
     },
     onError: (error) => {
       toast({
@@ -302,19 +309,23 @@ export default function PostCard({ post }: PostCardProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                  className={`relative p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
                     userEngagements.includes('upvote') 
-                      ? 'text-green-200 bg-green-800/60 shadow-lg shadow-green-400/30' 
-                      : 'text-white/80 hover:text-green-300 hover:bg-green-900/30'
-                  } ${engageMutation.isPending ? 'opacity-75' : ''}`}
+                      ? 'text-green-100 bg-gradient-to-r from-green-600 to-green-500 shadow-md' 
+                      : 'text-white/80 hover:text-green-300 hover:bg-green-900/20'
+                  } ${engageMutation.isPending ? 'opacity-75' : ''} ${
+                    clickEffects.upvote ? 'scale-125 rotate-12' : ''
+                  }`}
                   onClick={() => handleEngagement('upvote')}
                   disabled={engageMutation.isPending}
                   title="✨ Raise Spiritual Frequency"
                   data-testid={`button-upvote-${post.id}`}
                 >
                   <ChevronUp className="w-5 h-5" />
-                  {userEngagements.includes('upvote') && (
-                    <div className="absolute inset-0 bg-green-400/10 rounded-lg"></div>
+                  {clickEffects.upvote && (
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-green-300 text-xs font-bold animate-bounce pointer-events-none">
+                      +1 ✨
+                    </div>
                   )}
                 </Button>
                 
@@ -335,19 +346,23 @@ export default function PostCard({ post }: PostCardProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`relative p-2 rounded-lg transition-all duration-300 hover:scale-110 ${
+                  className={`relative p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
                     userEngagements.includes('downvote') 
-                      ? 'text-red-200 bg-red-800/60 shadow-lg shadow-red-400/30' 
-                      : 'text-white/80 hover:text-red-300 hover:bg-red-900/30'
-                  } ${engageMutation.isPending ? 'opacity-75' : ''}`}
+                      ? 'text-red-100 bg-gradient-to-r from-red-600 to-red-500 shadow-md' 
+                      : 'text-white/80 hover:text-red-300 hover:bg-red-900/20'
+                  } ${engageMutation.isPending ? 'opacity-75' : ''} ${
+                    clickEffects.downvote ? 'scale-125 -rotate-12' : ''
+                  }`}
                   onClick={() => handleEngagement('downvote')}
                   disabled={engageMutation.isPending}
                   title="🌊 Provide Constructive Balance"
                   data-testid={`button-downvote-${post.id}`}
                 >
                   <ChevronDown className="w-5 h-5" />
-                  {userEngagements.includes('downvote') && (
-                    <div className="absolute inset-0 bg-red-400/10 rounded-lg"></div>
+                  {clickEffects.downvote && (
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-blue-300 text-xs font-bold animate-bounce pointer-events-none">
+                      -1 🌊
+                    </div>
                   )}
                 </Button>
               </div>
@@ -408,11 +423,13 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-300 hover:scale-105 ${
+                className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
                   userEngagements.includes('like') 
-                    ? 'text-pink-200 bg-pink-800/40' 
+                    ? 'text-pink-100 bg-gradient-to-r from-pink-600 to-pink-500 shadow-md' 
                     : 'text-white/80 hover:text-pink-300'
-                } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
+                } ${engageMutation.isPending ? 'animate-pulse' : ''} ${
+                  clickEffects.like ? 'scale-110' : ''
+                }`}
                 onClick={() => handleEngagement('like')}
                 disabled={engageMutation.isPending}
                 title="💖 Send Heart Resonance"
@@ -421,8 +438,10 @@ export default function PostCard({ post }: PostCardProps) {
                 <Heart className={`w-4 h-4 transition-transform duration-200 ${
                   userEngagements.includes('like') ? 'scale-110 fill-current' : 'hover:scale-110'
                 }`} />
-                {userEngagements.includes('like') && (
-                  <div className="absolute inset-0 bg-pink-400/10 rounded-lg"></div>
+                {clickEffects.like && (
+                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-pink-300 animate-ping pointer-events-none">
+                    💖
+                  </div>
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
@@ -440,11 +459,13 @@ export default function PostCard({ post }: PostCardProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-300 hover:scale-105 ${
+                    className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
                       userEngagements.includes('energy') 
-                        ? 'text-yellow-200 bg-yellow-800/40' 
+                        ? 'text-yellow-100 bg-gradient-to-r from-yellow-600 to-yellow-500 shadow-md' 
                         : 'text-white/80 hover:text-yellow-300'
-                    } ${engageMutation.isPending ? 'opacity-75' : ''}`}
+                    } ${engageMutation.isPending ? 'opacity-75' : ''} ${
+                      clickEffects.energy ? 'scale-110 animate-pulse' : ''
+                    }`}
                     disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
                     title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
                     data-testid={`button-energy-${post.id}`}
@@ -456,8 +477,10 @@ export default function PostCard({ post }: PostCardProps) {
                     {((user as any)?.energy || 0) < energyAmount && (
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-80"></div>
                     )}
-                    {userEngagements.includes('energy') && (
-                      <div className="absolute inset-0 bg-yellow-400/10 rounded-lg"></div>
+                    {clickEffects.energy && (
+                      <div className="absolute -top-6 -left-2 text-yellow-300 text-xs animate-bounce pointer-events-none">
+                        ⚡+{energyAmount}
+                      </div>
                     )}
                   </Button>
                 </PopoverTrigger>

@@ -108,3 +108,27 @@ Premium subscriptions are managed through Stripe with support for recurring paym
 - **Notion API**: Documentation synchronization and content management
 - **Change Tracking**: All significant updates and feature changes are automatically documented in the Notion database
 - **Version Control Integration**: Code changes are synchronized with project documentation for complete traceability
+
+### Task Management and Development Workflow
+
+#### Trello Integration for Development
+The project uses Trello as a development task management system for tracking features, bugs, and improvements:
+
+- **Development Board**: [Ascended Social Development](https://trello.com/b/68a9ced99aed4ab60de0c985)
+- **Purpose**: Internal development coordination between developers and AI assistant
+- **Integration**: Command-line tools for task creation, status updates, and progress tracking
+
+#### Development Workflow Process
+1. **Task Creation**: New features, bugs, or improvements are created as Trello cards
+2. **Planning**: Tasks are organized into appropriate lists (Backlog, To Do, In Progress, Review, Done)
+3. **Assignment**: Cards can be assigned to developers or flagged for AI assistance
+4. **Progress Tracking**: Cards move through workflow stages with status updates
+5. **Communication**: Technical details, code references, and implementation notes are added as card comments
+6. **Completion**: Finished tasks are moved to "Done" with links to relevant commits or deployments
+
+#### Development Tools
+- **Trello CLI Tool**: `node dev-tools/trello-dev.js` for command-line task management
+- **Board Access**: Direct integration with development board for real-time updates
+- **Automated Sync**: Task creation and updates can be integrated with development workflows
+
+This system enables efficient collaboration between human developers and AI assistants, ensuring all development work is tracked, organized, and properly documented.

@@ -35,7 +35,6 @@ const upload = multer({
   }
 });
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
-import { trelloClient } from "./trello-client";
 import Stripe from "stripe";
 
 // Stripe setup
@@ -1348,83 +1347,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register Scrapybara routes for authenticated screenshot testing
   registerScrapybaraRoutes(app);
 
-  // Trello task management routes
-  app.get('/api/trello/boards', isAuthenticated, async (req: any, res) => {
-    try {
-      const boards = await trelloClient.listBoards();
-      res.json(boards);
-    } catch (error) {
-      console.error('Error fetching Trello boards:', error);
-      res.status(500).json({ message: 'Failed to fetch boards' });
-    }
-  });
-
-  app.get('/api/trello/boards/:boardId/lists', isAuthenticated, async (req: any, res) => {
-    try {
-      const { boardId } = req.params;
-      const lists = await trelloClient.getBoardLists(boardId);
-      res.json(lists);
-    } catch (error) {
-      console.error('Error fetching board lists:', error);
-      res.status(500).json({ message: 'Failed to fetch board lists' });
-    }
-  });
-
-  app.get('/api/trello/cards', isAuthenticated, async (req: any, res) => {
-    try {
-      const cards = await trelloClient.getMyCards();
-      res.json(cards);
-    } catch (error) {
-      console.error('Error fetching Trello cards:', error);
-      res.status(500).json({ message: 'Failed to fetch cards' });
-    }
-  });
-
-  app.post('/api/trello/cards', isAuthenticated, async (req: any, res) => {
-    try {
-      const { listId, name, description } = req.body;
-      const card = await trelloClient.createCard(listId, name, description);
-      res.json(card);
-    } catch (error) {
-      console.error('Error creating Trello card:', error);
-      res.status(500).json({ message: 'Failed to create card' });
-    }
-  });
-
-  app.put('/api/trello/cards/:cardId', isAuthenticated, async (req: any, res) => {
-    try {
-      const { cardId } = req.params;
-      const updates = req.body;
-      const card = await trelloClient.updateCard(cardId, updates);
-      res.json(card);
-    } catch (error) {
-      console.error('Error updating Trello card:', error);
-      res.status(500).json({ message: 'Failed to update card' });
-    }
-  });
-
-  app.delete('/api/trello/cards/:cardId', isAuthenticated, async (req: any, res) => {
-    try {
-      const { cardId } = req.params;
-      await trelloClient.deleteCard(cardId);
-      res.json({ success: true });
-    } catch (error) {
-      console.error('Error deleting Trello card:', error);
-      res.status(500).json({ message: 'Failed to delete card' });
-    }
-  });
-
-  app.put('/api/trello/cards/:cardId/move', isAuthenticated, async (req: any, res) => {
-    try {
-      const { cardId } = req.params;
-      const { listId } = req.body;
-      const card = await trelloClient.moveCard(cardId, listId);
-      res.json(card);
-    } catch (error) {
-      console.error('Error moving Trello card:', error);
-      res.status(500).json({ message: 'Failed to move card' });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;

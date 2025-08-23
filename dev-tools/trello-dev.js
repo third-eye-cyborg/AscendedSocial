@@ -12,12 +12,40 @@ if (!TRELLO_API_KEY || !TRELLO_TOKEN) {
   process.exit(1);
 }
 
-async function makeRequest(endpoint) {
-  const url = `https://api.trello.com/1${endpoint}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`;
-  const response = await fetch(url);
+async function makeRequest(endpoint, options = {}) {
+  const url = `https://api.trello.com/1${endpoint}`;
+  
+  // For GET requests, add auth as query params
+  if (!options.method || options.method === 'GET') {
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const authUrl = `${url}${separator}key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`;
+    const response = await fetch(authUrl);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Trello API error: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+    
+    return response.json();
+  }
+  
+  // For POST/PUT/DELETE, add auth to body
+  const body = options.body || {};
+  body.key = TRELLO_API_KEY;
+  body.token = TRELLO_TOKEN;
+  
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    body: JSON.stringify(body)
+  });
   
   if (!response.ok) {
-    throw new Error(`Trello API error: ${response.status} ${response.statusText}`);
+    const errorText = await response.text();
+    throw new Error(`Trello API error: ${response.status} ${response.statusText} - ${errorText}`);
   }
   
   return response.json();
@@ -75,25 +103,20 @@ async function listCards() {
 
 async function createCard(listId, name, description = '') {
   try {
-    const response = await fetch(`https://api.trello.com/1/cards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}`, {
+    const card = await makeRequest('/cards', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+      body: {
         idList: listId,
         name,
         desc: description
-      })
+      }
     });
     
-    if (!response.ok) {
-      throw new Error(`Failed to create card: ${response.status}`);
-    }
-    
-    const card = await response.json();
     console.log(`✅ Created card: ${card.name}`);
     console.log(`   URL: ${card.shortUrl}`);
+    return card;
   } catch (error) {
-    console.error('❌ Error:', error.message);
+    console.error('❌ Error creating card:', error.message);
   }
 }
 

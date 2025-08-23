@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, Eye, Users, Filter, Home, Zap, RotateCcw, Maximize2 } from 'lucide-react';
+import { Sparkles, Eye, Users, Filter, Home, Zap, RotateCcw, Maximize2, X } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
@@ -617,31 +617,41 @@ function StarmapScene() {
         </div>
         
         {showFilters && (
-          <Card className="p-4 bg-black/70 backdrop-blur-md border-purple-500/30 shadow-2xl">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="text-sm font-medium text-purple-200 flex items-center">
-                <Filter className="w-4 h-4 mr-2" />
-                Spiritual Filters
+          <Card className="p-3 bg-black/85 backdrop-blur-md border-purple-500/50 shadow-2xl w-72">
+            <CardHeader className="p-0 pb-2">
+              <CardTitle className="text-sm font-medium text-white flex items-center justify-between">
+                <div className="flex items-center">
+                  <Filter className="w-4 h-4 mr-2 text-purple-400" />
+                  Spiritual Filters
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setShowFilters(false)}
+                  className="text-purple-300 hover:text-white p-1 h-6 w-6"
+                >
+                  <X className="w-3 h-3" />
+                </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-purple-300 mb-1 block">Chakra Energy</label>
+                  <label className="text-xs text-white font-medium mb-2 block">Chakra Energy</label>
                   <Select onValueChange={(chakra) => setFilters((f) => ({ ...f, chakra: chakra === 'all' ? undefined : chakra }))}>
-                    <SelectTrigger className="h-8 text-xs bg-black/40 border-purple-400/30">
-                      <SelectValue placeholder="All Chakras" />
+                    <SelectTrigger className="h-8 text-xs bg-black/60 border-purple-400/50 text-white">
+                      <SelectValue placeholder="All Chakras" className="text-white" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black/90 backdrop-blur-md border-purple-500/30">
-                      <SelectItem value="all">All Chakras</SelectItem>
+                    <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
+                      <SelectItem value="all" className="text-white hover:bg-purple-900/50">All Chakras</SelectItem>
                       {Object.entries(chakraColors).map(([chakra, color]) => (
-                        <SelectItem key={chakra} value={chakra}>
+                        <SelectItem key={chakra} value={chakra} className="text-white hover:bg-purple-900/50">
                           <div className="flex items-center">
                             <div 
                               className="w-3 h-3 rounded-full mr-2" 
                               style={{ backgroundColor: color }}
                             ></div>
-                            <span className="capitalize">{chakra}</span>
+                            <span className="capitalize text-white">{chakra}</span>
                           </div>
                         </SelectItem>
                       ))}
@@ -650,16 +660,16 @@ function StarmapScene() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-purple-300 mb-1 block">Astrology Sign</label>
+                  <label className="text-xs text-white font-medium mb-2 block">Astrology Sign</label>
                   <Select onValueChange={(sign) => setFilters((f) => ({ ...f, astrologySign: sign === 'all' ? undefined : sign }))}>
-                    <SelectTrigger className="h-8 text-xs bg-black/40 border-purple-400/30">
-                      <SelectValue placeholder="All Signs" />
+                    <SelectTrigger className="h-8 text-xs bg-black/60 border-purple-400/50 text-white">
+                      <SelectValue placeholder="All Signs" className="text-white" />
                     </SelectTrigger>
-                    <SelectContent className="bg-black/90 backdrop-blur-md border-purple-500/30">
-                      <SelectItem value="all">All Signs</SelectItem>
+                    <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
+                      <SelectItem value="all" className="text-white hover:bg-purple-900/50">All Signs</SelectItem>
                       {['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'].map(sign => (
-                        <SelectItem key={sign} value={sign}>
-                          <span className="capitalize">♦ {sign}</span>
+                        <SelectItem key={sign} value={sign} className="text-white hover:bg-purple-900/50">
+                          <span className="capitalize text-white">♦ {sign}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>

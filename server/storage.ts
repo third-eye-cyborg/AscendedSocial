@@ -431,14 +431,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPostEngagements(postId: string): Promise<{ [key in EngagementType]: number } & { comments: number }> {
+    // Get regular engagement counts (upvote, downvote, like)
     const engagements = await db
       .select({
         type: postEngagements.type,
         count: count(),
       })
       .from(postEngagements)
-      .where(eq(postEngagements.postId, postId))
+      .where(
+        and(
+          eq(postEngagements.postId, postId),
+          ne(postEngagements.type, 'energy')
+        )
+      )
       .groupBy(postEngagements.type);
+
+    // Get total energy amount from energy engagements
+    const totalEnergyAmount = await db
+      .select({ totalEnergy: sum(postEngagements.energyAmount) })
+      .from(postEngagements)
+      .where(
+        and(
+          eq(postEngagements.postId, postId),
+          eq(postEngagements.type, 'energy')
+        )
+      );
 
     // Get comment count separately
     const [{ count: commentCount }] = await db
@@ -450,7 +467,7 @@ export class DatabaseStorage implements IStorage {
       upvote: 0,
       downvote: 0,
       like: 0,
-      energy: 0,
+      energy: Number(totalEnergyAmount[0]?.totalEnergy || 0),
       comments: commentCount || 0,
     };
 

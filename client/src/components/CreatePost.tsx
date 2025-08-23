@@ -181,36 +181,67 @@ export default function CreatePost() {
                 </div>
               )}
               
-              {/* Enhanced Actions */}
+              {/* Clean Actions */}
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-                <div className="flex items-center space-x-6">
-                  <ObjectUploader
-                    maxNumberOfFiles={1}
-                    maxFileSize={50 * 1024 * 1024} // 50MB
-                    onGetUploadParameters={handleGetUploadParameters}
-                    onComplete={handleUploadComplete}
-                    buttonClassName="group relative p-2 rounded-full bg-primary/10 hover:bg-primary/20 transition-all duration-300 border-none shadow-md hover:shadow-lg"
+                <div className="flex items-center space-x-4">
+                  {/* Simple File Upload */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    id="file-upload"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          const params = await handleGetUploadParameters();
+                          
+                          const response = await fetch(params.url, {
+                            method: params.method,
+                            body: file,
+                            headers: {
+                              'Content-Type': file.type,
+                            },
+                          });
+                          
+                          if (response.ok) {
+                            const publicUrl = params.url.split('?')[0];
+                            
+                            // Set ACL policy for the uploaded file
+                            const aclResponse = await apiRequest("PUT", "/api/media", { mediaURL: params.url });
+                            const aclData = await aclResponse.json();
+                            
+                            setMediaUrl(aclData.objectPath);
+                            setMediaType("image");
+                            
+                            toast({
+                              title: "Image uploaded successfully",
+                              description: "Your image is ready to share",
+                            });
+                          }
+                        } catch (error) {
+                          console.error('Upload failed:', error);
+                          toast({
+                            title: "Upload failed",
+                            description: "Please try again",
+                            variant: "destructive",
+                          });
+                        }
+                      }
+                    }}
+                    data-testid="input-file-upload"
+                  />
+                  <label 
+                    htmlFor="file-upload"
+                    className="cursor-pointer inline-flex items-center space-x-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-primary hover:text-white text-sm"
+                    data-testid="button-add-media"
                   >
-                    <div className="relative">
-                      <i className="fas fa-image text-primary group-hover:text-white transition-colors text-lg" data-testid="button-add-media"></i>
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                  </ObjectUploader>
+                    <i className="fas fa-image"></i>
+                    <span>Add Image</span>
+                  </label>
                   
-                  <button 
-                    type="button" 
-                    className="group relative p-2 rounded-full bg-accent/10 hover:bg-accent/20 transition-all duration-300 shadow-md hover:shadow-lg"
-                    onClick={() => alert('Spiritual Analytics - Coming soon! Track your post resonance, chakra alignment, and community impact 📊🔮')}
-                    data-testid="button-add-poll"
-                  >
-                    <div className="relative">
-                      <i className="fas fa-poll text-accent group-hover:text-white transition-colors text-lg"></i>
-                      <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                  </button>
-                  
-                  <div className="flex items-center text-xs text-white/80 ml-2">
-                    <i className="fas fa-sparkles mr-1 text-primary"></i>
+                  <div className="flex items-center text-xs text-white/60">
+                    <i className="fas fa-sparkles mr-1 text-primary/70"></i>
                     <span>Share your wisdom</span>
                   </div>
                 </div>
@@ -218,25 +249,20 @@ export default function CreatePost() {
                 <Button 
                   type="submit"
                   disabled={!content.trim() || createPostMutation.isPending}
-                  className="relative bg-gradient-to-r from-primary via-purple-600 to-accent hover:from-primary/80 hover:via-purple-500 hover:to-accent/80 px-6 py-2.5 font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] text-white border border-white/30 overflow-hidden group"
+                  className="bg-primary hover:bg-primary/80 px-6 py-2 rounded-lg transition-colors text-white font-medium"
                   data-testid="button-share"
                 >
-                  {/* Animated background shimmer */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  
-                  <div className="relative z-10">
-                    {createPostMutation.isPending ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></div>
-                        <span className="text-white/90 font-medium">Ascending...</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center space-x-2">
-                        <i className="fas fa-rocket text-white/90 transform group-hover:translate-y-[-1px] transition-transform duration-200"></i>
-                        <span className="text-white/90 font-medium">Ascend</span>
-                      </div>
-                    )}
-                  </div>
+                  {createPostMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></div>
+                      <span>Sharing...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <i className="fas fa-paper-plane"></i>
+                      <span>Share</span>
+                    </div>
+                  )}
                 </Button>
               </div>
             </div>

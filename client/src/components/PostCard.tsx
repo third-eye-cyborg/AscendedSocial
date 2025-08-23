@@ -47,7 +47,6 @@ export default function PostCard({ post }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [energyAmount, setEnergyAmount] = useState(10);
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
-  const [showSuccessEffect, setShowSuccessEffect] = useState<string | null>(null);
 
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
@@ -81,24 +80,6 @@ export default function PostCard({ post }: PostCardProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
-      
-      // Show success effect
-      setShowSuccessEffect(variables.type);
-      setTimeout(() => setShowSuccessEffect(null), 2000);
-      
-      // Show appropriate toast message
-      const messages = {
-        upvote: "✨ Frequency raised! +5 Spirit XP",
-        downvote: "🌊 Balance provided. +3 Spirit XP", 
-        like: "💖 Heart resonance sent! +2 Spirit XP",
-        energy: `⚡ Energy transferred! +20 Spirit XP (-${variables.energyAmount || energyAmount} energy)`
-      };
-      
-      toast({
-        title: "Spiritual Action Complete",
-        description: messages[variables.type as keyof typeof messages] || "Action completed!",
-        duration: 3000,
-      });
     },
     onError: (error) => {
       toast({
@@ -333,7 +314,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronUp className="w-5 h-5" />
                   {userEngagements.includes('upvote') && (
-                    <div className="absolute -inset-1 bg-green-400/30 rounded-lg animate-pulse shadow-lg shadow-green-400/50"></div>
+                    <div className="absolute inset-0 bg-green-400/10 rounded-lg"></div>
                   )}
                 </Button>
                 
@@ -348,10 +329,7 @@ export default function PostCard({ post }: PostCardProps) {
                   >
                     {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
                   </div>
-                  <div className="text-xs text-white/70 font-medium tracking-wide">
-                    FREQUENCY {showSuccessEffect === 'upvote' && <span className="text-green-300 animate-bounce">↗️</span>}
-                    {showSuccessEffect === 'downvote' && <span className="text-blue-300 animate-bounce">📉</span>}
-                  </div>
+                  <div className="text-xs text-white/70 font-medium tracking-wide">FREQUENCY</div>
                 </div>
                 
                 <Button
@@ -369,7 +347,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronDown className="w-5 h-5" />
                   {userEngagements.includes('downvote') && (
-                    <div className="absolute -inset-1 bg-red-400/30 rounded-lg animate-pulse shadow-lg shadow-red-400/50"></div>
+                    <div className="absolute inset-0 bg-red-400/10 rounded-lg"></div>
                   )}
                 </Button>
               </div>
@@ -444,16 +422,14 @@ export default function PostCard({ post }: PostCardProps) {
                   userEngagements.includes('like') ? 'scale-110 fill-current' : 'hover:scale-110'
                 }`} />
                 {userEngagements.includes('like') && (
-                  <div className="absolute -inset-1 bg-pink-400/40 rounded-lg animate-pulse shadow-lg shadow-pink-400/50"></div>
+                  <div className="absolute inset-0 bg-pink-400/10 rounded-lg"></div>
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
                 <span className="text-sm font-bold text-pink-200" data-testid={`likes-${post.id}`}>
                   {post.engagements?.like || 0}
                 </span>
-                <span className="text-xs text-white/70 font-medium">
-                  HEARTS {showSuccessEffect === 'like' && <span className="text-pink-300 animate-bounce">💖</span>}
-                </span>
+                <span className="text-xs text-white/70 font-medium">HEARTS</span>
               </div>
             </div>
 
@@ -481,7 +457,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-80"></div>
                     )}
                     {userEngagements.includes('energy') && (
-                      <div className="absolute -inset-1 bg-yellow-400/40 rounded-lg animate-pulse shadow-lg shadow-yellow-400/50"></div>
+                      <div className="absolute inset-0 bg-yellow-400/10 rounded-lg"></div>
                     )}
                   </Button>
                 </PopoverTrigger>

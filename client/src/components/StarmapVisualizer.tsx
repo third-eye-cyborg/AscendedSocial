@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState, useEffect, useMemo } from 'react';
+import { Suspense, useRef, useState, useEffect, useMemo, Component, ErrorInfo, ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, Text, Html } from '@react-three/drei';
 import { Group, Vector3, Color, Mesh, BufferGeometry, Material } from 'three';
@@ -10,6 +10,221 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Eye, Users, Filter, Home, Zap, RotateCcw, Maximize2 } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
+
+// Error Boundary for 3D Canvas
+interface CanvasErrorBoundaryState {
+  hasError: boolean;
+  error?: Error;
+}
+
+class CanvasErrorBoundary extends Component<
+  { children: ReactNode; onRetry: () => void },
+  CanvasErrorBoundaryState
+> {
+  constructor(props: { children: ReactNode; onRetry: () => void }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): CanvasErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.warn('3D Canvas Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <Starmap2DFallback onRetry={() => {
+        this.setState({ hasError: false, error: undefined });
+        this.props.onRetry();
+      }} />;
+    }
+
+    return this.props.children;
+  }
+}
+
+// 2D Fallback Starmap when WebGL fails
+function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
+  const [filters, setFilters] = useState<{
+    chakra?: string;
+    astrologySign?: string;
+    minAura?: number;
+    maxAura?: number;
+    minEnergy?: number;
+    maxEnergy?: number;
+  }>({});
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
+    queryKey: ['/api/starmap/users', JSON.stringify(filters)],
+    queryFn: async (): Promise<StarmapUser[]> => {
+      const params = new URLSearchParams();
+      if (filters.chakra) params.append('chakra', filters.chakra);
+      if (filters.astrologySign) params.append('astrologySign', filters.astrologySign);
+      if (filters.minAura !== undefined) params.append('minAura', filters.minAura.toString());
+      if (filters.maxAura !== undefined) params.append('maxAura', filters.maxAura.toString());
+      if (filters.minEnergy !== undefined) params.append('minEnergy', filters.minEnergy.toString());
+      if (filters.maxEnergy !== undefined) params.append('maxEnergy', filters.maxEnergy.toString());
+      
+      const queryString = params.toString();
+      const url = `/api/starmap/users${queryString ? '?' + queryString : ''}`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch starmap users: ${response.status}`);
+      }
+      
+      return response.json();
+    },
+    retry: 2
+  });
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Connection Lost",
+        description: "Unable to connect to the spiritual realm. Trying again...",
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-black via-purple-950/20 to-black">
+        <div className="relative mb-8">
+          <div className="w-24 h-24 rounded-full border-4 border-purple-500/30 border-t-purple-400 animate-spin"></div>
+          <Sparkles className="w-8 h-8 text-purple-400 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+        </div>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Mapping the Spiritual Cosmos</h2>
+          <p className="text-purple-300 animate-pulse">Connecting to the celestial network...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-b from-black via-purple-950/20 to-black">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🌌</div>
+          <h2 className="text-2xl font-bold text-white mb-2">Cosmic Interference</h2>
+          <p className="text-purple-300 mb-4">The spiritual realm seems distant right now.</p>
+          <Button 
+            onClick={() => window.location.reload()}
+            className="bg-purple-600 hover:bg-purple-700"
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reconnect to the Cosmos
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950/20 to-black relative overflow-hidden">
+      {/* Header with 3D retry option */}
+      <div className="absolute top-4 left-4 z-10 flex space-x-2">
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setLocation('/')}
+          className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+        >
+          <Home className="w-4 h-4" />
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={onRetry}
+          className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Try 3D View
+        </Button>
+      </div>
+
+      {/* Status Banner */}
+      <div className="absolute top-4 right-4 z-10">
+        <Card className="p-3 bg-black/70 backdrop-blur-md border-purple-500/30">
+          <div className="flex items-center space-x-2 text-sm text-white">
+            <div className="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></div>
+            <span>2D Cosmos View</span>
+          </div>
+        </Card>
+      </div>
+
+      {/* 2D Starmap Grid */}
+      <div className="pt-20 pb-8 px-4">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-2">Spiritual Community Map</h1>
+          <p className="text-purple-300">Explore souls in the astral plane</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          {users.map((user) => (
+            <Card 
+              key={user.id}
+              className="p-4 bg-black/60 backdrop-blur-sm border border-purple-500/30 hover:border-purple-400/50 transition-all cursor-pointer group"
+              onClick={() => setLocation(`/profile/${user.id}`)}
+            >
+              <CardContent className="p-0">
+                <div className="flex items-start space-x-3">
+                  <div 
+                    className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold group-hover:scale-110 transition-transform"
+                    style={{ 
+                      backgroundColor: user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1',
+                      boxShadow: `0 0 20px ${user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#6b46c1'}40`
+                    }}
+                  >
+                    {user.username ? user.username.charAt(0).toUpperCase() : '✨'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-semibold truncate">
+                      {user.username || 'Anonymous Soul'}
+                    </h3>
+                    <div className="flex items-center space-x-3 mt-2 text-xs">
+                      <div className="flex items-center text-yellow-400">
+                        <Zap className="w-3 h-3 mr-1" />
+                        {user.aura || 0}
+                      </div>
+                      <div className="flex items-center text-blue-400">
+                        <Sparkles className="w-3 h-3 mr-1" />
+                        {user.energy || 0}
+                      </div>
+                    </div>
+                    {user.dominantChakra && (
+                      <Badge 
+                        variant="outline" 
+                        className="text-xs mt-2 border-purple-300 text-purple-200 bg-purple-900/30"
+                        style={{ borderColor: chakraColors[user.dominantChakra] }}
+                      >
+                        {user.dominantChakra}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {users.length === 0 && (
+          <div className="text-center text-purple-300 mt-12">
+            <div className="text-6xl mb-4">🌌</div>
+            <p>No souls found in this realm. Try adjusting your filters.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // Chakra color mapping for stars
 const chakraColors: Record<string, string> = {
@@ -67,17 +282,26 @@ function StarUser({ user, position, mode, onClick }: {
   const [hovered, setHovered] = useState(false);
   
   useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * (hovered ? 1.0 : 0.3);
-      if (hovered) {
-        meshRef.current.scale.setScalar(mode === 'starmap' ? 1.5 : 1.3);
-      } else {
-        meshRef.current.scale.setScalar(1);
+    try {
+      if (meshRef.current) {
+        meshRef.current.rotation.y += delta * (hovered ? 1.0 : 0.3);
+        if (hovered) {
+          meshRef.current.scale.setScalar(mode === 'starmap' ? 1.5 : 1.3);
+        } else {
+          meshRef.current.scale.setScalar(1);
+        }
       }
+    } catch (error) {
+      console.warn('Error in StarUser useFrame:', error);
     }
   });
 
-  const color = user.dominantChakra ? chakraColors[user.dominantChakra] : '#ffffff';
+  // Defensive programming for user data
+  if (!user || !user.id) {
+    return null;
+  }
+
+  const color = user.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#ffffff';
   const auraIntensity = Math.min((user.aura || 0) / 1000, 1);
   const size = mode === 'starmap' ? 0.2 + auraIntensity * 0.3 : 0.6 + auraIntensity * 0.4;
   
@@ -261,6 +485,7 @@ function StarmapScene() {
   const [, setLocation] = useLocation();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
+  const [retryKey, setRetryKey] = useState(0);
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -286,17 +511,22 @@ function StarmapScene() {
       
       return response.json();
     },
-    retry: 2,
-    onError: () => {
+    retry: 2
+  });
+
+  // Add error handling with useEffect
+  useEffect(() => {
+    if (error) {
       toast({
         title: "Connection Lost",
         description: "Unable to connect to the spiritual realm. Trying again...",
         variant: "destructive",
       });
     }
-  });
+  }, [error, toast]);
 
   const userPositions = useMemo(() => {
+    if (!Array.isArray(users)) return [];
     return users.map((user: StarmapUser, index: number) => ({
       user,
       position: getStarPosition(user, index)
@@ -422,7 +652,7 @@ function StarmapScene() {
                   </Select>
                 </div>
                 
-                {Object.keys(filters).some(key => filters[key]) && (
+                {Object.keys(filters).some(key => filters[key as keyof typeof filters]) && (
                   <Button
                     size="sm"
                     variant="ghost"
@@ -506,57 +736,60 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* 3D Canvas */}
-      <Canvas
-        camera={{ position: [0, 5, 25], fov: 60 }}
-        className="bg-gradient-to-b from-black via-purple-950/20 to-black"
-      >
-        <Suspense fallback={null}>
-          <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
-          <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
-          <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
-          
-          {mode === 'starmap' && (
-            <>
-              <Stars radius={100} depth={50} count={2000} factor={6} saturation={0.1} fade />
-              <fog attach="fog" args={['#000011', 30, 100]} />
-            </>
-          )}
-          
-          {mode === 'fungus' && (
-            <fog attach="fog" args={['#001122', 10, 40]} />
-          )}
-          
-          <CameraController onModeChange={setMode} />
-          
-          {userPositions.map(({ user, position }, index) => (
-            <StarUser
-              key={user.id}
-              user={user}
-              position={position}
-              mode={mode}
-              onClick={handleUserClick}
+      {/* 3D Canvas with Error Boundary */}
+      <CanvasErrorBoundary onRetry={() => setRetryKey(k => k + 1)}>
+        <Canvas
+          key={retryKey}
+          camera={{ position: [0, 5, 25], fov: 60 }}
+          className="bg-gradient-to-b from-black via-purple-950/20 to-black"
+        >
+          <Suspense fallback={null}>
+            <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
+            <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
+            <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
+            
+            {mode === 'starmap' && (
+              <>
+                <Stars radius={100} depth={50} count={2000} factor={6} saturation={0.1} fade />
+                <fog attach="fog" args={['#000011', 30, 100]} />
+              </>
+            )}
+            
+            {mode === 'fungus' && (
+              <fog attach="fog" args={['#001122', 10, 40]} />
+            )}
+            
+            <CameraController onModeChange={setMode} />
+            
+            {userPositions.map(({ user, position }, index) => (
+              <StarUser
+                key={user.id}
+                user={user}
+                position={position}
+                mode={mode}
+                onClick={handleUserClick}
+              />
+            ))}
+            
+            {mode === 'fungus' && <ConnectionLines users={users} />}
+            
+            <OrbitControls
+              enableZoom
+              enablePan
+              enableRotate
+              zoomSpeed={1.5}
+              panSpeed={1.2}
+              rotateSpeed={0.8}
+              minDistance={3}
+              maxDistance={60}
+              dampingFactor={0.05}
+              enableDamping
+              autoRotate={mode === 'starmap'}
+              autoRotateSpeed={0.5}
             />
-          ))}
-          
-          {mode === 'fungus' && <ConnectionLines users={users} />}
-          
-          <OrbitControls
-            enableZoom
-            enablePan
-            enableRotate
-            zoomSpeed={1.5}
-            panSpeed={1.2}
-            rotateSpeed={0.8}
-            minDistance={3}
-            maxDistance={60}
-            dampingFactor={0.05}
-            enableDamping
-            autoRotate={mode === 'starmap'}
-            autoRotateSpeed={0.5}
-          />
-        </Suspense>
-      </Canvas>
+          </Suspense>
+        </Canvas>
+      </CanvasErrorBoundary>
     </div>
   );
 }

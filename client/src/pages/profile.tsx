@@ -13,6 +13,7 @@ import PostCard from "@/components/PostCard";
 import SigilGenerator from "@/components/SigilGenerator";
 import { getChakraColor } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -148,29 +149,14 @@ export default function Profile() {
             <Card className="bg-cosmic-light border border-primary/30 hover-lift animate-fade-in">
               <CardHeader>
                 <div className="flex flex-col items-center text-center">
-                  {/* Profile Sigil */}
-                  <div className="relative group mb-4">
-                    <div className="sigil-container w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-accent/30 p-1 shadow-2xl">
-                      <div className="w-full h-full bg-gradient-to-br from-cosmic to-cosmic-light rounded-full flex items-center justify-center border-2 border-primary/40 overflow-hidden">
-                        {profile?.profileImageUrl ? (
-                          <img 
-                            src={profile.profileImageUrl} 
-                            alt={profile?.username || 'User'} 
-                            className="w-full h-full object-cover"
-                            data-testid="img-profile-avatar"
-                          />
-                        ) : profile?.sigil ? (
-                          <span className="text-2xl text-white font-mono drop-shadow-xl" data-testid="text-profile-sigil">
-                            {profile.sigil}
-                          </span>
-                        ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                            <i className="fas fa-user text-2xl text-white drop-shadow-lg"></i>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                  {/* Profile Avatar using unified ProfileIcon */}
+                  <div className="mb-4">
+                    <ProfileIcon 
+                      user={profile}
+                      size="xl"
+                      className="sigil-container w-24 h-24 shadow-2xl"
+                      testId="profile-avatar"
+                    />
                   </div>
 
                   {/* User Info */}

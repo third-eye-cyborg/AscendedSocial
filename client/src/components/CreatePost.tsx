@@ -231,20 +231,25 @@ export default function CreatePost() {
                 <Button 
                   type="submit"
                   disabled={!content.trim() || createPostMutation.isPending}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 px-8 py-3 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-white border-2 border-white/20"
+                  className="relative bg-gradient-to-r from-primary via-purple-600 to-accent hover:from-primary/80 hover:via-purple-500 hover:to-accent/80 px-6 py-2.5 font-bold rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] text-white border border-white/30 overflow-hidden group"
                   data-testid="button-share"
                 >
-                  {createPostMutation.isPending ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-white drop-shadow-lg">Ascending...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-paper-plane text-white drop-shadow-lg"></i>
-                      <span className="text-white drop-shadow-lg">Ascend</span>
-                    </div>
-                  )}
+                  {/* Animated background shimmer */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  
+                  <div className="relative z-10">
+                    {createPostMutation.isPending ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-4 h-4 border-2 border-white/80 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-white/90 font-medium">Ascending...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <i className="fas fa-rocket text-white/90 transform group-hover:translate-y-[-1px] transition-transform duration-200"></i>
+                        <span className="text-white/90 font-medium">Ascend</span>
+                      </div>
+                    )}
+                  </div>
                 </Button>
               </div>
             </div>

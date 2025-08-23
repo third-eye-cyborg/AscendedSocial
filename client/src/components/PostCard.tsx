@@ -267,7 +267,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('upvote') ? 'text-green-400' : 'text-white/90 hover:text-green-400'}`}
+                className={`p-1 transition-colors duration-200 ${userEngagements.includes('upvote') ? 'text-green-300 bg-green-900/20' : 'text-white/90 hover:text-green-300'}`}
                 onClick={() => handleEngagement('upvote')}
                 disabled={engageMutation.isPending}
                 title="Upvote (Positive Frequency)"
@@ -278,8 +278,8 @@ export default function PostCard({ post }: PostCardProps) {
               <span 
                 className={`text-sm font-medium ${
                   ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
-                    ? 'text-green-400' 
-                    : 'text-red-400'
+                    ? 'text-green-300' 
+                    : 'text-red-300'
                 }`}
                 data-testid={`votes-${post.id}`}
               >
@@ -288,7 +288,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1 transition-colors duration-200 ${userEngagements.includes('downvote') ? 'text-red-400' : 'text-white/90 hover:text-red-400'}`}
+                className={`p-1 transition-colors duration-200 ${userEngagements.includes('downvote') ? 'text-red-300 bg-red-900/20' : 'text-white/90 hover:text-red-300'}`}
                 onClick={() => handleEngagement('downvote')}
                 disabled={engageMutation.isPending}
                 title="Downvote (Negative Frequency)"
@@ -302,7 +302,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('like') ? 'text-red-500' : 'text-white/90 hover:text-red-500'}`}
+              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('like') ? 'text-pink-300 bg-pink-900/20' : 'text-white/90 hover:text-pink-300'}`}
               onClick={() => handleEngagement('like')}
               disabled={engageMutation.isPending}
               data-testid={`button-like-${post.id}`}
@@ -317,7 +317,7 @@ export default function PostCard({ post }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('energy') ? 'text-accent-light' : 'text-white/90 hover:text-accent-light'}`}
+              className={`flex items-center space-x-1 transition-colors duration-200 ${userEngagements.includes('energy') ? 'text-yellow-300 bg-yellow-900/20' : 'text-white/90 hover:text-yellow-300'}`}
               onClick={() => handleEngagement('energy')}
               disabled={engageMutation.isPending}
               title="Send Energy (Uses 10 energy points)"

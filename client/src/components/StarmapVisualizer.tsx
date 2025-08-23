@@ -698,25 +698,25 @@ function StarmapScene() {
 
       {/* Mode indicator */}
       <div className="absolute top-4 right-4 z-10">
-        <Card className="p-4 bg-black/70 backdrop-blur-md border-purple-500/30 shadow-2xl">
+        <Card className="p-3 bg-black/80 backdrop-blur-md border-purple-500/30 shadow-2xl min-w-[260px]">
           <div className="flex items-center space-x-3 text-white mb-2">
             {mode === 'starmap' ? (
               <>
-                <div className="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
                   <Sparkles className="w-4 h-4 text-purple-300" />
                 </div>
-                <div>
-                  <div className="text-sm font-semibold">Cosmic Starfield</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold whitespace-nowrap">Cosmic Starfield</div>
                   <div className="text-xs text-purple-300">Universal Overview</div>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-8 h-8 rounded-full bg-green-600/30 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-green-600/30 flex items-center justify-center flex-shrink-0">
                   <Users className="w-4 h-4 text-green-300" />
                 </div>
-                <div>
-                  <div className="text-sm font-semibold">Mycelium Network</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold whitespace-nowrap">Mycelium Network</div>
                   <div className="text-xs text-green-300">Connection Web</div>
                 </div>
               </>

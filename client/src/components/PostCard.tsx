@@ -333,7 +333,7 @@ export default function PostCard({ post }: PostCardProps) {
                 size="sm"
                 className={`relative p-2 rounded-full transition-all duration-300 hover:scale-110 ${
                   userEngagements.includes('downvote') 
-                    ? 'text-red-300 bg-red-900/40 shadow-lg shadow-red-400/20' 
+                    ? 'text-red-200 bg-red-800/60 shadow-lg shadow-red-300/30' 
                     : 'text-white/70 hover:text-red-300 hover:bg-red-900/20'
                 } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
                 onClick={() => handleEngagement('downvote')}
@@ -343,7 +343,7 @@ export default function PostCard({ post }: PostCardProps) {
               >
                 <ChevronDown className="w-4 h-4" />
                 {userEngagements.includes('downvote') && (
-                  <div className="absolute inset-0 bg-red-400/20 rounded-full animate-ping"></div>
+                  <div className="absolute inset-0 bg-red-300/30 rounded-full animate-ping"></div>
                 )}
               </Button>
             </div>
@@ -354,7 +354,7 @@ export default function PostCard({ post }: PostCardProps) {
               size="sm"
               className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
                 userEngagements.includes('like') 
-                  ? 'text-pink-300 bg-pink-900/40 shadow-lg shadow-pink-400/20' 
+                  ? 'text-pink-200 bg-pink-800/60 shadow-lg shadow-pink-300/30' 
                   : 'text-white/70 hover:text-pink-300 hover:bg-pink-900/20'
               } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
               onClick={() => handleEngagement('like')}
@@ -369,7 +369,7 @@ export default function PostCard({ post }: PostCardProps) {
                 {post.engagements?.like || 0}
               </span>
               {userEngagements.includes('like') && (
-                <div className="absolute inset-0 bg-pink-400/20 rounded-full animate-ping"></div>
+                <div className="absolute inset-0 bg-pink-300/30 rounded-full animate-ping"></div>
               )}
             </Button>
 
@@ -381,7 +381,7 @@ export default function PostCard({ post }: PostCardProps) {
                   size="sm"
                   className={`relative flex items-center space-x-2 px-3 py-2 rounded-full transition-all duration-300 hover:scale-105 ${
                     userEngagements.includes('energy') 
-                      ? 'text-yellow-300 bg-yellow-900/40 shadow-lg shadow-yellow-400/20' 
+                      ? 'text-yellow-200 bg-yellow-800/60 shadow-lg shadow-yellow-300/30' 
                       : 'text-white/70 hover:text-yellow-300 hover:bg-yellow-900/20'
                   } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
                   disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
@@ -400,9 +400,9 @@ export default function PostCard({ post }: PostCardProps) {
                   )}
                   {userEngagements.includes('energy') && (
                     <>
-                      <div className="absolute inset-0 bg-yellow-400/20 rounded-full animate-ping"></div>
+                      <div className="absolute inset-0 bg-yellow-300/30 rounded-full animate-ping"></div>
                       <div className="absolute inset-0 overflow-hidden rounded-full">
-                        <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-400/30 to-transparent animate-pulse"></div>
+                        <div className="absolute inset-x-0 -top-2 h-4 bg-gradient-to-r from-transparent via-yellow-300/40 to-transparent animate-pulse"></div>
                       </div>
                     </>
                   )}

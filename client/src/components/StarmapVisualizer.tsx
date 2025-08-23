@@ -498,6 +498,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
+  const [enable3D, setEnable3D] = useState(false); // Start with 2D for stability
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -588,8 +589,8 @@ function StarmapScene() {
   return (
     <div className="w-full h-screen relative">
       {/* Control Panel */}
-      <div className="absolute top-4 left-4 z-10 flex flex-col space-y-2 max-w-xs">
-        <div className="flex space-x-2 mb-2">
+      <div className="absolute top-4 left-4 z-20">
+        <div className="flex space-x-2 mb-3">
           <Button
             size="sm"
             variant="outline"
@@ -615,9 +616,12 @@ function StarmapScene() {
             <Maximize2 className="w-4 h-4" />
           </Button>
         </div>
+      </div>
         
-        {showFilters && (
-          <Card className="p-3 bg-black/85 backdrop-blur-md border-purple-500/50 shadow-2xl w-72">
+      {/* Filter Panel - Separate positioning to avoid overlap */}
+      {showFilters && (
+        <div className="absolute top-16 left-4 z-20">
+          <Card className="p-3 bg-black/90 backdrop-blur-md border-purple-500/50 shadow-2xl w-64">
             <CardHeader className="p-0 pb-2">
               <CardTitle className="text-sm font-medium text-white flex items-center justify-between">
                 <div className="flex items-center">
@@ -689,8 +693,8 @@ function StarmapScene() {
               </div>
             </CardContent>
           </Card>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Mode indicator */}
       <div className="absolute top-4 right-4 z-10">
@@ -760,10 +764,86 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* 2D Starmap (WebGL disabled to prevent errors) */}
-      <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full">
-        <Starmap2DFallback onRetry={() => setRetryKey(k => k + 1)} />
-      </div>
+      {/* Starmap with 3D option */}
+      {enable3D ? (
+        <CanvasErrorBoundary onRetry={() => {
+          setRetryKey(k => k + 1);
+          setEnable3D(false); // Fall back to 2D on error
+        }}>
+          {userPositions.length > 0 ? (
+            <Canvas
+              key={retryKey}
+              camera={{ position: [0, 5, 25], fov: 60 }}
+              className="bg-gradient-to-b from-black via-purple-950/20 to-black"
+              gl={{ 
+                antialias: true, 
+                alpha: false,
+                powerPreference: "high-performance"
+              }}
+              onCreated={({ gl }) => {
+                gl.setClearColor('#000000');
+              }}
+            >
+              <Suspense fallback={null}>
+                <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
+                <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
+                <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
+                
+                {mode === 'starmap' && (
+                  <>
+                    <Stars radius={100} depth={50} count={2000} factor={6} saturation={0.1} fade />
+                    <fog attach="fog" args={['#000011', 30, 100]} />
+                  </>
+                )}
+                
+                {mode === 'fungus' && (
+                  <fog attach="fog" args={['#001122', 10, 40]} />
+                )}
+                
+                <CameraController onModeChange={setMode} />
+                
+                {userPositions.map(({ user, position }, index) => (
+                  <StarUser
+                    key={user.id}
+                    user={user}
+                    position={position}
+                    mode={mode}
+                    onClick={handleUserClick}
+                  />
+                ))}
+                
+                {mode === 'fungus' && <ConnectionLines users={users} />}
+                
+                <OrbitControls
+                  enableZoom
+                  enablePan
+                  enableRotate
+                  zoomSpeed={1.5}
+                  panSpeed={1.2}
+                  rotateSpeed={0.8}
+                  minDistance={3}
+                  maxDistance={60}
+                  dampingFactor={0.05}
+                  enableDamping
+                  autoRotate={mode === 'starmap'}
+                  autoRotateSpeed={0.5}
+                />
+              </Suspense>
+            </Canvas>
+          ) : (
+            <div className="flex items-center justify-center h-full bg-gradient-to-b from-purple-900 via-black to-purple-900">
+              <div className="text-center text-white">
+                <div className="animate-spin w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p>Loading spiritual cosmos...</p>
+              </div>
+            </div>
+          )}
+        </CanvasErrorBoundary>
+      ) : (
+        <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full">
+          <Starmap2DFallback onRetry={() => setEnable3D(true)} />
+        </div>
+      )}
     </div>
   );
 }

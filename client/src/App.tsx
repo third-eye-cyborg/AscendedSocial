@@ -20,6 +20,7 @@ import Oracle from "@/pages/oracle";
 import Onboarding from "@/pages/onboarding";
 import SpiritPage from "@/pages/spirit";
 import EnergyPage from "@/pages/energy";
+import StarmapPage from "@/pages/starmap";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,7 @@ function Router() {
           <Route path="/oracle" component={Oracle} />
           <Route path="/spirit" component={SpiritPage} />
           <Route path="/energy" component={EnergyPage} />
+          <Route path="/starmap" component={StarmapPage} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />

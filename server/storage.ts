@@ -35,7 +35,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUser(userId: string, updates: Partial<User>): Promise<User>;
-  updateUserSigil(userId: string, sigil: string): Promise<User>;
+  updateUserSigil(userId: string, sigil: string, sigilImageUrl?: string): Promise<User>;
   updateUserEnergy(userId: string, energy: number): Promise<User>;
   updateUserAura(userId: string, aura: number): Promise<User>;
   updateUserStripeInfo(userId: string, customerId: string, subscriptionId?: string): Promise<User>;
@@ -81,8 +81,9 @@ export interface IStorage {
   }>;
 
   // Spirits
-  createSpirit(userId: string, spiritData: { name: string; description: string; element: string; questionnaire: any }): Promise<any>;
+  createSpirit(userId: string, spiritData: { name: string; description: string; element: string; imageUrl?: string; questionnaire: any; level?: number; experience?: number }): Promise<any>;
   getUserSpirit(userId: string): Promise<any | null>;
+  deleteUserSpirit(userId: string): Promise<void>;
   updateSpiritLevel(spiritId: string, level: number, experience: number): Promise<any>;
 
   // Connections  
@@ -142,10 +143,10 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserSigil(userId: string, sigil: string): Promise<User> {
+  async updateUserSigil(userId: string, sigil: string, sigilImageUrl?: string): Promise<User> {
     const [user] = await db
       .update(users)
-      .set({ sigil, updatedAt: new Date() })
+      .set({ sigil, sigilImageUrl, updatedAt: new Date() })
       .where(eq(users.id, userId))
       .returning();
     return user;
@@ -673,7 +674,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Spirit operations
-  async createSpirit(userId: string, spiritData: { name: string; description: string; element: string; questionnaire: any }): Promise<any> {
+  async createSpirit(userId: string, spiritData: { name: string; description: string; element: string; imageUrl?: string; questionnaire: any; level?: number; experience?: number }): Promise<any> {
     const [spirit] = await db
       .insert(spirits)
       .values({
@@ -681,9 +682,10 @@ export class DatabaseStorage implements IStorage {
         name: spiritData.name,
         description: spiritData.description,
         element: spiritData.element as 'fire' | 'water' | 'earth' | 'air',
+        imageUrl: spiritData.imageUrl,
         questionnaire: spiritData.questionnaire,
-        level: 1,
-        experience: 0,
+        level: spiritData.level || 1,
+        experience: spiritData.experience || 0,
       })
       .returning();
     return spirit;
@@ -695,6 +697,12 @@ export class DatabaseStorage implements IStorage {
       .from(spirits)
       .where(eq(spirits.userId, userId));
     return spirit || null;
+  }
+
+  async deleteUserSpirit(userId: string): Promise<void> {
+    await db
+      .delete(spirits)
+      .where(eq(spirits.userId, userId));
   }
 
   async updateSpiritExperience(userId: string, experienceGain: number, action: string): Promise<any | null> {

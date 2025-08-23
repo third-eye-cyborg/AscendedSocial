@@ -166,12 +166,12 @@ export default function SpiritGenerator() {
               {regenerateSpiritMutation.isPending ? (
                 <>
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Evolving Spirit...
+                  Regenerating Spiritual Guide...
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Evolve Spirit
+                  Regenerate Spiritual Guide
                 </>
               )}
             </Button>

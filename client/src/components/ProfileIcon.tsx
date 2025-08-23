@@ -42,8 +42,22 @@ export function ProfileIcon({
           className="w-full h-full object-cover rounded-full"
           data-testid={testId ? `img-${testId}` : 'img-profile'}
         />
+      ) : user?.sigilImageUrl ? (
+        <img 
+          src={user.sigilImageUrl} 
+          alt="Sigil" 
+          className="w-full h-full object-cover rounded-full"
+          data-testid={testId ? `img-${testId}` : 'img-sigil'}
+          onError={(e) => {
+            // Fallback to text sigil if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const fallback = target.nextElementSibling as HTMLElement;
+            if (fallback) fallback.style.display = 'flex';
+          }}
+        />
       ) : user?.sigil ? (
-        <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center p-1">
+        <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center p-1" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
           <div className="text-center leading-none">
             <pre className={`${sigilSizes[size]} text-white font-mono whitespace-pre-wrap break-words`} data-testid={testId ? `text-${testId}` : 'text-sigil'}>
               {user.sigil}

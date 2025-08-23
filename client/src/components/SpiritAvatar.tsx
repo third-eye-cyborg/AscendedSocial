@@ -78,7 +78,20 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
           }}
           data-testid={`spirit-avatar-${level}`}
         >
-          <span className="drop-shadow-2xl filter brightness-110">{symbol}</span>
+          {(spirit as any)?.imageUrl ? (
+            <img 
+              src={(spirit as any).imageUrl} 
+              alt={`${(spirit as any)?.name || 'Spirit'} avatar`}
+              className="w-full h-full object-cover rounded-full"
+              style={{ filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.3))' }}
+              onError={(e) => {
+                // Fallback to symbol if image fails to load
+                (e.target as HTMLImageElement).style.display = 'none';
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+              }}
+            />
+          ) : null}
+          <span className={`drop-shadow-2xl filter brightness-110 ${(spirit as any)?.imageUrl ? 'hidden' : ''}`}>{symbol}</span>
           
           {/* Level indicator */}
           {level > 5 && (

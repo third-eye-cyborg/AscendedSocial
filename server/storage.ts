@@ -350,16 +350,35 @@ export class DatabaseStorage implements IStorage {
 
   // Engagement operations
   async createEngagement(engagement: InsertEngagement, userId: string, energyAmount?: number): Promise<Engagement> {
-    // Remove existing engagement of same type if exists
-    await db
-      .delete(postEngagements)
-      .where(
-        and(
-          eq(postEngagements.postId, engagement.postId),
-          eq(postEngagements.userId, userId),
-          eq(postEngagements.type, engagement.type)
+    // For energy transfers, check if one already exists and prevent duplicates
+    if (engagement.type === 'energy') {
+      const existingEnergyEngagement = await db
+        .select()
+        .from(postEngagements)
+        .where(
+          and(
+            eq(postEngagements.postId, engagement.postId),
+            eq(postEngagements.userId, userId),
+            eq(postEngagements.type, 'energy')
+          )
         )
-      );
+        .limit(1);
+      
+      if (existingEnergyEngagement.length > 0) {
+        throw new Error("You have already transferred energy to this post.");
+      }
+    } else {
+      // Remove existing engagement of same type if exists (for non-energy types)
+      await db
+        .delete(postEngagements)
+        .where(
+          and(
+            eq(postEngagements.postId, engagement.postId),
+            eq(postEngagements.userId, userId),
+            eq(postEngagements.type, engagement.type)
+          )
+        );
+    }
 
     // Handle energy deduction for energy type
     if (engagement.type === 'energy') {

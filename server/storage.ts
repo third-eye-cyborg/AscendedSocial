@@ -436,6 +436,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async removeEngagement(postId: string, userId: string, type: EngagementType): Promise<void> {
+    // Prevent removal of energy engagements - they are permanent once transferred
+    if (type === 'energy') {
+      throw new Error("Energy transfers cannot be reversed. They are permanent spiritual commitments.");
+    }
+
     await db
       .delete(postEngagements)
       .where(

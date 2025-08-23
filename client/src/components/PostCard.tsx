@@ -264,10 +264,14 @@ export default function PostCard({ post }: PostCardProps) {
                 <i className="fas fa-chevron-up"></i>
               </Button>
               <span 
-                className="text-sm font-medium text-green-400" 
+                className={`text-sm font-medium ${
+                  ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
+                    ? 'text-green-400' 
+                    : 'text-red-400'
+                }`}
                 data-testid={`votes-${post.id}`}
               >
-                +{(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
+                {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
               </span>
               <Button
                 variant="ghost"

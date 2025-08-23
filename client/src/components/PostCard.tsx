@@ -47,6 +47,7 @@ export default function PostCard({ post }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(false);
   const [energyAmount, setEnergyAmount] = useState(10);
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
+  const [showSuccessEffect, setShowSuccessEffect] = useState<string | null>(null);
 
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
@@ -76,10 +77,28 @@ export default function PostCard({ post }: PostCardProps) {
         });
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
+      
+      // Show success effect
+      setShowSuccessEffect(variables.type);
+      setTimeout(() => setShowSuccessEffect(null), 2000);
+      
+      // Show appropriate toast message
+      const messages = {
+        upvote: "✨ Frequency raised! +5 Spirit XP",
+        downvote: "🌊 Balance provided. +3 Spirit XP", 
+        like: "💖 Heart resonance sent! +2 Spirit XP",
+        energy: `⚡ Energy transferred! +20 Spirit XP (-${variables.energyAmount || energyAmount} energy)`
+      };
+      
+      toast({
+        title: "Spiritual Action Complete",
+        description: messages[variables.type as keyof typeof messages] || "Action completed!",
+        duration: 3000,
+      });
     },
     onError: (error) => {
       toast({
@@ -270,6 +289,9 @@ export default function PostCard({ post }: PostCardProps) {
             className="w-full h-80 object-cover"
             data-testid={`image-${post.id}`}
           />
+          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
+            📸 1 image
+          </div>
         </div>
       )}
 
@@ -311,7 +333,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronUp className="w-5 h-5" />
                   {userEngagements.includes('upvote') && (
-                    <div className="absolute inset-0 bg-green-400/20 rounded-lg"></div>
+                    <div className="absolute -inset-1 bg-green-400/30 rounded-lg animate-pulse shadow-lg shadow-green-400/50"></div>
                   )}
                 </Button>
                 
@@ -326,7 +348,10 @@ export default function PostCard({ post }: PostCardProps) {
                   >
                     {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
                   </div>
-                  <div className="text-xs text-white/70 font-medium tracking-wide">FREQUENCY</div>
+                  <div className="text-xs text-white/70 font-medium tracking-wide">
+                    FREQUENCY {showSuccessEffect === 'upvote' && <span className="text-green-300 animate-bounce">↗️</span>}
+                    {showSuccessEffect === 'downvote' && <span className="text-blue-300 animate-bounce">📉</span>}
+                  </div>
                 </div>
                 
                 <Button
@@ -344,7 +369,7 @@ export default function PostCard({ post }: PostCardProps) {
                 >
                   <ChevronDown className="w-5 h-5" />
                   {userEngagements.includes('downvote') && (
-                    <div className="absolute inset-0 bg-red-300/20 rounded-lg"></div>
+                    <div className="absolute -inset-1 bg-red-400/30 rounded-lg animate-pulse shadow-lg shadow-red-400/50"></div>
                   )}
                 </Button>
               </div>
@@ -419,14 +444,16 @@ export default function PostCard({ post }: PostCardProps) {
                   userEngagements.includes('like') ? 'scale-110 fill-current' : 'hover:scale-110'
                 }`} />
                 {userEngagements.includes('like') && (
-                  <div className="absolute inset-0 bg-pink-300/20 rounded-lg"></div>
+                  <div className="absolute -inset-1 bg-pink-400/40 rounded-lg animate-pulse shadow-lg shadow-pink-400/50"></div>
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
                 <span className="text-sm font-bold text-pink-200" data-testid={`likes-${post.id}`}>
                   {post.engagements?.like || 0}
                 </span>
-                <span className="text-xs text-white/70 font-medium">HEARTS</span>
+                <span className="text-xs text-white/70 font-medium">
+                  HEARTS {showSuccessEffect === 'like' && <span className="text-pink-300 animate-bounce">💖</span>}
+                </span>
               </div>
             </div>
 
@@ -454,7 +481,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-80"></div>
                     )}
                     {userEngagements.includes('energy') && (
-                      <div className="absolute inset-0 bg-yellow-300/20 rounded-lg"></div>
+                      <div className="absolute -inset-1 bg-yellow-400/40 rounded-lg animate-pulse shadow-lg shadow-yellow-400/50"></div>
                     )}
                   </Button>
                 </PopoverTrigger>
@@ -489,7 +516,9 @@ export default function PostCard({ post }: PostCardProps) {
                     </div>
                     
                     <div className="bg-yellow-900/20 rounded-lg p-3 text-xs text-yellow-200/80">
-                      <p>✨ Higher energy amounts provide more spiritual impact and experience points.</p>
+                      <p>✨ Energy transfers spiritual power to boost the post's frequency!</p>
+                      <p className="mt-1 text-yellow-300/60">• Contributes to frequency calculation (×0.2 per point)</p>
+                      <p className="text-yellow-300/60">• Higher amounts = more impact + XP</p>
                     </div>
                     
                     <Button 

@@ -142,11 +142,12 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
         <Button
           size="sm"
           variant="outline"
-          onClick={onRetry}
-          className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+          onClick={() => {/* 3D temporarily disabled */}}
+          disabled
+          className="bg-gray-600/20 border-gray-400/50 text-gray-400 cursor-not-allowed"
         >
           <RotateCcw className="w-4 h-4 mr-2" />
-          Try 3D View
+          3D View (Coming Soon)
         </Button>
       </div>
 
@@ -764,8 +765,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Starmap with 3D option */}
-      {enable3D ? (
+      {/* Starmap - 3D temporarily disabled due to WebGL issues */}
+      {false ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error

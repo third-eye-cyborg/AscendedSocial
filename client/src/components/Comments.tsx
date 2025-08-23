@@ -106,10 +106,17 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
             <div key={comment.id} className="flex space-x-3" data-testid={`comment-${comment.id}`}>
               {/* Comment Author Sigil */}
               <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center">
-                  {comment.author?.sigil ? (
-                    <span className="text-xs text-white font-mono" data-testid={`text-comment-sigil-${comment.id}`}>
-                      {comment.author.sigil}
+                <div className="w-8 h-8 rounded-full bg-cosmic border border-primary/30 flex items-center justify-center overflow-hidden">
+                  {comment.author?.profileImageUrl ? (
+                    <img 
+                      src={comment.author.profileImageUrl} 
+                      alt="Profile" 
+                      className="w-full h-full object-cover rounded-full"
+                      data-testid={`img-comment-profile-${comment.id}`}
+                    />
+                  ) : comment.author?.sigil ? (
+                    <span className="text-[10px] text-white font-mono text-center break-all" data-testid={`text-comment-sigil-${comment.id}`}>
+                      {(comment.author.sigil as string).slice(0, 3)}
                     </span>
                   ) : (
                     <i className="fas fa-user text-xs text-muted"></i>
@@ -120,14 +127,14 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
               {/* Comment Content */}
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-1">
-                  <span className="text-sm font-medium text-subtle" data-testid={`text-comment-author-${comment.id}`}>
+                  <span className="text-sm font-medium text-white" data-testid={`text-comment-author-${comment.id}`}>
                     {comment.author?.username || comment.author?.email || 'Spiritual Seeker'}
                   </span>
-                  <span className="text-xs text-muted" data-testid={`text-comment-time-${comment.id}`}>
+                  <span className="text-xs text-white/60" data-testid={`text-comment-time-${comment.id}`}>
                     {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                   </span>
                 </div>
-                <p className="text-sm text-subtle leading-relaxed" data-testid={`text-comment-content-${comment.id}`}>
+                <p className="text-sm text-white/90 leading-relaxed" data-testid={`text-comment-content-${comment.id}`}>
                   {comment.content}
                 </p>
                 
@@ -136,7 +143,8 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-muted hover:text-primary text-xs p-1 h-auto"
+                    onClick={() => alert('Like comment feature coming soon! ❤️✨')}
+                    className="text-white/70 hover:text-accent text-xs p-1 h-auto transition-colors"
                     data-testid={`button-comment-like-${comment.id}`}
                   >
                     <i className="fas fa-heart mr-1"></i>
@@ -145,7 +153,8 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-muted hover:text-secondary text-xs p-1 h-auto"
+                    onClick={() => alert('Reply to comment feature coming soon! 💬✨')}
+                    className="text-white/70 hover:text-secondary text-xs p-1 h-auto transition-colors"
                     data-testid={`button-comment-reply-${comment.id}`}
                   >
                     <i className="fas fa-reply mr-1"></i>

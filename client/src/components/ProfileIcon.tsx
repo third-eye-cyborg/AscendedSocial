@@ -36,26 +36,30 @@ export function ProfileIcon({
   const content = (
     <>
       {user?.profileImageUrl ? (
-        <img 
-          src={user.profileImageUrl} 
-          alt="Profile" 
-          className="w-full h-full object-cover rounded-full"
-          data-testid={testId ? `img-${testId}` : 'img-profile'}
-        />
+        <div className="w-full h-full bg-black rounded-full overflow-hidden">
+          <img 
+            src={user.profileImageUrl} 
+            alt="Profile" 
+            className="w-full h-full object-cover rounded-full"
+            data-testid={testId ? `img-${testId}` : 'img-profile'}
+          />
+        </div>
       ) : user?.sigilImageUrl ? (
-        <img 
-          src={user.sigilImageUrl} 
-          alt="Sigil" 
-          className="w-full h-full object-cover rounded-full"
-          data-testid={testId ? `img-${testId}` : 'img-sigil'}
-          onError={(e) => {
-            // Fallback to text sigil if image fails to load
-            const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            const fallback = target.nextElementSibling as HTMLElement;
-            if (fallback) fallback.style.display = 'flex';
-          }}
-        />
+        <div className="w-full h-full bg-black rounded-full overflow-hidden">
+          <img 
+            src={user.sigilImageUrl} 
+            alt="Sigil" 
+            className="w-full h-full object-cover rounded-full"
+            data-testid={testId ? `img-${testId}` : 'img-sigil'}
+            onError={(e) => {
+              // Fallback to text sigil if image fails to load
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback = target.nextElementSibling as HTMLElement;
+              if (fallback) fallback.style.display = 'flex';
+            }}
+          />
+        </div>
       ) : user?.sigil ? (
         <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center p-2" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
           <div className="text-center leading-none">

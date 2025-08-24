@@ -354,7 +354,8 @@ export default function PostCard({ post }: PostCardProps) {
             <ProfileIcon 
               user={post.author}
               size="md"
-              className="sigil-container shadow-lg"
+              className="shadow-lg"
+              onClick={() => window.location.href = `/profile/${post.author.id}`}
               testId={`post-author-${post.id}`}
             />
             <div>

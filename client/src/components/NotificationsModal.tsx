@@ -223,6 +223,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                           user={notification.triggerUser}
                           size="sm"
                           className="shadow-sm"
+                          onClick={() => window.location.href = `/profile/${notification.triggerUser.id}`}
                           testId={`notification-user-${notification.id}`}
                         />
                       </div>

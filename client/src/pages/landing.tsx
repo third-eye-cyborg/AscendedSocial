@@ -326,7 +326,7 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                  <i className="fas fa-crystal-ball text-white"></i>
+                  <i className="fas fa-eye text-white"></i>
                 </div>
                 <div>
                   <h4 className="font-semibold text-primary mb-1">Daily Oracle Readings</h4>

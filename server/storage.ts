@@ -9,6 +9,7 @@ import {
   spirits,
   connections,
   spiritualMarks,
+  newsletterSubscriptions,
   type User,
   type UpsertUser,
   type Post,
@@ -24,6 +25,8 @@ import {
   type Notification,
   type NotificationWithTriggerUser,
   type InsertNotification,
+  type NewsletterSubscription,
+  type InsertNewsletterSubscription,
   type ChakraType,
   type EngagementType,
   notifications,
@@ -125,6 +128,15 @@ export interface IStorage {
   addBookmark(userId: string, postId: string): Promise<void>;
   removeBookmark(userId: string, postId: string): Promise<void>;
   getUserBookmarks(userId: string): Promise<string[]>;
+  
+  // Newsletter subscription operations
+  createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription>;
+  getNewsletterSubscription(email: string): Promise<NewsletterSubscription | undefined>;
+  getNewsletterSubscriptionByToken(token: string): Promise<NewsletterSubscription | undefined>;
+  unsubscribeNewsletter(token: string): Promise<void>;
+  updateNewsletterPreferences(token: string, preferences: Record<string, any>): Promise<NewsletterSubscription>;
+  getActiveNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
+  updateNewsletterLastEmailSent(email: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1271,6 +1283,65 @@ export class DatabaseStorage implements IStorage {
       .limit(50);
 
     return result;
+  }
+
+  // Newsletter subscription operations
+  async createNewsletterSubscription(subscription: InsertNewsletterSubscription): Promise<NewsletterSubscription> {
+    const [result] = await db
+      .insert(newsletterSubscriptions)
+      .values(subscription)
+      .returning();
+    return result;
+  }
+
+  async getNewsletterSubscription(email: string): Promise<NewsletterSubscription | undefined> {
+    const result = await db
+      .select()
+      .from(newsletterSubscriptions)
+      .where(eq(newsletterSubscriptions.email, email))
+      .limit(1);
+    return result[0];
+  }
+
+  async getNewsletterSubscriptionByToken(token: string): Promise<NewsletterSubscription | undefined> {
+    const result = await db
+      .select()
+      .from(newsletterSubscriptions)
+      .where(eq(newsletterSubscriptions.unsubscribeToken, token))
+      .limit(1);
+    return result[0];
+  }
+
+  async unsubscribeNewsletter(token: string): Promise<void> {
+    await db
+      .update(newsletterSubscriptions)
+      .set({ isActive: false, updatedAt: new Date() })
+      .where(eq(newsletterSubscriptions.unsubscribeToken, token));
+  }
+
+  async updateNewsletterPreferences(token: string, preferences: Record<string, any>): Promise<NewsletterSubscription> {
+    const [result] = await db
+      .update(newsletterSubscriptions)
+      .set({ preferences, updatedAt: new Date() })
+      .where(eq(newsletterSubscriptions.unsubscribeToken, token))
+      .returning();
+    return result;
+  }
+
+  async getActiveNewsletterSubscriptions(): Promise<NewsletterSubscription[]> {
+    const result = await db
+      .select()
+      .from(newsletterSubscriptions)
+      .where(eq(newsletterSubscriptions.isActive, true))
+      .orderBy(desc(newsletterSubscriptions.subscriptionDate));
+    return result;
+  }
+
+  async updateNewsletterLastEmailSent(email: string): Promise<void> {
+    await db
+      .update(newsletterSubscriptions)
+      .set({ lastEmailSent: new Date(), updatedAt: new Date() })
+      .where(eq(newsletterSubscriptions.email, email));
   }
 }
 

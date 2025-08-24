@@ -322,3 +322,22 @@ export const spiritualMarks = pgTable('spiritual_marks', {
 export const insertSpiritualMarkSchema = createInsertSchema(spiritualMarks);
 export type SpiritualMark = typeof spiritualMarks.$inferSelect;
 export type InsertSpiritualMark = z.infer<typeof insertSpiritualMarkSchema>;
+
+// Newsletter subscriptions table - for marketing emails
+export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar('email').notNull().unique(),
+  firstName: varchar('first_name'),
+  lastName: varchar('last_name'),
+  isActive: boolean('is_active').default(true),
+  subscriptionDate: timestamp('subscription_date').defaultNow(),
+  unsubscribeToken: varchar('unsubscribe_token').unique(),
+  lastEmailSent: timestamp('last_email_sent'),
+  preferences: jsonb('preferences').default('{}'), // Email frequency, content types, etc.
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions);
+export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
+export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;

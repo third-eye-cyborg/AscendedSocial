@@ -62,12 +62,12 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="max-w-full sm:max-w-2xl mx-auto px-2 sm:px-4 py-3 sm:py-6 xl:px-6 2xl:px-4">
+      <div className="w-full max-w-full sm:max-w-2xl mx-auto px-3 sm:px-4 py-3 sm:py-6 xl:px-6 2xl:px-4 overflow-hidden">
         {/* Navigation Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 w-full">
           {/* Featured: Starmap Visualizer */}
-          <Card className="bg-gradient-to-br from-slate-900/95 via-purple-900/80 to-black/90 border-2 border-purple-400/40 hover-lift overflow-hidden shadow-2xl shadow-purple-900/20">
-            <CardContent className="p-3 sm:p-4 relative">
+          <Card className="w-full bg-gradient-to-br from-slate-900/95 via-purple-900/80 to-black/90 border-2 border-purple-400/40 hover-lift overflow-hidden shadow-2xl shadow-purple-900/20">
+            <CardContent className="p-3 sm:p-4 relative w-full min-w-0">
               <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40"></div>
               <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-radial from-purple-400/30 to-transparent rounded-full blur-lg"></div>
               <div className="relative z-10">
@@ -75,7 +75,7 @@ export default function Home() {
                   <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-purple-400 animate-pulse" />
                   Spiritual Cosmos
                 </h3>
-                <p className="text-purple-100 text-xs sm:text-sm mb-3 leading-relaxed">
+                <p className="text-purple-100 text-xs sm:text-sm mb-3 leading-relaxed break-words">
                   Journey through the mystical starmap where souls appear as glowing stars, 
                   clustering by chakra energy and spiritual connections.
                 </p>
@@ -113,8 +113,8 @@ export default function Home() {
           </Card>
 
           {/* Featured: Oracle & Tarot Readings */}
-          <Card className="bg-gradient-to-br from-slate-900/95 via-orange-900/80 to-black/90 border-2 border-orange-400/40 hover-lift overflow-hidden shadow-2xl shadow-orange-900/20">
-            <CardContent className="p-3 sm:p-4 relative">
+          <Card className="w-full bg-gradient-to-br from-slate-900/95 via-orange-900/80 to-black/90 border-2 border-orange-400/40 hover-lift overflow-hidden shadow-2xl shadow-orange-900/20">
+            <CardContent className="p-3 sm:p-4 relative w-full min-w-0">
               <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40"></div>
               <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-radial from-orange-400/30 to-transparent rounded-full blur-lg"></div>
               <div className="relative z-10">
@@ -122,7 +122,7 @@ export default function Home() {
                   <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-orange-400" />
                   Divine Oracle
                 </h3>
-                <p className="text-orange-100 text-xs sm:text-sm mb-3 leading-relaxed">
+                <p className="text-orange-100 text-xs sm:text-sm mb-3 leading-relaxed break-words">
                   Receive daily spiritual guidance, AI-powered tarot readings, 
                   and personalized insights from the digital oracle.
                 </p>
@@ -162,10 +162,12 @@ export default function Home() {
 
 
         {/* Post Creation */}
-        <CreatePost />
+        <div className="w-full">
+          <CreatePost />
+        </div>
 
         {/* Posts Feed */}
-        <div className="space-y-6">
+        <div className="w-full space-y-6">
           {postsLoading ? (
             Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="bg-cosmic-light rounded-xl p-4 border border-primary/30">

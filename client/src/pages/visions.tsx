@@ -31,7 +31,7 @@ export default function Visions() {
               <div className="aspect-video bg-cosmic rounded-lg flex items-center justify-center mb-4">
                 <i className="fas fa-om text-primary text-4xl"></i>
               </div>
-              <Button className="w-full bg-primary/30 hover:bg-primary/50">
+              <Button className="w-full bg-primary/30 hover:bg-primary/50 text-white">
                 Coming Soon
               </Button>
             </CardContent>
@@ -51,7 +51,7 @@ export default function Visions() {
               <div className="aspect-video bg-cosmic rounded-lg flex items-center justify-center mb-4">
                 <i className="fas fa-eye text-primary text-4xl"></i>
               </div>
-              <Button className="w-full bg-primary/30 hover:bg-primary/50">
+              <Button className="w-full bg-primary/30 hover:bg-primary/50 text-white">
                 Coming Soon
               </Button>
             </CardContent>
@@ -71,7 +71,7 @@ export default function Visions() {
               <div className="aspect-video bg-cosmic rounded-lg flex items-center justify-center mb-4">
                 <i className="fas fa-scroll text-primary text-4xl"></i>
               </div>
-              <Button className="w-full bg-primary/30 hover:bg-primary/50">
+              <Button className="w-full bg-primary/30 hover:bg-primary/50 text-white">
                 Coming Soon
               </Button>
             </CardContent>
@@ -90,7 +90,7 @@ export default function Visions() {
               </p>
               <Button 
                 onClick={() => window.location.href = '/'}
-                className="bg-primary hover:bg-primary/80"
+                className="bg-primary hover:bg-primary/80 text-white"
               >
                 Return to Feed
               </Button>

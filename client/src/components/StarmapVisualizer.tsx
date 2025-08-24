@@ -353,22 +353,75 @@ function StarUser({ user, position, mode, onClick }: {
           </>
         ) : (
           <>
-            <cylinderGeometry args={[size * 0.4, size * 0.2, size * 2, 12]} />
-            <meshStandardMaterial 
-              color={color}
-              emissive={color}
-              emissiveIntensity={0.2}
-              roughness={0.4}
-              metalness={0.2}
-            />
-            <sphereGeometry args={[size * 0.6, 8, 8]} />
-            <meshStandardMaterial 
-              color={color}
-              emissive={color}
-              emissiveIntensity={hovered ? 0.8 : 0.4}
-              transparent
-              opacity={0.8}
-            />
+            {/* Mushroom stem - tall and organic */}
+            <mesh position={[0, -size * 0.8, 0]}>
+              <cylinderGeometry args={[size * 0.15, size * 0.25, size * 1.6, 8]} />
+              <meshStandardMaterial 
+                color="#8B4513"
+                emissive="#4A2C17"
+                emissiveIntensity={0.1}
+                roughness={0.9}
+                metalness={0.0}
+              />
+            </mesh>
+            
+            {/* Mushroom cap - dome-shaped */}
+            <mesh position={[0, size * 0.2, 0]}>
+              <sphereGeometry args={[size * 0.8, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.7]} />
+              <meshStandardMaterial 
+                color={color}
+                emissive={color}
+                emissiveIntensity={hovered ? 0.6 : 0.3}
+                roughness={0.6}
+                metalness={0.1}
+                transparent
+                opacity={0.9}
+              />
+            </mesh>
+            
+            {/* Gills under the cap */}
+            <mesh position={[0, size * 0.1, 0]} rotation={[Math.PI, 0, 0]}>
+              <cylinderGeometry args={[size * 0.75, size * 0.75, size * 0.05, 16]} />
+              <meshStandardMaterial 
+                color="#2D1810"
+                emissive={color}
+                emissiveIntensity={0.1}
+                roughness={0.8}
+                metalness={0.0}
+                transparent
+                opacity={0.6}
+              />
+            </mesh>
+            
+            {/* Spore particles when hovered */}
+            {hovered && (
+              <>
+                <mesh position={[size * 0.3, size * 0.4, size * 0.2]}>
+                  <sphereGeometry args={[size * 0.05, 6, 6]} />
+                  <meshBasicMaterial 
+                    color={color}
+                    transparent
+                    opacity={0.7}
+                  />
+                </mesh>
+                <mesh position={[-size * 0.2, size * 0.5, -size * 0.1]}>
+                  <sphereGeometry args={[size * 0.04, 6, 6]} />
+                  <meshBasicMaterial 
+                    color={color}
+                    transparent
+                    opacity={0.6}
+                  />
+                </mesh>
+                <mesh position={[size * 0.1, size * 0.6, -size * 0.3]}>
+                  <sphereGeometry args={[size * 0.03, 6, 6]} />
+                  <meshBasicMaterial 
+                    color={color}
+                    transparent
+                    opacity={0.5}
+                  />
+                </mesh>
+              </>
+            )}
           </>
         )}
       </mesh>

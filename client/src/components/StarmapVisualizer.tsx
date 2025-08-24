@@ -533,7 +533,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
-  const [enable3D, setEnable3D] = useState(false); // Default to 2D for stability, user can enable 3D
+  const [enable3D, setEnable3D] = useState(false); // Default to 2D for stability
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -800,7 +800,7 @@ function StarmapScene() {
       </div>
 
       {/* Enhanced 3D Starmap with improved compatibility */}
-      {enable3D ? (
+      {false ? ( /* 3D mode temporarily disabled due to Replit environment compatibility */
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error

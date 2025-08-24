@@ -15,10 +15,10 @@ const sizeClasses = {
 };
 
 const sigilSizes = {
-  sm: 'text-[5px]',
-  md: 'text-[6px]',
-  lg: 'text-[7px]',
-  xl: 'text-[8px]'
+  sm: 'text-[8px] sm:text-[10px]',
+  md: 'text-[10px] sm:text-[12px]',
+  lg: 'text-[12px] sm:text-[14px]',
+  xl: 'text-[14px] sm:text-[16px]'
 };
 
 export function ProfileIcon({ 
@@ -57,7 +57,7 @@ export function ProfileIcon({
           }}
         />
       ) : user?.sigil ? (
-        <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center p-1" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center p-2" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
           <div className="text-center leading-none">
             <pre className={`${sigilSizes[size]} text-white font-mono whitespace-pre-wrap break-words`} data-testid={testId ? `text-${testId}` : 'text-sigil'}>
               {user.sigil}
@@ -65,8 +65,8 @@ export function ProfileIcon({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
-          <i className={`fas fa-lotus text-white ${size === 'sm' ? 'text-sm' : size === 'lg' ? 'text-lg' : size === 'xl' ? 'text-xl' : 'text-base'}`}></i>
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-blue-900/40 rounded-full flex items-center justify-center border border-purple-400/30">
+          <div className="text-primary text-2xl">✨</div>
         </div>
       )}
     </>

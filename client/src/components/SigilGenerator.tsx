@@ -5,6 +5,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import ExpandableImage from "@/components/ExpandableImage";
+import { Wand2 } from "lucide-react";
 
 interface SigilGeneratorProps {
   onSigilGenerated?: (sigil: string) => void;
@@ -78,7 +79,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
     <Card className="bg-slate-900 border border-slate-700 shadow-lg">
       <CardHeader>
         <CardTitle className="text-accent-light flex items-center">
-          <i className="fas fa-magic mr-2"></i>
+          <Wand2 className="w-4 h-4 mr-2" />
           Sigil Generator
         </CardTitle>
       </CardHeader>
@@ -95,7 +96,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                   <img 
                     src={displaySigilImage}
                     alt={isGeneratedSigil ? "Generated Sigil" : "Your Saved Sigil"}
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-full h-full object-cover rounded-full border-2 border-purple-400/40 shadow-lg"
                     data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
                     onError={() => {
                       if (isGeneratedSigil) {
@@ -105,10 +106,10 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                   />
                 </ExpandableImage>
               ) : (
-                <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center">
-                  <span className="text-2xl text-white font-mono" data-testid={isGeneratedSigil ? "text-generated-sigil" : "text-saved-sigil"}>
+                <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center border-2 border-purple-400/40 shadow-lg">
+                  <pre className="text-xs sm:text-sm lg:text-lg text-white font-mono leading-tight text-center" data-testid={isGeneratedSigil ? "text-generated-sigil" : "text-saved-sigil"}>
                     {displaySigil}
-                  </span>
+                  </pre>
                 </div>
               )}
             </div>
@@ -171,8 +172,8 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
           </div>
         ) : (
           <div className="text-center">
-            <div className="w-24 h-24 mx-auto bg-cosmic/50 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-primary/30">
-              <i className="fas fa-magic text-primary text-2xl"></i>
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-purple-900/40 to-blue-900/40 rounded-full flex items-center justify-center mb-4 border-2 border-dashed border-primary/30">
+              <Wand2 className="text-primary text-2xl w-8 h-8" />
             </div>
             <p className="text-sm text-gray-300 mb-2">
               Generate your unique AI-powered spiritual sigil

@@ -23,9 +23,9 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
 
   const getSpiritVisual = (level: number, element: string) => {
     const baseStyle = {
-      sm: "w-12 h-12 text-2xl",
-      md: "w-20 h-20 text-4xl", 
-      lg: "w-32 h-32 text-6xl"
+      sm: "w-12 h-12 text-xl sm:text-2xl",
+      md: "w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-4xl", 
+      lg: "w-24 h-24 sm:w-32 sm:h-32 text-4xl sm:text-6xl"
     }[size];
 
     const levelTier = Math.floor((level - 1) / 5) + 1; // Tiers: 1-5, 6-10, 11-15, etc.

@@ -160,7 +160,7 @@ export default function Settings() {
 
   const updateUsernameMutation = useMutation({
     mutationFn: (newUsername: string) => 
-      apiRequest("/api/users/update-username", "POST", { username: newUsername }),
+      apiRequest("POST", "/api/users/update-username", { username: newUsername }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
@@ -186,7 +186,7 @@ export default function Settings() {
   // Privacy settings mutations
   const updatePrivacyMutation = useMutation({
     mutationFn: (settings: any) => 
-      apiRequest("/api/users/settings/privacy", "PUT", settings),
+      apiRequest("PUT", "/api/users/settings/privacy", settings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users/settings"] });
       toast({
@@ -206,7 +206,7 @@ export default function Settings() {
   // Notification settings mutations
   const updateNotificationMutation = useMutation({
     mutationFn: (settings: any) => 
-      apiRequest("/api/users/settings/notifications", "PUT", settings),
+      apiRequest("PUT", "/api/users/settings/notifications", settings),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/users/settings"] });
       toast({

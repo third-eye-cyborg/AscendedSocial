@@ -14,6 +14,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
 import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles, Gem } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface PostCardProps {
   post: {
@@ -60,6 +61,7 @@ export default function PostCard({ post }: PostCardProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [userEngagements, setUserEngagements] = useState<string[]>([]);
   const [showComments, setShowComments] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -355,13 +357,13 @@ export default function PostCard({ post }: PostCardProps) {
               user={post.author}
               size="md"
               className="shadow-lg"
-              onClick={() => window.location.href = `/profile/${post.author.id}`}
+              onClick={() => setLocation(`/profile/${post.author.id}`)}
               testId={`post-author-${post.id}`}
             />
             <div>
               <h4 
                 className="font-semibold text-white cursor-pointer hover:text-primary transition-colors duration-200" 
-                onClick={() => window.location.href = `/profile/${post.author.id}`}
+                onClick={() => setLocation(`/profile/${post.author.id}`)}
                 data-testid={`text-author-${post.id}`}
               >
                 {post.author.username || post.author.email || 'Anonymous'}

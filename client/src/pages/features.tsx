@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 
 export default function Features() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   return (
     <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic text-white relative overflow-hidden">
       {/* Animated Background Elements */}
@@ -65,9 +67,88 @@ export default function Features() {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
               </Button>
             </div>
+
+            {/* Mobile Hamburger Menu */}
+            <div className="md:hidden flex items-center space-x-2">
+              <Button 
+                size="sm"
+                onClick={() => window.location.href = '/api/login'}
+                className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-3 py-2 rounded-xl transition-all duration-300 shadow-lg"
+                data-testid="button-login-mobile"
+              >
+                <span className="relative z-10">Login</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-white hover:text-primary p-2"
+                data-testid="button-mobile-menu"
+              >
+                <div className="space-y-1">
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
       </header>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="fixed top-16 left-0 right-0 z-40 bg-cosmic/95 backdrop-blur-xl border-b border-primary/30 md:hidden">
+          <div className="max-w-7xl mx-auto px-4 py-4">
+            <nav className="flex flex-col space-y-3">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-home"
+              >
+                Home
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/about';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-about"
+              >
+                About
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/pricing';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-pricing"
+              >
+                Pricing
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/community';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-community"
+              >
+                Community
+              </Button>
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="relative pt-32 pb-16">

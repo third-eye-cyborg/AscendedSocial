@@ -143,31 +143,56 @@ export async function generateSigilImage(userData?: { beliefs?: string; astrolog
   }
 }
 
-// Analyze post content and categorize by chakra system
-export async function analyzePostChakra(content: string): Promise<ChakraAnalysis> {
+// Analyze post content and categorize by chakra system (text and images)
+export async function analyzePostChakra(content: string, imageUrls?: string[]): Promise<ChakraAnalysis> {
   try {
+    const messages: any[] = [
+      {
+        role: "system",
+        content: `You are a spiritual AI that categorizes content based on the 7-chakra system. Analyze both text content and images (if provided) to determine which chakra they most align with:
+
+Root Chakra (root): Survival, grounding, security, basic needs, fear, anger, violence, earth elements, red colors, stability
+Sacral Chakra (sacral): Creativity, sexuality, pleasure, emotions, relationships, passion, orange colors, water elements, artistic expression
+Solar Plexus Chakra (solar): Personal power, confidence, self-esteem, willpower, control, yellow colors, fire elements, achievement
+Heart Chakra (heart): Love, compassion, forgiveness, connection, empathy, healing, green/pink colors, air elements, nature
+Throat Chakra (throat): Communication, truth, expression, authenticity, speaking up, blue colors, sound, speech
+Third Eye Chakra (third_eye): Intuition, wisdom, psychic abilities, dreams, meditation, insight, indigo/purple colors, mystical symbols
+Crown Chakra (crown): Spirituality, divine connection, enlightenment, universal consciousness, violet/white colors, sacred geometry, cosmic themes
+
+Consider both textual content and visual elements like colors, symbols, natural elements, emotional tones, and spiritual imagery.
+
+Respond with JSON in this format: { "chakra": "chakra_name", "confidence": 0.85, "reasoning": "explanation including both text and visual analysis if images present" }`
+      }
+    ];
+
+    // Add text content
+    let userContent = `Analyze this text content: "${content}"`;
+    
+    // Add image analysis if images are provided
+    if (imageUrls && imageUrls.length > 0) {
+      userContent += `\n\nAlso analyze these images for visual chakra indicators:`;
+      const imageContent = imageUrls.slice(0, 3).map((url) => ({
+        type: "image_url",
+        image_url: { url }
+      }));
+      
+      messages.push({
+        role: "user",
+        content: [
+          { type: "text", text: userContent },
+          ...imageContent
+        ]
+      });
+    } else {
+      messages.push({
+        role: "user", 
+        content: userContent
+      });
+    }
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: `You are a spiritual AI that categorizes content based on the 7-chakra system. Analyze the content and determine which chakra it most aligns with:
-
-Root Chakra (root): Survival, grounding, security, basic needs, fear, anger, violence
-Sacral Chakra (sacral): Creativity, sexuality, pleasure, emotions, relationships, passion
-Solar Plexus Chakra (solar): Personal power, confidence, self-esteem, willpower, control
-Heart Chakra (heart): Love, compassion, forgiveness, connection, empathy, healing
-Throat Chakra (throat): Communication, truth, expression, authenticity, speaking up
-Third Eye Chakra (third_eye): Intuition, wisdom, psychic abilities, dreams, meditation, insight
-Crown Chakra (crown): Spirituality, divine connection, enlightenment, universal consciousness
-
-Respond with JSON in this format: { "chakra": "chakra_name", "confidence": 0.85, "reasoning": "explanation" }`
-        },
-        {
-          role: "user",
-          content: `Analyze this content: "${content}"`
-        }
-      ],
+      messages,
       response_format: { type: "json_object" },
     });
 
@@ -181,7 +206,7 @@ Respond with JSON in this format: { "chakra": "chakra_name", "confidence": 0.85,
   } catch (error) {
     console.error("Error analyzing chakra:", error);
     return {
-      chakra: "heart",
+      chakra: "heart", 
       confidence: 0.5,
       reasoning: "Default heart chakra assignment due to analysis error"
     };

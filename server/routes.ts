@@ -178,8 +178,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Create post
       const post = await storage.createPost(postData, userId);
       
-      // Analyze content for chakra categorization
-      const chakraAnalysis = await analyzePostChakra(postData.content);
+      // Analyze content and images for chakra categorization
+      const chakraAnalysis = await analyzePostChakra(postData.content, postData.imageUrls);
       await storage.updatePostChakra(post.id, chakraAnalysis.chakra);
       
       // Fetch complete post with author

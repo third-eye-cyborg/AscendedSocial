@@ -190,24 +190,45 @@ export default function CreatePost() {
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
               </div>
               
-              {/* Media Preview */}
-              {mediaUrl && (
-                <div className="mt-3 relative">
-                  {mediaType === "image" ? (
-                    <img 
-                      src={mediaUrl} 
-                      alt="Upload preview" 
-                      className="max-h-48 rounded-lg object-cover"
-                      data-testid="image-preview"
-                    />
-                  ) : (
-                    <div className="bg-cosmic rounded-lg p-4 border border-primary/30">
-                      <div className="flex items-center space-x-2">
-                        <i className="fas fa-video text-primary"></i>
-                        <span className="text-sm text-white">Video uploaded</span>
+              {/* Multiple Images Preview */}
+              {mediaUrls.length > 0 && (
+                <div className="mt-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {mediaUrls.map((url, index) => (
+                      <div key={index} className="relative">
+                        <img 
+                          src={url} 
+                          alt={`Upload preview ${index + 1}`} 
+                          className="w-full h-24 rounded-lg object-cover"
+                          data-testid={`image-preview-${index}`}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white w-6 h-6 p-0 rounded-full"
+                          onClick={() => {
+                            setMediaUrls(prev => prev.filter((_, i) => i !== index));
+                          }}
+                          data-testid={`button-remove-image-${index}`}
+                        >
+                          <i className="fas fa-times text-xs"></i>
+                        </Button>
                       </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Single Video Preview */}
+              {mediaUrl && mediaType === "video" && (
+                <div className="mt-3 relative">
+                  <div className="bg-cosmic rounded-lg p-4 border border-primary/30">
+                    <div className="flex items-center space-x-2">
+                      <i className="fas fa-video text-primary"></i>
+                      <span className="text-sm text-white">Video uploaded</span>
                     </div>
-                  )}
+                  </div>
                   <Button
                     type="button"
                     variant="ghost"
@@ -217,7 +238,7 @@ export default function CreatePost() {
                       setMediaUrl("");
                       setMediaType(null);
                     }}
-                    data-testid="button-remove-media"
+                    data-testid="button-remove-video"
                   >
                     <i className="fas fa-times"></i>
                   </Button>
@@ -227,61 +248,16 @@ export default function CreatePost() {
               {/* Clean Actions */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20 space-y-3 sm:space-y-0">
                 <div className="flex items-center space-x-2 sm:space-x-4">
-                  {/* Simple File Upload */}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    id="file-upload"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        try {
-                          const params = await handleGetUploadParameters();
-                          
-                          const response = await fetch(params.url, {
-                            method: params.method,
-                            body: file,
-                            headers: {
-                              'Content-Type': file.type,
-                            },
-                          });
-                          
-                          if (response.ok) {
-                            const publicUrl = params.url.split('?')[0];
-                            
-                            // Set ACL policy for the uploaded file
-                            const aclResponse = await apiRequest("PUT", "/api/media", { mediaURL: params.url });
-                            const aclData = await aclResponse.json();
-                            
-                            setMediaUrl(aclData.objectPath);
-                            setMediaType("image");
-                            
-                            toast({
-                              title: "Image uploaded successfully",
-                              description: "Your image is ready to share",
-                            });
-                          }
-                        } catch (error) {
-                          console.error('Upload failed:', error);
-                          toast({
-                            title: "Upload failed",
-                            description: "Please try again",
-                            variant: "destructive",
-                          });
-                        }
-                      }
-                    }}
-                    data-testid="input-file-upload"
-                  />
-                  <label 
-                    htmlFor="file-upload"
-                    className="cursor-pointer inline-flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-white text-xs sm:text-sm"
-                    data-testid="button-add-media"
+                  {/* Enhanced Multi-Image Upload */}
+                  <ObjectUploader
+                    maxNumberOfFiles={5}
+                    onGetUploadParameters={handleGetUploadParameters}
+                    onComplete={handleUploadComplete}
+                    buttonClassName="cursor-pointer inline-flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-white text-xs sm:text-sm"
                   >
-                    <i className="fas fa-image"></i>
-                    <span>Add Image</span>
-                  </label>
+                    <i className="fas fa-images"></i>
+                    <span>Add Images ({mediaUrls.length}/5)</span>
+                  </ObjectUploader>
                   
                   <div className="hidden sm:flex items-center text-xs text-white/60">
                     <i className="fas fa-sparkles mr-1 text-primary/70"></i>

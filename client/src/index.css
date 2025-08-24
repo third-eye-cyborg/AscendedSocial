@@ -173,6 +173,17 @@ html, body {
   color: white !important;
 }
 
+/* Tooltip z-index fixes */
+[data-radix-tooltip-content] {
+  z-index: 9999 !important;
+  position: relative !important;
+}
+
+[data-radix-tooltip-trigger] {
+  position: relative !important;
+  z-index: 1 !important;
+}
+
 .uppy-StatusBar-content {
   color: white !important;
 }

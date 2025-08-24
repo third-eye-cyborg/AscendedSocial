@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import Uppy from "@uppy/core";
-import { DashboardModal } from "@uppy/react";
 import AwsS3 from "@uppy/aws-s3";
 import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
@@ -56,7 +55,6 @@ export function ObjectUploader({
   buttonClassName,
   children,
 }: ObjectUploaderProps) {
-  const [showModal, setShowModal] = useState(false);
   const [uppy] = useState(() =>
     new Uppy({
       restrictions: {
@@ -64,32 +62,47 @@ export function ObjectUploader({
         maxFileSize,
         allowedFileTypes: ['image/*'],
       },
-      autoProceed: false,
+      autoProceed: true,
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
         getUploadParameters: onGetUploadParameters,
       })
       .on("complete", (result) => {
-        setShowModal(false);
         onComplete?.(result);
       })
   );
 
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        uppy.addFile({
+          name: file.name,
+          type: file.type,
+          data: file,
+        });
+      });
+    }
+    // Clear the input so the same file can be selected again
+    event.target.value = '';
+  };
+
+  const inputId = `file-input-${Math.random()}`;
+  
   return (
     <div>
-      <Button onClick={() => setShowModal(true)} className={buttonClassName}>
-        {children}
-      </Button>
-
-      <DashboardModal
-        uppy={uppy}
-        open={showModal}
-        onRequestClose={() => setShowModal(false)}
-        closeModalOnClickOutside={true}
-        closeAfterFinish={true}
-        proudlyDisplayPoweredByUppy={false}
+      <input
+        type="file"
+        multiple={maxNumberOfFiles > 1}
+        accept="image/*"
+        onChange={handleFileSelect}
+        style={{ display: 'none' }}
+        id={inputId}
       />
+      <label htmlFor={inputId} className={buttonClassName}>
+        {children}
+      </label>
     </div>
   );
 }

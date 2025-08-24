@@ -124,17 +124,6 @@ export default function Sidebar() {
             <span>Sparks</span>
           </button>
         </Link>
-        <Link href="/community">
-          <button 
-            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
-              location === "/community" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
-            }`}
-            data-testid="link-community"
-          >
-            <i className="fas fa-users"></i>
-            <span>Community</span>
-          </button>
-        </Link>
         <Link href="/oracle">
           <button 
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
@@ -144,17 +133,6 @@ export default function Sidebar() {
           >
             <i className="fas fa-eye"></i>
             <span>Oracle</span>
-          </button>
-        </Link>
-        <Link href="/energy">
-          <button 
-            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
-              location === "/energy" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
-            }`}
-            data-testid="link-energy"
-          >
-            <i className="fas fa-battery-three-quarters"></i>
-            <span>Energy</span>
           </button>
         </Link>
         <Link href="/starmap">
@@ -180,6 +158,37 @@ export default function Sidebar() {
           </button>
         </Link>
       </nav>
+
+      {/* Marketing Pages */}
+      <div className="mb-6">
+        <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 px-3">
+          Discover
+        </h4>
+        <nav className="space-y-2">
+          <Link href="/community">
+            <button 
+              className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+                location === "/community" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+              }`}
+              data-testid="link-community"
+            >
+              <i className="fas fa-users"></i>
+              <span>Community</span>
+            </button>
+          </Link>
+          <Link href="/energy">
+            <button 
+              className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+                location === "/energy" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+              }`}
+              data-testid="link-energy"
+            >
+              <i className="fas fa-battery-three-quarters"></i>
+              <span>Energy</span>
+            </button>
+          </Link>
+        </nav>
+      </div>
 
       {/* Premium Features */}
       <Card className="bg-cosmic-light rounded-xl border border-primary/30 hover-lift animate-slide-up">

@@ -143,7 +143,7 @@ export default function Explore() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-display font-bold mb-2 bg-gradient-to-r from-primary to-accent-light bg-clip-text text-transparent">

@@ -140,7 +140,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 variant={filter === "all" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter("all")}
-                className={`${filter === "all" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-primary/10"}`}
+                className={`${filter === "all" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-slate-700 hover:text-white"}`}
                 data-testid="filter-all-notifications"
               >
                 All
@@ -149,7 +149,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 variant={filter === "unread" ? "default" : "outline"}
                 size="sm"
                 onClick={() => setFilter("unread")}
-                className={`${filter === "unread" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-primary/10"}`}
+                className={`${filter === "unread" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-slate-700 hover:text-white"}`}
                 data-testid="filter-unread-notifications"
               >
                 Unread ({unreadCount})
@@ -162,7 +162,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                 size="sm"
                 onClick={() => markAllReadMutation.mutate()}
                 disabled={markAllReadMutation.isPending}
-                className="text-muted hover:text-white"
+                className="text-muted hover:text-white hover:bg-slate-700"
                 data-testid="button-mark-all-read"
               >
                 <i className="fas fa-check-double mr-2"></i>
@@ -288,7 +288,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="border-primary/50 text-primary hover:bg-primary/10"
+              className="border-primary/50 text-primary hover:bg-slate-700 hover:text-white"
               data-testid="button-close-notifications"
             >
               Close

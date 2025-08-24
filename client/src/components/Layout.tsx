@@ -88,7 +88,7 @@ export default function Layout({ children }: LayoutProps) {
                   variant="ghost" 
                   size="sm"
                   onClick={() => setIsNotificationsOpen(true)}
-                  className="text-gray-300 hover:text-primary relative"
+                  className="text-gray-300 hover:text-white hover:bg-slate-700 relative"
                   data-testid="button-notifications"
                 >
                   <i className="fas fa-bell"></i>

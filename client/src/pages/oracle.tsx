@@ -66,13 +66,21 @@ export default function Oracle() {
   // Mutation to refresh community oracle
   const refreshCommunityMutation = useMutation({
     mutationFn: async () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/oracle/community"] });
-      return true;
+      const response = await apiRequest("POST", "/api/oracle/community");
+      return await response.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/oracle/community"] });
       toast({
         title: "🌌 Community Oracle Refreshed",
         description: "The universe has guided new wisdom to your path",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "🌌 Community Oracle",
+        description: "Unable to refresh community wisdom. Please try again.",
+        variant: "destructive"
       });
     },
   });
@@ -190,7 +198,7 @@ export default function Oracle() {
                     onClick={() => newReadingMutation.mutate()}
                     disabled={newReadingMutation.isPending}
                     size="sm"
-                    className="bg-primary hover:bg-primary/80 text-black font-semibold text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white font-semibold text-xs"
                   >
                     Generate Daily Reading
                   </Button>
@@ -254,7 +262,7 @@ export default function Oracle() {
                     onClick={() => refreshOracleMutation.mutate()}
                     disabled={refreshOracleMutation.isPending}
                     size="sm"
-                    className="bg-primary hover:bg-primary/80 text-black font-semibold text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white font-semibold text-xs"
                   >
                     Seek Guidance
                   </Button>
@@ -342,7 +350,7 @@ export default function Oracle() {
                     onClick={() => refreshCommunityMutation.mutate()}
                     disabled={refreshCommunityMutation.isPending}
                     size="sm"
-                    className="bg-primary hover:bg-primary/80 text-black font-semibold text-xs"
+                    className="bg-primary hover:bg-primary/80 text-white font-semibold text-xs"
                   >
                     Seek Community Wisdom
                   </Button>
@@ -385,7 +393,7 @@ export default function Oracle() {
                     type="submit"
                     disabled={tarotReadingMutation.isPending}
                     size="sm"
-                    className="w-full bg-primary hover:bg-primary/80 text-black font-semibold text-xs"
+                    className="w-full bg-primary hover:bg-primary/80 text-white font-semibold text-xs"
                     data-testid="button-draw-tarot"
                   >
                     {tarotReadingMutation.isPending ? (

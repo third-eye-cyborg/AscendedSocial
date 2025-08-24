@@ -27,7 +27,7 @@ const chakraInfo = [
   {
     name: "Heart",
     key: "heart",
-    emoji: "💚", 
+    emoji: "🟢", 
     description: "Love, compassion, relationships, emotional healing",
     topics: "Love, kindness, forgiveness, healing, community, connection"
   },
@@ -41,14 +41,14 @@ const chakraInfo = [
   {
     name: "Third Eye",
     key: "third_eye",
-    emoji: "🟣",
+    emoji: "🔮",
     description: "Intuition, wisdom, psychic abilities, inner vision",
     topics: "Intuition, dreams, visions, psychic experiences, inner knowing"
   },
   {
     name: "Crown", 
     key: "crown",
-    emoji: "🟤",
+    emoji: "🤍",
     description: "Spirituality, enlightenment, divine connection, transcendence",
     topics: "Meditation, spirituality, enlightenment, divine connection, unity"
   }

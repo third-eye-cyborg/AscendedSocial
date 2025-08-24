@@ -117,10 +117,10 @@ export default function Explore() {
     { value: "root", label: "🔴 Root" },
     { value: "sacral", label: "🟠 Sacral" },
     { value: "solar", label: "🟡 Solar" },
-    { value: "heart", label: "💚 Heart" },
+    { value: "heart", label: "🟢 Heart" },
     { value: "throat", label: "🔵 Throat" },
-    { value: "third_eye", label: "🟣 Third Eye" },
-    { value: "crown", label: "🟤 Crown" },
+    { value: "third_eye", label: "🔮 Third Eye" },
+    { value: "crown", label: "🤍 Crown" },
   ];
 
   const categoryStats = useMemo(() => {

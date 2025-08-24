@@ -290,7 +290,7 @@ export default function PostCard({ post }: PostCardProps) {
   const chakraGlow = getChakraGlow(post.chakra);
 
   return (
-    <Card className={`bg-cosmic-light rounded-xl overflow-hidden border-2 ${chakraGlow} hover-lift animate-fade-in`}>
+    <Card className={`post-card-container bg-cosmic-light rounded-xl border-2 ${chakraGlow} hover-lift animate-fade-in`}>
       {/* Post Header */}
       <div className="p-4">
         <div className="flex items-center justify-between">
@@ -380,7 +380,65 @@ export default function PostCard({ post }: PostCardProps) {
       </div>
 
       {/* Post Media */}
-      {post.imageUrl && (
+      {post.imageUrls && post.imageUrls.length > 0 && (
+        <div className="relative">
+          {post.imageUrls.length === 1 ? (
+            <img 
+              src={post.imageUrls[0]} 
+              alt="Post image" 
+              className="w-full h-80 object-cover"
+              data-testid={`image-${post.id}-0`}
+            />
+          ) : post.imageUrls.length === 2 ? (
+            <div className="grid grid-cols-2 gap-2">
+              {post.imageUrls.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Post image ${index + 1}`}
+                  className="w-full h-80 object-cover"
+                  data-testid={`image-${post.id}-${index}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <img
+                src={post.imageUrls[0]}
+                alt="Post image 1"
+                className="w-full h-80 object-cover"
+                data-testid={`image-${post.id}-0`}
+              />
+              <div className="grid grid-rows-2 gap-2">
+                <img
+                  src={post.imageUrls[1]}
+                  alt="Post image 2"
+                  className="w-full h-40 object-cover"
+                  data-testid={`image-${post.id}-1`}
+                />
+                <div className="relative">
+                  <img
+                    src={post.imageUrls[2]}
+                    alt="Post image 3"
+                    className="w-full h-40 object-cover"
+                    data-testid={`image-${post.id}-2`}
+                  />
+                  {post.imageUrls.length > 3 && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg">
+                      +{post.imageUrls.length - 3}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
+            📸 {post.imageUrls.length} image{post.imageUrls.length > 1 ? 's' : ''}
+          </div>
+        </div>
+      )}
+      {/* Fallback to single image for backward compatibility */}
+      {!post.imageUrls && post.imageUrl && (
         <div className="relative">
           <img 
             src={post.imageUrl} 

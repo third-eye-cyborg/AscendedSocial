@@ -183,8 +183,8 @@ export default function Explore() {
               <div>
                 <label className="text-xs text-white/70 block mb-1">Category</label>
                 <Select value={filterCategory} onValueChange={setFilterCategory}>
-                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
-                    <SelectValue />
+                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30 text-white">
+                    <SelectValue className="text-white" style={{ color: 'white' }} />
                   </SelectTrigger>
                   <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
                     <SelectItem value="trending" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
@@ -199,8 +199,8 @@ export default function Explore() {
               <div>
                 <label className="text-xs text-white/70 block mb-1">Chakra</label>
                 <Select value={chakraFilter} onValueChange={setChakraFilter}>
-                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
-                    <SelectValue />
+                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30 text-white">
+                    <SelectValue className="text-white" style={{ color: 'white' }} />
                   </SelectTrigger>
                   <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
                     {chakraOptions.map(option => (
@@ -216,8 +216,8 @@ export default function Explore() {
               <div>
                 <label className="text-xs text-white/70 block mb-1">Spiritual</label>
                 <Select value={spiritualFilter} onValueChange={setSpiritualFilter}>
-                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
-                    <SelectValue />
+                  <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30 text-white">
+                    <SelectValue className="text-white" style={{ color: 'white' }} />
                   </SelectTrigger>
                   <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
                     <SelectItem value="all" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}>🌌 All Posts</SelectItem>

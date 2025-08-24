@@ -62,49 +62,50 @@ export default function Home() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto px-4 py-6 xl:px-6 2xl:px-4">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 xl:px-6 2xl:px-4">
         {/* Navigation Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {/* Featured: Starmap Visualizer */}
-          <Card className="bg-gradient-to-br from-purple-900/40 via-blue-900/30 to-black/60 border-2 border-purple-400/30 hover-lift overflow-hidden">
-            <CardContent className="p-4 relative">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-radial from-purple-400/20 to-transparent rounded-full blur-lg"></div>
+          <Card className="bg-gradient-to-br from-slate-900/95 via-purple-900/80 to-black/90 border-2 border-purple-400/40 hover-lift overflow-hidden shadow-2xl shadow-purple-900/20">
+            <CardContent className="p-3 sm:p-4 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40"></div>
+              <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-radial from-purple-400/30 to-transparent rounded-full blur-lg"></div>
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white mb-2 flex items-center">
-                  <Sparkles className="w-4 h-4 mr-2 text-purple-400 animate-pulse" />
+                <h3 className="text-base sm:text-lg font-bold text-white mb-2 flex items-center">
+                  <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-purple-400 animate-pulse" />
                   Spiritual Cosmos
                 </h3>
-                <p className="text-purple-200 text-sm mb-3">
+                <p className="text-purple-100 text-xs sm:text-sm mb-3 leading-relaxed">
                   Journey through the mystical starmap where souls appear as glowing stars, 
                   clustering by chakra energy and spiritual connections.
                 </p>
                 
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3">
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-purple-600/30 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-3 h-3 text-purple-300" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-purple-600/50 rounded-full flex items-center justify-center border border-purple-400/30">
+                      <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 text-purple-200" />
                     </div>
-                    <div className="text-xs text-purple-300">Starfield</div>
+                    <div className="text-2xs sm:text-xs text-purple-200">Starfield</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-green-600/30 rounded-full flex items-center justify-center">
-                      <Users className="w-3 h-3 text-green-300" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-green-600/50 rounded-full flex items-center justify-center border border-green-400/30">
+                      <Users className="w-2 h-2 sm:w-3 sm:h-3 text-green-200" />
                     </div>
-                    <div className="text-xs text-green-300">Connections</div>
+                    <div className="text-2xs sm:text-xs text-green-200">Connections</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-blue-600/30 rounded-full flex items-center justify-center">
-                      <Eye className="w-3 h-3 text-blue-300" />
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-blue-600/50 rounded-full flex items-center justify-center border border-blue-400/30">
+                      <Eye className="w-2 h-2 sm:w-3 sm:h-3 text-blue-200" />
                     </div>
-                    <div className="text-xs text-blue-300">Discovery</div>
+                    <div className="text-2xs sm:text-xs text-blue-200">Discovery</div>
                   </div>
                 </div>
 
                 <Link href="/starmap">
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25">
-                    <Sparkles className="w-3 h-3 mr-2" />
+                  <Button className="w-full bg-gradient-to-r from-purple-700 to-blue-700 hover:from-purple-800 hover:to-blue-800 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 text-sm sm:text-base">
+                    <Sparkles className="w-3 h-3 mr-1 sm:mr-2" />
                     Enter Starmap
-                    <ArrowRight className="w-3 h-3 ml-2" />
+                    <ArrowRight className="w-3 h-3 ml-1 sm:ml-2" />
                   </Button>
                 </Link>
               </div>
@@ -112,45 +113,46 @@ export default function Home() {
           </Card>
 
           {/* Featured: Oracle & Tarot Readings */}
-          <Card className="bg-gradient-to-br from-orange-900/40 via-yellow-900/30 to-red-900/40 border-2 border-orange-400/30 hover-lift overflow-hidden">
-            <CardContent className="p-4 relative">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-radial from-orange-400/20 to-transparent rounded-full blur-lg"></div>
+          <Card className="bg-gradient-to-br from-slate-900/95 via-orange-900/80 to-black/90 border-2 border-orange-400/40 hover-lift overflow-hidden shadow-2xl shadow-orange-900/20">
+            <CardContent className="p-3 sm:p-4 relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-transparent to-black/40"></div>
+              <div className="absolute top-0 right-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-radial from-orange-400/30 to-transparent rounded-full blur-lg"></div>
               <div className="relative z-10">
-                <h3 className="text-lg font-bold text-white mb-2 flex items-center">
-                  <i className="fas fa-crystal-ball w-4 h-4 mr-2 text-orange-400"></i>
+                <h3 className="text-base sm:text-lg font-bold text-white mb-2 flex items-center">
+                  <i className="fas fa-crystal-ball w-3 h-3 sm:w-4 sm:h-4 mr-2 text-orange-400"></i>
                   Divine Oracle
                 </h3>
-                <p className="text-orange-200 text-sm mb-3">
+                <p className="text-orange-100 text-xs sm:text-sm mb-3 leading-relaxed">
                   Receive daily spiritual guidance, AI-powered tarot readings, 
                   and personalized insights from the digital oracle.
                 </p>
                 
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="grid grid-cols-3 gap-1 sm:gap-2 mb-3">
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-orange-600/30 rounded-full flex items-center justify-center">
-                      <i className="fas fa-cards-blank text-xs text-orange-300"></i>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-orange-600/50 rounded-full flex items-center justify-center border border-orange-400/30">
+                      <i className="fas fa-cards-blank text-2xs sm:text-xs text-orange-200"></i>
                     </div>
-                    <div className="text-xs text-orange-300">Tarot</div>
+                    <div className="text-2xs sm:text-xs text-orange-200">Tarot</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-yellow-600/30 rounded-full flex items-center justify-center">
-                      <i className="fas fa-sparkles text-xs text-yellow-300"></i>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-yellow-600/50 rounded-full flex items-center justify-center border border-yellow-400/30">
+                      <i className="fas fa-sparkles text-2xs sm:text-xs text-yellow-200"></i>
                     </div>
-                    <div className="text-xs text-yellow-300">Insights</div>
+                    <div className="text-2xs sm:text-xs text-yellow-200">Insights</div>
                   </div>
                   <div className="text-center">
-                    <div className="w-8 h-8 mx-auto mb-1 bg-red-600/30 rounded-full flex items-center justify-center">
-                      <i className="fas fa-magic text-xs text-red-300"></i>
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 bg-red-600/50 rounded-full flex items-center justify-center border border-red-400/30">
+                      <i className="fas fa-magic text-2xs sm:text-xs text-red-200"></i>
                     </div>
-                    <div className="text-xs text-red-300">Wisdom</div>
+                    <div className="text-2xs sm:text-xs text-red-200">Wisdom</div>
                   </div>
                 </div>
 
                 <Link href="/oracle">
-                  <Button className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white font-semibold py-2 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25">
-                    <i className="fas fa-crystal-ball w-3 h-3 mr-2"></i>
+                  <Button className="w-full bg-gradient-to-r from-orange-700 to-red-700 hover:from-orange-800 hover:to-red-800 text-white font-semibold py-2 px-3 sm:px-4 rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 text-sm sm:text-base">
+                    <i className="fas fa-crystal-ball w-3 h-3 mr-1 sm:mr-2"></i>
                     Consult Oracle
-                    <ArrowRight className="w-3 h-3 ml-2" />
+                    <ArrowRight className="w-3 h-3 ml-1 sm:ml-2" />
                   </Button>
                 </Link>
               </div>

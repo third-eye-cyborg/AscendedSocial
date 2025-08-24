@@ -120,28 +120,28 @@ export default function CreatePost() {
 
   return (
     <Card className="bg-gradient-to-br from-cosmic-light via-cosmic-light to-cosmic border border-primary/40 rounded-2xl mb-6 shadow-2xl hover:shadow-primary/10 transition-all duration-300">
-      <CardContent className="p-6">
+      <CardContent className="p-3 sm:p-6">
         <form onSubmit={handleSubmit}>
-          <div className="flex items-start space-x-4">
+          <div className="flex items-start space-x-2 sm:space-x-4">
             {/* User Avatar using ProfileIcon */}
             <div className="relative group">
               <ProfileIcon 
                 user={user as any}
                 size="md"
-                className="sigil-container w-12 h-12 shadow-lg"
+                className="sigil-container w-10 h-10 sm:w-12 sm:h-12 shadow-lg"
                 testId="create-post-avatar"
               />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/0 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             
             {/* Enhanced Post Content */}
-            <div className="flex-1 bg-gradient-to-b from-cosmic/30 to-cosmic-light/30 rounded-xl p-4 border border-primary/20">
+            <div className="flex-1 bg-gradient-to-b from-cosmic/30 to-cosmic-light/30 rounded-xl p-3 sm:p-4 border border-primary/20">
               <div className="relative">
                 <Textarea
                   placeholder="Share your spiritual insight..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  className="w-full bg-transparent border-none resize-none text-white placeholder:text-primary/60 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[100px] text-lg leading-relaxed"
+                  className="w-full bg-transparent border-none resize-none text-white placeholder:text-primary/60 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[80px] sm:min-h-[100px] text-sm sm:text-lg leading-relaxed"
                   data-testid="textarea-content"
                 />
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
@@ -182,8 +182,8 @@ export default function CreatePost() {
               )}
               
               {/* Clean Actions */}
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
-                <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-primary/20 space-y-3 sm:space-y-0">
+                <div className="flex items-center space-x-2 sm:space-x-4">
                   {/* Simple File Upload */}
                   <input
                     type="file"
@@ -233,14 +233,14 @@ export default function CreatePost() {
                   />
                   <label 
                     htmlFor="file-upload"
-                    className="cursor-pointer inline-flex items-center space-x-2 px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-white text-sm"
+                    className="cursor-pointer inline-flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 bg-primary/10 hover:bg-primary/20 rounded-lg transition-colors text-white text-xs sm:text-sm"
                     data-testid="button-add-media"
                   >
                     <i className="fas fa-image"></i>
                     <span>Add Image</span>
                   </label>
                   
-                  <div className="flex items-center text-xs text-white/60">
+                  <div className="hidden sm:flex items-center text-xs text-white/60">
                     <i className="fas fa-sparkles mr-1 text-primary/70"></i>
                     <span>Share your wisdom</span>
                   </div>
@@ -249,7 +249,7 @@ export default function CreatePost() {
                 <Button 
                   type="submit"
                   disabled={!content.trim() || createPostMutation.isPending}
-                  className="bg-primary hover:bg-primary/80 px-6 py-2 rounded-lg transition-colors text-white font-medium"
+                  className="bg-primary hover:bg-primary/80 px-4 sm:px-6 py-2 rounded-lg transition-colors text-white font-medium text-sm sm:text-base w-full sm:w-auto"
                   data-testid="button-share"
                 >
                   {createPostMutation.isPending ? (

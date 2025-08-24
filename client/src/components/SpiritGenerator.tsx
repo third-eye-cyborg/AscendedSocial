@@ -118,13 +118,29 @@ export default function SpiritGenerator() {
               <div className="mb-4 relative">
                 {/* Glow effect behind avatar */}
                 <div className="absolute inset-0 blur-xl bg-purple-500/30 rounded-full" />
-                {currentSpirit?.imageUrl ? (
+                {(currentSpirit as any)?.imageUrl ? (
                   <ExpandableImage
-                    src={currentSpirit.imageUrl}
-                    alt="Spirit Guide"
-                    title={`${currentSpirit.name || 'Your Spirit Guide'} - ${currentSpirit.type || 'Mystical Guardian'}`}
+                    src={(currentSpirit as any).imageUrl}
+                    alt="AI Generated Spirit Guide"
+                    title={`${(currentSpirit as any)?.name || 'Your Spirit Guide'} - ${(currentSpirit as any)?.type || 'Mystical Guardian'}`}
                   >
-                    <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+                    <img 
+                      src={(currentSpirit as any).imageUrl}
+                      alt="AI Generated Spirit Guide"
+                      className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 object-cover rounded-full border-4 border-purple-400/50 shadow-2xl"
+                      onError={(e) => {
+                        console.log("Spirit image failed to load:", (currentSpirit as any)?.imageUrl);
+                        // Fall back to avatar
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        const fallback = (e.target as HTMLImageElement).nextElementSibling;
+                        if (fallback) {
+                          (fallback as HTMLElement).style.display = 'block';
+                        }
+                      }}
+                    />
+                    <div style={{ display: 'none' }}>
+                      <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />
+                    </div>
                   </ExpandableImage>
                 ) : (
                   <SpiritAvatar userId={(user as any)?.id} size="lg" showDetails={false} />

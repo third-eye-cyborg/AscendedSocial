@@ -278,7 +278,7 @@ export default function Settings() {
                   <Switch
                     checked={profileVisibility}
                     onCheckedChange={setProfileVisibility}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -292,7 +292,7 @@ export default function Settings() {
                   <Switch
                     checked={postsVisibility}
                     onCheckedChange={setPostsVisibility}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -306,7 +306,7 @@ export default function Settings() {
                   <Switch
                     checked={showOnlineStatus}
                     onCheckedChange={setShowOnlineStatus}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -320,7 +320,7 @@ export default function Settings() {
                   <Switch
                     checked={allowDirectMessages}
                     onCheckedChange={setAllowDirectMessages}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -334,7 +334,7 @@ export default function Settings() {
                   <Switch
                     checked={showActivityStatus}
                     onCheckedChange={setShowActivityStatus}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -348,7 +348,7 @@ export default function Settings() {
                   <Switch
                     checked={allowTagging}
                     onCheckedChange={setAllowTagging}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
               </CardContent>
@@ -373,7 +373,7 @@ export default function Settings() {
                   <Switch
                     checked={likeNotifications}
                     onCheckedChange={setLikeNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -387,7 +387,7 @@ export default function Settings() {
                   <Switch
                     checked={commentNotifications}
                     onCheckedChange={setCommentNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -401,7 +401,7 @@ export default function Settings() {
                   <Switch
                     checked={energyNotifications}
                     onCheckedChange={setEnergyNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -415,7 +415,7 @@ export default function Settings() {
                   <Switch
                     checked={followNotifications}
                     onCheckedChange={setFollowNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -429,7 +429,7 @@ export default function Settings() {
                   <Switch
                     checked={oracleNotifications}
                     onCheckedChange={setOracleNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
 
@@ -443,7 +443,7 @@ export default function Settings() {
                   <Switch
                     checked={emailNotifications}
                     onCheckedChange={setEmailNotifications}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
               </CardContent>

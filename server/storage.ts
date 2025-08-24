@@ -41,6 +41,13 @@ export interface IStorage {
   updateUserAura(userId: string, aura: number): Promise<User>;
   updateUserStripeInfo(userId: string, customerId: string, subscriptionId?: string): Promise<User>;
   
+  // User activity operations
+  getUserLikedPosts(userId: string): Promise<PostWithAuthor[]>;
+  getUserEnergyGivenPosts(userId: string): Promise<PostWithAuthor[]>;
+  getUserVotedPosts(userId: string): Promise<PostWithAuthor[]>;
+  getUserCommentedPosts(userId: string): Promise<PostWithAuthor[]>;
+  getUserSpiritualPosts(userId: string): Promise<PostWithAuthor[]>;
+  
   // Post operations
   createPost(post: InsertPost, authorId: string): Promise<Post>;
   getPost(id: string): Promise<PostWithAuthor | undefined>;
@@ -1003,6 +1010,189 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookmarks.userId, userId));
     
     return userBookmarks.map(b => b.postId);
+  }
+
+  // User activity methods
+  async getUserLikedPosts(userId: string): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        authorId: posts.authorId,
+        author: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          sigil: users.sigil,
+          sigilImageUrl: users.sigilImageUrl,
+        },
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .innerJoin(postEngagements, eq(posts.id, postEngagements.postId))
+      .where(
+        and(
+          eq(postEngagements.userId, userId),
+          eq(postEngagements.type, 'like')
+        )
+      )
+      .orderBy(desc(postEngagements.createdAt))
+      .limit(50);
+
+    return result;
+  }
+
+  async getUserEnergyGivenPosts(userId: string): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        authorId: posts.authorId,
+        author: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          sigil: users.sigil,
+          sigilImageUrl: users.sigilImageUrl,
+        },
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .innerJoin(postEngagements, eq(posts.id, postEngagements.postId))
+      .where(
+        and(
+          eq(postEngagements.userId, userId),
+          eq(postEngagements.type, 'energy')
+        )
+      )
+      .orderBy(desc(postEngagements.createdAt))
+      .limit(50);
+
+    return result;
+  }
+
+  async getUserVotedPosts(userId: string): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        authorId: posts.authorId,
+        author: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          sigil: users.sigil,
+          sigilImageUrl: users.sigilImageUrl,
+        },
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .innerJoin(postEngagements, eq(posts.id, postEngagements.postId))
+      .where(
+        and(
+          eq(postEngagements.userId, userId),
+          or(
+            eq(postEngagements.type, 'upvote'),
+            eq(postEngagements.type, 'downvote')
+          )
+        )
+      )
+      .orderBy(desc(postEngagements.createdAt))
+      .limit(50);
+
+    return result;
+  }
+
+  async getUserCommentedPosts(userId: string): Promise<PostWithAuthor[]> {
+    const result = await db
+      .selectDistinct({
+        id: posts.id,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        authorId: posts.authorId,
+        author: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          sigil: users.sigil,
+          sigilImageUrl: users.sigilImageUrl,
+        },
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .innerJoin(comments, eq(posts.id, comments.postId))
+      .where(eq(comments.authorId, userId))
+      .orderBy(desc(comments.createdAt))
+      .limit(50);
+
+    return result;
+  }
+
+  async getUserSpiritualPosts(userId: string): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        authorId: posts.authorId,
+        author: {
+          id: users.id,
+          email: users.email,
+          username: users.username,
+          sigil: users.sigil,
+          sigilImageUrl: users.sigilImageUrl,
+        },
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .where(
+        and(
+          eq(posts.authorId, userId),
+          eq(posts.isSpiritual, true)
+        )
+      )
+      .orderBy(desc(posts.createdAt))
+      .limit(50);
+
+    return result;
   }
 }
 

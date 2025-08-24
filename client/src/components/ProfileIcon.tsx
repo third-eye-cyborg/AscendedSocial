@@ -41,6 +41,7 @@ export function ProfileIcon({
             src={user.profileImageUrl} 
             alt="Profile" 
             className="w-full h-full object-cover rounded-full"
+            style={{ objectPosition: 'center' }}
             data-testid={testId ? `img-${testId}` : 'img-profile'}
           />
         </div>
@@ -50,6 +51,7 @@ export function ProfileIcon({
             src={user.sigilImageUrl} 
             alt="Sigil" 
             className="w-full h-full object-cover rounded-full"
+            style={{ objectPosition: 'center' }}
             data-testid={testId ? `img-${testId}` : 'img-sigil'}
             onError={(e) => {
               // Fallback to text sigil if image fails to load

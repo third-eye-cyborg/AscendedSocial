@@ -353,8 +353,8 @@ export default function PostCard({ post }: PostCardProps) {
           <div className="flex items-center space-x-3">
             <ProfileIcon 
               user={post.author}
-              size="sm"
-              className="w-10 h-10 sigil-container"
+              size="md"
+              className="sigil-container shadow-lg"
               testId={`post-author-${post.id}`}
             />
             <div>

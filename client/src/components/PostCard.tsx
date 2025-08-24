@@ -634,7 +634,7 @@ export default function PostCard({ post }: PostCardProps) {
                 size="sm"
                 className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 ${
                   showComments 
-                    ? 'text-purple-200 bg-purple-800/60 shadow-lg shadow-purple-400/30' 
+                    ? 'text-white bg-purple-800/60 shadow-lg shadow-purple-400/30' 
                     : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
                 }`}
                 onClick={() => setShowComments(!showComments)}
@@ -642,7 +642,9 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`button-comment-${post.id}`}
               >
                 <MessageCircle className="w-4 h-4" />
-                <span className="text-sm font-bold text-purple-100 bg-purple-900/20 px-1 rounded" data-testid={`comments-${post.id}`}>
+                <span className={`text-sm font-bold bg-purple-900/20 px-1 rounded ${
+                  showComments ? 'text-white' : 'text-purple-100'
+                }`} data-testid={`comments-${post.id}`}>
                   {(post.engagements as any)?.comments || 0}
                 </span>
               </Button>

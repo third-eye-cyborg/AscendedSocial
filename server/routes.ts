@@ -1390,6 +1390,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Activity endpoints for settings page
+  app.get('/api/users/:userId/activity/liked', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const posts = await storage.getUserLikedPosts(userId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching liked posts:", error);
+      res.status(500).json({ message: "Failed to fetch liked posts" });
+    }
+  });
+
+  app.get('/api/users/:userId/activity/energy-given', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const posts = await storage.getUserEnergyGivenPosts(userId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching energy given posts:", error);
+      res.status(500).json({ message: "Failed to fetch energy given posts" });
+    }
+  });
+
+  app.get('/api/users/:userId/activity/voted', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const posts = await storage.getUserVotedPosts(userId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching voted posts:", error);
+      res.status(500).json({ message: "Failed to fetch voted posts" });
+    }
+  });
+
+  app.get('/api/users/:userId/activity/commented', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const posts = await storage.getUserCommentedPosts(userId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching commented posts:", error);
+      res.status(500).json({ message: "Failed to fetch commented posts" });
+    }
+  });
+
+  app.get('/api/users/:userId/activity/spiritual', isAuthenticated, async (req: any, res) => {
+    try {
+      const { userId } = req.params;
+      const posts = await storage.getUserSpiritualPosts(userId);
+      res.json(posts);
+    } catch (error) {
+      console.error("Error fetching spiritual posts:", error);
+      res.status(500).json({ message: "Failed to fetch spiritual posts" });
+    }
+  });
+
   // Register Scrapybara routes for authenticated screenshot testing
   registerScrapybaraRoutes(app);
 

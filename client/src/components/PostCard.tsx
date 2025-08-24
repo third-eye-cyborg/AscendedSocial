@@ -13,7 +13,7 @@ import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
-import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles } from "lucide-react";
+import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles, Gem } from "lucide-react";
 
 interface PostCardProps {
   post: {
@@ -693,7 +693,7 @@ export default function PostCard({ post }: PostCardProps) {
                 title={isMarkedSpiritual ? "🔮 Remove Spiritual Mark" : "🔮 Mark as Spiritual"}
                 data-testid={`button-spirit-${post.id}`}
               >
-                <Sparkles className={`w-4 h-4 ${
+                <Gem className={`w-4 h-4 ${
                   isMarkedSpiritual ? 'fill-purple-400 text-purple-400' : ''
                 }`} />
               </Button>

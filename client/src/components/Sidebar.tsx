@@ -157,6 +157,17 @@ export default function Sidebar() {
             <span>Profile</span>
           </button>
         </Link>
+        <Link href="/settings">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/settings" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-settings"
+          >
+            <i className="fas fa-cog"></i>
+            <span>Settings</span>
+          </button>
+        </Link>
       </nav>
 
       {/* Marketing Pages */}

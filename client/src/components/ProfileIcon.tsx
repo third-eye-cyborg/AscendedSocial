@@ -8,17 +8,17 @@ interface ProfileIconProps {
 }
 
 const sizeClasses = {
-  sm: 'w-8 h-8',
-  md: 'w-10 h-10', 
-  lg: 'w-12 h-12',
-  xl: 'w-16 h-16'
+  sm: 'w-6 h-6 sm:w-8 sm:h-8',
+  md: 'w-8 h-8 sm:w-10 sm:h-10', 
+  lg: 'w-10 h-10 sm:w-12 sm:h-12',
+  xl: 'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16'
 };
 
 const sigilSizes = {
-  sm: 'text-[8px] sm:text-[10px]',
-  md: 'text-[10px] sm:text-[12px]',
-  lg: 'text-[12px] sm:text-[14px]',
-  xl: 'text-[14px] sm:text-[16px]'
+  sm: 'text-[6px] sm:text-[8px] md:text-[10px]',
+  md: 'text-[8px] sm:text-[10px] md:text-[12px]',
+  lg: 'text-[10px] sm:text-[12px] md:text-[14px]',
+  xl: 'text-[12px] sm:text-[14px] md:text-[16px]'
 };
 
 export function ProfileIcon({ 

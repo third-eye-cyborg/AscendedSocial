@@ -135,6 +135,17 @@ export default function Sidebar() {
             <span>Oracle</span>
           </button>
         </Link>
+        <Link href="/explore">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/explore" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-explore"
+          >
+            <i className="fas fa-rocket"></i>
+            <span>Explore</span>
+          </button>
+        </Link>
         <Link href={`/profile/${(user as any)?.id}`}>
           <button 
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${

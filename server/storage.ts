@@ -46,6 +46,7 @@ export interface IStorage {
   getPosts(limit?: number, offset?: number): Promise<PostWithAuthor[]>;
   getUserPosts(userId: string, limit?: number): Promise<PostWithAuthor[]>;
   updatePostChakra(postId: string, chakra: ChakraType): Promise<Post>;
+  updatePostSpiritual(postId: string, authorId: string, isSpiritual: boolean): Promise<void>;
   
   // Search operations
   searchPosts(query: string, limit?: number): Promise<PostWithAuthor[]>;
@@ -346,6 +347,19 @@ export class DatabaseStorage implements IStorage {
       .where(eq(posts.id, postId))
       .returning();
     return post;
+  }
+
+  async updatePostSpiritual(postId: string, authorId: string, isSpiritual: boolean): Promise<void> {
+    // Verify the user is the author of the post
+    const post = await this.getPost(postId);
+    if (!post || post.author.id !== authorId) {
+      throw new Error("Only the author can update the spiritual status of their post");
+    }
+
+    await db
+      .update(posts)
+      .set({ isSpiritual, updatedAt: new Date() })
+      .where(eq(posts.id, postId));
   }
 
   // Engagement operations

@@ -36,21 +36,18 @@ export function ProfileIcon({
   const content = (
     <>
       {user?.profileImageUrl ? (
-        <div className="w-full h-full bg-black rounded-full overflow-hidden">
           <img 
             src={user.profileImageUrl} 
             alt="Profile" 
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover"
             style={{ objectPosition: 'center' }}
             data-testid={testId ? `img-${testId}` : 'img-profile'}
           />
-        </div>
       ) : user?.sigilImageUrl ? (
-        <div className="w-full h-full bg-black rounded-full overflow-hidden">
           <img 
             src={user.sigilImageUrl} 
             alt="Sigil" 
-            className="w-full h-full object-cover rounded-full"
+            className="w-full h-full object-cover"
             style={{ objectPosition: 'center' }}
             data-testid={testId ? `img-${testId}` : 'img-sigil'}
             onError={(e) => {
@@ -61,9 +58,8 @@ export function ProfileIcon({
               if (fallback) fallback.style.display = 'flex';
             }}
           />
-        </div>
       ) : user?.sigil ? (
-        <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center p-2" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 flex items-center justify-center p-2" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
           <div className="text-center leading-none">
             <pre className={`${sigilSizes[size]} text-white font-mono whitespace-pre-wrap break-words`} data-testid={testId ? `text-${testId}` : 'text-sigil'}>
               {user.sigil}
@@ -71,7 +67,7 @@ export function ProfileIcon({
           </div>
         </div>
       ) : (
-        <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-blue-900/40 rounded-full flex items-center justify-center border border-purple-400/30">
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/40 to-blue-900/40 flex items-center justify-center border border-purple-400/30">
           <div className="text-primary text-2xl">✨</div>
         </div>
       )}

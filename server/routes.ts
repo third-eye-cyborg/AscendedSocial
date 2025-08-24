@@ -269,7 +269,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(engagement);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating engagement:", error);
       res.status(500).json({ message: error.message || "Failed to create engagement" });
     }
@@ -282,9 +282,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await storage.removeEngagement(postId, userId, type as EngagementType);
       res.json({ success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error removing engagement:", error);
       res.status(500).json({ message: "Failed to remove engagement" });
+    }
+  });
+
+  // Update post spiritual status
+  app.patch('/api/posts/:postId', isAuthenticated, async (req: any, res) => {
+    try {
+      const { postId } = req.params;
+      const { isSpiritual } = req.body;
+      const userId = req.user.claims.sub;
+      
+      await storage.updatePostSpiritual(postId, userId, isSpiritual);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating post spiritual status:", error);
+      res.status(500).json({ message: "Failed to update post" });
     }
   });
 

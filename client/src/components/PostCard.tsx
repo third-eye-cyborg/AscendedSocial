@@ -11,7 +11,7 @@ import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
-import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings } from "lucide-react";
+import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles } from "lucide-react";
 
 interface PostCardProps {
   post: {
@@ -22,6 +22,7 @@ interface PostCardProps {
     chakra: string;
     frequency: number;
     type: string;
+    isSpiritual?: boolean;
     createdAt: string;
     author: {
       id: string;
@@ -48,6 +49,7 @@ export default function PostCard({ post }: PostCardProps) {
   const [energyAmount, setEnergyAmount] = useState(10);
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
   const [clickEffects, setClickEffects] = useState<{[key: string]: boolean}>({});
+  const [isMarkedSpiritual, setIsMarkedSpiritual] = useState(post.isSpiritual || false);
 
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
@@ -96,6 +98,29 @@ export default function PostCard({ post }: PostCardProps) {
       });
     },
   });
+
+  const handleSpiritualToggle = async () => {
+    try {
+      await apiRequest("PATCH", `/api/posts/${post.id}`, {
+        isSpiritual: !isMarkedSpiritual
+      });
+      setIsMarkedSpiritual(!isMarkedSpiritual);
+      queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      toast({
+        title: !isMarkedSpiritual ? "🔮 Marked as Spiritual" : "📝 Unmarked as Spiritual",
+        description: !isMarkedSpiritual ? 
+          "This post is now flagged as spiritual content" : 
+          "This post is no longer flagged as spiritual content",
+        duration: 2000,
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update spiritual status",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleEngagement = (type: string, energyAmountOverride?: number) => {
     if (!user) {
@@ -398,7 +423,7 @@ export default function PostCard({ post }: PostCardProps) {
               >
                 <MessageCircle className="w-4 h-4" />
                 <span className="text-sm font-bold text-purple-100 bg-purple-900/20 px-1 rounded" data-testid={`comments-${post.id}`}>
-                  {post.engagements?.comments || 0}
+                  {(post.engagements as any)?.comments || 0}
                 </span>
               </Button>
 
@@ -425,6 +450,24 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`button-save-${post.id}`}
               >
                 {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+              </Button>
+              
+              {/* Spirit Toggle Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                  isMarkedSpiritual 
+                    ? 'text-purple-200 hover:text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-500/30' 
+                    : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
+                }`}
+                onClick={handleSpiritualToggle}
+                title={isMarkedSpiritual ? "🔮 Remove Spiritual Mark" : "🔮 Mark as Spiritual"}
+                data-testid={`button-spirit-${post.id}`}
+              >
+                <Sparkles className={`w-4 h-4 ${
+                  isMarkedSpiritual ? 'fill-purple-400 text-purple-400' : ''
+                }`} />
               </Button>
             </div>
           </div>

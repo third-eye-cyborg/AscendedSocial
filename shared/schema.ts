@@ -71,6 +71,7 @@ export const posts = pgTable("posts", {
   frequency: integer("frequency").default(0), // Post frequency from votes
   type: varchar("type").notNull().default("post"), // "post", "spark", "vision"
   isPremium: boolean("is_premium").default(false), // Premium locked content
+  isSpiritual: boolean("is_spiritual").default(false), // User-marked as spiritual content
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -334,7 +334,7 @@ export default function PostCard({ post }: PostCardProps) {
                     {post.frequency > 0 ? '+' : ''}{post.frequency} Hz
                   </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-cosmic-dark/95 border-primary/30 backdrop-blur max-w-sm">
+                <TooltipContent className="bg-cosmic-dark/95 border-primary/30 backdrop-blur max-w-sm z-50">
                   <div className="space-y-3 p-2">
                     <div className="flex items-center space-x-2">
                       <div 

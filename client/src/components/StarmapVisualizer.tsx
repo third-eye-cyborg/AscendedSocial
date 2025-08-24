@@ -290,14 +290,23 @@ function StarUser({ user, position, mode, onClick }: {
   useFrame((state, delta) => {
     try {
       if (meshRef.current) {
-        // Smooth rotation
-        meshRef.current.rotation.y += delta * (hovered ? 1.0 : 0.3);
+        // Enhanced rotation with gentle bobbing
+        meshRef.current.rotation.y += delta * (hovered ? 1.2 : 0.4);
+        meshRef.current.rotation.x += delta * 0.1;
         
-        // Simple scale animation
-        const targetScale = hovered ? (mode === 'starmap' ? 1.5 : 1.3) : 1;
+        // Smooth scale animation with spiritual pulsing
+        const targetScale = hovered ? (mode === 'starmap' ? 1.8 : 1.5) : 1;
         const currentScale = meshRef.current.scale.x;
-        const newScale = currentScale + (targetScale - currentScale) * delta * 5;
-        meshRef.current.scale.setScalar(newScale);
+        const newScale = currentScale + (targetScale - currentScale) * delta * 6;
+        
+        // Add gentle spiritual pulsing
+        const pulse = 1 + Math.sin(state.clock.elapsedTime * 3 + user.id.charCodeAt(0)) * 0.08;
+        meshRef.current.scale.setScalar(newScale * pulse);
+        
+        // Subtle vertical floating motion
+        const baseY = position.y;
+        const floatOffset = Math.sin(state.clock.elapsedTime * 2 + user.id.charCodeAt(0)) * 0.3;
+        meshRef.current.position.y = baseY + floatOffset;
       }
     } catch (error) {
       console.warn('Error in StarUser useFrame:', error);
@@ -334,16 +343,16 @@ function StarUser({ user, position, mode, onClick }: {
                 <pointLight 
                   position={[0, 0, 0]} 
                   color={color} 
-                  intensity={3} 
-                  distance={8} 
+                  intensity={4} 
+                  distance={12} 
                 />
+                {/* Simple glow effect */}
                 <mesh position={[0, 0, 0]}>
-                  <sphereGeometry args={[size * 2, 16, 16]} />
+                  <sphereGeometry args={[size * 1.6, 12, 12]} />
                   <meshBasicMaterial 
                     color={color} 
                     transparent 
-                    opacity={0.1}
-                    wireframe
+                    opacity={0.15}
                   />
                 </mesh>
               </>
@@ -806,21 +815,55 @@ function StarmapScene() {
               }}
             >
               <Suspense fallback={null}>
-                <ambientLight intensity={mode === 'starmap' ? 0.2 : 0.4} />
-                <pointLight position={[15, 15, 15]} intensity={0.8} color="#8b5cf6" />
-                <pointLight position={[-15, -15, -15]} intensity={0.6} color="#06b6d4" />
-                <pointLight position={[0, 20, 0]} intensity={0.4} color="#fbbf24" />
-                <pointLight position={[0, -20, 0]} intensity={0.3} color="#ec4899" />
+                <ambientLight intensity={mode === 'starmap' ? 0.15 : 0.35} />
+                
+                {/* Dynamic lighting system */}
+                <pointLight 
+                  position={[20, 20, 20]} 
+                  intensity={mode === 'starmap' ? 1.2 : 0.8} 
+                  color="#8b5cf6" 
+                  distance={100}
+                  decay={2}
+                />
+                <pointLight 
+                  position={[-20, -20, -20]} 
+                  intensity={mode === 'starmap' ? 0.8 : 0.6} 
+                  color="#06b6d4" 
+                  distance={80}
+                  decay={2}
+                />
+                <pointLight 
+                  position={[0, 30, 0]} 
+                  intensity={0.6} 
+                  color="#fbbf24" 
+                  distance={60}
+                  decay={1.5}
+                />
+                <pointLight 
+                  position={[0, -30, 0]} 
+                  intensity={0.4} 
+                  color="#ec4899" 
+                  distance={50}
+                  decay={1.8}
+                />
+                
+                {/* Rim lighting for depth */}
+                <directionalLight
+                  position={[50, 50, 50]}
+                  intensity={0.3}
+                  color="#ffffff"
+                  castShadow={false}
+                />
                 
                 {mode === 'starmap' && (
                   <>
-                    <Stars radius={200} depth={100} count={5000} factor={4} saturation={0.2} fade speed={0.5} />
-                    <fog attach="fog" args={['#000011', 50, 150]} />
+                    <Stars radius={300} depth={150} count={8000} factor={3} saturation={0.3} fade speed={0.3} />
+                    <fog attach="fog" args={['#000033', 80, 200]} />
                   </>
                 )}
                 
                 {mode === 'fungus' && (
-                  <fog attach="fog" args={['#001122', 10, 40]} />
+                  <fog attach="fog" args={['#001133', 15, 50]} />
                 )}
                 
                 <CameraController onModeChange={setMode} />
@@ -841,15 +884,15 @@ function StarmapScene() {
                   enableZoom
                   enablePan
                   enableRotate
-                  zoomSpeed={1.8}
-                  panSpeed={1.4}
-                  rotateSpeed={1.0}
-                  minDistance={2}
-                  maxDistance={80}
-                  dampingFactor={0.03}
+                  zoomSpeed={2.0}
+                  panSpeed={1.6}
+                  rotateSpeed={1.2}
+                  minDistance={1.5}
+                  maxDistance={100}
+                  dampingFactor={0.02}
                   enableDamping
                   autoRotate={mode === 'starmap'}
-                  autoRotateSpeed={0.3}
+                  autoRotateSpeed={0.2}
                   target={[0, 0, 0]}
                 />
               </Suspense>
@@ -887,12 +930,18 @@ export default function StarmapVisualizer() {
   return (
     <div className="relative w-full h-screen overflow-hidden">
       <StarmapScene />
-      {/* Ambient background effects */}
+      {/* Enhanced ambient background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-10 w-4 h-4 bg-purple-400 rounded-full opacity-60 animate-ping delay-1000"></div>
-        <div className="absolute top-32 right-20 w-2 h-2 bg-blue-400 rounded-full opacity-40 animate-pulse delay-2000"></div>
-        <div className="absolute bottom-20 left-32 w-3 h-3 bg-pink-400 rounded-full opacity-50 animate-bounce delay-3000"></div>
-        <div className="absolute bottom-40 right-40 w-2 h-2 bg-cyan-400 rounded-full opacity-30 animate-ping delay-4000"></div>
+        <div className="absolute top-10 left-10 w-4 h-4 bg-purple-400 rounded-full opacity-70 animate-ping delay-1000 shadow-lg shadow-purple-400/50"></div>
+        <div className="absolute top-32 right-20 w-3 h-3 bg-blue-400 rounded-full opacity-60 animate-pulse delay-2000 shadow-lg shadow-blue-400/50"></div>
+        <div className="absolute bottom-20 left-32 w-5 h-5 bg-pink-400 rounded-full opacity-50 animate-bounce delay-3000 shadow-lg shadow-pink-400/50"></div>
+        <div className="absolute bottom-40 right-40 w-2 h-2 bg-cyan-400 rounded-full opacity-40 animate-ping delay-4000 shadow-lg shadow-cyan-400/50"></div>
+        <div className="absolute top-1/2 left-10 w-3 h-3 bg-yellow-400 rounded-full opacity-50 animate-pulse delay-5000 shadow-lg shadow-yellow-400/50"></div>
+        <div className="absolute top-20 right-1/2 w-4 h-4 bg-green-400 rounded-full opacity-40 animate-bounce delay-6000 shadow-lg shadow-green-400/50"></div>
+        
+        {/* Ethereal gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-blue-900/10 via-transparent to-purple-900/10"></div>
       </div>
     </div>
   );

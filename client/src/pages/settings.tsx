@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import SigilGenerator from "@/components/SigilGenerator";
 import ProfilePictureChanger from "@/components/ProfilePictureChanger";
 import PostCard from "@/components/PostCard";
+import { Link } from "wouter";
 import { 
   User, 
   Shield, 
@@ -154,6 +155,13 @@ export default function Settings() {
     }
   };
 
+  // Helper function to strip HTML and get plain text
+  const stripHtml = (html: string) => {
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+  };
+
   const ActivitySection = ({ title, posts, icon }: { title: string; posts: Post[]; icon: React.ReactNode }) => (
     <Card className="mb-6 bg-cosmic-light border-cosmic-light">
       <CardHeader>
@@ -167,19 +175,42 @@ export default function Settings() {
         {posts.length === 0 ? (
           <p className="text-gray-400">No posts found in this category.</p>
         ) : (
-          <ScrollArea className="max-h-96">
-            <div className="space-y-4">
-              {posts.map((post) => (
-                <div key={post.id} className="border border-primary/20 rounded-lg p-3 bg-cosmic/50 hover:bg-cosmic/70 transition-colors">
-                  <p className="text-sm text-white mb-2 line-clamp-2">{post.content}</p>
-                  <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span className="capitalize">Chakra: {post.chakra}</span>
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="h-80 overflow-hidden">
+            <ScrollArea className="h-full w-full">
+              <div className="space-y-3 pr-4">
+                {posts.map((post) => (
+                  <Link
+                    key={post.id}
+                    href={`/?post=${post.id}`}
+                    className="block cursor-pointer"
+                    data-testid={`activity-post-link-${post.id}`}
+                  >
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/50 hover:bg-cosmic/80 transition-all duration-200 hover:border-primary/40 hover:shadow-md hover:shadow-primary/20">
+                      <p className="text-sm text-white mb-3 line-clamp-3 leading-relaxed">
+                        {stripHtml(post.content)}
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-400">
+                        <div className="flex items-center gap-2">
+                          <span className="capitalize bg-primary/20 text-primary px-2 py-1 rounded-full">
+                            {post.chakra}
+                          </span>
+                          {post.frequency && (
+                            <span className="text-yellow-400">✨ {post.frequency}Hz</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                          <span className="text-primary hover:text-primary/80 transition-colors">
+                            View →
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
         )}
       </CardContent>
     </Card>

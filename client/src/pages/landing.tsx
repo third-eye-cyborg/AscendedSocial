@@ -338,7 +338,7 @@ export default function Landing() {
 
               <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
-                  <i className="fas fa-cards-blank text-white"></i>
+                  <i className="fas fa-cards text-white"></i>
                 </div>
                 <div>
                   <h4 className="font-semibold text-secondary mb-1">AI Tarot Readings</h4>

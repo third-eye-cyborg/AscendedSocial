@@ -438,7 +438,7 @@ export default function PostCard({ post }: PostCardProps) {
                 size="sm"
                 className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
                   userEngagements.includes('like') 
-                    ? 'text-white/90' 
+                    ? 'text-white/90 hover:bg-pink-900/40' 
                     : 'text-white/80 hover:text-pink-300 hover:bg-pink-900/30'
                 } ${engageMutation.isPending ? 'animate-pulse' : ''}`}
                 onClick={() => handleEngagement('like')}
@@ -474,7 +474,7 @@ export default function PostCard({ post }: PostCardProps) {
                     size="sm"
                     className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
                       userEngagements.includes('energy') 
-                        ? 'text-white/90' 
+                        ? 'text-white/90 hover:bg-yellow-900/40' 
                         : 'text-white/80 hover:text-yellow-300 hover:bg-yellow-900/30'
                     } ${engageMutation.isPending ? 'opacity-75' : ''}`}
                     disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}

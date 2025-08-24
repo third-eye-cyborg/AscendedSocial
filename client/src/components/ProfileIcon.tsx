@@ -29,7 +29,7 @@ export function ProfileIcon({
   onClick, 
   testId 
 }: ProfileIconProps) {
-  const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-transform duration-500`;
+  const baseClasses = `${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden cursor-pointer transition-transform duration-500 flex-shrink-0`;
   const glowClasses = showGlow ? 'hover:scale-110' : 'hover:scale-105';
   const containerClasses = `${baseClasses} ${glowClasses} ${className}`;
 
@@ -59,9 +59,9 @@ export function ProfileIcon({
             }}
           />
       ) : user?.sigil ? (
-        <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 flex items-center justify-center p-2" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
-          <div className="text-center leading-none">
-            <pre className={`${sigilSizes[size]} text-white font-mono whitespace-pre-wrap break-words`} data-testid={testId ? `text-${testId}` : 'text-sigil'}>
+        <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 flex items-center justify-center p-1" style={{ display: user?.sigilImageUrl ? 'none' : 'flex' }}>
+          <div className="text-center leading-none overflow-hidden">
+            <pre className={`${sigilSizes[size]} text-white font-mono text-center overflow-hidden text-ellipsis max-w-full max-h-full`} data-testid={testId ? `text-${testId}` : 'text-sigil'}>
               {user.sigil}
             </pre>
           </div>

@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PostCard from "@/components/PostCard";
-import { TrendingUp, TrendingDown, Heart, Users, Sparkles, Filter } from "lucide-react";
+import ChakraLegend from "@/components/ChakraLegend";
+import { TrendingUp, TrendingDown, Heart, Users, Sparkles, Filter, Info } from "lucide-react";
 
 interface Post {
   id: string;
@@ -38,6 +39,7 @@ export default function Explore() {
   const [chakraFilter, setChakraFilter] = useState("all");
   const [spiritualFilter, setSpiritualFilter] = useState("all");
   const [sortMode, setSortMode] = useState("frequency"); // "frequency", "above_below", "recent"
+  const [showLegend, setShowLegend] = useState(false);
 
   const { data: posts = [], isLoading } = useQuery<Post[]>({
     queryKey: ["/api/posts"],
@@ -226,37 +228,57 @@ export default function Explore() {
             </div>
             
             {/* Sort Mode Toggle */}
-            <div className="flex items-center space-x-4 mt-4 pt-4 border-t border-primary/20">
-              <span className="text-sm font-semibold text-white">View:</span>
-              <div className="flex space-x-2">
-                <Button
-                  variant={sortMode === "frequency" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSortMode("frequency")}
-                  className="text-xs"
-                >
-                  📊 Standard
-                </Button>
-                <Button
-                  variant={sortMode === "above_below" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSortMode("above_below")}
-                  className="text-xs"
-                >
-                  ⚡ Above/Below
-                </Button>
-                <Button
-                  variant={sortMode === "recent" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSortMode("recent")}
-                  className="text-xs"
-                >
-                  🕒 Recent
-                </Button>
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-primary/20">
+              <div className="flex items-center space-x-4">
+                <span className="text-sm font-semibold text-white">View:</span>
+                <div className="flex space-x-2">
+                  <Button
+                    variant={sortMode === "frequency" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSortMode("frequency")}
+                    className="text-xs"
+                  >
+                    📊 Standard
+                  </Button>
+                  <Button
+                    variant={sortMode === "above_below" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSortMode("above_below")}
+                    className="text-xs"
+                  >
+                    ⚡ Above/Below
+                  </Button>
+                  <Button
+                    variant={sortMode === "recent" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSortMode("recent")}
+                    className="text-xs"
+                  >
+                    🕒 Recent
+                  </Button>
+                </div>
               </div>
+              
+              {/* Chakra Legend Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLegend(!showLegend)}
+                className="text-xs flex items-center space-x-1"
+              >
+                <Info className="w-3 h-3" />
+                <span>{showLegend ? "Hide" : "Show"} Chakra Guide</span>
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Chakra Legend */}
+        {showLegend && (
+          <div className="mb-6">
+            <ChakraLegend />
+          </div>
+        )}
 
         {/* Results */}
         {sortMode === "above_below" ? (

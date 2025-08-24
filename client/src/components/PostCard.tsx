@@ -395,11 +395,11 @@ export default function PostCard({ post }: PostCardProps) {
                     data-testid={`image-${post.id}-0`}
                   />
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
                   <img 
                     src={post.imageUrls[0]} 
                     alt="Post image expanded" 
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain rounded-lg"
                   />
                 </DialogContent>
               </Dialog>
@@ -415,14 +415,14 @@ export default function PostCard({ post }: PostCardProps) {
                         data-testid={`image-${post.id}-${index}`}
                       />
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
                       <div className="relative">
                         <img 
                           src={url} 
                           alt={`Post image ${index + 1} expanded`} 
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-contain rounded-lg"
                         />
-                        <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                        <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
                           {index + 1} of {post.imageUrls.length}
                         </div>
                       </div>
@@ -441,14 +441,14 @@ export default function PostCard({ post }: PostCardProps) {
                       data-testid={`image-${post.id}-0`}
                     />
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                  <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
                     <div className="relative">
                       <img 
                         src={post.imageUrls[0]} 
                         alt="Post image 1 expanded" 
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain rounded-lg"
                       />
-                      <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                      <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
                         1 of {post.imageUrls.length}
                       </div>
                     </div>
@@ -464,14 +464,14 @@ export default function PostCard({ post }: PostCardProps) {
                         data-testid={`image-${post.id}-1`}
                       />
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
                       <div className="relative">
                         <img 
                           src={post.imageUrls[1]} 
                           alt="Post image 2 expanded" 
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-contain rounded-lg"
                         />
-                        <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                        <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
                           2 of {post.imageUrls.length}
                         </div>
                       </div>
@@ -487,14 +487,14 @@ export default function PostCard({ post }: PostCardProps) {
                           data-testid={`image-${post.id}-2`}
                         />
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
                         <div className="relative">
                           <img 
                             src={post.imageUrls[2]} 
                             alt="Post image 3 expanded" 
-                            className="w-full h-full object-contain"
+                            className="w-full h-full object-contain rounded-lg"
                           />
-                          <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                          <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
                             3 of {post.imageUrls.length}
                           </div>
                         </div>
@@ -527,11 +527,11 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`image-${post.id}`}
               />
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+            <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
               <img 
                 src={post.imageUrl} 
                 alt="Post image expanded" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain rounded-lg"
               />
             </DialogContent>
           </Dialog>

@@ -86,7 +86,7 @@ export async function generateSpiritImage(spiritData: { name: string; descriptio
   try {
     const response = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Create a mystical spiritual guide avatar: ${spiritData.name}, a ${spiritData.element} element spirit at level ${spiritData.level}. ${spiritData.description}. Style: ethereal, glowing, mystical, spiritual art with ${spiritData.element} elemental themes. Digital art, high quality, mystical atmosphere. IMPORTANT: No text, letters, words, or writing of any kind should appear in the image. Pure visual representation only.`,
+      prompt: `Create a mystical spiritual guide avatar: ${spiritData.name}, a ${spiritData.element} element spirit at level ${spiritData.level}. ${spiritData.description}. Style: ethereal, glowing, mystical, spiritual art with ${spiritData.element} elemental themes. Digital art, high quality, mystical atmosphere. CRITICAL REQUIREMENTS: ABSOLUTELY NO text, letters, words, symbols, writing, runes, glyphs, or any textual elements whatsoever in the image. This is a pure visual artwork only - no language characters of any kind. Focus entirely on colors, light, energy, and visual forms without any written or symbolic text.`,
       n: 1,
       size: "1024x1024",
       quality: "standard",
@@ -390,11 +390,11 @@ Questionnaire:
 - Astrology Sign: ${questionnaire.astrologySign}
 
 Generate a Spirit with:
-- name: A mystical, 2-3 word name that reflects their spiritual essence
+- name: A mystical, 2-3 word name that reflects their spiritual essence. Incorporate references to ancient deities, esoteric entities, spiritual beings, or mythological figures from various traditions (Egyptian, Greek, Celtic, Norse, Hindu, Buddhist, Native American, Mesopotamian, Aztec, etc.). Examples: "Thoth Whisperer", "Anubis Guardian", "Quan Yin's Echo", "Thor's Ember", "Isis Moonweaver", "Ganesh Pathfinder", "Freyja Stormcaller", "Lakshmi Goldkeeper", "Odin's Raven", "Brigid Flamekeeper", "Hecate Shadowwalker", "Artemis Moonhunter", "Kali Truthseer", "Hermes Wanderer", "Sekhmet Lionheart", "Tara Compassion"
 - description: A 30-50 word description of the Spirit's personality, wisdom, and spiritual gifts
 - element: One of "fire", "water", "earth", or "air" based on their nature
 
-The Spirit should feel personal and meaningful to this individual's spiritual journey.
+The Spirit should feel personal and meaningful to this individual's spiritual journey while drawing from the rich tapestry of global spiritual and mythological traditions.
 Return as JSON with 'name', 'description', and 'element' fields.`;
 
   try {

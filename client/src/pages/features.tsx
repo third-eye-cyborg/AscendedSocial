@@ -54,6 +54,22 @@ export default function Features() {
               </Button>
               <Button 
                 variant="ghost"
+                onClick={() => window.location.href = '/energy'}
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="button-energy"
+              >
+                Energy
+              </Button>
+              <Button 
+                variant="ghost"
+                onClick={() => window.location.href = '/community'}
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="button-community"
+              >
+                Community
+              </Button>
+              <Button 
+                variant="ghost"
                 onClick={() => window.location.href = '/pricing'}
                 className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-pricing"
@@ -124,6 +140,28 @@ export default function Features() {
                 data-testid="mobile-nav-about"
               >
                 About
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/energy';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-energy"
+              >
+                Energy
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  window.location.href = '/community';
+                  setIsMobileMenuOpen(false);
+                }}
+                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="mobile-nav-community"
+              >
+                Community
               </Button>
               <Button
                 variant="ghost"

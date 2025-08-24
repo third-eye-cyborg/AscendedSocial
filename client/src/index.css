@@ -233,8 +233,20 @@ html, body {
   position: static !important;
 }
 
-/* Override container overflow for the entire post card area */
-.post-card-container, .post-card-container * {
+/* Override container overflow for the entire post card area - but keep images contained */
+.post-card-container {
+  overflow: visible !important;
+}
+
+/* Ensure images and media stay within post boundaries */
+.post-card-container img,
+.post-card-container video {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* Keep chakra legend tooltips visible */
+.chakra-legend {
   overflow: visible !important;
 }
 

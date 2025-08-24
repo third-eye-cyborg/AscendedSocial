@@ -345,13 +345,13 @@ export default function PostCard({ post }: PostCardProps) {
                 <div className="px-4 text-center">
                   <div 
                     className={`text-lg font-bold transition-colors duration-300 ${
-                      ((post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)) >= 0 
+                      post.frequency >= 0 
                         ? 'text-green-200 drop-shadow-lg' 
                         : 'text-red-200 drop-shadow-lg'
                     }`}
                     data-testid={`votes-${post.id}`}
                   >
-                    {(post.engagements?.upvote || 0) - (post.engagements?.downvote || 0)}
+                    {post.frequency > 0 ? '+' : ''}{post.frequency}
                   </div>
                   <div className="text-xs text-white/70 font-medium tracking-wide">FREQUENCY</div>
                 </div>
@@ -397,8 +397,8 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`button-comment-${post.id}`}
               >
                 <MessageCircle className="w-4 h-4" />
-                <span className="text-sm font-semibold" data-testid={`comments-${post.id}`}>
-                  {(post.engagements as any)?.comments || 0}
+                <span className="text-sm font-bold text-purple-100 bg-purple-900/20 px-1 rounded" data-testid={`comments-${post.id}`}>
+                  {post.engagements?.comments || 0}
                 </span>
               </Button>
 
@@ -458,7 +458,7 @@ export default function PostCard({ post }: PostCardProps) {
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
-                <span className="text-sm font-bold text-pink-50 drop-shadow-md" data-testid={`likes-${post.id}`}>
+                <span className="text-lg font-bold text-pink-100 drop-shadow-md bg-pink-900/20 px-2 py-1 rounded" data-testid={`likes-${post.id}`}>
                   {post.engagements?.like || 0}
                 </span>
                 <span className="text-xs text-pink-200/90 font-medium tracking-wide">HEARTS</span>
@@ -552,7 +552,7 @@ export default function PostCard({ post }: PostCardProps) {
                 </PopoverContent>
               </Popover>
               <div className="flex items-center space-x-1 ml-2">
-                <span className="text-sm font-bold text-yellow-50 drop-shadow-md" data-testid={`energy-${post.id}`}>
+                <span className="text-lg font-bold text-yellow-100 drop-shadow-md bg-yellow-900/20 px-2 py-1 rounded" data-testid={`energy-${post.id}`}>
                   {post.engagements?.energy || 0}
                 </span>
                 <span className="text-xs text-yellow-200/90 font-medium tracking-wide">ENERGY</span>

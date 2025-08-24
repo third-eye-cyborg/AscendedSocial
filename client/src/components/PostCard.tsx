@@ -615,12 +615,12 @@ export default function PostCard({ post }: PostCardProps) {
       )}
 
       {/* Enhanced Engagement Bar */}
-      <div className="p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
+      <div className="p-3 sm:p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
         <div className="flex flex-col space-y-3">
           {/* Main Engagement Actions */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
             {/* Spiritual Frequency Voting */}
-            <div className="flex items-center bg-black/40 rounded-xl p-2 border border-primary/30 shadow-lg">
+            <div className="flex items-center bg-black/40 rounded-xl p-1.5 sm:p-2 border border-primary/30 shadow-lg flex-shrink-0">
               <div className="flex items-center">
                 <Button
                   variant="ghost"
@@ -685,12 +685,12 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
 
             {/* Secondary Actions */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
               {/* Mystical Comments */}
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center space-x-2 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 ${
+                className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 min-w-0 ${
                   showComments 
                     ? 'text-white bg-purple-800/60 shadow-lg shadow-purple-400/30' 
                     : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
@@ -699,8 +699,8 @@ export default function PostCard({ post }: PostCardProps) {
                 title="💬 Join the Sacred Discussion"
                 data-testid={`button-comment-${post.id}`}
               >
-                <MessageCircle className="w-4 h-4" />
-                <span className={`text-sm font-bold bg-purple-900/20 px-1 rounded ${
+                <MessageCircle className="w-4 h-4 flex-shrink-0" />
+                <span className={`text-xs sm:text-sm font-bold bg-purple-900/20 px-1 rounded flex-shrink-0 ${
                   showComments ? 'text-white' : 'text-purple-100'
                 }`} data-testid={`comments-${post.id}`}>
                   {(post.engagements as any)?.comments || 0}
@@ -710,7 +710,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-2 rounded-xl text-white/80 hover:text-cyan-300 hover:bg-cyan-900/30 transition-all duration-300 hover:scale-110"
+                className="p-1.5 sm:p-2 rounded-xl text-white/80 hover:text-cyan-300 hover:bg-cyan-900/30 transition-all duration-300 hover:scale-110 min-w-[36px] min-h-[36px] flex-shrink-0"
                 onClick={handleShare}
                 title="🔗 Share Sacred Wisdom"
                 data-testid={`button-share-${post.id}`}
@@ -720,7 +720,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                className={`p-1.5 sm:p-2 rounded-xl transition-all duration-300 hover:scale-110 min-w-[36px] min-h-[36px] flex-shrink-0 ${
                   isSaved 
                     ? 'text-amber-300 hover:text-amber-200 bg-amber-900/40 shadow-lg shadow-amber-500/30' 
                     : 'text-white/80 hover:text-amber-300 hover:bg-amber-900/30'
@@ -735,11 +735,11 @@ export default function PostCard({ post }: PostCardProps) {
               </Button>
               
               {/* Spirit Toggle Button */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                  className={`p-1.5 sm:p-2 rounded-xl transition-all duration-300 hover:scale-110 min-w-[36px] min-h-[36px] ${
                     userSpiritualMark 
                       ? 'text-purple-200 hover:text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-500/30' 
                       : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
@@ -753,7 +753,7 @@ export default function PostCard({ post }: PostCardProps) {
                   }`} />
                 </Button>
                 {spiritualCount > 0 && (
-                  <span className="text-xs font-bold text-purple-300 bg-purple-900/30 px-1.5 py-0.5 rounded-full border border-purple-500/30 shadow-sm">
+                  <span className="text-xs font-bold text-purple-300 bg-purple-900/30 px-1.5 py-0.5 rounded-full border border-purple-500/30 shadow-sm whitespace-nowrap">
                     {spiritualCount}
                   </span>
                 )}
@@ -762,9 +762,9 @@ export default function PostCard({ post }: PostCardProps) {
           </div>
 
           {/* Resonance & Energy Row */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto pb-1">
             {/* Heart Resonance */}
-            <div className="flex items-center bg-black/40 rounded-xl px-3 py-2 border border-pink-500/30">
+            <div className="flex items-center bg-black/40 rounded-xl px-2 sm:px-3 py-2 border border-pink-500/30 flex-shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
@@ -798,7 +798,7 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
 
             {/* Spiritual Energy Transfer */}
-            <div className="flex items-center bg-black/40 rounded-xl px-3 py-2 border border-yellow-500/30">
+            <div className="flex items-center bg-black/40 rounded-xl px-2 sm:px-3 py-2 border border-yellow-500/30 flex-shrink-0">
               <Popover open={energyPopoverOpen} onOpenChange={setEnergyPopoverOpen}>
                 <PopoverTrigger asChild>
                   <Button

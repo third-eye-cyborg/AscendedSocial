@@ -259,7 +259,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-4 text-chakra-heart">AI-Generated Sigils</h3>
-                    <p className="text-secondary leading-relaxed text-sm sm:text-base lg:text-lg">
+                    <p className="text-muted leading-relaxed text-sm sm:text-base lg:text-lg">
                       Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                     </p>
                     <div className="mt-4 sm:mt-6 inline-flex items-center text-chakra-heart text-xs sm:text-sm font-semibold">
@@ -281,7 +281,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Chakra Intelligence</h3>
-                    <p className="text-secondary leading-relaxed text-lg">
+                    <p className="text-muted leading-relaxed text-lg">
                       AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-crown text-sm font-semibold">
@@ -303,7 +303,7 @@ export default function Landing() {
                       </div>
                     </div>
                     <h3 className="text-2xl font-display font-bold mb-4 text-primary">Sacred Energy System</h3>
-                    <p className="text-secondary leading-relaxed text-lg">
+                    <p className="text-muted leading-relaxed text-lg">
                       Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                     </p>
                     <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">

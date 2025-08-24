@@ -785,8 +785,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Enhanced 3D Starmap with full WebGL capabilities */}
-      {enable3D ? (
+      {/* Temporarily disable 3D due to WebGL compatibility issues */}
+      {false ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -907,17 +907,60 @@ function StarmapScene() {
         </CanvasErrorBoundary>
       ) : (
         <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <div className="text-6xl mb-4">🌌</div>
-            <h2 className="text-2xl font-bold mb-2">3D Starmap Disabled</h2>
-            <p className="text-purple-300 mb-4">Experience the full cosmic visualization</p>
-            <Button 
-              onClick={() => setEnable3D(true)}
-              className="bg-purple-600 hover:bg-purple-700"
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Enter 3D Cosmos
-            </Button>
+          <div className="text-center text-white max-w-2xl mx-auto p-8">
+            <div className="text-8xl mb-6">✨</div>
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">
+              Spiritual Community Starmap
+            </h2>
+            <p className="text-purple-300 mb-6 text-lg leading-relaxed">
+              Your cosmic community visualization is currently in stable 2D mode for optimal performance.
+            </p>
+            
+            {users.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                {users.slice(0, 8).map((user, index) => (
+                  <div 
+                    key={user.id}
+                    className="p-3 bg-purple-900/30 rounded-lg border border-purple-500/30 hover:border-purple-400/50 transition-all cursor-pointer"
+                    onClick={() => handleUserClick(user)}
+                  >
+                    <div className="text-2xl mb-2">
+                      {user.dominantChakra === 'root' ? '🔴' :
+                       user.dominantChakra === 'sacral' ? '🟠' :
+                       user.dominantChakra === 'solar' ? '🟡' :
+                       user.dominantChakra === 'heart' ? '💚' :
+                       user.dominantChakra === 'throat' ? '🔵' :
+                       user.dominantChakra === 'third_eye' ? '🟣' :
+                       user.dominantChakra === 'crown' ? '⚪' : '✨'}
+                    </div>
+                    <div className="text-sm font-medium truncate">{user.username}</div>
+                    <div className="text-xs text-purple-300">Energy: {user.energyLevel || 0}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <Button 
+                onClick={() => setLocation('/community')}
+                className="bg-purple-600 hover:bg-purple-700 mr-3"
+                data-testid="button-community"
+              >
+                Explore Community
+              </Button>
+              <Button 
+                onClick={() => setLocation('/')}
+                variant="outline"
+                className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+                data-testid="button-home"
+              >
+                Return Home
+              </Button>
+            </div>
+            
+            <p className="text-xs text-gray-400 mt-6">
+              3D visualization temporarily disabled for compatibility
+            </p>
           </div>
         </div>
       )}

@@ -37,16 +37,17 @@ export default function Layout({ children }: LayoutProps) {
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo and Brand */}
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 p-1 shadow-lg">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 p-1 shadow-lg">
                 <img 
                   src={logoPath} 
                   alt="Ascended Social" 
                   className="w-full h-full object-contain filter drop-shadow-md"
                 />
               </div>
-              <h1 className="text-xl font-display font-bold bg-gradient-to-r from-purple-400 via-violet-500 to-indigo-600 bg-clip-text text-transparent">
-                Ascended Social
+              <h1 className="text-lg sm:text-xl font-display font-bold bg-gradient-to-r from-purple-400 via-violet-500 to-indigo-600 bg-clip-text text-transparent">
+                <span className="hidden sm:inline">Ascended Social</span>
+                <span className="sm:hidden">Ascended</span>
               </h1>
             </div>
 

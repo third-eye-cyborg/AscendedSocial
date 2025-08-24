@@ -187,10 +187,10 @@ export default function Explore() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-cosmic-dark border-primary/30">
-                    <SelectItem value="trending"><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
-                    <SelectItem value="for_you"><Star className="w-4 h-4 mr-2 inline" />For You</SelectItem>
-                    <SelectItem value="friends"><Users className="w-4 h-4 mr-2 inline" />Friends</SelectItem>
-                    <SelectItem value="spiritual"><Sparkles className="w-4 h-4 mr-2 inline" />Spiritual</SelectItem>
+                    <SelectItem value="trending" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
+                    <SelectItem value="for_you" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Star className="w-4 h-4 mr-2 inline" />For You</SelectItem>
+                    <SelectItem value="friends" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Users className="w-4 h-4 mr-2 inline" />Friends</SelectItem>
+                    <SelectItem value="spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Sparkles className="w-4 h-4 mr-2 inline" />Spiritual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -204,7 +204,7 @@ export default function Explore() {
                   </SelectTrigger>
                   <SelectContent className="bg-cosmic-dark border-primary/30">
                     {chakraOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
+                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-primary/20 focus:bg-primary/20">
                         {option.label}
                       </SelectItem>
                     ))}
@@ -220,9 +220,9 @@ export default function Explore() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-cosmic-dark border-primary/30">
-                    <SelectItem value="all">🌌 All Posts</SelectItem>
-                    <SelectItem value="spiritual">🔮 Spiritual</SelectItem>
-                    <SelectItem value="non_spiritual">💭 General</SelectItem>
+                    <SelectItem value="all" className="text-white hover:bg-primary/20 focus:bg-primary/20">🌌 All Posts</SelectItem>
+                    <SelectItem value="spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20">🔮 Spiritual</SelectItem>
+                    <SelectItem value="non_spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20">💭 General</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

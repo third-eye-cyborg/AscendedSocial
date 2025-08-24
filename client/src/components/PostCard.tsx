@@ -573,14 +573,16 @@ export default function PostCard({ post }: PostCardProps) {
                 size="sm"
                 className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
                   isSaved 
-                    ? 'text-pink-300 hover:text-pink-200 bg-pink-900/40 shadow-lg shadow-pink-500/30' 
-                    : 'text-white/80 hover:text-pink-300 hover:bg-pink-900/30'
+                    ? 'text-amber-300 hover:text-amber-200 bg-amber-900/40 shadow-lg shadow-amber-500/30' 
+                    : 'text-white/80 hover:text-amber-300 hover:bg-amber-900/30'
                 }`}
                 onClick={handleSave}
                 title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
                 data-testid={`button-save-${post.id}`}
               >
-                {isSaved ? <BookmarkCheck className="w-4 h-4 fill-current" /> : <Bookmark className="w-4 h-4" />}
+                <Bookmark className={`w-4 h-4 transition-all duration-300 ${
+                  isSaved ? 'fill-amber-400 stroke-amber-400' : 'fill-transparent stroke-current'
+                }`} />
               </Button>
               
               {/* Spirit Toggle Button */}

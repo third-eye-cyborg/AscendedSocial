@@ -274,9 +274,11 @@ export default function PostCard({ post }: PostCardProps) {
 
       {/* Post Content */}
       <div className="px-4 pb-3">
-        <p className="text-white leading-relaxed" data-testid={`content-${post.id}`}>
-          {post.content}
-        </p>
+        <div 
+          className="post-content text-white leading-relaxed" 
+          data-testid={`content-${post.id}`}
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
       </div>
 
       {/* Post Media */}

@@ -696,4 +696,132 @@ html, body {
   .animation-delay-600 {
     animation-delay: 600ms;
   }
+
+  /* Rich Text Editor Styling */
+  .custom-quill .ql-toolbar {
+    background: rgba(139, 92, 246, 0.1);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px 8px 0 0;
+  }
+
+  .custom-quill .ql-container {
+    background: transparent;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    font-size: 16px;
+    min-height: 120px;
+  }
+
+  .custom-quill .ql-editor {
+    color: white;
+    min-height: 100px;
+    padding: 16px;
+    line-height: 1.6;
+  }
+
+  .custom-quill .ql-editor.ql-blank::before {
+    color: rgba(139, 92, 246, 0.6);
+    font-style: italic;
+  }
+
+  .custom-quill .ql-toolbar .ql-stroke {
+    stroke: rgba(255, 255, 255, 0.8);
+  }
+
+  .custom-quill .ql-toolbar .ql-fill {
+    fill: rgba(255, 255, 255, 0.8);
+  }
+
+  .custom-quill .ql-toolbar .ql-picker-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .custom-quill .ql-toolbar button:hover,
+  .custom-quill .ql-toolbar button:focus {
+    background: rgba(139, 92, 246, 0.2);
+  }
+
+  .custom-quill .ql-toolbar button.ql-active {
+    background: rgba(139, 92, 246, 0.4);
+  }
+
+  /* Post content HTML styling */
+  .post-content h1, .post-content h2 {
+    font-weight: bold;
+    margin: 16px 0 8px 0;
+  }
+
+  .post-content h1 {
+    font-size: 1.5em;
+  }
+
+  .post-content h2 {
+    font-size: 1.3em;
+  }
+
+  .post-content strong {
+    font-weight: bold;
+  }
+
+  .post-content em {
+    font-style: italic;
+  }
+
+  .post-content u {
+    text-decoration: underline;
+  }
+
+  .post-content s {
+    text-decoration: line-through;
+  }
+
+  .post-content blockquote {
+    border-left: 3px solid rgba(139, 92, 246, 0.6);
+    padding-left: 16px;
+    margin: 16px 0;
+    font-style: italic;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 12px;
+    border-radius: 4px;
+  }
+
+  .post-content code {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  .post-content pre {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .post-content pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .post-content ol, .post-content ul {
+    margin: 12px 0;
+    padding-left: 24px;
+  }
+
+  .post-content li {
+    margin: 4px 0;
+  }
+
+  .post-content a {
+    color: rgba(139, 92, 246, 0.9);
+    text-decoration: underline;
+  }
+
+  .post-content a:hover {
+    color: rgb(139, 92, 246);
+  }
 }

@@ -10,6 +10,8 @@ import { ObjectUploader } from "./ObjectUploader";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import type { UploadResult } from '@uppy/core';
 import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export default function CreatePost() {
   const { user } = useAuth();
@@ -42,10 +44,18 @@ export default function CreatePost() {
     },
   });
 
+  // Convert HTML content to plain text for validation
+  const getPlainTextContent = (htmlContent: string) => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!content.trim()) {
+    const plainTextContent = getPlainTextContent(content);
+    if (!plainTextContent.trim()) {
       toast({
         title: "Error",
         description: "Please enter some content for your post",
@@ -55,9 +65,11 @@ export default function CreatePost() {
     }
 
     const postData: any = {
-      content: content.trim(),
+      content: content, // Keep HTML content
       type: mediaType === "video" ? "spark" : "post"
     };
+
+    console.log('Submitting post with data:', { ...postData, mediaUrl, mediaType }); // Debug log
 
     if (mediaUrl) {
       if (mediaType === "image") {
@@ -137,13 +149,32 @@ export default function CreatePost() {
             {/* Enhanced Post Content */}
             <div className="flex-1 bg-gradient-to-b from-cosmic/30 to-cosmic-light/30 rounded-xl p-3 sm:p-4 border border-primary/20">
               <div className="relative">
-                <Textarea
-                  placeholder="Share your spiritual insight..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="w-full bg-transparent border-none resize-none text-white placeholder:text-primary/60 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[80px] sm:min-h-[100px] text-sm sm:text-lg leading-relaxed"
-                  data-testid="textarea-content"
-                />
+                <div className="rich-text-editor">
+                  <ReactQuill
+                    value={content}
+                    onChange={setContent}
+                    placeholder="Share your spiritual insight..."
+                    className="custom-quill"
+                    theme="snow"
+                    modules={{
+                      toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'header': 1 }, { 'header': 2 }],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'script': 'sub'}, { 'script': 'super' }],
+                        [{ 'indent': '-1'}, { 'indent': '+1' }],
+                        ['link'],
+                        [{ 'color': [] }, { 'background': [] }],
+                        ['clean']
+                      ]
+                    }}
+                    formats={[
+                      'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
+                      'list', 'bullet', 'indent', 'link', 'color', 'background', 'code-block', 'script'
+                    ]}
+                  />
+                </div>
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
               </div>
               

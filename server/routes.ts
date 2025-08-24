@@ -882,6 +882,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User Settings Routes
+  app.put('/api/users/settings/privacy', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const {
+        profileVisibility,
+        postsVisibility,
+        showOnlineStatus,
+        allowDirectMessages,
+        showActivityStatus,
+        allowTagging
+      } = req.body;
+      
+      const updateData: any = {};
+      if (profileVisibility !== undefined) updateData.profileVisibility = profileVisibility;
+      if (postsVisibility !== undefined) updateData.postsVisibility = postsVisibility;
+      if (showOnlineStatus !== undefined) updateData.showOnlineStatus = showOnlineStatus;
+      if (allowDirectMessages !== undefined) updateData.allowDirectMessages = allowDirectMessages;
+      if (showActivityStatus !== undefined) updateData.showActivityStatus = showActivityStatus;
+      if (allowTagging !== undefined) updateData.allowTagging = allowTagging;
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      res.json({ success: true, settings: updateData });
+    } catch (error) {
+      console.error("Error updating privacy settings:", error);
+      res.status(500).json({ message: "Failed to update privacy settings" });
+    }
+  });
+
+  app.put('/api/users/settings/notifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const {
+        likeNotifications,
+        commentNotifications,
+        energyNotifications,
+        followNotifications,
+        oracleNotifications,
+        emailNotifications
+      } = req.body;
+      
+      const updateData: any = {};
+      if (likeNotifications !== undefined) updateData.likeNotifications = likeNotifications;
+      if (commentNotifications !== undefined) updateData.commentNotifications = commentNotifications;
+      if (energyNotifications !== undefined) updateData.energyNotifications = energyNotifications;
+      if (followNotifications !== undefined) updateData.followNotifications = followNotifications;
+      if (oracleNotifications !== undefined) updateData.oracleNotifications = oracleNotifications;
+      if (emailNotifications !== undefined) updateData.emailNotifications = emailNotifications;
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      res.json({ success: true, settings: updateData });
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+
+  app.get('/api/users/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return only settings-related fields
+      const settings = {
+        privacy: {
+          profileVisibility: user.profileVisibility ?? true,
+          postsVisibility: user.postsVisibility ?? true,
+          showOnlineStatus: user.showOnlineStatus ?? true,
+          allowDirectMessages: user.allowDirectMessages ?? true,
+          showActivityStatus: user.showActivityStatus ?? true,
+          allowTagging: user.allowTagging ?? true,
+        },
+        notifications: {
+          likeNotifications: user.likeNotifications ?? true,
+          commentNotifications: user.commentNotifications ?? true,
+          energyNotifications: user.energyNotifications ?? true,
+          followNotifications: user.followNotifications ?? true,
+          oracleNotifications: user.oracleNotifications ?? true,
+          emailNotifications: user.emailNotifications ?? false,
+        }
+      };
+      
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching user settings:", error);
+      res.status(500).json({ message: "Failed to fetch user settings" });
+    }
+  });
+
   app.get('/api/users/:userId', async (req, res) => {
     try {
       const { userId } = req.params;

@@ -46,6 +46,23 @@ export const users = pgTable("users", {
   hasCompletedOnboarding: boolean("has_completed_onboarding").default(false),
   astrologySign: varchar("astrology_sign"),
   birthDate: timestamp("birth_date"),
+  
+  // Privacy settings
+  profileVisibility: boolean("profile_visibility").default(true),
+  postsVisibility: boolean("posts_visibility").default(true),
+  showOnlineStatus: boolean("show_online_status").default(true),
+  allowDirectMessages: boolean("allow_direct_messages").default(true),
+  showActivityStatus: boolean("show_activity_status").default(true),
+  allowTagging: boolean("allow_tagging").default(true),
+  
+  // Notification settings
+  likeNotifications: boolean("like_notifications").default(true),
+  commentNotifications: boolean("comment_notifications").default(true),
+  energyNotifications: boolean("energy_notifications").default(true),
+  followNotifications: boolean("follow_notifications").default(true),
+  oracleNotifications: boolean("oracle_notifications").default(true),
+  emailNotifications: boolean("email_notifications").default(false),
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

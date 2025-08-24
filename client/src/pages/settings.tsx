@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
@@ -80,6 +81,33 @@ export default function Settings() {
   const [oracleNotifications, setOracleNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(false);
 
+  // Load user settings from backend
+  const { data: userSettings } = useQuery({
+    queryKey: ["/api/users/settings"],
+    enabled: !!(user as any)?.id,
+  });
+
+  // Update state when settings are loaded
+  React.useEffect(() => {
+    if (userSettings) {
+      // Privacy settings
+      setProfileVisibility(userSettings.privacy.profileVisibility);
+      setPostsVisibility(userSettings.privacy.postsVisibility);
+      setShowOnlineStatus(userSettings.privacy.showOnlineStatus);
+      setAllowDirectMessages(userSettings.privacy.allowDirectMessages);
+      setShowActivityStatus(userSettings.privacy.showActivityStatus);
+      setAllowTagging(userSettings.privacy.allowTagging);
+      
+      // Notification settings
+      setLikeNotifications(userSettings.notifications.likeNotifications);
+      setCommentNotifications(userSettings.notifications.commentNotifications);
+      setEnergyNotifications(userSettings.notifications.energyNotifications);
+      setFollowNotifications(userSettings.notifications.followNotifications);
+      setOracleNotifications(userSettings.notifications.oracleNotifications);
+      setEmailNotifications(userSettings.notifications.emailNotifications);
+    }
+  }, [userSettings]);
+
   // User activity queries
   const { data: likedPosts = [] } = useQuery<Post[]>({
     queryKey: [`/api/users/${(user as any)?.id}/activity/liked`],
@@ -153,6 +181,58 @@ export default function Settings() {
     if (username.trim()) {
       updateUsernameMutation.mutate(username.trim());
     }
+  };
+
+  // Privacy settings mutations
+  const updatePrivacyMutation = useMutation({
+    mutationFn: (settings: any) => 
+      apiRequest("/api/users/settings/privacy", "PUT", settings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users/settings"] });
+      toast({
+        title: "Success",
+        description: "Privacy settings updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update privacy settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Notification settings mutations
+  const updateNotificationMutation = useMutation({
+    mutationFn: (settings: any) => 
+      apiRequest("/api/users/settings/notifications", "PUT", settings),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/users/settings"] });
+      toast({
+        title: "Success",
+        description: "Notification settings updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update notification settings",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Privacy setting handlers
+  const handlePrivacySetting = (setting: string, value: boolean) => {
+    const settings = { [setting]: value };
+    updatePrivacyMutation.mutate(settings);
+  };
+
+  // Notification setting handlers
+  const handleNotificationSetting = (setting: string, value: boolean) => {
+    const settings = { [setting]: value };
+    updateNotificationMutation.mutate(settings);
   };
 
   // Helper function to strip HTML and get plain text
@@ -308,7 +388,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={profileVisibility}
-                    onCheckedChange={setProfileVisibility}
+                    onCheckedChange={(value) => {
+                      setProfileVisibility(value);
+                      handlePrivacySetting('profileVisibility', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -322,7 +405,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={postsVisibility}
-                    onCheckedChange={setPostsVisibility}
+                    onCheckedChange={(value) => {
+                      setPostsVisibility(value);
+                      handlePrivacySetting('postsVisibility', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -336,7 +422,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={showOnlineStatus}
-                    onCheckedChange={setShowOnlineStatus}
+                    onCheckedChange={(value) => {
+                      setShowOnlineStatus(value);
+                      handlePrivacySetting('showOnlineStatus', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -350,7 +439,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={allowDirectMessages}
-                    onCheckedChange={setAllowDirectMessages}
+                    onCheckedChange={(value) => {
+                      setAllowDirectMessages(value);
+                      handlePrivacySetting('allowDirectMessages', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -364,7 +456,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={showActivityStatus}
-                    onCheckedChange={setShowActivityStatus}
+                    onCheckedChange={(value) => {
+                      setShowActivityStatus(value);
+                      handlePrivacySetting('showActivityStatus', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -378,7 +473,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={allowTagging}
-                    onCheckedChange={setAllowTagging}
+                    onCheckedChange={(value) => {
+                      setAllowTagging(value);
+                      handlePrivacySetting('allowTagging', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -403,7 +501,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={likeNotifications}
-                    onCheckedChange={setLikeNotifications}
+                    onCheckedChange={(value) => {
+                      setLikeNotifications(value);
+                      handleNotificationSetting('likeNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -417,7 +518,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={commentNotifications}
-                    onCheckedChange={setCommentNotifications}
+                    onCheckedChange={(value) => {
+                      setCommentNotifications(value);
+                      handleNotificationSetting('commentNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -431,7 +535,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={energyNotifications}
-                    onCheckedChange={setEnergyNotifications}
+                    onCheckedChange={(value) => {
+                      setEnergyNotifications(value);
+                      handleNotificationSetting('energyNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -445,7 +552,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={followNotifications}
-                    onCheckedChange={setFollowNotifications}
+                    onCheckedChange={(value) => {
+                      setFollowNotifications(value);
+                      handleNotificationSetting('followNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -459,7 +569,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={oracleNotifications}
-                    onCheckedChange={setOracleNotifications}
+                    onCheckedChange={(value) => {
+                      setOracleNotifications(value);
+                      handleNotificationSetting('oracleNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>
@@ -473,7 +586,10 @@ export default function Settings() {
                   </div>
                   <Switch
                     checked={emailNotifications}
-                    onCheckedChange={setEmailNotifications}
+                    onCheckedChange={(value) => {
+                      setEmailNotifications(value);
+                      handleNotificationSetting('emailNotifications', value);
+                    }}
                     className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600"
                   />
                 </div>

@@ -176,12 +176,39 @@ html, body {
 /* Tooltip z-index fixes */
 [data-radix-tooltip-content] {
   z-index: 9999 !important;
-  position: relative !important;
+  position: fixed !important;
 }
 
 [data-radix-tooltip-trigger] {
   position: relative !important;
   z-index: 1 !important;
+}
+
+/* Force tooltip portal to highest layer */
+[data-radix-portal] {
+  z-index: 9999 !important;
+}
+
+/* Override any overflow hidden on post cards */
+.post-card-container {
+  overflow: visible !important;
+  position: relative;
+}
+
+/* Chakra legend tooltip fixes - create better stacking context */
+.chakra-legend {
+  position: relative;
+  z-index: 10;
+}
+
+.chakra-legend-item {
+  position: static !important;
+}
+
+/* Create portal for tooltips to escape container bounds */
+[data-radix-popper-content-wrapper][data-side] {
+  z-index: 9999 !important;
+  position: fixed !important;
 }
 
 .uppy-StatusBar-content {

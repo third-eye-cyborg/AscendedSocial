@@ -19,16 +19,18 @@ export default function CreatePost() {
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
 
   const createPostMutation = useMutation({
-    mutationFn: async (postData: { content: string; imageUrl?: string; videoUrl?: string; type?: string }) => {
+    mutationFn: async (postData: { content: string; imageUrl?: string; imageUrls?: string[]; videoUrl?: string; type?: string }) => {
       return apiRequest("POST", "/api/posts", postData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
       setContent("");
       setMediaUrl("");
+      setMediaUrls([]);
       setMediaType(null);
       toast({
         title: "Post Created",
@@ -71,12 +73,11 @@ export default function CreatePost() {
 
     console.log('Submitting post with data:', { ...postData, mediaUrl, mediaType }); // Debug log
 
-    if (mediaUrl) {
-      if (mediaType === "image") {
-        postData.imageUrl = mediaUrl;
-      } else if (mediaType === "video") {
-        postData.videoUrl = mediaUrl;
-      }
+    // Handle multiple images or single video
+    if (mediaUrls.length > 0 && mediaType === "image") {
+      postData.imageUrls = mediaUrls;
+    } else if (mediaUrl && mediaType === "video") {
+      postData.videoUrl = mediaUrl;
     }
 
     createPostMutation.mutate(postData);
@@ -101,13 +102,24 @@ export default function CreatePost() {
         const response = await apiRequest("PUT", "/api/media", { mediaURL: uploadURL });
         const data = await response.json();
         
-        setMediaUrl(data.objectPath);
-        
-        // Determine media type based on file type
         const fileName = uploadedFile.name || "";
+        
         if (fileName.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+          // Add to image URLs array (max 5)
+          setMediaUrls(prev => {
+            if (prev.length >= 5) {
+              toast({
+                title: "Maximum Images Reached",
+                description: "You can only upload up to 5 images per post",
+                variant: "destructive",
+              });
+              return prev;
+            }
+            return [...prev, data.objectPath];
+          });
           setMediaType("image");
         } else if (fileName.match(/\.(mp4|webm|mov|avi)$/i)) {
+          setMediaUrl(data.objectPath);
           setMediaType("video");
         }
         

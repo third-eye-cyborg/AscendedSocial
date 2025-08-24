@@ -67,6 +67,7 @@ export const posts = pgTable("posts", {
   authorId: varchar("author_id").notNull().references(() => users.id),
   content: text("content").notNull(),
   imageUrl: varchar("image_url"),
+  imageUrls: text("image_urls").array(), // Support up to 5 images as JSON array  
   videoUrl: varchar("video_url"),
   chakra: chakraEnum("chakra").notNull(), // AI-assigned chakra category
   frequency: integer("frequency").default(0), // Post frequency from votes

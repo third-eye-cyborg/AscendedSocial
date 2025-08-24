@@ -748,6 +748,19 @@ function StarmapScene() {
           <div className="text-xs text-gray-300 border-t border-purple-500/20 pt-2">
             {mode === 'starmap' ? '🔍 Zoom in to reveal the fungal network' : '🔍 Zoom out to see the cosmic starfield'}
           </div>
+          {mode === 'fungus' && (
+            <div className="mt-2 pt-2 border-t border-green-500/20">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setMode('starmap')}
+                className="w-full bg-green-600/20 backdrop-blur-sm border-green-400/50 text-green-200 hover:bg-green-700/30 hover:text-white text-xs"
+              >
+                <Sparkles className="w-3 h-3 mr-2" />
+                Return to Starfield
+              </Button>
+            </div>
+          )}
         </Card>
       </div>
 

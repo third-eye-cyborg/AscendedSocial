@@ -152,7 +152,25 @@ html, body {
 .uppy-StatusBar {
   background: hsl(245, 35%, 18%) !important;
   border-top: 1px solid hsl(245, 20%, 30%) !important;
-  border-radius: 0 0 12px 12px !important;
+}
+
+/* Select dropdown overrides for explore page */
+[data-radix-select-content] {
+  background: hsl(245, 35%, 18%) !important;
+  border: 1px solid hsl(232, 100%, 67%, 0.3) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+
+[data-radix-select-item] {
+  color: white !important;
+  background: transparent !important;
+}
+
+[data-radix-select-item]:hover,
+[data-radix-select-item][data-highlighted] {
+  background: hsl(232, 100%, 67%, 0.2) !important;
+  color: white !important;
 }
 
 .uppy-StatusBar-content {

@@ -199,11 +199,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const posts = await storage.getPosts(limit, offset);
       
-      // Get engagement counts for each post
+      // Get engagement counts and spiritual counts for each post
+      const postIds = posts.map(p => p.id);
+      const spiritualCounts = await storage.getSpiritualCountForPosts(postIds);
+      
       const postsWithEngagements = await Promise.all(
         posts.map(async (post) => {
           const engagements = await storage.getPostEngagements(post.id);
-          return { ...post, engagements };
+          return { 
+            ...post, 
+            engagements,
+            spiritualCount: spiritualCounts[post.id] || 0
+          };
         })
       );
       
@@ -1443,6 +1450,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching spiritual posts:", error);
       res.status(500).json({ message: "Failed to fetch spiritual posts" });
+    }
+  });
+
+  // Spiritual mark endpoints
+  app.post('/api/posts/:postId/spiritual-mark', isAuthenticated, async (req: any, res) => {
+    try {
+      const { postId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.toggleSpiritualMark(userId, postId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error toggling spiritual mark:", error);
+      res.status(500).json({ message: "Failed to toggle spiritual mark" });
+    }
+  });
+
+  app.get('/api/posts/:postId/spiritual-mark/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const { postId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.getSpiritualMarkStatus(userId, postId);
+      res.json(result);
+    } catch (error) {
+      console.error("Error getting spiritual mark status:", error);
+      res.status(500).json({ message: "Failed to get spiritual mark status" });
     }
   });
 

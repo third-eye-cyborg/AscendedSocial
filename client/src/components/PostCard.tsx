@@ -38,6 +38,7 @@ interface PostCardProps {
       like: number;
       energy: number;
     };
+    spiritualCount?: number;
   };
 }
 
@@ -66,6 +67,8 @@ export default function PostCard({ post }: PostCardProps) {
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
   const [clickEffects, setClickEffects] = useState<{[key: string]: boolean}>({});
   const [isMarkedSpiritual, setIsMarkedSpiritual] = useState(post.isSpiritual || false);
+  const [spiritualCount, setSpiritualCount] = useState(post.spiritualCount || 0);
+  const [userSpiritualMark, setUserSpiritualMark] = useState(false);
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(null);
 
   // Check if post is bookmarked
@@ -90,12 +93,30 @@ export default function PostCard({ post }: PostCardProps) {
     enabled: !!user,
   });
 
+  // Fetch user spiritual mark status for this post
+  const { data: spiritualMarkData } = useQuery({
+    queryKey: ["/api/posts", post.id, "spiritual-mark/user"],
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/posts/${post.id}/spiritual-mark/user`);
+      return response.json();
+    },
+    enabled: !!user,
+  });
+
   // Set initial engagement state when data is fetched
   useEffect(() => {
     if (userEngagementData?.engagements) {
       setUserEngagements(userEngagementData.engagements);
     }
   }, [userEngagementData]);
+
+  // Set initial spiritual mark state when data is fetched
+  useEffect(() => {
+    if (spiritualMarkData) {
+      setUserSpiritualMark(spiritualMarkData.marked || false);
+      setSpiritualCount(spiritualMarkData.count || 0);
+    }
+  }, [spiritualMarkData]);
 
   const engageMutation = useMutation({
     mutationFn: async ({ type, remove, energyAmount }: { type: string; remove?: boolean; energyAmount?: number }) => {
@@ -146,6 +167,30 @@ export default function PostCard({ post }: PostCardProps) {
       toast({
         title: "Error",
         description: error.message || "Failed to update spiritual status",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSpiritualMark = async () => {
+    try {
+      const response = await apiRequest("POST", `/api/posts/${post.id}/spiritual-mark`);
+      const data = await response.json();
+      
+      setUserSpiritualMark(data.marked);
+      setSpiritualCount(data.count);
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id, "spiritual-mark/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      
+      toast({
+        title: "Success",
+        description: data.marked ? 'Added spiritual mark' : 'Removed spiritual mark',
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to toggle spiritual mark",
         variant: "destructive",
       });
     }
@@ -681,22 +726,45 @@ export default function PostCard({ post }: PostCardProps) {
               </Button>
               
               {/* Spirit Toggle Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
-                  isMarkedSpiritual 
-                    ? 'text-purple-200 hover:text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-500/30' 
-                    : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
-                }`}
-                onClick={handleSpiritualToggle}
-                title={isMarkedSpiritual ? "🔮 Remove Spiritual Mark" : "🔮 Mark as Spiritual"}
-                data-testid={`button-spirit-${post.id}`}
-              >
-                <Gem className={`w-4 h-4 ${
-                  isMarkedSpiritual ? 'fill-purple-400 text-purple-400' : ''
-                }`} />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
+                    userSpiritualMark 
+                      ? 'text-purple-200 hover:text-purple-300 bg-purple-900/40 shadow-lg shadow-purple-500/30' 
+                      : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
+                  }`}
+                  onClick={handleSpiritualMark}
+                  title={userSpiritualMark ? "🔮 Remove Spiritual Mark" : "🔮 Mark as Spiritual"}
+                  data-testid={`button-spirit-mark-${post.id}`}
+                >
+                  <Gem className={`w-4 h-4 ${
+                    userSpiritualMark ? 'fill-purple-400 text-purple-400' : ''
+                  }`} />
+                </Button>
+                {spiritualCount > 0 && (
+                  <span className="text-xs font-bold text-purple-300 bg-purple-900/30 px-1.5 py-0.5 rounded-full border border-purple-500/30 shadow-sm">
+                    {spiritualCount}
+                  </span>
+                )}
+                {(user as any)?.id === post.author.id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={`p-1 rounded-lg transition-all duration-300 ${
+                      isMarkedSpiritual
+                        ? 'text-violet-300 hover:text-violet-200 bg-violet-900/30'
+                        : 'text-white/40 hover:text-violet-300 hover:bg-violet-900/20'
+                    }`}
+                    onClick={handleSpiritualToggle}
+                    title={isMarkedSpiritual ? "🔮 Remove Author Flag" : "🔮 Mark as Spiritual (Author)"}
+                    data-testid={`button-spirit-author-${post.id}`}
+                  >
+                    <Settings className="w-3 h-3" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
 

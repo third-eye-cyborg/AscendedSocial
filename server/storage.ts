@@ -8,6 +8,7 @@ import {
   subscriptions,
   spirits,
   connections,
+  spiritualMarks,
   type User,
   type UpsertUser,
   type Post,
@@ -1010,6 +1011,82 @@ export class DatabaseStorage implements IStorage {
       .where(eq(bookmarks.userId, userId));
     
     return userBookmarks.map(b => b.postId);
+  }
+
+  // Spiritual mark operations
+  async toggleSpiritualMark(userId: string, postId: string): Promise<{ marked: boolean; count: number }> {
+    // Check if user has already marked this post
+    const existing = await db
+      .select()
+      .from(spiritualMarks)
+      .where(and(eq(spiritualMarks.userId, userId), eq(spiritualMarks.postId, postId)))
+      .limit(1);
+
+    let marked: boolean;
+    if (existing.length > 0) {
+      // Remove the mark
+      await db
+        .delete(spiritualMarks)
+        .where(and(eq(spiritualMarks.userId, userId), eq(spiritualMarks.postId, postId)));
+      marked = false;
+    } else {
+      // Add the mark
+      await db
+        .insert(spiritualMarks)
+        .values({ userId, postId });
+      marked = true;
+    }
+
+    // Get updated count
+    const [countResult] = await db
+      .select({ count: count() })
+      .from(spiritualMarks)
+      .where(eq(spiritualMarks.postId, postId));
+
+    return {
+      marked,
+      count: countResult?.count || 0
+    };
+  }
+
+  async getSpiritualMarkStatus(userId: string, postId: string): Promise<{ marked: boolean; count: number }> {
+    // Check if user has marked this post
+    const existing = await db
+      .select()
+      .from(spiritualMarks)
+      .where(and(eq(spiritualMarks.userId, userId), eq(spiritualMarks.postId, postId)))
+      .limit(1);
+
+    // Get total count for this post
+    const [countResult] = await db
+      .select({ count: count() })
+      .from(spiritualMarks)
+      .where(eq(spiritualMarks.postId, postId));
+
+    return {
+      marked: existing.length > 0,
+      count: countResult?.count || 0
+    };
+  }
+
+  async getSpiritualCountForPosts(postIds: string[]): Promise<Record<string, number>> {
+    if (postIds.length === 0) return {};
+    
+    const results = await db
+      .select({
+        postId: spiritualMarks.postId,
+        count: count()
+      })
+      .from(spiritualMarks)
+      .where(sql`${spiritualMarks.postId} IN (${postIds.map(id => `'${id}'`).join(',')})`)
+      .groupBy(spiritualMarks.postId);
+
+    const countMap: Record<string, number> = {};
+    for (const result of results) {
+      countMap[result.postId] = result.count;
+    }
+    
+    return countMap;
   }
 
   // User activity methods

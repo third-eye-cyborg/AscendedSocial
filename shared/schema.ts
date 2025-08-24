@@ -293,3 +293,15 @@ export const bookmarks = pgTable('bookmarks', {
 export const insertBookmarkSchema = createInsertSchema(bookmarks);
 export type Bookmark = typeof bookmarks.$inferSelect;
 export type InsertBookmark = z.infer<typeof insertBookmarkSchema>;
+
+// Spiritual marks table - tracks which users have marked posts as spiritual
+export const spiritualMarks = pgTable('spiritual_marks', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  postId: varchar('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  userId: varchar('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const insertSpiritualMarkSchema = createInsertSchema(spiritualMarks);
+export type SpiritualMark = typeof spiritualMarks.$inferSelect;
+export type InsertSpiritualMark = z.infer<typeof insertSpiritualMarkSchema>;

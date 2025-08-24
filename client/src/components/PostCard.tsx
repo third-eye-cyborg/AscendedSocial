@@ -748,22 +748,6 @@ export default function PostCard({ post }: PostCardProps) {
                     {spiritualCount}
                   </span>
                 )}
-                {(user as any)?.id === post.author.id && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={`p-1 rounded-lg transition-all duration-300 ${
-                      isMarkedSpiritual
-                        ? 'text-violet-300 hover:text-violet-200 bg-violet-900/30'
-                        : 'text-white/40 hover:text-violet-300 hover:bg-violet-900/20'
-                    }`}
-                    onClick={handleSpiritualToggle}
-                    title={isMarkedSpiritual ? "🔮 Remove Author Flag" : "🔮 Mark as Spiritual (Author)"}
-                    data-testid={`button-spirit-author-${post.id}`}
-                  >
-                    <Settings className="w-3 h-3" />
-                  </Button>
-                )}
               </div>
             </div>
           </div>

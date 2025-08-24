@@ -153,20 +153,6 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
         </Button>
       </div>
 
-      {/* Status Banner */}
-      <div className="absolute top-4 right-4 z-10">
-        <Card className="p-4 bg-black/80 backdrop-blur-md border-purple-500/40 shadow-2xl">
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-sm text-white">
-              <div className="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></div>
-              <span className="font-medium">2D Fallback Mode</span>
-            </div>
-            <div className="text-xs text-purple-300">
-              Enhanced for stability
-            </div>
-          </div>
-        </Card>
-      </div>
 
       {/* 2D Starmap Grid */}
       <div className="pt-20 pb-8 px-4">

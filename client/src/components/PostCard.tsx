@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,6 +66,7 @@ export default function PostCard({ post }: PostCardProps) {
   const [energyPopoverOpen, setEnergyPopoverOpen] = useState(false);
   const [clickEffects, setClickEffects] = useState<{[key: string]: boolean}>({});
   const [isMarkedSpiritual, setIsMarkedSpiritual] = useState(post.isSpiritual || false);
+  const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(null);
 
   // Check if post is bookmarked
   const { data: bookmarks = [] } = useQuery<string[]>({
@@ -379,73 +381,160 @@ export default function PostCard({ post }: PostCardProps) {
         />
       </div>
 
-      {/* Post Media */}
+      {/* Post Media - Expandable */}
       {post.imageUrls && post.imageUrls.length > 0 && (
-        <div className="relative">
-          {post.imageUrls.length === 1 ? (
-            <img 
-              src={post.imageUrls[0]} 
-              alt="Post image" 
-              className="w-full h-80 object-cover"
-              data-testid={`image-${post.id}-0`}
-            />
-          ) : post.imageUrls.length === 2 ? (
-            <div className="grid grid-cols-2 gap-2">
-              {post.imageUrls.map((url, index) => (
-                <img
-                  key={index}
-                  src={url}
-                  alt={`Post image ${index + 1}`}
-                  className="w-full h-80 object-cover"
-                  data-testid={`image-${post.id}-${index}`}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              <img
-                src={post.imageUrls[0]}
-                alt="Post image 1"
-                className="w-full h-80 object-cover"
-                data-testid={`image-${post.id}-0`}
-              />
-              <div className="grid grid-rows-2 gap-2">
-                <img
-                  src={post.imageUrls[1]}
-                  alt="Post image 2"
-                  className="w-full h-40 object-cover"
-                  data-testid={`image-${post.id}-1`}
-                />
-                <div className="relative">
-                  <img
-                    src={post.imageUrls[2]}
-                    alt="Post image 3"
-                    className="w-full h-40 object-cover"
-                    data-testid={`image-${post.id}-2`}
+        <>
+          <div className="relative">
+            {post.imageUrls.length === 1 ? (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <img 
+                    src={post.imageUrls[0]} 
+                    alt="Post image" 
+                    className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                    data-testid={`image-${post.id}-0`}
                   />
-                  {post.imageUrls.length > 3 && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg">
-                      +{post.imageUrls.length - 3}
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                  <img 
+                    src={post.imageUrls[0]} 
+                    alt="Post image expanded" 
+                    className="w-full h-full object-contain"
+                  />
+                </DialogContent>
+              </Dialog>
+            ) : post.imageUrls.length === 2 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {post.imageUrls.map((url, index) => (
+                  <Dialog key={index}>
+                    <DialogTrigger asChild>
+                      <img
+                        src={url}
+                        alt={`Post image ${index + 1}`}
+                        className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        data-testid={`image-${post.id}-${index}`}
+                      />
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                      <div className="relative">
+                        <img 
+                          src={url} 
+                          alt={`Post image ${index + 1} expanded`} 
+                          className="w-full h-full object-contain"
+                        />
+                        <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                          {index + 1} of {post.imageUrls.length}
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <img
+                      src={post.imageUrls[0]}
+                      alt="Post image 1"
+                      className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                      data-testid={`image-${post.id}-0`}
+                    />
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                    <div className="relative">
+                      <img 
+                        src={post.imageUrls[0]} 
+                        alt="Post image 1 expanded" 
+                        className="w-full h-full object-contain"
+                      />
+                      <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                        1 of {post.imageUrls.length}
+                      </div>
                     </div>
-                  )}
+                  </DialogContent>
+                </Dialog>
+                <div className="grid grid-rows-2 gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <img
+                        src={post.imageUrls[1]}
+                        alt="Post image 2"
+                        className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        data-testid={`image-${post.id}-1`}
+                      />
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                      <div className="relative">
+                        <img 
+                          src={post.imageUrls[1]} 
+                          alt="Post image 2 expanded" 
+                          className="w-full h-full object-contain"
+                        />
+                        <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                          2 of {post.imageUrls.length}
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <div className="relative">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <img
+                          src={post.imageUrls[2]}
+                          alt="Post image 3"
+                          className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          data-testid={`image-${post.id}-2`}
+                        />
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+                        <div className="relative">
+                          <img 
+                            src={post.imageUrls[2]} 
+                            alt="Post image 3 expanded" 
+                            className="w-full h-full object-contain"
+                          />
+                          <div className="absolute top-4 left-4 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
+                            3 of {post.imageUrls.length}
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    {post.imageUrls.length > 3 && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-bold text-lg pointer-events-none">
+                        +{post.imageUrls.length - 3}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
+            )}
+            <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
+              📸 {post.imageUrls.length} image{post.imageUrls.length > 1 ? 's' : ''}
             </div>
-          )}
-          <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
-            📸 {post.imageUrls.length} image{post.imageUrls.length > 1 ? 's' : ''}
           </div>
-        </div>
+        </>
       )}
-      {/* Fallback to single image for backward compatibility */}
+      {/* Fallback to single image for backward compatibility - Expandable */}
       {!post.imageUrls && post.imageUrl && (
         <div className="relative">
-          <img 
-            src={post.imageUrl} 
-            alt="Post image" 
-            className="w-full h-80 object-cover"
-            data-testid={`image-${post.id}`}
-          />
+          <Dialog>
+            <DialogTrigger asChild>
+              <img 
+                src={post.imageUrl} 
+                alt="Post image" 
+                className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                data-testid={`image-${post.id}`}
+              />
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-black/95 border-primary/30">
+              <img 
+                src={post.imageUrl} 
+                alt="Post image expanded" 
+                className="w-full h-full object-contain"
+              />
+            </DialogContent>
+          </Dialog>
           <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
             📸 1 image
           </div>

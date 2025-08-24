@@ -398,7 +398,7 @@ export default function PostCard({ post }: PostCardProps) {
               >
                 <MessageCircle className="w-4 h-4" />
                 <span className="text-sm font-semibold" data-testid={`comments-${post.id}`}>
-                  0
+                  {post.engagements?.comments || 0}
                 </span>
               </Button>
 
@@ -436,32 +436,37 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
+                className={`relative flex items-center space-x-2 p-1 rounded-lg transition-all duration-300 hover:scale-105 hover:rotate-6 ${
                   userEngagements.includes('like') 
-                    ? 'text-pink-100 bg-gradient-to-r from-pink-600 to-pink-500 shadow-md' 
-                    : 'text-white/80 hover:text-pink-300'
+                    ? 'text-pink-50 bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 shadow-lg shadow-pink-500/50 scale-105' 
+                    : 'text-white/90 hover:text-pink-200 hover:bg-pink-900/30 hover:shadow-lg hover:shadow-pink-500/20'
                 } ${engageMutation.isPending ? 'animate-pulse' : ''} ${
-                  clickEffects.like ? 'scale-110' : ''
+                  clickEffects.like ? 'scale-125 rotate-12 animate-bounce' : ''
                 }`}
                 onClick={() => handleEngagement('like')}
                 disabled={engageMutation.isPending}
                 title="💖 Send Heart Resonance"
                 data-testid={`button-like-${post.id}`}
               >
-                <Heart className={`w-4 h-4 transition-transform duration-200 ${
-                  userEngagements.includes('like') ? 'scale-110 fill-current' : 'hover:scale-110'
+                <Heart className={`w-4 h-4 transition-all duration-300 ${
+                  userEngagements.includes('like') ? 'scale-125 fill-current drop-shadow-lg animate-pulse' : 'hover:scale-125 hover:fill-pink-300'
                 }`} />
                 {clickEffects.like && (
-                  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 text-pink-300 animate-ping pointer-events-none">
-                    💖
+                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 pointer-events-none">
+                    <div className="text-pink-300 text-lg animate-bounce font-bold drop-shadow-lg">
+                      💖
+                    </div>
+                    <div className="text-pink-300 text-xs animate-ping font-bold mt-1">
+                      +LOVE
+                    </div>
                   </div>
                 )}
               </Button>
               <div className="flex items-center space-x-1 ml-2">
-                <span className="text-sm font-bold text-pink-200" data-testid={`likes-${post.id}`}>
+                <span className="text-sm font-bold text-pink-50 drop-shadow-md" data-testid={`likes-${post.id}`}>
                   {post.engagements?.like || 0}
                 </span>
-                <span className="text-xs text-white/70 font-medium">HEARTS</span>
+                <span className="text-xs text-pink-200/90 font-medium tracking-wide">HEARTS</span>
               </div>
             </div>
 
@@ -472,27 +477,32 @@ export default function PostCard({ post }: PostCardProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-200 hover:scale-105 ${
+                    className={`relative flex items-center space-x-1 p-1 rounded-lg transition-all duration-300 hover:scale-105 hover:-rotate-3 ${
                       userEngagements.includes('energy') 
-                        ? 'text-yellow-100 bg-gradient-to-r from-yellow-600 to-yellow-500 shadow-md' 
-                        : 'text-white/80 hover:text-yellow-300'
+                        ? 'text-yellow-50 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 shadow-lg shadow-yellow-500/60 scale-105' 
+                        : 'text-white/90 hover:text-yellow-200 hover:bg-yellow-900/30 hover:shadow-lg hover:shadow-yellow-500/30'
                     } ${engageMutation.isPending ? 'opacity-75' : ''} ${
-                      clickEffects.energy ? 'scale-110 animate-pulse' : ''
+                      clickEffects.energy ? 'scale-125 -rotate-6 animate-bounce' : ''
                     }`}
                     disabled={engageMutation.isPending || ((user as any)?.energy || 0) < energyAmount}
                     title={`⚡ Transfer Spiritual Energy (-${energyAmount} energy) | Your Energy: ${(user as any)?.energy || 0}`}
                     data-testid={`button-energy-${post.id}`}
                   >
-                    <Zap className={`w-4 h-4 transition-transform duration-200 ${
-                      userEngagements.includes('energy') ? 'scale-110' : 'hover:scale-110'
+                    <Zap className={`w-4 h-4 transition-all duration-300 ${
+                      userEngagements.includes('energy') ? 'scale-125 drop-shadow-lg animate-pulse' : 'hover:scale-125 hover:drop-shadow-md'
                     }`} />
                     <Settings className="w-3 h-3 opacity-60" />
                     {((user as any)?.energy || 0) < energyAmount && (
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full opacity-80"></div>
                     )}
                     {clickEffects.energy && (
-                      <div className="absolute -top-6 -left-2 text-yellow-300 text-xs animate-bounce pointer-events-none">
-                        ⚡+{energyAmount}
+                      <div className="absolute -top-10 -left-2 pointer-events-none">
+                        <div className="text-yellow-300 text-base animate-bounce font-bold drop-shadow-lg">
+                          ⚡
+                        </div>
+                        <div className="text-yellow-300 text-xs animate-ping font-bold mt-1">
+                          +{energyAmount} POWER
+                        </div>
                       </div>
                     )}
                   </Button>
@@ -552,10 +562,10 @@ export default function PostCard({ post }: PostCardProps) {
                 </PopoverContent>
               </Popover>
               <div className="flex items-center space-x-1 ml-2">
-                <span className="text-sm font-bold text-yellow-200" data-testid={`energy-${post.id}`}>
+                <span className="text-sm font-bold text-yellow-50 drop-shadow-md" data-testid={`energy-${post.id}`}>
                   {post.engagements?.energy || 0}
                 </span>
-                <span className="text-xs text-white/70 font-medium">ENERGY</span>
+                <span className="text-xs text-yellow-200/90 font-medium tracking-wide">ENERGY</span>
               </div>
             </div>
           </div>

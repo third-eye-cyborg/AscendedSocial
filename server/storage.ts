@@ -1141,6 +1141,7 @@ export class DatabaseStorage implements IStorage {
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
         authorId: posts.authorId,
+        commentCreatedAt: comments.createdAt,
         author: {
           id: users.id,
           email: users.email,
@@ -1153,7 +1154,7 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(users, eq(posts.authorId, users.id))
       .innerJoin(comments, eq(posts.id, comments.postId))
       .where(eq(comments.authorId, userId))
-      .orderBy(desc(comments.createdAt))
+      .orderBy(desc(sql`${comments.createdAt}`))
       .limit(50);
 
     return result;

@@ -155,12 +155,12 @@ export default function Settings() {
   };
 
   const ActivitySection = ({ title, posts, icon }: { title: string; posts: Post[]; icon: React.ReactNode }) => (
-    <Card className="mb-6">
+    <Card className="mb-6 bg-cosmic-light border-cosmic-light">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           {icon}
           {title}
-          <Badge variant="secondary">{posts.length}</Badge>
+          <Badge variant="secondary" className="bg-primary/20 text-primary">{posts.length}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -170,10 +170,10 @@ export default function Settings() {
           <ScrollArea className="max-h-96">
             <div className="space-y-4">
               {posts.map((post) => (
-                <div key={post.id} className="border border-cosmic-light rounded-lg p-3">
+                <div key={post.id} className="border border-primary/20 rounded-lg p-3 bg-cosmic/50 hover:bg-cosmic/70 transition-colors">
                   <p className="text-sm text-white mb-2 line-clamp-2">{post.content}</p>
                   <div className="flex items-center justify-between text-xs text-gray-400">
-                    <span>Chakra: {post.chakra}</span>
+                    <span className="capitalize">Chakra: {post.chakra}</span>
                     <span>{new Date(post.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
@@ -194,16 +194,16 @@ export default function Settings() {
         </div>
 
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-cosmic-light">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="activity">Activity</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-cosmic-light border-primary/30">
+            <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-white text-gray-300">Profile</TabsTrigger>
+            <TabsTrigger value="privacy" className="data-[state=active]:bg-primary data-[state=active]:text-white text-gray-300">Privacy</TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-primary data-[state=active]:text-white text-gray-300">Notifications</TabsTrigger>
+            <TabsTrigger value="activity" className="data-[state=active]:bg-primary data-[state=active]:text-white text-gray-300">Activity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
             {/* Profile Picture Section */}
-            <Card>
+            <Card className="bg-cosmic-light border-cosmic-light">
               <CardHeader>
                 <CardTitle className="text-white">Profile Picture</CardTitle>
               </CardHeader>
@@ -213,7 +213,7 @@ export default function Settings() {
             </Card>
 
             {/* Username Section */}
-            <Card>
+            <Card className="bg-cosmic-light border-cosmic-light">
               <CardHeader>
                 <CardTitle className="text-white">Username</CardTitle>
               </CardHeader>
@@ -225,13 +225,13 @@ export default function Settings() {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Enter your username"
-                    className="bg-cosmic-light border-cosmic-light text-white"
+                    className="bg-cosmic border-primary/30 text-white placeholder:text-gray-400 focus:border-primary"
                   />
                 </div>
                 <Button 
                   onClick={handleUpdateUsername}
                   disabled={updateUsernameMutation.isPending}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary hover:bg-primary/90 text-white"
                 >
                   {updateUsernameMutation.isPending ? "Updating..." : "Update Username"}
                 </Button>
@@ -239,7 +239,7 @@ export default function Settings() {
             </Card>
 
             {/* Sigil Section */}
-            <Card>
+            <Card className="bg-cosmic-light border-cosmic-light">
               <CardHeader>
                 <CardTitle className="text-white">Spiritual Sigil</CardTitle>
                 <p className="text-gray-400 text-sm">Your unique spiritual signature</p>
@@ -251,7 +251,7 @@ export default function Settings() {
                     onClick={() => regenerateSigilMutation.mutate()}
                     disabled={regenerateSigilMutation.isPending}
                     variant="outline"
-                    className="border-primary text-primary hover:bg-primary hover:text-white"
+                    className="border-primary text-primary hover:bg-primary hover:text-white bg-transparent"
                   >
                     {regenerateSigilMutation.isPending ? "Regenerating..." : "Regenerate Sigil"}
                   </Button>
@@ -261,7 +261,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="privacy" className="space-y-6">
-            <Card>
+            <Card className="bg-cosmic-light border-cosmic-light">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
                   <Shield className="w-5 h-5" />
@@ -278,10 +278,11 @@ export default function Settings() {
                   <Switch
                     checked={profileVisibility}
                     onCheckedChange={setProfileVisibility}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -291,10 +292,11 @@ export default function Settings() {
                   <Switch
                     checked={postsVisibility}
                     onCheckedChange={setPostsVisibility}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -304,10 +306,11 @@ export default function Settings() {
                   <Switch
                     checked={showOnlineStatus}
                     onCheckedChange={setShowOnlineStatus}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -317,10 +320,11 @@ export default function Settings() {
                   <Switch
                     checked={allowDirectMessages}
                     onCheckedChange={setAllowDirectMessages}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -330,10 +334,11 @@ export default function Settings() {
                   <Switch
                     checked={showActivityStatus}
                     onCheckedChange={setShowActivityStatus}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -343,6 +348,7 @@ export default function Settings() {
                   <Switch
                     checked={allowTagging}
                     onCheckedChange={setAllowTagging}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
               </CardContent>
@@ -350,7 +356,7 @@ export default function Settings() {
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">
-            <Card>
+            <Card className="bg-cosmic-light border-cosmic-light">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-white">
                   <Bell className="w-5 h-5" />
@@ -367,10 +373,11 @@ export default function Settings() {
                   <Switch
                     checked={likeNotifications}
                     onCheckedChange={setLikeNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -380,10 +387,11 @@ export default function Settings() {
                   <Switch
                     checked={commentNotifications}
                     onCheckedChange={setCommentNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -393,10 +401,11 @@ export default function Settings() {
                   <Switch
                     checked={energyNotifications}
                     onCheckedChange={setEnergyNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -406,10 +415,11 @@ export default function Settings() {
                   <Switch
                     checked={followNotifications}
                     onCheckedChange={setFollowNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -419,10 +429,11 @@ export default function Settings() {
                   <Switch
                     checked={oracleNotifications}
                     onCheckedChange={setOracleNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
 
-                <Separator className="bg-cosmic-light" />
+                <Separator className="bg-primary/20" />
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
@@ -432,6 +443,7 @@ export default function Settings() {
                   <Switch
                     checked={emailNotifications}
                     onCheckedChange={setEmailNotifications}
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
               </CardContent>

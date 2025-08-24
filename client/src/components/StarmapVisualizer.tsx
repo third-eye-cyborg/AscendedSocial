@@ -290,12 +290,14 @@ function StarUser({ user, position, mode, onClick }: {
   useFrame((state, delta) => {
     try {
       if (meshRef.current) {
+        // Smooth rotation
         meshRef.current.rotation.y += delta * (hovered ? 1.0 : 0.3);
-        if (hovered) {
-          meshRef.current.scale.setScalar(mode === 'starmap' ? 1.5 : 1.3);
-        } else {
-          meshRef.current.scale.setScalar(1);
-        }
+        
+        // Simple scale animation
+        const targetScale = hovered ? (mode === 'starmap' ? 1.5 : 1.3) : 1;
+        const currentScale = meshRef.current.scale.x;
+        const newScale = currentScale + (targetScale - currentScale) * delta * 5;
+        meshRef.current.scale.setScalar(newScale);
       }
     } catch (error) {
       console.warn('Error in StarUser useFrame:', error);
@@ -321,21 +323,30 @@ function StarUser({ user, position, mode, onClick }: {
       >
         {mode === 'starmap' ? (
           <>
-            <sphereGeometry args={[size, 12, 12]} />
-            <meshStandardMaterial 
+            <sphereGeometry args={[size, 8, 8]} />
+            <meshBasicMaterial 
               color={color} 
-              emissive={color} 
-              emissiveIntensity={hovered ? 0.6 : 0.3}
-              roughness={0.3}
-              metalness={0.1}
+              transparent
+              opacity={0.8 + auraIntensity * 0.2}
             />
             {hovered && (
-              <pointLight 
-                position={[0, 0, 0]} 
-                color={color} 
-                intensity={2} 
-                distance={5} 
-              />
+              <>
+                <pointLight 
+                  position={[0, 0, 0]} 
+                  color={color} 
+                  intensity={3} 
+                  distance={8} 
+                />
+                <mesh position={[0, 0, 0]}>
+                  <sphereGeometry args={[size * 2, 16, 16]} />
+                  <meshBasicMaterial 
+                    color={color} 
+                    transparent 
+                    opacity={0.1}
+                    wireframe
+                  />
+                </mesh>
+              </>
             )}
           </>
         ) : (
@@ -499,7 +510,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
-  const [enable3D, setEnable3D] = useState(false); // Start with 2D for stability
+  const [enable3D, setEnable3D] = useState(true); // Enable 3D starmap by default
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -765,8 +776,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Starmap - 3D temporarily disabled due to WebGL issues */}
-      {false ? (
+      {/* Enhanced 3D Starmap with full WebGL capabilities */}
+      {enable3D ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -774,15 +785,16 @@ function StarmapScene() {
           {userPositions.length > 0 ? (
             <Canvas
               key={retryKey}
-              camera={{ position: [0, 5, 25], fov: 60 }}
+              camera={{ position: [0, 10, 35], fov: 75 }}
               className="bg-gradient-to-b from-black via-purple-950/20 to-black"
               gl={{ 
                 antialias: true, 
                 alpha: false,
-                powerPreference: "default",
+                powerPreference: "high-performance",
                 preserveDrawingBuffer: false,
                 stencil: false,
-                depth: true
+                depth: true,
+                failIfMajorPerformanceCaveat: false
               }}
               onCreated={({ gl, scene, camera }) => {
                 try {
@@ -794,14 +806,16 @@ function StarmapScene() {
               }}
             >
               <Suspense fallback={null}>
-                <ambientLight intensity={mode === 'starmap' ? 0.1 : 0.3} />
-                <pointLight position={[10, 10, 10]} intensity={0.6} color="#8b5cf6" />
-                <pointLight position={[-10, -10, -10]} intensity={0.4} color="#06b6d4" />
+                <ambientLight intensity={mode === 'starmap' ? 0.2 : 0.4} />
+                <pointLight position={[15, 15, 15]} intensity={0.8} color="#8b5cf6" />
+                <pointLight position={[-15, -15, -15]} intensity={0.6} color="#06b6d4" />
+                <pointLight position={[0, 20, 0]} intensity={0.4} color="#fbbf24" />
+                <pointLight position={[0, -20, 0]} intensity={0.3} color="#ec4899" />
                 
                 {mode === 'starmap' && (
                   <>
-                    <Stars radius={100} depth={50} count={2000} factor={6} saturation={0.1} fade />
-                    <fog attach="fog" args={['#000011', 30, 100]} />
+                    <Stars radius={200} depth={100} count={5000} factor={4} saturation={0.2} fade speed={0.5} />
+                    <fog attach="fog" args={['#000011', 50, 150]} />
                   </>
                 )}
                 
@@ -827,15 +841,16 @@ function StarmapScene() {
                   enableZoom
                   enablePan
                   enableRotate
-                  zoomSpeed={1.5}
-                  panSpeed={1.2}
-                  rotateSpeed={0.8}
-                  minDistance={3}
-                  maxDistance={60}
-                  dampingFactor={0.05}
+                  zoomSpeed={1.8}
+                  panSpeed={1.4}
+                  rotateSpeed={1.0}
+                  minDistance={2}
+                  maxDistance={80}
+                  dampingFactor={0.03}
                   enableDamping
                   autoRotate={mode === 'starmap'}
-                  autoRotateSpeed={0.5}
+                  autoRotateSpeed={0.3}
+                  target={[0, 0, 0]}
                 />
               </Suspense>
             </Canvas>
@@ -849,8 +864,19 @@ function StarmapScene() {
           )}
         </CanvasErrorBoundary>
       ) : (
-        <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full">
-          <Starmap2DFallback onRetry={() => setEnable3D(true)} />
+        <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full flex items-center justify-center">
+          <div className="text-center text-white">
+            <div className="text-6xl mb-4">🌌</div>
+            <h2 className="text-2xl font-bold mb-2">3D Starmap Disabled</h2>
+            <p className="text-purple-300 mb-4">Experience the full cosmic visualization</p>
+            <Button 
+              onClick={() => setEnable3D(true)}
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Enter 3D Cosmos
+            </Button>
+          </div>
         </div>
       )}
     </div>

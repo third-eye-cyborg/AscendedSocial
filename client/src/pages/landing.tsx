@@ -262,8 +262,8 @@ export default function Landing() {
                     <p className="text-muted leading-relaxed text-sm sm:text-base lg:text-lg">
                       Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                     </p>
-                    <div className="mt-4 sm:mt-6 inline-flex items-center text-chakra-heart text-xs sm:text-sm font-semibold">
-                      Learn More <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-chakra-heart"></i>
+                    <div className="mt-4 sm:mt-6 inline-flex items-center text-xs sm:text-sm font-semibold">
+                      <span className="text-chakra-heart">Learn More</span> <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-chakra-heart"></i>
                     </div>
                   </CardContent>
                 </Card>
@@ -306,8 +306,8 @@ export default function Landing() {
                     <p className="text-muted leading-relaxed text-lg">
                       Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                     </p>
-                    <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">
-                      Experience Energy <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-primary"></i>
+                    <div className="mt-6 inline-flex items-center text-sm font-semibold">
+                      <span className="text-primary">Experience Energy</span> <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-primary"></i>
                     </div>
                   </CardContent>
                 </Card>

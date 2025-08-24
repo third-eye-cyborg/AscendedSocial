@@ -5,6 +5,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile responsiveness fixes */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure no elements exceed viewport width */
+@media (max-width: 640px) {
+  * {
+    max-width: 100vw !important;
+  }
+  
+  .container, [class*="container"] {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
 /* Uppy Modal Complete Styling */
 .uppy-Root {
   color: white !important;

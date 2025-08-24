@@ -263,7 +263,7 @@ export default function Landing() {
                       Receive your unique mystical sigil that represents your spiritual essence and energy signature, crafted by advanced AI consciousness.
                     </p>
                     <div className="mt-4 sm:mt-6 inline-flex items-center text-chakra-heart text-xs sm:text-sm font-semibold">
-                      Learn More <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                      Learn More <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-chakra-heart"></i>
                     </div>
                   </CardContent>
                 </Card>
@@ -285,7 +285,7 @@ export default function Landing() {
                       AI automatically categorizes your posts by the 7-chakra system, creating a vibrant energy map of your spiritual evolution.
                     </p>
                     <div className="mt-6 inline-flex items-center text-chakra-crown text-sm font-semibold">
-                      Explore System <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                      Explore System <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-chakra-crown"></i>
                     </div>
                   </CardContent>
                 </Card>
@@ -307,7 +307,7 @@ export default function Landing() {
                       Engage with content using our revolutionary three-tier system: votes, likes, and pure spiritual energy transmission.
                     </p>
                     <div className="mt-6 inline-flex items-center text-primary text-sm font-semibold">
-                      Experience Energy <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300"></i>
+                      Experience Energy <i className="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform duration-300 text-primary"></i>
                     </div>
                   </CardContent>
                 </Card>

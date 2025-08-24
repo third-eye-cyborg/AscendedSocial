@@ -1022,19 +1022,25 @@ export default function StarmapVisualizer() {
           );
         })}
         
-        {/* Shooting stars */}
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={`shooting-${i}`}
-            className="absolute w-0.5 h-20 bg-gradient-to-b from-white via-blue-200 to-transparent opacity-0"
-            style={{
-              left: `${Math.random() * 80 + 10}%`,
-              top: `${Math.random() * 60 + 10}%`,
-              transform: 'rotate(45deg)',
-              animation: `shootingStar ${8000 + Math.random() * 4000}ms linear infinite ${Math.random() * 10000}ms`,
-            }}
-          />
-        ))}
+        {/* Subtle shooting stars - very rare and realistic */}
+        <div
+          className="absolute w-0.5 h-8 bg-gradient-to-br from-white via-cyan-200 to-transparent opacity-0"
+          style={{
+            left: '20%',
+            top: '15%',
+            transform: 'rotate(-45deg)',
+            animation: 'shootingStar 15000ms linear infinite 5000ms',
+          }}
+        />
+        <div
+          className="absolute w-0.5 h-6 bg-gradient-to-br from-white via-purple-200 to-transparent opacity-0"
+          style={{
+            left: '70%',
+            top: '30%',
+            transform: 'rotate(-35deg)',
+            animation: 'shootingStar 18000ms linear infinite 25000ms',
+          }}
+        />
         
         {/* Ethereal gradient overlays */}
         <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 via-transparent to-transparent"></div>

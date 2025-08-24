@@ -350,7 +350,7 @@ export default function Landing() {
 
               <div className="flex items-start space-x-4">
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                  <i className="fas fa-video text-cosmic"></i>
+                  <i className="fas fa-video text-white"></i>
                 </div>
                 <div>
                   <h4 className="font-semibold text-accent-light mb-1">Sparks & Visions</h4>

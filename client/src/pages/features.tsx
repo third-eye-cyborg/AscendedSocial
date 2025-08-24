@@ -16,24 +16,26 @@ export default function Features() {
 
       {/* Premium Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-cosmic/80 backdrop-blur-2xl border-b border-primary/20 shadow-xl">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="relative">
                 <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md animate-pulse"></div>
-                <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                  <img src={logoImage} alt="Ascended Social Logo" className="w-8 h-8" />
+                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
+                  <img src={logoImage} alt="Ascended Social Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
                 </div>
               </div>
               <div>
-                <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Ascended Social
+                <h1 className="text-lg sm:text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  <span className="hidden sm:inline">Ascended Social</span>
+                  <span className="sm:hidden">Ascended</span>
                 </h1>
-                <p className="text-xs text-muted font-medium tracking-wide">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-muted font-medium tracking-wide hidden sm:block">TRANSCEND • CONNECT • EVOLVE</p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-4">
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}
@@ -151,16 +153,16 @@ export default function Features() {
       )}
 
       {/* Main Content */}
-      <main className="relative pt-32 pb-16">
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <main className="relative pt-20 sm:pt-24 pb-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           {/* Hero Section */}
-          <div className="text-center mb-16 animate-fade-in">
-            <h2 className="text-6xl font-display font-bold mb-6 leading-tight">
+          <div className="text-center mb-12 sm:mb-16 animate-fade-in">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold mb-4 sm:mb-6 leading-tight">
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Platform Features
               </span>
             </h2>
-            <p className="text-2xl text-subtle mb-8 leading-relaxed max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl lg:text-2xl text-subtle mb-6 sm:mb-8 leading-relaxed max-w-4xl mx-auto px-4">
               Discover the revolutionary tools designed to elevate your spiritual journey and connect you with like-minded souls.
             </p>
           </div>

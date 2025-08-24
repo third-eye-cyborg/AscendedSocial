@@ -429,7 +429,7 @@ export default function PostCard({ post }: PostCardProps) {
       {/* Post Media - Expandable */}
       {post.imageUrls && post.imageUrls.length > 0 && (
         <>
-          <div className="relative">
+          <div className="relative mx-4 mb-4 rounded-lg overflow-hidden">
             {post.imageUrls.length === 1 ? (
               <Dialog>
                 <DialogTrigger asChild>
@@ -458,7 +458,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <img
                         src={url}
                         alt={`Post image ${index + 1}`}
-                        className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                         data-testid={`image-${post.id}-${index}`}
                       />
                     </DialogTrigger>
@@ -507,7 +507,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <img
                         src={post.imageUrls[1]}
                         alt="Post image 2"
-                        className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                        className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                         data-testid={`image-${post.id}-1`}
                       />
                     </DialogTrigger>
@@ -530,7 +530,7 @@ export default function PostCard({ post }: PostCardProps) {
                         <img
                           src={post.imageUrls[2]}
                           alt="Post image 3"
-                          className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                           data-testid={`image-${post.id}-2`}
                         />
                       </DialogTrigger>
@@ -564,7 +564,7 @@ export default function PostCard({ post }: PostCardProps) {
       )}
       {/* Fallback to single image for backward compatibility - Expandable */}
       {!post.imageUrls && post.imageUrl && (
-        <div className="relative">
+        <div className="relative mx-4 mb-4 rounded-lg overflow-hidden">
           <Dialog>
             <DialogTrigger asChild>
               <img 
@@ -591,7 +591,7 @@ export default function PostCard({ post }: PostCardProps) {
       )}
 
       {post.videoUrl && (
-        <div className="relative bg-cosmic">
+        <div className="relative bg-cosmic mx-4 mb-4 rounded-lg overflow-hidden">
           <div className="aspect-video bg-gradient-to-br from-cosmic to-primary/20 flex items-center justify-center relative">
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
               <Button 

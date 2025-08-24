@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileIcon } from "@/components/ProfileIcon";
+import { useLocation } from "wouter";
 
 interface Comment {
   id: string;
@@ -31,6 +32,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
+  const [, setLocation] = useLocation();
 
   const { data: comments, isLoading } = useQuery<Comment[]>({
     queryKey: ["/api/posts", postId, "comments"],
@@ -111,7 +113,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   user={comment.author}
                   size="sm"
                   className="shadow-sm"
-                  onClick={() => window.location.href = `/profile/${comment.author.id}`}
+                  onClick={() => setLocation(`/profile/${comment.author.id}`)}
                   testId={`comment-author-${comment.id}`}
                 />
               </div>

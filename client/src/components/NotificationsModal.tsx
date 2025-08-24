@@ -8,6 +8,7 @@ import { ProfileIcon } from "@/components/ProfileIcon";
 import { formatDistanceToNow } from "date-fns";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 interface NotificationsModalProps {
   isOpen: boolean;
@@ -36,6 +37,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: notifications, isLoading, error } = useQuery({
     queryKey: ["/api/notifications"],
@@ -87,7 +89,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
       // we'd navigate to the specific post
       onClose();
     } else if (notification.relatedType === 'user' && notification.relatedId) {
-      window.location.href = `/profile/${notification.relatedId}`;
+      setLocation(`/profile/${notification.relatedId}`);
     } else {
       onClose();
     }
@@ -223,7 +225,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                           user={notification.triggerUser}
                           size="sm"
                           className="shadow-sm"
-                          onClick={() => window.location.href = `/profile/${notification.triggerUser.id}`}
+                          onClick={() => setLocation(`/profile/${notification.triggerUser.id}`)}
                           testId={`notification-user-${notification.id}`}
                         />
                       </div>

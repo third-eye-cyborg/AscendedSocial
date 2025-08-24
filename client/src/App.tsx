@@ -13,6 +13,7 @@ import Features from "@/pages/features";
 import Pricing from "@/pages/pricing";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profileSettings";
+import Post from "@/pages/post";
 import Settings from "@/pages/settings";
 import Visions from "@/pages/visions";
 import Sparks from "@/pages/sparks";
@@ -44,6 +45,7 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/profile/:userId" component={Profile} />
+          <Route path="/post/:postId" component={Post} />
           <Route path="/settings" component={Settings} />
           <Route path="/visions" component={Visions} />
           <Route path="/sparks" component={Sparks} />

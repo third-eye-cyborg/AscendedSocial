@@ -951,7 +951,7 @@ function StarmapScene() {
               <Button 
                 onClick={() => setLocation('/')}
                 variant="outline"
-                className="border-purple-500/50 text-purple-300 hover:!bg-gray-900 hover:!text-white hover:!border-purple-400"
+                className="bg-gray-800/80 border-purple-500/50 text-purple-300 hover:!bg-gray-900 hover:!text-white hover:!border-purple-400"
                 data-testid="button-home"
               >
                 Return Home

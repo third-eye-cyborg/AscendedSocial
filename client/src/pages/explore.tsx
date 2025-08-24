@@ -186,11 +186,11 @@ export default function Explore() {
                   <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-cosmic-dark border-primary/30">
-                    <SelectItem value="trending" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
-                    <SelectItem value="for_you" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Star className="w-4 h-4 mr-2 inline" />For You</SelectItem>
-                    <SelectItem value="friends" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Users className="w-4 h-4 mr-2 inline" />Friends</SelectItem>
-                    <SelectItem value="spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20"><Sparkles className="w-4 h-4 mr-2 inline" />Spiritual</SelectItem>
+                  <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
+                    <SelectItem value="trending" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
+                    <SelectItem value="for_you" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}><Star className="w-4 h-4 mr-2 inline" />For You</SelectItem>
+                    <SelectItem value="friends" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}><Users className="w-4 h-4 mr-2 inline" />Friends</SelectItem>
+                    <SelectItem value="spiritual" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}><Sparkles className="w-4 h-4 mr-2 inline" />Spiritual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -202,9 +202,9 @@ export default function Explore() {
                   <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-cosmic-dark border-primary/30">
+                  <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
                     {chakraOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value} className="text-white hover:bg-primary/20 focus:bg-primary/20">
+                      <SelectItem key={option.value} value={option.value} className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}>
                         {option.label}
                       </SelectItem>
                     ))}
@@ -219,10 +219,10 @@ export default function Explore() {
                   <SelectTrigger className="w-40 bg-cosmic-dark/50 border-primary/30">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-cosmic-dark border-primary/30">
-                    <SelectItem value="all" className="text-white hover:bg-primary/20 focus:bg-primary/20">🌌 All Posts</SelectItem>
-                    <SelectItem value="spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20">🔮 Spiritual</SelectItem>
-                    <SelectItem value="non_spiritual" className="text-white hover:bg-primary/20 focus:bg-primary/20">💭 General</SelectItem>
+                  <SelectContent className="!bg-slate-900 border-primary/30" style={{ backgroundColor: 'hsl(245, 35%, 18%)', borderColor: 'hsl(232, 100%, 67%, 0.3)' }}>
+                    <SelectItem value="all" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}>🌌 All Posts</SelectItem>
+                    <SelectItem value="spiritual" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}>🔮 Spiritual</SelectItem>
+                    <SelectItem value="non_spiritual" className="text-white hover:!bg-primary/20 focus:!bg-primary/20" style={{ color: 'white' }}>💭 General</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

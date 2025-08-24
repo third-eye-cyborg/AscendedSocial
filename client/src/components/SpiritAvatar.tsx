@@ -23,9 +23,9 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
 
   const getSpiritVisual = (level: number, element: string) => {
     const baseStyle = {
-      sm: "w-12 h-12 text-xl sm:text-2xl",
-      md: "w-16 h-16 sm:w-20 sm:h-20 text-2xl sm:text-4xl", 
-      lg: "w-24 h-24 sm:w-32 sm:h-32 text-4xl sm:text-6xl"
+      sm: "w-12 h-12 text-lg sm:text-xl",
+      md: "w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-3xl", 
+      lg: "w-24 h-24 sm:w-32 sm:h-32 text-3xl sm:text-5xl"
     }[size];
 
     const levelTier = Math.floor((level - 1) / 5) + 1; // Tiers: 1-5, 6-10, 11-15, etc.
@@ -57,24 +57,25 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
       <div className="relative">
         {/* Outer glow ring */}
         <div 
-          className={`${baseStyle} absolute inset-0 rounded-full animate-pulse`}
+          className={`${baseStyle} absolute inset-0 rounded-full animate-pulse opacity-60`}
           style={{
-            background: `radial-gradient(circle, rgba(${colors.primary}, 0.2) 0%, transparent 70%)`,
-            filter: `blur(${size === 'lg' ? '20px' : '10px'})`,
+            background: `radial-gradient(circle, rgba(${colors.primary}, 0.15) 0%, transparent 60%)`,
+            filter: `blur(${size === 'lg' ? '15px' : size === 'md' ? '10px' : '6px'})`,
           }}
         />
         
         {/* Main avatar */}
         <div 
-          className={`${baseStyle} rounded-full flex items-center justify-center relative bg-gradient-to-br shadow-2xl`}
+          className={`${baseStyle} rounded-full flex items-center justify-center relative bg-gradient-to-br shadow-xl border-2`}
           style={{
-            background: `linear-gradient(135deg, rgba(${colors.primary}, 0.3) 0%, rgba(${colors.secondary}, 0.2) 100%)`,
+            background: `linear-gradient(135deg, rgba(${colors.primary}, 0.25) 0%, rgba(${colors.secondary}, 0.15) 100%)`,
             boxShadow: `
-              0 0 ${Math.min(level * 3, 30)}px rgba(${colors.primary}, 0.4),
-              inset 0 0 20px rgba(${colors.primary}, 0.2)
+              0 0 ${Math.min(level * 2, 20)}px rgba(${colors.primary}, 0.3),
+              inset 0 0 15px rgba(${colors.primary}, 0.1),
+              0 4px 15px rgba(0, 0, 0, 0.2)
             `,
-            border: `3px solid rgba(${colors.primary}, 0.4)`,
-            backdropFilter: 'blur(10px)',
+            borderColor: `rgba(${colors.primary}, 0.5)`,
+            backdropFilter: 'blur(8px)',
           }}
           data-testid={`spirit-avatar-${level}`}
         >
@@ -91,26 +92,26 @@ export default function SpiritAvatar({ userId, showDetails = true, size = "md" }
               }}
             />
           ) : null}
-          <span className={`drop-shadow-2xl filter brightness-110 ${(spirit as any)?.imageUrl ? 'hidden' : ''}`}>{symbol}</span>
+          <span className={`drop-shadow-lg filter brightness-125 ${(spirit as any)?.imageUrl ? 'hidden' : ''} select-none font-bold`} style={{ textShadow: '0 0 10px rgba(255,255,255,0.5)' }}>{symbol}</span>
           
           {/* Level indicator */}
           {level > 5 && (
             <div 
-              className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
+              className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center shadow-lg border border-white/20"
               style={{
                 background: `linear-gradient(135deg, rgba(${colors.primary}, 0.9) 0%, rgba(${colors.secondary}, 0.9) 100%)`,
               }}
             >
-              <span className="text-xs text-white font-bold">{levelTier}</span>
+              <span className="text-xs sm:text-xs text-white font-bold drop-shadow-sm">{levelTier}</span>
             </div>
           )}
           
           {/* Sparkle effects for higher levels */}
           {level > 10 && (
             <>
-              <div className="absolute top-0 left-1/4 w-1 h-1 bg-white rounded-full animate-ping" />
-              <div className="absolute bottom-1/4 right-0 w-1 h-1 bg-white rounded-full animate-ping animation-delay-200" />
-              <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white rounded-full animate-ping animation-delay-400" />
+              <div className="absolute top-1 left-1/4 w-1 h-1 bg-white/80 rounded-full animate-ping" />
+              <div className="absolute bottom-1/4 right-1 w-1 h-1 bg-white/80 rounded-full animate-ping animation-delay-200" />
+              <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white/80 rounded-full animate-ping animation-delay-400" />
             </>
           )}
         </div>

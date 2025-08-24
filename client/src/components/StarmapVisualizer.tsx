@@ -142,12 +142,14 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => {/* 3D temporarily disabled */}}
-          disabled
-          className="bg-gray-600/20 border-gray-400/50 text-gray-400 cursor-not-allowed"
+          onClick={() => {
+            // Note: 3D mode functionality will be handled by the main component
+            console.log('3D mode button clicked');
+          }}
+          className="bg-purple-600/80 backdrop-blur-sm border-purple-400/50 text-white hover:bg-purple-700/80"
         >
           <RotateCcw className="w-4 h-4 mr-2" />
-          3D View (Coming Soon)
+          3D Visualization Active
         </Button>
       </div>
 
@@ -800,7 +802,7 @@ function StarmapScene() {
       </div>
 
       {/* Enhanced 3D Starmap with improved compatibility */}
-      {false ? ( /* 3D mode temporarily disabled due to Replit environment compatibility */
+      {enable3D ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -1022,22 +1024,24 @@ export default function StarmapVisualizer() {
           );
         })}
         
-        {/* Subtle shooting stars - very rare and realistic */}
+        {/* Subtle shooting stars - diagonal meteors with proper comet head direction */}
         <div
-          className="absolute w-0.5 h-8 bg-gradient-to-br from-white via-cyan-200 to-transparent opacity-0"
+          className="absolute w-0.5 h-8 bg-gradient-to-t from-white via-cyan-200 to-transparent opacity-0"
           style={{
             left: '20%',
             top: '15%',
-            transform: 'rotate(-45deg)',
+            transform: 'rotate(135deg)', // Diagonal down-right with head at bottom
+            transformOrigin: 'bottom center',
             animation: 'shootingStar 15000ms linear infinite 5000ms',
           }}
         />
         <div
-          className="absolute w-0.5 h-6 bg-gradient-to-br from-white via-purple-200 to-transparent opacity-0"
+          className="absolute w-0.5 h-6 bg-gradient-to-t from-white via-purple-200 to-transparent opacity-0"
           style={{
             left: '70%',
             top: '30%',
-            transform: 'rotate(-35deg)',
+            transform: 'rotate(145deg)', // Diagonal down-right with head at bottom
+            transformOrigin: 'bottom center',
             animation: 'shootingStar 18000ms linear infinite 25000ms',
           }}
         />

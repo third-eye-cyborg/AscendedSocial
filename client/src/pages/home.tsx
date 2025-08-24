@@ -75,7 +75,7 @@ export default function Home() {
                   <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-purple-400 animate-pulse" />
                   Spiritual Cosmos
                 </h3>
-                <p className="text-purple-100 text-xs sm:text-sm mb-3 leading-relaxed break-words">
+                <p className="text-white text-xs sm:text-sm mb-3 leading-relaxed break-words">
                   Journey through the mystical starmap where souls appear as glowing stars, 
                   clustering by chakra energy and spiritual connections.
                 </p>
@@ -122,7 +122,7 @@ export default function Home() {
                   <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-orange-400" />
                   Divine Oracle
                 </h3>
-                <p className="text-orange-100 text-xs sm:text-sm mb-3 leading-relaxed break-words">
+                <p className="text-white text-xs sm:text-sm mb-3 leading-relaxed break-words">
                   Receive daily spiritual guidance, AI-powered tarot readings, 
                   and personalized insights from the digital oracle.
                 </p>

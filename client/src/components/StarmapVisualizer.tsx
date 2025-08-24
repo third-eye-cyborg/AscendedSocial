@@ -153,10 +153,15 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
 
       {/* Status Banner */}
       <div className="absolute top-4 right-4 z-10">
-        <Card className="p-3 bg-black/70 backdrop-blur-md border-purple-500/30">
-          <div className="flex items-center space-x-2 text-sm text-white">
-            <div className="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></div>
-            <span>2D Cosmos View</span>
+        <Card className="p-4 bg-black/80 backdrop-blur-md border-purple-500/40 shadow-2xl">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 text-sm text-white">
+              <div className="w-3 h-3 rounded-full bg-yellow-500 animate-pulse"></div>
+              <span className="font-medium">2D Fallback Mode</span>
+            </div>
+            <div className="text-xs text-purple-300">
+              Enhanced for stability
+            </div>
           </div>
         </Card>
       </div>
@@ -494,11 +499,20 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
 // Camera controller for zoom-based mode switching
 function CameraController({ onModeChange }: { onModeChange: (mode: 'starmap' | 'fungus') => void }) {
   const { camera } = useThree();
+  const [lastMode, setLastMode] = useState<'starmap' | 'fungus'>('starmap');
   
   useFrame(() => {
+    // Enhanced zoom-based mode switching with smooth transitions
     const distance = camera.position.distanceTo(new Vector3(0, 0, 0));
-    const newMode = distance < 15 ? 'fungus' : 'starmap';
-    onModeChange(newMode);
+    
+    // Use hysteresis to prevent flickering between modes
+    if (distance > 25 && lastMode !== 'starmap') {
+      onModeChange('starmap');  // Far = cosmic starfield view
+      setLastMode('starmap');
+    } else if (distance < 18 && lastMode !== 'fungus') {
+      onModeChange('fungus');   // Close = fungal network view
+      setLastMode('fungus');
+    }
   });
   
   return null;
@@ -785,8 +799,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Temporarily disable 3D due to WebGL compatibility issues */}
-      {false ? (
+      {/* Enhanced 3D Starmap with improved compatibility */}
+      {enable3D ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -810,7 +824,7 @@ function StarmapScene() {
               }}
               onError={(error) => {
                 console.warn('Canvas error caught:', error);
-                setEnable3D(false);
+                // Don't automatically disable on error, let user retry
               }}
             >
               <Suspense fallback={null}>
@@ -883,16 +897,17 @@ function StarmapScene() {
                   enableZoom
                   enablePan
                   enableRotate
-                  zoomSpeed={2.0}
-                  panSpeed={1.6}
-                  rotateSpeed={1.2}
-                  minDistance={1.5}
-                  maxDistance={100}
-                  dampingFactor={0.02}
+                  zoomSpeed={1.5}
+                  panSpeed={1.2}
+                  rotateSpeed={0.8}
+                  minDistance={8}
+                  maxDistance={60}
+                  dampingFactor={0.05}
                   enableDamping
                   autoRotate={mode === 'starmap'}
-                  autoRotateSpeed={0.2}
+                  autoRotateSpeed={0.3}
                   target={[0, 0, 0]}
+                  makeDefault
                 />
               </Suspense>
             </Canvas>
@@ -958,9 +973,19 @@ function StarmapScene() {
               </Button>
             </div>
             
-            <p className="text-xs text-gray-400 mt-6">
-              3D visualization temporarily disabled for compatibility
-            </p>
+            <div className="mt-6 space-y-2">
+              <Button 
+                onClick={() => setEnable3D(true)}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105"
+                data-testid="button-enable-3d"
+              >
+                <Sparkles className="w-4 h-4 mr-2" />
+                Enter 3D Cosmos
+              </Button>
+              <p className="text-xs text-gray-400">
+                Experience the full immersive starmap
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -974,12 +999,42 @@ export default function StarmapVisualizer() {
       <StarmapScene />
       {/* Enhanced ambient background effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-10 w-4 h-4 bg-purple-400 rounded-full opacity-70 animate-ping delay-1000 shadow-lg shadow-purple-400/50"></div>
-        <div className="absolute top-32 right-20 w-3 h-3 bg-blue-400 rounded-full opacity-60 animate-pulse delay-2000 shadow-lg shadow-blue-400/50"></div>
-        <div className="absolute bottom-20 left-32 w-5 h-5 bg-pink-400 rounded-full opacity-50 animate-bounce delay-3000 shadow-lg shadow-pink-400/50"></div>
-        <div className="absolute bottom-40 right-40 w-2 h-2 bg-cyan-400 rounded-full opacity-40 animate-ping delay-4000 shadow-lg shadow-cyan-400/50"></div>
-        <div className="absolute top-1/2 left-10 w-3 h-3 bg-yellow-400 rounded-full opacity-50 animate-pulse delay-5000 shadow-lg shadow-yellow-400/50"></div>
-        <div className="absolute top-20 right-1/2 w-4 h-4 bg-green-400 rounded-full opacity-40 animate-bounce delay-6000 shadow-lg shadow-green-400/50"></div>
+        {/* Realistic star field background */}
+        {Array.from({ length: 50 }).map((_, i) => {
+          const left = Math.random() * 100;
+          const top = Math.random() * 100;
+          const size = Math.random() * 3 + 1;
+          const delay = Math.random() * 6000;
+          const duration = Math.random() * 3000 + 2000;
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full bg-white opacity-60"
+              style={{
+                left: `${left}%`,
+                top: `${top}%`,
+                width: `${size}px`,
+                height: `${size}px`,
+                animation: `twinkle ${duration}ms ease-in-out infinite ${delay}ms`,
+                boxShadow: `0 0 ${size * 2}px rgba(255, 255, 255, 0.8)`,
+              }}
+            />
+          );
+        })}
+        
+        {/* Shooting stars */}
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={`shooting-${i}`}
+            className="absolute w-0.5 h-20 bg-gradient-to-b from-white via-blue-200 to-transparent opacity-0"
+            style={{
+              left: `${Math.random() * 80 + 10}%`,
+              top: `${Math.random() * 60 + 10}%`,
+              transform: 'rotate(45deg)',
+              animation: `shootingStar ${8000 + Math.random() * 4000}ms linear infinite ${Math.random() * 10000}ms`,
+            }}
+          />
+        ))}
         
         {/* Ethereal gradient overlays */}
         <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 via-transparent to-transparent"></div>

@@ -3,15 +3,20 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 
 export default function Oracle() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [tarotQuestion, setTarotQuestion] = useState("");
+  const [lastTarotReading, setLastTarotReading] = useState<any>(null);
 
   const { data: dailyReading, isLoading: readingLoading } = useQuery({
     queryKey: ["/api/readings/daily"],
@@ -72,6 +77,43 @@ export default function Oracle() {
     },
   });
 
+  // Mutation to generate tarot reading
+  const tarotReadingMutation = useMutation({
+    mutationFn: async (question: string) => {
+      const response = await apiRequest("POST", "/api/readings/tarot", {
+        question: question || "What guidance do I need today?"
+      });
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      setLastTarotReading(data);
+      toast({
+        title: "🔮 Tarot Cards Drawn",
+        description: "The cosmic forces have spoken through the cards",
+      });
+    },
+    onError: (error: any) => {
+      if (error.message?.includes("Premium")) {
+        toast({
+          title: "✨ Premium Feature",
+          description: "Tarot readings are available to premium members",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Unable to draw tarot cards. Please try again.",
+          variant: "destructive"
+        });
+      }
+    },
+  });
+
+  const handleTarotSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    tarotReadingMutation.mutate(tarotQuestion);
+  };
+
   if (!user) {
     return (
       <Layout>
@@ -97,7 +139,7 @@ export default function Oracle() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
           {/* Daily Oracle Reading */}
           <Card className="bg-cosmic-light rounded-xl border border-primary/30 hover-lift">
             <CardHeader>
@@ -299,6 +341,101 @@ export default function Oracle() {
                     className="bg-primary hover:bg-primary/80 text-black font-semibold"
                   >
                     Seek Community Wisdom
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Tarot Reading */}
+          <Card className="bg-cosmic-light rounded-xl border border-primary/30 hover-lift">
+            <CardHeader>
+              <CardTitle className="font-display font-semibold text-accent-light flex items-center">
+                <i className="fas fa-magic mr-2 animate-pulse"></i>
+                Tarot Reading
+                {(user as any)?.isPremium && (
+                  <span className="ml-2 text-xs bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full font-bold">
+                    PREMIUM
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!lastTarotReading ? (
+                <form onSubmit={handleTarotSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="tarot-question" className="text-white text-sm font-medium">
+                      Ask the cards your question:
+                    </Label>
+                    <Input
+                      id="tarot-question"
+                      type="text"
+                      placeholder="What guidance do I need today?"
+                      value={tarotQuestion}
+                      onChange={(e) => setTarotQuestion(e.target.value)}
+                      className="mt-1 bg-cosmic border-primary/30 text-white placeholder-white/50"
+                      data-testid="input-tarot-question"
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={tarotReadingMutation.isPending}
+                    className="w-full bg-primary hover:bg-primary/80 text-black font-semibold"
+                    data-testid="button-draw-tarot"
+                  >
+                    {tarotReadingMutation.isPending ? (
+                      <>
+                        <i className="fas fa-spinner animate-spin mr-2"></i>
+                        Drawing Cards...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-magic mr-2"></i>
+                        Draw Cards
+                      </>
+                    )}
+                  </Button>
+                </form>
+              ) : (
+                <div className="space-y-4">
+                  {/* Display tarot cards */}
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    {lastTarotReading.metadata?.cards?.map((card: any, index: number) => (
+                      <div key={index} className="text-center">
+                        <div className="w-full h-20 bg-cosmic rounded-lg flex flex-col items-center justify-center border border-primary/30 mb-2">
+                          <i className="fas fa-star text-accent-light mb-1"></i>
+                          <span className="text-xs text-white/80 uppercase">{card.position}</span>
+                        </div>
+                        <div className="text-xs text-white font-semibold truncate">{card.name}</div>
+                        <div className="text-xs text-white/70 truncate">{card.meaning}</div>
+                      </div>
+                    )) || []}
+                  </div>
+
+                  {/* Interpretation */}
+                  <div className="space-y-3">
+                    <p className="text-white text-sm leading-relaxed italic">
+                      "{lastTarotReading.content}"
+                    </p>
+                    {lastTarotReading.metadata?.guidance && (
+                      <p className="text-accent text-sm font-medium">
+                        {lastTarotReading.metadata.guidance}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between text-sm text-white/70">
+                      <span>Question: {lastTarotReading.metadata?.question || "General guidance"}</span>
+                      <span className="text-accent-light">•••</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => setLastTarotReading(null)}
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-primary/30 text-white hover:bg-cosmic"
+                  >
+                    <i className="fas fa-redo mr-2"></i>
+                    New Reading
                   </Button>
                 </div>
               )}

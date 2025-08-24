@@ -49,7 +49,7 @@ export default function Visions() {
                 Share your spiritual visions and mystical experiences through video.
               </p>
               <div className="aspect-video bg-cosmic rounded-lg flex items-center justify-center mb-4">
-                <i className="fas fa-crystal-ball text-primary text-4xl"></i>
+                <i className="fas fa-eye text-primary text-4xl"></i>
               </div>
               <Button className="w-full bg-primary/30 hover:bg-primary/50">
                 Coming Soon

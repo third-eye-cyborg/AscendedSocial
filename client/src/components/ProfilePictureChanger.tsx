@@ -135,7 +135,7 @@ export default function ProfilePictureChanger() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="text-center">
-          <div className="w-24 h-24 mx-auto mb-4">
+          <div className="mx-auto mb-4 flex justify-center">
             <ProfileIcon 
               user={user as any}
               size="xl"

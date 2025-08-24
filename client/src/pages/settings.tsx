@@ -251,7 +251,7 @@ export default function Settings() {
                     onClick={() => regenerateSigilMutation.mutate()}
                     disabled={regenerateSigilMutation.isPending}
                     variant="outline"
-                    className="border-primary text-primary hover:bg-primary hover:text-white bg-transparent"
+                    className="border-primary text-white hover:bg-primary hover:text-white bg-transparent"
                   >
                     {regenerateSigilMutation.isPending ? "Regenerating..." : "Regenerate Sigil"}
                   </Button>

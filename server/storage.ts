@@ -26,6 +26,7 @@ import {
   type ChakraType,
   type EngagementType,
   notifications,
+  bookmarks,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, count, ilike, or, ne, sum } from "drizzle-orm";
@@ -111,6 +112,11 @@ export interface IStorage {
     dominantChakra?: string;
     postCount: number;
   }>>;
+
+  // Bookmark operations
+  addBookmark(userId: string, postId: string): Promise<void>;
+  removeBookmark(userId: string, postId: string): Promise<void>;
+  getUserBookmarks(userId: string): Promise<string[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -963,6 +969,29 @@ export class DatabaseStorage implements IStorage {
       console.error('Error getting starmap users:', error);
       throw error;
     }
+  }
+
+  // Bookmark operations
+  async addBookmark(userId: string, postId: string): Promise<void> {
+    await db
+      .insert(bookmarks)
+      .values({ userId, postId })
+      .onConflictDoNothing();
+  }
+
+  async removeBookmark(userId: string, postId: string): Promise<void> {
+    await db
+      .delete(bookmarks)
+      .where(and(eq(bookmarks.userId, userId), eq(bookmarks.postId, postId)));
+  }
+
+  async getUserBookmarks(userId: string): Promise<string[]> {
+    const userBookmarks = await db
+      .select({ postId: bookmarks.postId })
+      .from(bookmarks)
+      .where(eq(bookmarks.userId, userId));
+    
+    return userBookmarks.map(b => b.postId);
   }
 }
 

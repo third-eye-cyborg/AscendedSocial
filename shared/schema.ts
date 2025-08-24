@@ -10,6 +10,7 @@ import {
   boolean,
   decimal,
   pgEnum,
+  unique,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -279,3 +280,15 @@ export type NewSpiritualInteraction = typeof spiritualInteractions.$inferInsert;
 export type ChakraType = "root" | "sacral" | "solar" | "heart" | "throat" | "third_eye" | "crown";
 export type EngagementType = "upvote" | "downvote" | "like" | "energy";
 export type ConnectionStatus = "pending" | "accepted" | "declined" | "blocked";
+
+// Bookmarks table
+export const bookmarks = pgTable('bookmarks', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  postId: varchar('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export const insertBookmarkSchema = createInsertSchema(bookmarks);
+export type Bookmark = typeof bookmarks.$inferSelect;
+export type InsertBookmark = z.infer<typeof insertBookmarkSchema>;

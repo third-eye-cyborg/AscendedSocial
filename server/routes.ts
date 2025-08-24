@@ -303,6 +303,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bookmark routes
+  app.post('/api/posts/:postId/bookmark', isAuthenticated, async (req: any, res) => {
+    try {
+      const { postId } = req.params;
+      const { bookmarked } = req.body;
+      const userId = req.user.claims.sub;
+      
+      if (bookmarked) {
+        await storage.addBookmark(userId, postId);
+      } else {
+        await storage.removeBookmark(userId, postId);
+      }
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error updating bookmark:", error);
+      res.status(500).json({ message: "Failed to update bookmark" });
+    }
+  });
+
+  app.get('/api/bookmarks', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const bookmarks = await storage.getUserBookmarks(userId);
+      res.json(bookmarks);
+    } catch (error: any) {
+      console.error("Error fetching bookmarks:", error);
+      res.status(500).json({ message: "Failed to fetch bookmarks" });
+    }
+  });
+
   app.get('/api/posts/:postId/engage/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

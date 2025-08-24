@@ -211,6 +211,33 @@ html, body {
   position: fixed !important;
 }
 
+/* Tooltip content positioning and width constraints */
+[data-radix-tooltip-content] {
+  max-width: 280px !important;
+  word-wrap: break-word !important;
+  z-index: 9999 !important;
+  position: fixed !important;
+}
+
+/* Ensure tooltip doesn't exceed viewport */
+[data-radix-tooltip-content][data-side="right"] {
+  transform: translateX(-10px) !important;
+}
+
+[data-radix-tooltip-content][data-side="left"] {
+  transform: translateX(10px) !important;
+}
+
+/* Force tooltip to use better positioning */
+.chakra-legend [data-radix-tooltip-trigger] {
+  position: static !important;
+}
+
+/* Override container overflow for the entire post card area */
+.post-card-container, .post-card-container * {
+  overflow: visible !important;
+}
+
 .uppy-StatusBar-content {
   color: white !important;
 }

@@ -307,20 +307,29 @@ export default function PostCard({ post }: PostCardProps) {
   };
 
   const saveMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newBookmarkState: boolean) => {
       return apiRequest("POST", `/api/posts/${post.id}/bookmark`, {
-        bookmarked: !isSaved
+        bookmarked: newBookmarkState
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    },
+    onError: () => {
+      // Revert the optimistic update on error
+      setIsSaved(isSaved);
+      toast({
+        title: "Error",
+        description: "Failed to update bookmark",
+        variant: "destructive",
+      });
     }
   });
 
   const handleSave = () => {
     const newSavedState = !isSaved;
-    setIsSaved(newSavedState);
+    setIsSaved(newSavedState); // Optimistic update
     
     toast({
       title: newSavedState ? "🏛️ Added to Sacred Collection!" : "📜 Removed from Sacred Collection",
@@ -330,7 +339,7 @@ export default function PostCard({ post }: PostCardProps) {
       duration: 2500,
     });
     
-    saveMutation.mutate();
+    saveMutation.mutate(newSavedState);
   };
 
   const chakraColor = getChakraColor(post.chakra);

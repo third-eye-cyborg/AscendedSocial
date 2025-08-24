@@ -126,24 +126,24 @@ export default function ProfilePictureChanger() {
   };
 
   return (
-    <Card className="bg-slate-900 border border-slate-700 shadow-lg">
-      <CardHeader>
-        <CardTitle className="text-accent-light flex items-center">
+    <Card className="bg-slate-900 border border-slate-700 shadow-lg mb-6">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-accent-light flex items-center text-lg">
           <i className="fas fa-user-circle mr-2"></i>
           Profile Picture
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pb-6">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex justify-center">
+          <div className="mx-auto mb-3 flex justify-center">
             <ProfileIcon 
               user={user as any}
-              size="xl"
+              size="lg"
               className="shadow-lg"
               testId="current-profile-picture"
             />
           </div>
-          <p className="text-sm text-white/90 mb-4">
+          <p className="text-xs sm:text-sm text-white/90 mb-4">
             {(user as any)?.profileImageUrl ? "Your current profile picture" : "Using your sigil as profile display"}
           </p>
         </div>
@@ -151,12 +151,12 @@ export default function ProfilePictureChanger() {
         <div className="space-y-3">
           {/* File Upload Option */}
           <div className="flex flex-col space-y-2">
-            <label className="text-sm text-white/90 font-medium">Upload Image File</label>
+            <label className="text-xs sm:text-sm text-white/90 font-medium">Upload Image File</label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileUpload}
-              className="bg-slate-800 border border-slate-600 rounded-md p-2 text-white file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary file:text-black file:font-medium hover:file:bg-primary/80"
+              className="bg-slate-800 border border-slate-600 rounded-md p-2 text-white text-sm file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary file:text-black file:font-medium hover:file:bg-primary/80"
               data-testid="input-file-upload"
             />
           </div>
@@ -177,13 +177,13 @@ export default function ProfilePictureChanger() {
               placeholder="Enter image URL..."
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              className="bg-slate-800 border-slate-600 text-white placeholder-gray-400"
+              className="bg-slate-800 border-slate-600 text-white placeholder-gray-400 text-sm"
               data-testid="input-image-url"
             />
             <Button
               onClick={() => changeProfilePictureMutation.mutate(imageUrl)}
               disabled={changeProfilePictureMutation.isPending || isUploading || !imageUrl.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm h-10"
               data-testid="button-change-picture"
             >
               {changeProfilePictureMutation.isPending ? "Updating..." : "Change Picture"}

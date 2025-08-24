@@ -300,12 +300,12 @@ function StarUser({ user, position, mode, onClick }: {
         const newScale = currentScale + (targetScale - currentScale) * delta * 6;
         
         // Add gentle spiritual pulsing
-        const pulse = 1 + Math.sin(state.clock.elapsedTime * 3 + user.id.charCodeAt(0)) * 0.08;
+        const pulse = 1 + Math.sin((state.clock?.elapsedTime || 0) * 3 + (user.id?.charCodeAt(0) || 0)) * 0.08;
         meshRef.current.scale.setScalar(newScale * pulse);
         
         // Subtle vertical floating motion
-        const baseY = position.y;
-        const floatOffset = Math.sin(state.clock.elapsedTime * 2 + user.id.charCodeAt(0)) * 0.3;
+        const baseY = position.y || 0;
+        const floatOffset = Math.sin((state.clock?.elapsedTime || 0) * 2 + (user.id?.charCodeAt(0) || 0)) * 0.3;
         meshRef.current.position.y = baseY + floatOffset;
       }
     } catch (error) {
@@ -797,20 +797,26 @@ function StarmapScene() {
               camera={{ position: [0, 10, 35], fov: 75 }}
               className="bg-gradient-to-b from-black via-purple-950/20 to-black"
               gl={{ 
-                antialias: true, 
+                antialias: false, 
                 alpha: false,
-                powerPreference: "high-performance",
+                powerPreference: "default",
                 preserveDrawingBuffer: false,
                 stencil: false,
                 depth: true,
-                failIfMajorPerformanceCaveat: false
+                failIfMajorPerformanceCaveat: true,
+                precision: "lowp"
               }}
               onCreated={({ gl, scene, camera }) => {
                 try {
-                  gl.setClearColor('#000000');
-                  gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                  if (gl && typeof gl.setClearColor === 'function') {
+                    gl.setClearColor('#000000');
+                  }
+                  if (gl && typeof gl.setPixelRatio === 'function') {
+                    gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                  }
                 } catch (error) {
                   console.warn('WebGL setup warning:', error);
+                  // Gracefully handle WebGL errors without breaking the app
                 }
               }}
             >

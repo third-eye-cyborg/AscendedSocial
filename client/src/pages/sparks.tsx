@@ -47,7 +47,7 @@ export default function Sparks() {
               />
               <Button 
                 onClick={handleCreateSpark}
-                className="bg-primary hover:bg-primary/80"
+                className="bg-primary hover:bg-primary/80 text-white"
                 disabled={!sparkInput.trim()}
                 data-testid="button-create-spark"
               >
@@ -119,7 +119,7 @@ export default function Sparks() {
               </p>
               <Button 
                 onClick={() => window.location.href = '/'}
-                className="bg-primary hover:bg-primary/80"
+                className="bg-primary hover:bg-primary/80 text-white"
               >
                 Return to Feed
               </Button>

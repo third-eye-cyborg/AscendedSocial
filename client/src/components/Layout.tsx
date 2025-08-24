@@ -128,7 +128,7 @@ export default function Layout({ children }: LayoutProps) {
                   variant="ghost" 
                   size="sm"
                   onClick={() => window.location.href = '/api/logout'}
-                  className="text-gray-300 hover:text-white"
+                  className="text-gray-300 hover:text-white hover:bg-gray-800"
                   data-testid="button-logout"
                 >
                   <i className="fas fa-sign-out-alt"></i>

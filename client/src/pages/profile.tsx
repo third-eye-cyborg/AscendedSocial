@@ -188,8 +188,8 @@ export default function Profile() {
                   {/* Aura Level */}
                   <div className="w-full mb-4">
                     <div className="flex justify-between text-sm mb-1">
-                      <span>Aura Level</span>
-                      <span className="text-primary" data-testid="text-profile-aura">
+                      <span className="text-white">Aura Level</span>
+                      <span className="text-white" data-testid="text-profile-aura">
                         Level {stats?.auraLevel || 1}
                       </span>
                     </div>

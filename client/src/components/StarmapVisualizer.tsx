@@ -519,7 +519,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
-  const [enable3D, setEnable3D] = useState(true); // Enable 3D starmap by default
+  const [enable3D, setEnable3D] = useState(false); // Default to 2D for stability, user can enable 3D
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -796,28 +796,21 @@ function StarmapScene() {
               key={retryKey}
               camera={{ position: [0, 10, 35], fov: 75 }}
               className="bg-gradient-to-b from-black via-purple-950/20 to-black"
+              dpr={1}
+              legacy={true}
               gl={{ 
                 antialias: false, 
                 alpha: false,
                 powerPreference: "default",
                 preserveDrawingBuffer: false,
                 stencil: false,
-                depth: true,
+                depth: false,
                 failIfMajorPerformanceCaveat: true,
                 precision: "lowp"
               }}
-              onCreated={({ gl, scene, camera }) => {
-                try {
-                  if (gl && typeof gl.setClearColor === 'function') {
-                    gl.setClearColor('#000000');
-                  }
-                  if (gl && typeof gl.setPixelRatio === 'function') {
-                    gl.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-                  }
-                } catch (error) {
-                  console.warn('WebGL setup warning:', error);
-                  // Gracefully handle WebGL errors without breaking the app
-                }
+              onError={(error) => {
+                console.warn('Canvas error caught:', error);
+                setEnable3D(false);
               }}
             >
               <Suspense fallback={null}>

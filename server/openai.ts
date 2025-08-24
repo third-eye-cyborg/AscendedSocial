@@ -1,10 +1,61 @@
 import OpenAI from "openai";
 import type { ChakraType } from "@shared/schema";
+import { ObjectStorageService } from "./objectStorage";
+import { randomUUID } from "crypto";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY
 });
+
+// Utility function to download image from URL and save to persistent storage
+async function downloadAndSaveImage(imageUrl: string, filename: string): Promise<string> {
+  try {
+    if (!imageUrl) {
+      throw new Error("No image URL provided");
+    }
+
+    // Download the image from OpenAI's temporary URL
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to download image: ${response.statusText}`);
+    }
+
+    const imageBuffer = Buffer.from(await response.arrayBuffer());
+    
+    // Save to object storage
+    const objectStorageService = new ObjectStorageService();
+    const privateObjectDir = objectStorageService.getPrivateObjectDir();
+    const objectPath = `${privateObjectDir}/ai-images/${filename}`;
+    
+    // Parse the object path to get bucket and object names
+    const pathParts = objectPath.split('/');
+    const bucketName = pathParts[1];
+    const objectName = pathParts.slice(2).join('/');
+    
+    // Upload to Google Cloud Storage
+    const { objectStorageClient } = await import('./objectStorage');
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    
+    await file.save(imageBuffer, {
+      metadata: {
+        contentType: 'image/png',
+        metadata: {
+          'generated-by': 'openai-dalle3',
+          'created-at': new Date().toISOString()
+        }
+      }
+    });
+    
+    // Return the path that can be served via our API
+    return `/objects/ai-images/${filename}`;
+  } catch (error) {
+    console.error("Error downloading and saving image:", error);
+    // Return the original URL as fallback
+    return imageUrl;
+  }
+}
 
 export interface ChakraAnalysis {
   chakra: ChakraType;
@@ -41,7 +92,18 @@ export async function generateSpiritImage(spiritData: { name: string; descriptio
       quality: "standard",
     });
 
-    return response.data[0].url || '';
+    const imageUrl = response.data?.[0]?.url;
+    if (!imageUrl) {
+      console.error("No image URL returned from OpenAI");
+      return '';
+    }
+
+    // Download and save to persistent storage
+    const filename = `spirit-${spiritData.name.toLowerCase().replace(/\s+/g, '-')}-${randomUUID()}.png`;
+    const persistentUrl = await downloadAndSaveImage(imageUrl, filename);
+    
+    console.log(`Spirit image saved: ${filename} -> ${persistentUrl}`);
+    return persistentUrl;
   } catch (error) {
     console.error("Error generating spirit image:", error);
     return '';
@@ -63,7 +125,18 @@ export async function generateSigilImage(userData?: { beliefs?: string; astrolog
       quality: "standard",
     });
 
-    return response.data[0].url || '';
+    const imageUrl = response.data?.[0]?.url;
+    if (!imageUrl) {
+      console.error("No image URL returned from OpenAI");
+      return '';
+    }
+
+    // Download and save to persistent storage
+    const filename = `sigil-${sign}-${randomUUID()}.png`;
+    const persistentUrl = await downloadAndSaveImage(imageUrl, filename);
+    
+    console.log(`Sigil image saved: ${filename} -> ${persistentUrl}`);
+    return persistentUrl;
   } catch (error) {
     console.error("Error generating sigil image:", error);
     return '';

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Slider } from "@/components/ui/slider";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -38,6 +39,20 @@ interface PostCardProps {
     };
   };
 }
+
+// Chakra descriptions for tooltips
+const getChakraDescription = (chakra: string): string => {
+  const descriptions: Record<string, string> = {
+    root: "Survival, grounding, material security, stability",
+    sacral: "Creativity, sexuality, emotional well-being, pleasure", 
+    solar: "Personal power, confidence, willpower, self-esteem",
+    heart: "Love, compassion, relationships, emotional healing",
+    throat: "Communication, truth, self-expression, authenticity",
+    third_eye: "Intuition, wisdom, psychic abilities, inner vision",
+    crown: "Spirituality, enlightenment, divine connection, transcendence"
+  };
+  return descriptions[chakra] || "Universal spiritual energy";
+};
 
 export default function PostCard({ post }: PostCardProps) {
   const { user } = useAuth();
@@ -280,14 +295,45 @@ export default function PostCard({ post }: PostCardProps) {
               title={`${post.chakra.replace('_', ' ')} Chakra`}
               data-testid={`chakra-indicator-${post.id}`}
             ></div>
-            {/* Frequency Indicator */}
-            <div 
-              className="text-sm font-medium" 
-              style={{ color: chakraColor }}
-              data-testid={`frequency-${post.id}`}
-            >
-              {post.frequency > 0 ? '+' : ''}{post.frequency} Hz
-            </div>
+            {/* Frequency Indicator with Chakra Tooltip */}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div 
+                    className="text-sm font-medium cursor-help hover:scale-105 transition-transform" 
+                    style={{ color: chakraColor }}
+                    data-testid={`frequency-${post.id}`}
+                  >
+                    {post.frequency > 0 ? '+' : ''}{post.frequency} Hz
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-cosmic-dark/95 border-primary/30 backdrop-blur max-w-sm">
+                  <div className="space-y-3 p-2">
+                    <div className="flex items-center space-x-2">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: chakraColor }}
+                      ></div>
+                      <span className="text-white font-semibold capitalize">
+                        {post.chakra.replace('_', ' ')} Chakra
+                      </span>
+                    </div>
+                    
+                    <div className="text-sm text-white/90">
+                      <div className="mb-2">
+                        <span className="text-accent-light font-medium">Frequency:</span> {post.frequency > 0 ? '+' : ''}{post.frequency} Hz
+                      </div>
+                      <div className="mb-2">
+                        <span className="text-accent-light font-medium">Energy Type:</span> {getChakraDescription(post.chakra)}
+                      </div>
+                      <div className="text-xs text-white/70 mt-2 pt-2 border-t border-primary/20">
+                        This post was automatically categorized by AI based on its spiritual content and energy signature.
+                      </div>
+                    </div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             {post.type !== 'post' && (
               <span className="bg-primary text-white text-xs px-2 py-1 rounded-full uppercase">
                 {post.type}

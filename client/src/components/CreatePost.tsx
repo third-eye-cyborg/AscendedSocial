@@ -152,7 +152,7 @@ export default function CreatePost() {
               <ProfileIcon 
                 user={user as any}
                 size="lg"
-                className="sigil-container shadow-lg"
+                className="shadow-lg"
                 testId="create-post-avatar"
               />
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/0 to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

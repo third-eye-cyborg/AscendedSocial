@@ -111,6 +111,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                   user={comment.author}
                   size="sm"
                   className="shadow-sm"
+                  onClick={() => window.location.href = `/profile/${comment.author.id}`}
                   testId={`comment-author-${comment.id}`}
                 />
               </div>

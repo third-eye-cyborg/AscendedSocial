@@ -37,9 +37,15 @@ Posts are automatically categorized using OpenAI's GPT-4 model into seven chakra
 The platform implements a polished spiritual-themed engagement system with actions like upvote, downvote, like, and energy sharing. The interface features mystical design language with animated hover effects, glowing buttons, and contextual spiritual messaging. Users have energy points that refresh monthly and can be spent on high-impact engagements. The system tracks engagement statistics and user interactions across posts and comments with real-time visual feedback and success notifications.
 
 ### 3D Starmap Visualization System
-The application features an immersive 3D starmap that visualizes the spiritual community as an interactive cosmic experience. Users appear as glowing stars clustered by chakra energy, aura levels, and spiritual connections. The system supports dual visualization modes:
-- **Cosmic Starfield Mode**: Overview of all souls as stars in a mystical night sky with chakra-based clustering
-- **Fungal Network Mode**: Detailed view showing mushroom-like nodes connected by spiritual bonds and relationships
+The application features an immersive 3D starmap that visualizes the spiritual community as an interactive cosmic experience with two distinct visualization paradigms:
+
+**Conceptual Design:**
+- **Starmap Mode (Macro View)**: Shows large connections and groupings across the entire application - representing the universal overview of spiritual community patterns, chakra-based clustering, and app-wide relationship networks
+- **Fungal Mode (Micro View)**: Shows small, intimate connections around a specific star/user - representing the detailed mycelium network of close spiritual bonds and local relationship webs
+
+**Technical Implementation:**
+- **Cosmic Starfield Mode**: Overview of all souls as glowing stars in a mystical night sky with broad community clustering and universal spiritual patterns
+- **Fungal Network Mode**: Focused view showing mushroom-like nodes with detailed local connections around individual users, representing intimate spiritual bonds and close relationship networks
 - **Real-time Data**: Live user information including dominant chakras, aura/energy levels, connection counts, and spiritual statistics
 - **Interactive Features**: Clickable profiles, advanced filtering by spiritual attributes, smooth 3D navigation, and contextual tooltips
 - **Professional Polish**: Enhanced lighting, atmospheric effects, animated materials, and responsive design

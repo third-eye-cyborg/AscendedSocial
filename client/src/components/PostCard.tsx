@@ -66,6 +66,18 @@ export default function PostCard({ post }: PostCardProps) {
   const [clickEffects, setClickEffects] = useState<{[key: string]: boolean}>({});
   const [isMarkedSpiritual, setIsMarkedSpiritual] = useState(post.isSpiritual || false);
 
+  // Check if post is bookmarked
+  const { data: bookmarks = [] } = useQuery<string[]>({
+    queryKey: ["/api/bookmarks"],
+    enabled: !!user,
+  });
+  
+  useEffect(() => {
+    if (bookmarks.includes(post.id)) {
+      setIsSaved(true);
+    }
+  }, [bookmarks, post.id]);
+
   // Fetch user engagement status for this post
   const { data: userEngagementData } = useQuery({
     queryKey: ["/api/posts", post.id, "engage/user"],
@@ -247,16 +259,31 @@ export default function PostCard({ post }: PostCardProps) {
     });
   };
 
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", `/api/posts/${post.id}/bookmark`, {
+        bookmarked: !isSaved
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
+    }
+  });
+
   const handleSave = () => {
-    // Toggle saved state (this would integrate with backend saved posts)
-    setIsSaved(!isSaved);
+    const newSavedState = !isSaved;
+    setIsSaved(newSavedState);
+    
     toast({
-      title: isSaved ? "📜 Removed from Sacred Collection" : "🏛️ Added to Sacred Collection!",
-      description: isSaved ? 
-        "This wisdom has been released from your spiritual library" : 
-        "This sacred knowledge is now preserved in your mystical archives",
+      title: newSavedState ? "🏛️ Added to Sacred Collection!" : "📜 Removed from Sacred Collection",
+      description: newSavedState ? 
+        "This sacred knowledge is now preserved in your mystical archives" : 
+        "This wisdom has been released from your spiritual library",
       duration: 2500,
     });
+    
+    saveMutation.mutate();
   };
 
   const chakraColor = getChakraColor(post.chakra);
@@ -488,14 +515,14 @@ export default function PostCard({ post }: PostCardProps) {
                 size="sm"
                 className={`p-2 rounded-xl transition-all duration-300 hover:scale-110 ${
                   isSaved 
-                    ? 'text-amber-200 hover:text-amber-300 bg-amber-900/30' 
-                    : 'text-white/80 hover:text-amber-300 hover:bg-amber-900/30'
+                    ? 'text-pink-300 hover:text-pink-200 bg-pink-900/40 shadow-lg shadow-pink-500/30' 
+                    : 'text-white/80 hover:text-pink-300 hover:bg-pink-900/30'
                 }`}
                 onClick={handleSave}
                 title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
                 data-testid={`button-save-${post.id}`}
               >
-                {isSaved ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+                {isSaved ? <BookmarkCheck className="w-4 h-4 fill-current" /> : <Bookmark className="w-4 h-4" />}
               </Button>
               
               {/* Spirit Toggle Button */}

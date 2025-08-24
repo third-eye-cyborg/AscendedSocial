@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PostCard from "@/components/PostCard";
 import ChakraLegend from "@/components/ChakraLegend";
-import { TrendingUp, TrendingDown, Heart, Users, Sparkles, Filter, Info } from "lucide-react";
+import Layout from "@/components/Layout";
+import { TrendingUp, TrendingDown, Heart, Users, Sparkles, Filter, Info, Flame, Star, Clock, Eye } from "lucide-react";
 
 interface Post {
   id: string;
@@ -141,7 +142,7 @@ export default function Explore() {
   }
 
   return (
-    <div className="min-h-screen bg-cosmic text-white p-6">
+    <Layout>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -186,10 +187,10 @@ export default function Explore() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-cosmic-dark border-primary/30">
-                    <SelectItem value="trending">🔥 Trending</SelectItem>
-                    <SelectItem value="for_you">✨ For You</SelectItem>
-                    <SelectItem value="friends">👥 Friends</SelectItem>
-                    <SelectItem value="spiritual">🔮 Spiritual</SelectItem>
+                    <SelectItem value="trending"><Flame className="w-4 h-4 mr-2 inline" />Trending</SelectItem>
+                    <SelectItem value="for_you"><Star className="w-4 h-4 mr-2 inline" />For You</SelectItem>
+                    <SelectItem value="friends"><Users className="w-4 h-4 mr-2 inline" />Friends</SelectItem>
+                    <SelectItem value="spiritual"><Sparkles className="w-4 h-4 mr-2 inline" />Spiritual</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -236,25 +237,28 @@ export default function Explore() {
                     variant={sortMode === "frequency" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSortMode("frequency")}
-                    className="text-xs"
+                    className="text-xs flex items-center space-x-1"
                   >
-                    📊 Standard
+                    <TrendingUp className="w-3 h-3" />
+                    <span>Standard</span>
                   </Button>
                   <Button
                     variant={sortMode === "above_below" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSortMode("above_below")}
-                    className="text-xs"
+                    className="text-xs flex items-center space-x-1"
                   >
-                    ⚡ Above/Below
+                    <TrendingDown className="w-3 h-3" />
+                    <span>Above/Below</span>
                   </Button>
                   <Button
                     variant={sortMode === "recent" ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSortMode("recent")}
-                    className="text-xs"
+                    className="text-xs flex items-center space-x-1"
                   >
-                    🕒 Recent
+                    <Clock className="w-3 h-3" />
+                    <span>Recent</span>
                   </Button>
                 </div>
               </div>
@@ -331,10 +335,10 @@ export default function Explore() {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white">
-                {filterCategory === "trending" && "🔥 Trending Posts"}
-                {filterCategory === "for_you" && "✨ Recommended for You"}
-                {filterCategory === "friends" && "👥 Friend Posts"}
-                {filterCategory === "spiritual" && "🔮 Spiritual Posts"}
+                {filterCategory === "trending" && <><Flame className="w-5 h-5 inline mr-2" />Trending Posts</>}
+                {filterCategory === "for_you" && <><Star className="w-5 h-5 inline mr-2" />Recommended for You</>}
+                {filterCategory === "friends" && <><Users className="w-5 h-5 inline mr-2" />Friend Posts</>}
+                {filterCategory === "spiritual" && <><Sparkles className="w-5 h-5 inline mr-2" />Spiritual Posts</>}
               </h2>
               <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
                 {filteredPosts.length} posts
@@ -356,6 +360,6 @@ export default function Explore() {
           </div>
         )}
       </div>
-    </div>
+    </Layout>
   );
 }

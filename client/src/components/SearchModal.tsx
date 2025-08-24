@@ -91,7 +91,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
             <Button 
               variant="outline" 
               onClick={onClose}
-              className="border-primary/50 text-primary hover:bg-primary/10"
+              className="bg-cosmic-light border-primary/50 text-primary hover:bg-primary/10"
               data-testid="button-close-search"
             >
               <i className="fas fa-times"></i>
@@ -104,7 +104,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               variant={searchType === "all" ? "default" : "outline"}
               size="sm"
               onClick={() => setSearchType("all")}
-              className={`${searchType === "all" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-primary/10"}`}
+              className={`${searchType === "all" ? "bg-primary text-white" : "bg-cosmic-light border-primary/50 text-primary hover:bg-primary/10"}`}
               data-testid="filter-all"
             >
               All
@@ -113,7 +113,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               variant={searchType === "posts" ? "default" : "outline"}
               size="sm"
               onClick={() => setSearchType("posts")}
-              className={`${searchType === "posts" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-primary/10"}`}
+              className={`${searchType === "posts" ? "bg-primary text-white" : "bg-cosmic-light border-primary/50 text-primary hover:bg-primary/10"}`}
               data-testid="filter-posts"
             >
               Posts
@@ -122,7 +122,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
               variant={searchType === "users" ? "default" : "outline"}
               size="sm"
               onClick={() => setSearchType("users")}
-              className={`${searchType === "users" ? "bg-primary text-white" : "border-primary/50 text-primary hover:bg-primary/10"}`}
+              className={`${searchType === "users" ? "bg-primary text-white" : "bg-cosmic-light border-primary/50 text-primary hover:bg-primary/10"}`}
               data-testid="filter-users"
             >
               Users

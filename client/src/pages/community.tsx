@@ -234,7 +234,7 @@ export default function Community() {
                         </div>
                       </div>
                       <Button 
-                        className="w-full bg-primary/30 hover:bg-primary/50"
+                        className="w-full bg-primary/30 hover:bg-primary/50 text-white"
                         onClick={() => alert(`Joining ${circle.name}...\n\nThis feature will be fully implemented soon! 🕉️`)}
                       >
                         Join Circle
@@ -305,7 +305,7 @@ export default function Community() {
                     Start your own sacred circle and invite others to join your spiritual practice.
                   </p>
                   <Button 
-                    className="w-full bg-primary hover:bg-primary/80"
+                    className="w-full bg-primary hover:bg-primary/80 text-white"
                     onClick={() => alert('Creating Sacred Circles...\n\nThis feature will allow you to start your own spiritual community! Coming soon! 🕉️')}
                   >
                     Create Circle
@@ -328,7 +328,7 @@ export default function Community() {
                 </p>
                 <Button 
                   onClick={() => window.location.href = '/'}
-                  className="bg-primary hover:bg-primary/80"
+                  className="bg-primary hover:bg-primary/80 text-white"
                 >
                   Return to Feed
                 </Button>

@@ -668,9 +668,9 @@ function StarmapScene() {
                       <SelectValue placeholder="All Chakras" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
-                      <SelectItem value="all" className="text-white hover:bg-black hover:text-white">All Chakras</SelectItem>
+                      <SelectItem value="all" className="text-white hover:!bg-black hover:!text-white data-[highlighted]:!bg-black data-[highlighted]:!text-white">All Chakras</SelectItem>
                       {Object.entries(chakraColors).map(([chakra, color]) => (
-                        <SelectItem key={chakra} value={chakra} className="text-white hover:bg-black hover:text-white">
+                        <SelectItem key={chakra} value={chakra} className="text-white hover:!bg-black hover:!text-white data-[highlighted]:!bg-black data-[highlighted]:!text-white">
                           <div className="flex items-center">
                             <div 
                               className="w-3 h-3 rounded-full mr-2" 
@@ -691,9 +691,9 @@ function StarmapScene() {
                       <SelectValue placeholder="All Signs" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
-                      <SelectItem value="all" className="text-white hover:bg-black hover:text-white">All Signs</SelectItem>
+                      <SelectItem value="all" className="text-white hover:!bg-black hover:!text-white data-[highlighted]:!bg-black data-[highlighted]:!text-white">All Signs</SelectItem>
                       {['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'].map(sign => (
-                        <SelectItem key={sign} value={sign} className="text-white hover:bg-black hover:text-white">
+                        <SelectItem key={sign} value={sign} className="text-white hover:!bg-black hover:!text-white data-[highlighted]:!bg-black data-[highlighted]:!text-white">
                           <span className="capitalize text-white">♦ {sign}</span>
                         </SelectItem>
                       ))}
@@ -951,7 +951,7 @@ function StarmapScene() {
               <Button 
                 onClick={() => setLocation('/')}
                 variant="outline"
-                className="border-purple-500/50 text-purple-300 hover:bg-black hover:text-white hover:border-white/20"
+                className="border-purple-500/50 text-purple-300 hover:!bg-black hover:!text-white hover:!border-white/20"
                 data-testid="button-home"
               >
                 Return Home

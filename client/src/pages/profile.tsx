@@ -163,7 +163,7 @@ export default function Profile() {
                         <ProfileIcon 
                           user={profile}
                           size="xl"
-                          className="sigil-container shadow-2xl"
+                          className="shadow-2xl"
                           testId="profile-avatar"
                         />
                       </ExpandableImage>
@@ -171,7 +171,7 @@ export default function Profile() {
                       <ProfileIcon 
                         user={profile}
                         size="xl"
-                        className="sigil-container shadow-2xl"
+                        className="shadow-2xl"
                         testId="profile-avatar"
                       />
                     )}

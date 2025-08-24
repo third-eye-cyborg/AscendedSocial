@@ -86,7 +86,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
       <CardContent className="space-y-4">
         {displaySigil ? (
           <div className="text-center">
-            <div className="sigil-container w-24 h-24 mx-auto rounded-full p-1 mb-4">
+            <div className="mx-auto mb-4 flex justify-center">
               {shouldShowImage ? (
                 <ExpandableImage
                   src={displaySigilImage}
@@ -96,7 +96,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                   <img 
                     src={displaySigilImage}
                     alt={isGeneratedSigil ? "Generated Sigil" : "Your Saved Sigil"}
-                    className="w-full h-full object-cover rounded-full border-2 border-purple-400/40 shadow-lg"
+                    className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-full border-2 border-purple-400/40 shadow-lg"
                     data-testid={isGeneratedSigil ? "img-generated-sigil" : "img-saved-sigil"}
                     onError={() => {
                       if (isGeneratedSigil) {
@@ -106,7 +106,7 @@ export default function SigilGenerator({ onSigilGenerated }: SigilGeneratorProps
                   />
                 </ExpandableImage>
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center border-2 border-purple-400/40 shadow-lg">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-purple-900/60 to-blue-900/60 rounded-full flex items-center justify-center border-2 border-purple-400/40 shadow-lg">
                   <pre className="text-xs sm:text-sm lg:text-lg text-white font-mono leading-tight text-center" data-testid={isGeneratedSigil ? "text-generated-sigil" : "text-saved-sigil"}>
                     {displaySigil}
                   </pre>

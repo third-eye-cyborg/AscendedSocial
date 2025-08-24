@@ -176,7 +176,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
               <ProfileIcon 
                 user={user as any}
                 size="sm"
-                className="w-8 h-8 sigil-container"
+                className=""
                 testId="user-comment-profile"
               />
             </div>

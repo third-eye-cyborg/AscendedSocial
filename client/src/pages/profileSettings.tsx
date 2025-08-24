@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import SigilGenerator from "@/components/SigilGenerator";
+import { ProfileIcon } from "@/components/ProfileIcon";
 import ProfilePictureChanger from "@/components/ProfilePictureChanger";
 
 export default function ProfileSettings() {
@@ -87,17 +88,12 @@ export default function ProfileSettings() {
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="sigil-container w-20 h-20 rounded-full p-1">
-                  <div className="w-full h-full bg-cosmic rounded-full flex items-center justify-center overflow-hidden">
-                    {(user as any)?.sigil ? (
-                      <span className="text-sm text-white font-mono break-all text-center">
-                        {((user as any)?.sigil as string).slice(0, 4)}
-                      </span>
-                    ) : (
-                      <i className="fas fa-om text-white text-2xl"></i>
-                    )}
-                  </div>
-                </div>
+                <ProfileIcon 
+                  user={user as any}
+                  size="lg"
+                  className=""
+                  testId="settings-profile-icon"
+                />
                 <div>
                   <p className="text-subtle mb-1">Your unique spiritual identifier</p>
                   <p className="text-xs text-muted font-mono">{(user as any)?.sigil || "No sigil generated"}</p>

@@ -395,12 +395,14 @@ export default function PostCard({ post }: PostCardProps) {
                     data-testid={`image-${post.id}-0`}
                   />
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-                  <img 
-                    src={post.imageUrls[0]} 
-                    alt="Post image expanded" 
-                    className="w-full h-full object-contain rounded-lg"
-                  />
+                <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+                  <div className="p-8">
+                    <img 
+                      src={post.imageUrls[0]} 
+                      alt="Post image expanded" 
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
                 </DialogContent>
               </Dialog>
             ) : post.imageUrls.length === 2 ? (
@@ -415,8 +417,8 @@ export default function PostCard({ post }: PostCardProps) {
                         data-testid={`image-${post.id}-${index}`}
                       />
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-                      <div className="relative">
+                    <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+                      <div className="relative p-8">
                         <img 
                           src={url} 
                           alt={`Post image ${index + 1} expanded`} 
@@ -441,8 +443,8 @@ export default function PostCard({ post }: PostCardProps) {
                       data-testid={`image-${post.id}-0`}
                     />
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-                    <div className="relative">
+                  <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+                    <div className="relative p-8">
                       <img 
                         src={post.imageUrls[0]} 
                         alt="Post image 1 expanded" 
@@ -464,8 +466,8 @@ export default function PostCard({ post }: PostCardProps) {
                         data-testid={`image-${post.id}-1`}
                       />
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-                      <div className="relative">
+                    <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+                      <div className="relative p-8">
                         <img 
                           src={post.imageUrls[1]} 
                           alt="Post image 2 expanded" 
@@ -487,8 +489,8 @@ export default function PostCard({ post }: PostCardProps) {
                           data-testid={`image-${post.id}-2`}
                         />
                       </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-                        <div className="relative">
+                      <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+                        <div className="relative p-8">
                           <img 
                             src={post.imageUrls[2]} 
                             alt="Post image 3 expanded" 
@@ -527,12 +529,14 @@ export default function PostCard({ post }: PostCardProps) {
                 data-testid={`image-${post.id}`}
               />
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] p-8 bg-black/95 border-primary/30">
-              <img 
-                src={post.imageUrl} 
-                alt="Post image expanded" 
-                className="w-full h-full object-contain rounded-lg"
-              />
+            <DialogContent className="max-w-4xl max-h-[90vh] bg-black/95 border-primary/30">
+              <div className="p-8">
+                <img 
+                  src={post.imageUrl} 
+                  alt="Post image expanded" 
+                  className="w-full h-full object-contain rounded-lg"
+                />
+              </div>
             </DialogContent>
           </Dialog>
           <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">

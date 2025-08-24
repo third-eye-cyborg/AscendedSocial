@@ -138,8 +138,8 @@ export default function ProfilePictureChanger() {
           <div className="w-24 h-24 mx-auto mb-4">
             <ProfileIcon 
               user={user as any}
-              size="lg"
-              className="w-full h-full"
+              size="xl"
+              className="shadow-lg"
               testId="current-profile-picture"
             />
           </div>

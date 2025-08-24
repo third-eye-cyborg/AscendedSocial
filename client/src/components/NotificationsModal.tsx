@@ -222,7 +222,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
                         <ProfileIcon 
                           user={notification.triggerUser}
                           size="sm"
-                          className="w-8 h-8"
+                          className="shadow-sm"
                           testId={`notification-user-${notification.id}`}
                         />
                       </div>

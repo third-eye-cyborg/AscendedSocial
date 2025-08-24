@@ -110,7 +110,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
                 <ProfileIcon 
                   user={comment.author}
                   size="sm"
-                  className="w-8 h-8"
+                  className="shadow-sm"
                   testId={`comment-author-${comment.id}`}
                 />
               </div>

@@ -618,7 +618,7 @@ export default function PostCard({ post }: PostCardProps) {
       <div className="p-3 sm:p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
         <div className="flex flex-col space-y-3">
           {/* Main Engagement Actions */}
-          <div className="flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
             {/* Spiritual Frequency Voting */}
             <div className="flex items-center bg-black/40 rounded-xl p-1.5 sm:p-2 border border-primary/30 shadow-lg flex-shrink-0">
               <div className="flex items-center">
@@ -685,7 +685,7 @@ export default function PostCard({ post }: PostCardProps) {
             </div>
 
             {/* Secondary Actions */}
-            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 flex-shrink-0 min-w-0">
               {/* Mystical Comments */}
               <Button
                 variant="ghost"
@@ -762,7 +762,7 @@ export default function PostCard({ post }: PostCardProps) {
           </div>
 
           {/* Resonance & Energy Row */}
-          <div className="flex items-center space-x-2 sm:space-x-3 overflow-x-auto pb-1">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Heart Resonance */}
             <div className="flex items-center bg-black/40 rounded-xl px-2 sm:px-3 py-2 border border-pink-500/30 flex-shrink-0">
               <Button

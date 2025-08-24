@@ -668,9 +668,9 @@ function StarmapScene() {
                       <SelectValue placeholder="All Chakras" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
-                      <SelectItem value="all" className="text-white hover:bg-purple-900/50">All Chakras</SelectItem>
+                      <SelectItem value="all" className="text-white hover:bg-black/80">All Chakras</SelectItem>
                       {Object.entries(chakraColors).map(([chakra, color]) => (
-                        <SelectItem key={chakra} value={chakra} className="text-white hover:bg-purple-900/50">
+                        <SelectItem key={chakra} value={chakra} className="text-white hover:bg-black/80">
                           <div className="flex items-center">
                             <div 
                               className="w-3 h-3 rounded-full mr-2" 
@@ -691,9 +691,9 @@ function StarmapScene() {
                       <SelectValue placeholder="All Signs" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
-                      <SelectItem value="all" className="text-white hover:bg-purple-900/50">All Signs</SelectItem>
+                      <SelectItem value="all" className="text-white hover:bg-black/80">All Signs</SelectItem>
                       {['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'].map(sign => (
-                        <SelectItem key={sign} value={sign} className="text-white hover:bg-purple-900/50">
+                        <SelectItem key={sign} value={sign} className="text-white hover:bg-black/80">
                           <span className="capitalize text-white">♦ {sign}</span>
                         </SelectItem>
                       ))}
@@ -934,7 +934,7 @@ function StarmapScene() {
                        user.dominantChakra === 'crown' ? '⚪' : '✨'}
                     </div>
                     <div className="text-sm font-medium truncate">{user.username}</div>
-                    <div className="text-xs text-purple-300">Energy: {user.energyLevel || 0}</div>
+                    <div className="text-xs text-purple-300">Energy: {user.energy || 0}</div>
                   </div>
                 ))}
               </div>
@@ -951,7 +951,7 @@ function StarmapScene() {
               <Button 
                 onClick={() => setLocation('/')}
                 variant="outline"
-                className="border-purple-500/50 text-purple-300 hover:bg-purple-500/20"
+                className="border-purple-500/50 text-purple-300 hover:bg-black/60"
                 data-testid="button-home"
               >
                 Return Home

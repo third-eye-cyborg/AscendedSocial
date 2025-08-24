@@ -36,6 +36,7 @@ const upload = multer({
 });
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import Stripe from "stripe";
+import { emailService } from "./emailService";
 
 // Stripe setup
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -179,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const post = await storage.createPost(postData, userId);
       
       // Analyze content and images for chakra categorization
-      const chakraAnalysis = await analyzePostChakra(postData.content, postData.imageUrls);
+      const chakraAnalysis = await analyzePostChakra(postData.content, postData.imageUrls || undefined);
       await storage.updatePostChakra(post.id, chakraAnalysis.chakra);
       
       // Fetch complete post with author
@@ -1570,6 +1571,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error getting spiritual mark status:", error);
       res.status(500).json({ message: "Failed to get spiritual mark status" });
+    }
+  });
+
+  // Newsletter subscription routes
+  app.post('/api/newsletter/subscribe', async (req, res) => {
+    try {
+      const { email, firstName, lastName } = req.body;
+      
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Valid email is required" });
+      }
+
+      // Check if email already exists
+      const existingSubscription = await storage.getNewsletterSubscription(email);
+      if (existingSubscription) {
+        if (existingSubscription.isActive) {
+          return res.status(400).json({ message: "Email is already subscribed" });
+        } else {
+          // Reactivate subscription
+          const token = emailService.generateUnsubscribeToken();
+          await storage.updateNewsletterPreferences(existingSubscription.unsubscribeToken!, { isActive: true });
+          return res.json({ message: "Subscription reactivated successfully" });
+        }
+      }
+
+      // Create new subscription
+      const unsubscribeToken = emailService.generateUnsubscribeToken();
+      const subscription = await storage.createNewsletterSubscription({
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        unsubscribeToken,
+        preferences: { frequency: 'weekly', contentTypes: ['spiritual', 'community', 'oracle'] }
+      });
+
+      // Send welcome email
+      await emailService.sendWelcomeEmail({
+        email: subscription.email,
+        firstName: subscription.firstName || undefined
+      });
+
+      res.json({ message: "Successfully subscribed to newsletter", subscriptionId: subscription.id });
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error);
+      res.status(500).json({ message: "Failed to subscribe to newsletter" });
+    }
+  });
+
+  app.get('/api/newsletter/unsubscribe', async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Unsubscribe token is required" });
+      }
+
+      const subscription = await storage.getNewsletterSubscriptionByToken(token);
+      if (!subscription) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      await storage.unsubscribeNewsletter(token);
+      res.json({ message: "Successfully unsubscribed from newsletter" });
+    } catch (error) {
+      console.error("Error unsubscribing from newsletter:", error);
+      res.status(500).json({ message: "Failed to unsubscribe from newsletter" });
+    }
+  });
+
+  app.get('/api/newsletter/preferences', async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Token is required" });
+      }
+
+      const subscription = await storage.getNewsletterSubscriptionByToken(token);
+      if (!subscription) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      res.json({
+        email: subscription.email,
+        preferences: subscription.preferences,
+        isActive: subscription.isActive
+      });
+    } catch (error) {
+      console.error("Error getting newsletter preferences:", error);
+      res.status(500).json({ message: "Failed to get newsletter preferences" });
+    }
+  });
+
+  app.post('/api/newsletter/preferences', async (req, res) => {
+    try {
+      const { token } = req.query;
+      const { preferences } = req.body;
+      
+      if (!token || typeof token !== 'string') {
+        return res.status(400).json({ message: "Token is required" });
+      }
+
+      if (!preferences || typeof preferences !== 'object') {
+        return res.status(400).json({ message: "Valid preferences object is required" });
+      }
+
+      const subscription = await storage.updateNewsletterPreferences(token, preferences);
+      res.json({ message: "Preferences updated successfully", preferences: subscription.preferences });
+    } catch (error) {
+      console.error("Error updating newsletter preferences:", error);
+      res.status(500).json({ message: "Failed to update newsletter preferences" });
+    }
+  });
+
+  // Admin route to send newsletter (optional - for testing)
+  app.post('/api/newsletter/send', isAuthenticated, async (req: any, res) => {
+    try {
+      const { subject, content } = req.body;
+      
+      if (!subject || !content) {
+        return res.status(400).json({ message: "Subject and content are required" });
+      }
+
+      // Get all active subscriptions
+      const subscriptions = await storage.getActiveNewsletterSubscriptions();
+      
+      let sentCount = 0;
+      let failedCount = 0;
+
+      // Send email to all subscribers
+      for (const subscription of subscriptions) {
+        const success = await emailService.sendNewsletterEmail({
+          email: subscription.email,
+          firstName: subscription.firstName || undefined,
+          subject,
+          content,
+          unsubscribeToken: subscription.unsubscribeToken || ''
+        });
+
+        if (success) {
+          await storage.updateNewsletterLastEmailSent(subscription.email);
+          sentCount++;
+        } else {
+          failedCount++;
+        }
+      }
+
+      res.json({ 
+        message: "Newsletter sent", 
+        results: { sent: sentCount, failed: failedCount } 
+      });
+    } catch (error) {
+      console.error("Error sending newsletter:", error);
+      res.status(500).json({ message: "Failed to send newsletter" });
     }
   });
 

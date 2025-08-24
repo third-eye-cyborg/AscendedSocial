@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
+import { NewsletterSignup } from "@/components/NewsletterSignup";
 
 export default function Landing() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -456,6 +457,30 @@ export default function Landing() {
               <i className="fas fa-globe text-secondary"></i>
               <span>Global Community</span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Signup Section */}
+      <section className="relative py-16 sm:py-24 bg-gradient-to-br from-cosmic-dark/50 to-cosmic/30">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-primary/10 rounded-full blur-2xl animate-float"></div>
+          <div className="absolute top-1/4 right-1/4 w-24 h-24 bg-secondary/15 rounded-full blur-xl animate-float" style={{animationDelay: '1s'}}></div>
+        </div>
+        
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-6 animate-fade-in">
+            Stay Connected to Your{' '}
+            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Spiritual Journey
+            </span>
+          </h2>
+          <p className="text-lg sm:text-xl text-muted mb-12 animate-fade-in max-w-2xl mx-auto" style={{animationDelay: '0.2s'}}>
+            Join thousands of spiritual seekers who receive weekly wisdom, oracle insights, and community updates directly in their inbox.
+          </p>
+          
+          <div className="flex justify-center animate-fade-in" style={{animationDelay: '0.4s'}}>
+            <NewsletterSignup />
           </div>
         </div>
       </section>

@@ -23,6 +23,7 @@ import SpiritPage from "@/pages/spirit";
 import EnergyPage from "@/pages/energy";
 import StarmapPage from "@/pages/starmap";
 import ExplorePage from "@/pages/explore";
+import Unsubscribe from "@/pages/unsubscribe";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/pricing" component={Pricing} />
           <Route path="/community" component={Community} />
           <Route path="/subscribe" component={Subscribe} />
+          <Route path="/unsubscribe" component={Unsubscribe} />
         </>
       ) : (
         <>
@@ -56,6 +58,7 @@ function Router() {
           <Route path="/features" component={Features} />
           <Route path="/pricing" component={Pricing} />
           <Route path="/subscribe" component={Subscribe} />
+          <Route path="/unsubscribe" component={Unsubscribe} />
         </>
       )}
       <Route component={NotFound} />

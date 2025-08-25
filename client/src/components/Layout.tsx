@@ -54,13 +54,6 @@ export default function Layout({ children }: LayoutProps) {
 
             {/* Main Navigation - Hidden on mobile */}
             <nav className="hidden md:flex items-center space-x-6 ml-8">
-              <Link href="/features">
-                <button className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location === '/features' ? 'text-primary' : 'text-white/90'
-                }`} data-testid="nav-features">
-                  Features
-                </button>
-              </Link>
               <Link href="/energy">
                 <button className={`text-sm font-medium transition-colors hover:text-primary ${
                   location === '/energy' ? 'text-primary' : 'text-white/90'
@@ -73,13 +66,6 @@ export default function Layout({ children }: LayoutProps) {
                   location === '/community' ? 'text-primary' : 'text-white/90'
                 }`} data-testid="nav-community">
                   Community
-                </button>
-              </Link>
-              <Link href="/pricing">
-                <button className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location === '/pricing' ? 'text-primary' : 'text-white/90'
-                }`} data-testid="nav-pricing">
-                  Pricing
                 </button>
               </Link>
             </nav>
@@ -124,14 +110,6 @@ export default function Layout({ children }: LayoutProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-cosmic-light border-primary/30 w-48">
                   <DropdownMenuItem asChild>
-                    <Link href="/features" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
-                        <i className="fas fa-star mr-2"></i>
-                        Features
-                      </button>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
                     <Link href="/energy" className="w-full">
                       <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
                         <i className="fas fa-bolt mr-2"></i>
@@ -144,14 +122,6 @@ export default function Layout({ children }: LayoutProps) {
                       <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
                         <i className="fas fa-users mr-2"></i>
                         Community
-                      </button>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/pricing" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
-                        <i className="fas fa-tag mr-2"></i>
-                        Pricing
                       </button>
                     </Link>
                   </DropdownMenuItem>

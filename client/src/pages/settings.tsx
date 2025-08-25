@@ -237,9 +237,9 @@ export default function Settings() {
 
   // Helper function to strip HTML and get plain text
   const stripHtml = (html: string) => {
-    const tmp = document.createElement('div');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    return doc.body.textContent || doc.body.innerText || '';
   };
 
   const ActivitySection = ({ title, posts, icon }: { title: string; posts: Post[]; icon: React.ReactNode }) => (

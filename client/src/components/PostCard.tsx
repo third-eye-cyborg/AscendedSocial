@@ -80,6 +80,9 @@ export default function PostCard({ post }: PostCardProps) {
   const [spiritualCount, setSpiritualCount] = useState(post.spiritualCount || 0);
   const [userSpiritualMark, setUserSpiritualMark] = useState(false);
   const [expandedImageIndex, setExpandedImageIndex] = useState<number | null>(null);
+  // Local frequency state for immediate updates
+  const [localFrequency, setLocalFrequency] = useState(post.frequency);
+  const [localEngagements, setLocalEngagements] = useState(post.engagements || { upvote: 0, downvote: 0, like: 0, energy: 0 });
 
   // Check if post is bookmarked
   const { data: bookmarks = [] } = useQuery<string[]>({
@@ -120,6 +123,17 @@ export default function PostCard({ post }: PostCardProps) {
     }
   }, [userEngagementData]);
 
+  // Update local frequency when post data changes
+  useEffect(() => {
+    setLocalFrequency(post.frequency);
+    setLocalEngagements(post.engagements || { upvote: 0, downvote: 0, like: 0, energy: 0 });
+  }, [post.frequency, post.engagements]);
+
+  // Function to calculate frequency based on engagements
+  const calculateFrequency = (engagements: { upvote: number; downvote: number; like: number; energy: number }) => {
+    return engagements.upvote - engagements.downvote + engagements.like + Math.floor(engagements.energy * 0.2);
+  };
+
   // Set initial spiritual mark state when data is fetched
   useEffect(() => {
     if (spiritualMarkData) {
@@ -136,6 +150,53 @@ export default function PostCard({ post }: PostCardProps) {
         return apiRequest("POST", `/api/posts/${post.id}/engage`, { 
           type, 
           ...(type === 'energy' ? { energyAmount } : {})
+        });
+      }
+    },
+    onMutate: async (variables) => {
+      // Optimistic frequency and engagement updates for immediate UI response
+      const { type, remove, energyAmount = 10 } = variables;
+      const wasEngaged = userEngagements.includes(type);
+      
+      if (type === 'upvote' || type === 'downvote' || type === 'like') {
+        setLocalEngagements(prev => {
+          const newEngagements = { ...prev };
+          
+          if (type === 'upvote') {
+            if (!wasEngaged && !remove) {
+              newEngagements.upvote = prev.upvote + 1;
+              if (userEngagements.includes('downvote')) {
+                newEngagements.downvote = Math.max(0, prev.downvote - 1);
+              }
+            } else if (wasEngaged && remove) {
+              newEngagements.upvote = Math.max(0, prev.upvote - 1);
+            }
+          } else if (type === 'downvote') {
+            if (!wasEngaged && !remove) {
+              newEngagements.downvote = prev.downvote + 1;
+              if (userEngagements.includes('upvote')) {
+                newEngagements.upvote = Math.max(0, prev.upvote - 1);
+              }
+            } else if (wasEngaged && remove) {
+              newEngagements.downvote = Math.max(0, prev.downvote - 1);
+            }
+          } else if (type === 'like') {
+            if (!wasEngaged && !remove) {
+              newEngagements.like = prev.like + 1;
+            } else if (wasEngaged && remove) {
+              newEngagements.like = Math.max(0, prev.like - 1);
+            }
+          }
+          
+          // Update frequency immediately
+          setLocalFrequency(calculateFrequency(newEngagements));
+          return newEngagements;
+        });
+      } else if (type === 'energy' && !remove) {
+        setLocalEngagements(prev => {
+          const newEngagements = { ...prev, energy: prev.energy + energyAmount };
+          setLocalFrequency(calculateFrequency(newEngagements));
+          return newEngagements;
         });
       }
     },
@@ -400,7 +461,7 @@ export default function PostCard({ post }: PostCardProps) {
                     style={{ color: chakraColor }}
                     data-testid={`frequency-${post.id}`}
                   >
-                    {post.frequency > 0 ? '+' : ''}{post.frequency} Hz
+                    {localFrequency > 0 ? '+' : ''}{localFrequency} Hz
                   </div>
                 </TooltipTrigger>
                 <TooltipContent className="bg-cosmic-dark/95 border-primary/30 backdrop-blur max-w-sm z-50">
@@ -667,7 +728,7 @@ export default function PostCard({ post }: PostCardProps) {
                     }}
                     data-testid={`frequency-display-${post.id}`}
                   >
-                    {post.frequency > 0 ? '+' : ''}{post.frequency}
+                    {localFrequency > 0 ? '+' : ''}{localFrequency}
                   </div>
                   <div className="text-[10px] sm:text-xs text-white/60 font-medium">FREQUENCY</div>
                 </div>
@@ -804,7 +865,7 @@ export default function PostCard({ post }: PostCardProps) {
               </Button>
               <div className="flex items-center space-x-1 ml-2">
                 <span className="text-lg font-bold text-pink-100 drop-shadow-md bg-pink-900/20 px-2 py-1 rounded" data-testid={`likes-${post.id}`}>
-                  {post.engagements?.like || 0}
+                  {localEngagements.like || 0}
                 </span>
                 <span className="text-xs text-pink-200/90 font-medium tracking-wide">HEARTS</span>
               </div>
@@ -898,7 +959,7 @@ export default function PostCard({ post }: PostCardProps) {
               </Popover>
               <div className="flex items-center space-x-1 ml-2">
                 <span className="text-lg font-bold text-yellow-100 drop-shadow-md bg-yellow-900/20 px-2 py-1 rounded" data-testid={`energy-${post.id}`}>
-                  {post.engagements?.energy || 0}
+                  {localEngagements.energy || 0}
                 </span>
                 <span className="text-xs text-yellow-200/90 font-medium tracking-wide">ENERGY</span>
               </div>

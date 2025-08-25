@@ -48,9 +48,9 @@ export default function CreatePost() {
 
   // Convert HTML content to plain text for validation
   const getPlainTextContent = (htmlContent: string) => {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = htmlContent;
-    return tempDiv.textContent || tempDiv.innerText || '';
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+    return doc.body.textContent || doc.body.innerText || '';
   };
 
   const handleSubmit = (e: React.FormEvent) => {

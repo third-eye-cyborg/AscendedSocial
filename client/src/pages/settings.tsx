@@ -615,8 +615,8 @@ export default function Settings() {
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <Label className="text-white">Follow Notifications</Label>
-                    <p className="text-sm text-gray-400">When someone follows you or connects</p>
+                    <Label className="text-white">Connection Notifications</Label>
+                    <p className="text-sm text-gray-400">When someone connects with you</p>
                   </div>
                   <Switch
                     checked={followNotifications}

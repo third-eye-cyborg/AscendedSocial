@@ -176,6 +176,19 @@ export default function Community() {
             </p>
           </div>
 
+          {/* Demo Data Notice */}
+          <div className="mb-6">
+            <div className="bg-amber-900/20 border border-amber-500/30 rounded-lg p-4 text-center">
+              <div className="flex items-center justify-center space-x-2 mb-2">
+                <i className="fas fa-info-circle text-amber-400"></i>
+                <h3 className="text-amber-400 font-semibold">Demo Content</h3>
+              </div>
+              <p className="text-amber-200/90 text-sm">
+                The circles, events, and community stats shown below are demo data to showcase how the community will look once users begin creating content and joining activities.
+              </p>
+            </div>
+          </div>
+
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Sacred Circles */}
             <div className="lg:col-span-2">

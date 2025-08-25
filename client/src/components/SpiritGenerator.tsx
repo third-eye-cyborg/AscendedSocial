@@ -197,12 +197,12 @@ export default function SpiritGenerator() {
               )}
             </div>
             
-            {/* Evolve Button - More Prominent */}
-            <div className="flex gap-2">
+            {/* Evolve Buttons - Stacked Vertically */}
+            <div className="space-y-2">
               <Button
                 onClick={() => regenerateSpiritMutation.mutate()}
                 disabled={regenerateSpiritMutation.isPending || ((user as any)?.energy || 0) < 100}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="default"
                 data-testid="button-regenerate-spirit"
               >
@@ -220,6 +220,7 @@ export default function SpiritGenerator() {
               </Button>
               <Button
                 onClick={() => {
+                  console.log("Evolve & Update button clicked");
                   // Pre-fill questionnaire with existing data
                   const existingQuestionnaire = (currentSpirit as any)?.questionnaire || {};
                   setQuestionnaire({
@@ -235,7 +236,7 @@ export default function SpiritGenerator() {
                   setIsModalOpen(true);
                 }}
                 disabled={((user as any)?.energy || 0) < 100}
-                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
                 size="default"
                 data-testid="button-evolve-with-questionnaire"
               >

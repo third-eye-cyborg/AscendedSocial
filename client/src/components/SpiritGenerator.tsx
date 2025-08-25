@@ -247,154 +247,158 @@ export default function SpiritGenerator() {
           </CardContent>
         </Card>
       ) : (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button
-              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-              data-testid="button-generate-spirit"
-            >
-              <Wand2 className="w-4 h-4 mr-2" />
-              Generate AI Spirit
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-cosmic-light border border-primary/30 text-white max-w-md max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-accent-light flex items-center">
-                <Sparkles className="w-5 h-5 mr-2" />
-                {isEvolutionMode ? "Evolve Your AI Spirit Guide" : "Generate Your AI Spirit Guide"}
-              </DialogTitle>
-              {isEvolutionMode && (
-                <p className="text-sm text-gray-400 mt-2">
-                  Update your spiritual insights to evolve your companion. Cost: 100 Energy
-                </p>
-              )}
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="isReligious"
-                    checked={questionnaire.isReligious}
-                    onChange={(e) => setQuestionnaire(prev => ({ ...prev, isReligious: e.target.checked }))}
-                    className="rounded border-primary/30"
-                    data-testid="checkbox-religious"
-                  />
-                  <Label htmlFor="isReligious" className="text-sm text-white">Religious</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    id="isSpiritual"
-                    checked={questionnaire.isSpiritual}
-                    onChange={(e) => setQuestionnaire(prev => ({ ...prev, isSpiritual: e.target.checked }))}
-                    className="rounded border-primary/30"
-                    data-testid="checkbox-spiritual"
-                  />
-                  <Label htmlFor="isSpiritual" className="text-sm text-white">Spiritual</Label>
-                </div>
-              </div>
+        <Button
+          onClick={() => {
+            setIsEvolutionMode(false);
+            setIsModalOpen(true);
+          }}
+          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+          data-testid="button-generate-spirit"
+        >
+          <Wand2 className="w-4 h-4 mr-2" />
+          Generate AI Spirit
+        </Button>
+      )}
 
-              {questionnaire.isReligious && (
-                <div>
-                  <Label htmlFor="religion" className="text-white text-sm">Religion</Label>
-                  <Input
-                    id="religion"
-                    value={questionnaire.religion}
-                    onChange={(e) => setQuestionnaire(prev => ({ ...prev, religion: e.target.value }))}
-                    placeholder="Your religious background"
-                    className="bg-cosmic border-primary/30 text-white"
-                    data-testid="input-religion"
-                  />
-                </div>
-              )}
-
-              <div>
-                <Label htmlFor="spiritualPath" className="text-white text-sm">Spiritual Path</Label>
-                <Input
-                  id="spiritualPath"
-                  value={questionnaire.spiritualPath}
-                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, spiritualPath: e.target.value }))}
-                  placeholder="Your spiritual practice or path"
-                  className="bg-cosmic border-primary/30 text-white"
-                  data-testid="input-spiritual-path"
+      {/* Modal Dialog - Always Available */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="bg-cosmic-light border border-primary/30 text-white max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-accent-light flex items-center">
+              <Sparkles className="w-5 h-5 mr-2" />
+              {isEvolutionMode ? "Evolve Your AI Spirit Guide" : "Generate Your AI Spirit Guide"}
+            </DialogTitle>
+            {isEvolutionMode && (
+              <p className="text-sm text-gray-400 mt-2">
+                Update your spiritual insights to evolve your companion. Cost: 100 Energy
+              </p>
+            )}
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isReligious"
+                  checked={questionnaire.isReligious}
+                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, isReligious: e.target.checked }))}
+                  className="rounded border-primary/30"
+                  data-testid="checkbox-religious"
                 />
+                <Label htmlFor="isReligious" className="text-sm text-white">Religious</Label>
               </div>
-
-              <div>
-                <Label htmlFor="beliefs" className="text-white text-sm">Core Beliefs *</Label>
-                <Textarea
-                  id="beliefs"
-                  value={questionnaire.beliefs}
-                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, beliefs: e.target.value }))}
-                  placeholder="Share your core spiritual beliefs and values..."
-                  className="bg-cosmic border-primary/30 text-white min-h-[60px]"
-                  data-testid="textarea-beliefs"
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="isSpiritual"
+                  checked={questionnaire.isSpiritual}
+                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, isSpiritual: e.target.checked }))}
+                  className="rounded border-primary/30"
+                  data-testid="checkbox-spiritual"
                 />
-              </div>
-
-              <div>
-                <Label htmlFor="offerings" className="text-white text-sm">Sacred Offerings</Label>
-                <Input
-                  id="offerings"
-                  value={questionnaire.offerings}
-                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, offerings: e.target.value }))}
-                  placeholder="What do you offer to the divine?"
-                  className="bg-cosmic border-primary/30 text-white"
-                  data-testid="input-offerings"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="astrologySign" className="text-white text-sm">Astrology Sign *</Label>
-                <Select 
-                  value={questionnaire.astrologySign} 
-                  onValueChange={(value) => setQuestionnaire(prev => ({ ...prev, astrologySign: value }))}
-                >
-                  <SelectTrigger className="bg-cosmic border-primary/30 text-white" data-testid="select-astrology">
-                    <SelectValue placeholder="Select your zodiac sign" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-cosmic-light border-primary/30 max-h-[200px] overflow-y-auto">
-                    {zodiacSigns.map((sign) => (
-                      <SelectItem key={sign} value={sign} className="text-white hover:bg-primary/20">
-                        {sign}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex space-x-3 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsModalOpen(false)}
-                  className="flex-1 border-primary/50 text-white bg-slate-800 hover:bg-cosmic"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleGenerateSpirit}
-                  disabled={generateSpiritMutation.isPending}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                  data-testid="button-submit-generate"
-                >
-                  {generateSpiritMutation.isPending ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Generating...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4 mr-2" />
-                      {isEvolutionMode ? "Evolve Spirit" : "Generate Spirit"}
-                    </>
-                  )}
-                </Button>
+                <Label htmlFor="isSpiritual" className="text-sm text-white">Spiritual</Label>
               </div>
             </div>
-          </DialogContent>
-        </Dialog>
-      )}
+
+            {questionnaire.isReligious && (
+              <div>
+                <Label htmlFor="religion" className="text-white text-sm">Religion</Label>
+                <Input
+                  id="religion"
+                  value={questionnaire.religion}
+                  onChange={(e) => setQuestionnaire(prev => ({ ...prev, religion: e.target.value }))}
+                  placeholder="Your religious background"
+                  className="bg-cosmic border-primary/30 text-white"
+                  data-testid="input-religion"
+                />
+              </div>
+            )}
+
+            <div>
+              <Label htmlFor="spiritualPath" className="text-white text-sm">Spiritual Path</Label>
+              <Input
+                id="spiritualPath"
+                value={questionnaire.spiritualPath}
+                onChange={(e) => setQuestionnaire(prev => ({ ...prev, spiritualPath: e.target.value }))}
+                placeholder="Your spiritual practice or path"
+                className="bg-cosmic border-primary/30 text-white"
+                data-testid="input-spiritual-path"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="beliefs" className="text-white text-sm">Core Beliefs *</Label>
+              <Textarea
+                id="beliefs"
+                value={questionnaire.beliefs}
+                onChange={(e) => setQuestionnaire(prev => ({ ...prev, beliefs: e.target.value }))}
+                placeholder="Share your core spiritual beliefs and values..."
+                className="bg-cosmic border-primary/30 text-white min-h-[60px]"
+                data-testid="textarea-beliefs"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="offerings" className="text-white text-sm">Sacred Offerings</Label>
+              <Input
+                id="offerings"
+                value={questionnaire.offerings}
+                onChange={(e) => setQuestionnaire(prev => ({ ...prev, offerings: e.target.value }))}
+                placeholder="What do you offer to the divine?"
+                className="bg-cosmic border-primary/30 text-white"
+                data-testid="input-offerings"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="astrologySign" className="text-white text-sm">Astrology Sign *</Label>
+              <Select 
+                value={questionnaire.astrologySign} 
+                onValueChange={(value) => setQuestionnaire(prev => ({ ...prev, astrologySign: value }))}
+              >
+                <SelectTrigger className="bg-cosmic border-primary/30 text-white" data-testid="select-astrology">
+                  <SelectValue placeholder="Select your zodiac sign" />
+                </SelectTrigger>
+                <SelectContent className="bg-cosmic-light border-primary/30 max-h-[200px] overflow-y-auto">
+                  {zodiacSigns.map((sign) => (
+                    <SelectItem key={sign} value={sign} className="text-white hover:bg-primary/20">
+                      {sign}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex space-x-3 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1 border-primary/50 text-white bg-slate-800 hover:bg-cosmic"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleGenerateSpirit}
+                disabled={generateSpiritMutation.isPending}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                data-testid="button-submit-generate"
+              >
+                {generateSpiritMutation.isPending ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {isEvolutionMode ? "Evolve Spirit" : "Generate Spirit"}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

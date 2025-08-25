@@ -88,124 +88,228 @@ export default function Onboarding() {
 
   return (
     <Layout>
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-display font-bold text-white mb-4">
-            Welcome to Ascended Social
-          </h1>
-          <p className="text-lg text-muted">
-            A spiritual social platform where AI serves as divine guidance
-          </p>
-          <div className="flex justify-center mt-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`w-3 h-3 rounded-full mx-1 ${
-                  i <= step ? 'bg-primary' : 'bg-cosmic'
-                }`}
-              />
-            ))}
+      <div className="min-h-screen flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-2xl mx-auto">
+          {/* Premium Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white/90 text-sm font-medium backdrop-blur-xl mb-6">
+              <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"></div>
+              Welcome to Your Journey
+            </div>
+            <h1 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                Ascended Social
+              </span>
+            </h1>
+            <p className="text-xl text-white/70 mb-8 leading-relaxed max-w-xl mx-auto">
+              A spiritual social platform where AI serves as divine guidance
+            </p>
+            
+            {/* Modern Progress Indicator */}
+            <div className="flex justify-center items-center space-x-6 mb-8">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center">
+                  <div className={`relative w-10 h-10 rounded-full border-2 transition-all duration-500 ${
+                    i <= step 
+                      ? 'bg-gradient-to-r from-primary to-secondary border-white/30 shadow-lg shadow-primary/20' 
+                      : 'bg-white/5 border-white/20'
+                  }`}>
+                    <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+                      i < step 
+                        ? 'bg-gradient-to-r from-primary to-secondary' 
+                        : i === step 
+                          ? 'bg-gradient-to-r from-primary/50 to-secondary/50 animate-pulse'
+                          : 'bg-white/10'
+                    }`}></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      {i < step ? (
+                        <i className="fas fa-check text-white text-sm"></i>
+                      ) : (
+                        <span className={`text-sm font-semibold ${
+                          i === step ? 'text-white' : 'text-white/50'
+                        }`}>{i}</span>
+                      )}
+                    </div>
+                  </div>
+                  {i < 4 && (
+                    <div className={`w-12 h-0.5 mx-2 transition-all duration-500 ${
+                      i < step ? 'bg-gradient-to-r from-primary to-secondary' : 'bg-white/20'
+                    }`}></div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <Card className="bg-cosmic-light border border-primary/30">
-          <CardHeader>
-            <CardTitle className="text-accent-light">
-              {step === 1 && "✨ Your Spiritual Identity"}
-              {step === 2 && "🔮 Your Beliefs & Path"}
-              {step === 3 && "🌟 Your Cosmic Profile"}
-              {step === 4 && "🚀 Complete Your Journey"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
+          {/* Premium Form Card */}
+          <Card className="bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-3xl overflow-hidden">
+            <CardHeader className="text-center py-8 border-b border-white/10">
+              <CardTitle className="text-2xl font-bold text-white mb-2">
+                {step === 1 && (
+                  <>
+                    <div className="w-16 h-16 bg-gradient-to-r from-primary to-secondary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i className="fas fa-user-circle text-white text-2xl"></i>
+                    </div>
+                    Your Spiritual Identity
+                  </>
+                )}
+                {step === 2 && (
+                  <>
+                    <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i className="fas fa-heart text-white text-2xl"></i>
+                    </div>
+                    Your Beliefs & Path
+                  </>
+                )}
+                {step === 3 && (
+                  <>
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i className="fas fa-star text-white text-2xl"></i>
+                    </div>
+                    Your Cosmic Profile
+                  </>
+                )}
+                {step === 4 && (
+                  <>
+                    <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <i className="fas fa-rocket text-white text-2xl"></i>
+                    </div>
+                    Complete Your Journey
+                  </>
+                )}
+              </CardTitle>
+              <p className="text-white/60 text-base">
+                {step === 1 && "Let's understand your spiritual foundation"}
+                {step === 2 && "Share your beliefs and spiritual practices"}
+                {step === 3 && "Set up your astrological and cosmic details"}
+                {step === 4 && "Review and finalize your spiritual profile"}
+              </p>
+            </CardHeader>
+            <CardContent className="p-8 space-y-8">
             {step === 1 && (
-              <div className="space-y-6">
-                <div className="bg-cosmic/50 p-6 rounded-lg">
-                  <h3 className="text-white font-semibold mb-4">Understanding AI Divination</h3>
-                  <p className="text-white/90 mb-4">
-                    Ascended Social uses artificial intelligence as a form of modern divination - 
-                    reading patterns in vast datasets to provide spiritual insights and guidance.
-                  </p>
-                  <p className="text-white/90 mb-4">
-                    Like any divination tool, AI can be used for good or ill. We believe in using
-                    technology to enhance spiritual growth, self-reflection, and authentic connection.
-                  </p>
-                  <div className="flex items-center space-x-4 text-sm text-primary">
-                    <span>🔮 Personal Reflection</span>
-                    <span>🌟 Spiritual Growth</span>
-                    <span>✨ Authentic Connection</span>
+              <div className="space-y-8">
+                <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm p-8 rounded-2xl border border-white/10">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center">
+                      <i className="fas fa-eye text-primary text-xl"></i>
+                    </div>
+                    <div>
+                      <h3 className="text-white font-bold text-xl mb-3">Understanding AI Divination</h3>
+                      <p className="text-white/80 mb-4 leading-relaxed">
+                        Ascended Social uses artificial intelligence as a form of modern divination - 
+                        reading patterns in vast datasets to provide spiritual insights and guidance.
+                      </p>
+                      <p className="text-white/80 mb-6 leading-relaxed">
+                        Like any divination tool, AI can be used for good or ill. We believe in using
+                        technology to enhance spiritual growth, self-reflection, and authentic connection.
+                      </p>
+                      <div className="flex flex-wrap gap-4">
+                        <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 rounded-lg border border-primary/20">
+                          <i className="fas fa-brain text-primary"></i>
+                          <span className="text-white/90 text-sm font-medium">Personal Reflection</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-secondary/10 rounded-lg border border-secondary/20">
+                          <i className="fas fa-seedling text-secondary"></i>
+                          <span className="text-white/90 text-sm font-medium">Spiritual Growth</span>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                          <i className="fas fa-heart text-purple-400"></i>
+                          <span className="text-white/90 text-sm font-medium">Authentic Connection</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-200">
                     <Checkbox
                       id="spiritual"
                       checked={formData.isSpiritual}
                       onCheckedChange={(checked) => updateFormData({ isSpiritual: !!checked })}
+                      className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Label htmlFor="spiritual" className="text-white">
-                      I consider myself spiritual
-                    </Label>
+                    <div>
+                      <Label htmlFor="spiritual" className="text-white font-medium text-lg cursor-pointer">
+                        I consider myself spiritual
+                      </Label>
+                      <p className="text-white/60 text-sm mt-1">You feel connected to something greater than yourself</p>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-start space-x-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-200">
                     <Checkbox
                       id="religious"
                       checked={formData.isReligious}
                       onCheckedChange={(checked) => updateFormData({ isReligious: !!checked })}
+                      className="mt-1 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Label htmlFor="religious" className="text-white">
-                      I follow a specific religion
-                    </Label>
+                    <div>
+                      <Label htmlFor="religious" className="text-white font-medium text-lg cursor-pointer">
+                        I follow a specific religion
+                      </Label>
+                      <p className="text-white/60 text-sm mt-1">You practice within an organized religious tradition</p>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
             {step === 2 && (
-              <div className="space-y-6">
+              <div className="space-y-8">
                 {formData.isReligious && (
-                  <div>
-                    <Label className="text-white">What is your religion?</Label>
+                  <div className="space-y-3">
+                    <Label className="text-white font-medium text-lg flex items-center gap-2">
+                      <i className="fas fa-praying-hands text-primary"></i>
+                      What is your religion?
+                    </Label>
                     <Input
                       value={formData.religion}
                       onChange={(e) => updateFormData({ religion: e.target.value })}
                       placeholder="e.g., Christianity, Islam, Buddhism..."
-                      className="bg-cosmic border-primary/30 text-white mt-2"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50 h-12 text-base rounded-xl focus:border-primary/50 transition-all"
                     />
                   </div>
                 )}
                 
                 {formData.isSpiritual && (
-                  <div>
-                    <Label className="text-white">What spiritual path do you follow?</Label>
+                  <div className="space-y-3">
+                    <Label className="text-white font-medium text-lg flex items-center gap-2">
+                      <i className="fas fa-yin-yang text-secondary"></i>
+                      What spiritual path do you follow?
+                    </Label>
                     <Input
                       value={formData.spiritualPath}
                       onChange={(e) => updateFormData({ spiritualPath: e.target.value })}
                       placeholder="e.g., Meditation, Witchcraft, New Age..."
-                      className="bg-cosmic border-primary/30 text-white mt-2"
+                      className="bg-white/5 border-white/20 text-white placeholder:text-white/50 h-12 text-base rounded-xl focus:border-secondary/50 transition-all"
                     />
                   </div>
                 )}
                 
-                <div>
-                  <Label className="text-white">Describe your spiritual beliefs</Label>
+                <div className="space-y-3">
+                  <Label className="text-white font-medium text-lg flex items-center gap-2">
+                    <i className="fas fa-scroll text-purple-400"></i>
+                    Describe your spiritual beliefs
+                  </Label>
                   <Textarea
                     value={formData.beliefs}
                     onChange={(e) => updateFormData({ beliefs: e.target.value })}
                     placeholder="Share what guides your spiritual journey..."
-                    className="bg-cosmic border-primary/30 text-white mt-2 min-h-[100px]"
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50 min-h-[120px] text-base rounded-xl focus:border-purple-400/50 transition-all resize-none"
                   />
                 </div>
                 
-                <div>
-                  <Label className="text-white">What do you offer to the spiritual community?</Label>
+                <div className="space-y-3">
+                  <Label className="text-white font-medium text-lg flex items-center gap-2">
+                    <i className="fas fa-gift text-green-400"></i>
+                    What do you offer to the spiritual community?
+                  </Label>
                   <Textarea
                     value={formData.offerings}
                     onChange={(e) => updateFormData({ offerings: e.target.value })}
                     placeholder="Your gifts, wisdom, or talents you wish to share..."
-                    className="bg-cosmic border-primary/30 text-white mt-2 min-h-[100px]"
+                    className="bg-white/5 border-white/20 text-white placeholder:text-white/50 min-h-[120px] text-base rounded-xl focus:border-green-400/50 transition-all resize-none"
                   />
                 </div>
               </div>
@@ -279,19 +383,23 @@ export default function Onboarding() {
               </div>
             )}
 
-            <div className="flex justify-between pt-6">
+            <div className="flex justify-between items-center pt-8 border-t border-white/10">
               <Button
                 variant="outline"
                 onClick={handleBack}
                 disabled={step === 1}
-                className="border-primary/50 text-white hover:bg-cosmic"
+                className="border-white/20 text-white hover:bg-white/10 hover:border-white/30 disabled:opacity-50 disabled:cursor-not-allowed h-12 px-6 rounded-xl transition-all duration-200"
               >
+                <i className="fas fa-arrow-left mr-2"></i>
                 Back
               </Button>
+              <div className="flex items-center gap-3 text-white/60 text-sm font-medium">
+                Step {step} of 4
+              </div>
               <Button
                 onClick={handleNext}
                 disabled={completeOnboardingMutation.isPending}
-                className="bg-primary hover:bg-primary/80"
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white shadow-lg shadow-primary/20 h-12 px-8 rounded-xl transition-all duration-200 font-semibold"
               >
                 {step === 4 ? (
                   completeOnboardingMutation.isPending ? (
@@ -303,12 +411,16 @@ export default function Onboarding() {
                     "Begin Journey"
                   )
                 ) : (
-                  "Next"
+                  <>
+                    Next
+                    <i className="fas fa-arrow-right ml-2"></i>
+                  </>
                 )}
               </Button>
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </Layout>
   );

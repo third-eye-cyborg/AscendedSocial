@@ -235,15 +235,15 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-// Chakra color mapping for stars
+// Chakra color mapping for stars (using hex values for 3D compatibility)
 const chakraColors: Record<string, string> = {
   root: '#ff0000',
-  sacral: '#ff8c00',
-  solar: '#ffd700',
-  heart: '#00ff00',
-  throat: '#0088ff',
+  sacral: '#ff7f00',
+  solar: '#ffff00',
+  heart: '#e4467c', // Pink/red to match main heart chakra
+  throat: '#0000ff',
   third_eye: '#4b0082',
-  crown: '#8b00ff',
+  crown: '#9400d3',
 };
 
 // User type definition

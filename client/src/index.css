@@ -338,9 +338,9 @@ html, body {
   --chakra-root: hsl(0, 100%, 50%);
   --chakra-sacral: hsl(30, 100%, 50%);
   --chakra-solar: hsl(60, 100%, 50%);
-  --chakra-heart: hsl(340, 82%, 52%);
+  --chakra-heart: hsl(120, 100%, 35%);
   --chakra-throat: hsl(240, 100%, 50%);
-  --chakra-third: hsl(260, 100%, 25%);
+  --chakra-third: hsl(260, 100%, 45%);
   --chakra-crown: hsl(280, 100%, 41%);
   
   --font-sans: 'Inter', 'Open Sans', sans-serif;
@@ -393,6 +393,16 @@ html, body {
   --sidebar-accent-foreground: hsl(0, 0%, 95%);
   --sidebar-border: hsl(245, 20%, 30%);
   --sidebar-ring: hsl(232, 100%, 67%);
+  
+  /* Chakra Colors for dark theme */
+  --chakra-root: hsl(0, 100%, 50%);
+  --chakra-sacral: hsl(30, 100%, 50%);
+  --chakra-solar: hsl(60, 100%, 50%);
+  --chakra-heart: hsl(120, 100%, 35%);
+  --chakra-throat: hsl(240, 100%, 50%);
+  --chakra-third: hsl(260, 100%, 45%);
+  --chakra-crown: hsl(280, 100%, 41%);
+  
   --font-sans: 'Inter', 'Open Sans', sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
@@ -439,7 +449,7 @@ html, body {
     border-color: var(--chakra-solar);
   }
   .chakra-glow-heart { 
-    box-shadow: 0 0 15px var(--chakra-heart), inset 0 0 15px hsl(340, 82%, 52%, 0.1);
+    box-shadow: 0 0 15px var(--chakra-heart), inset 0 0 15px hsl(120, 100%, 35%, 0.1);
     border-color: var(--chakra-heart);
   }
   .chakra-glow-throat { 
@@ -447,7 +457,7 @@ html, body {
     border-color: var(--chakra-throat);
   }
   .chakra-glow-third { 
-    box-shadow: 0 0 15px var(--chakra-third), inset 0 0 15px hsl(260, 100%, 25%, 0.1);
+    box-shadow: 0 0 15px var(--chakra-third), inset 0 0 15px hsl(260, 100%, 45%, 0.1);
     border-color: var(--chakra-third);
   }
   .chakra-glow-crown { 

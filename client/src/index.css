@@ -169,7 +169,7 @@ html, body {
 
 [data-radix-select-item]:hover,
 [data-radix-select-item][data-highlighted] {
-  background: hsl(232, 100%, 67%, 0.2) !important;
+  background: hsl(232, 35%, 20%, 0.8) !important;
   color: white !important;
 }
 

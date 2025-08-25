@@ -791,10 +791,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Both sigil and imageUrl are required' });
       }
 
+      let finalImageUrl = imageUrl;
+      
+      // If this is a temporary DALL-E URL, download and save it permanently
+      if (imageUrl.includes('oaidalleapiprodscus.blob.core.windows.net')) {
+        console.log('Detected temporary DALL-E URL, downloading and saving permanently...');
+        try {
+          const { downloadAndSaveImage } = await import('./openai');
+          const filename = `sigil-permanent-${userId}-${Date.now()}.png`;
+          finalImageUrl = await downloadAndSaveImage(imageUrl, filename);
+          console.log(`Sigil image permanently saved: ${filename} -> ${finalImageUrl}`);
+        } catch (downloadError) {
+          console.error('Failed to download sigil image, using original URL:', downloadError);
+          // Keep the original URL as fallback
+        }
+      }
+
       // Update user's sigil and sigil image separately from profile picture
       const user = await storage.updateUser(userId, {
         sigil: sigil,
-        sigilImageUrl: imageUrl
+        sigilImageUrl: finalImageUrl
       });
 
       res.status(200).json({ user });

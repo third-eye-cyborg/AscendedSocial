@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -21,6 +22,7 @@ export default function CreatePost() {
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaUrls, setMediaUrls] = useState<string[]>([]);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
+  const [postType, setPostType] = useState("post");
 
   const createPostMutation = useMutation({
     mutationFn: async (postData: { content: string; imageUrl?: string; imageUrls?: string[]; videoUrl?: string; type?: string }) => {
@@ -32,6 +34,7 @@ export default function CreatePost() {
       setMediaUrl("");
       setMediaUrls([]);
       setMediaType(null);
+      setPostType("post");
       toast({
         title: "Post Created",
         description: "Your spiritual insight has been shared with the community",
@@ -68,7 +71,7 @@ export default function CreatePost() {
 
     const postData: any = {
       content: content, // Keep HTML content
-      type: mediaType === "video" ? "spark" : "post"
+      type: mediaType === "video" ? "spark" : postType
     };
 
     console.log('Submitting post with data:', { ...postData, mediaUrl, mediaType }); // Debug log
@@ -258,6 +261,48 @@ export default function CreatePost() {
                     <i className="fas fa-images"></i>
                     <span>Add Images ({mediaUrls.length}/5)</span>
                   </ObjectUploader>
+                  
+                  {/* Post Type Selector */}
+                  <div className="flex items-center space-x-2">
+                    <i className="fas fa-tag text-primary/70"></i>
+                    <Select value={postType} onValueChange={setPostType}>
+                      <SelectTrigger className="w-32 bg-cosmic/40 border-primary/30 text-white text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-cosmic border-primary/30">
+                        <SelectItem value="post" className="text-white hover:bg-primary/20">
+                          <span className="flex items-center space-x-2">
+                            <span>📝</span>
+                            <span>Post</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="empowerment" className="text-white hover:bg-primary/20">
+                          <span className="flex items-center space-x-2">
+                            <span>✨</span>
+                            <span>Empowerment</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="vision" className="text-white hover:bg-primary/20">
+                          <span className="flex items-center space-x-2">
+                            <span>👁️</span>
+                            <span>Vision</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="wisdom" className="text-white hover:bg-primary/20">
+                          <span className="flex items-center space-x-2">
+                            <span>🧠</span>
+                            <span>Wisdom</span>
+                          </span>
+                        </SelectItem>
+                        <SelectItem value="reflection" className="text-white hover:bg-primary/20">
+                          <span className="flex items-center space-x-2">
+                            <span>💭</span>
+                            <span>Reflection</span>
+                          </span>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   
                   <div className="hidden sm:flex items-center text-xs text-white/60">
                     <i className="fas fa-sparkles mr-1 text-primary/70"></i>

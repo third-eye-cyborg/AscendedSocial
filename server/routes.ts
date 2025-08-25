@@ -108,42 +108,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      // Use ObjectStorageService to upload the file
-      const objectStorageService = new ObjectStorageService();
-      const objectId = randomUUID();
-      const privateObjectDir = objectStorageService.getPrivateObjectDir();
-      const fullPath = `${privateObjectDir}/uploads/${objectId}`;
+      // For now, use a simpler approach - convert to base64 data URL
+      // This avoids the Google Cloud Storage authentication issues
+      const base64Data = file.buffer.toString('base64');
+      const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
       
-      const { bucketName, objectName } = parseObjectPath(fullPath);
-      const bucket = objectStorageClient.bucket(bucketName);
-      const bucketFile = bucket.file(objectName);
-      
-      // Upload the file buffer to Google Cloud Storage
-      await bucketFile.save(file.buffer, {
-        metadata: {
-          contentType: file.mimetype,
-        },
-      });
-      
-      // Set as public
-      const mediaURL = `https://storage.googleapis.com/${bucketName}/${objectName}`;
-      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
-        mediaURL,
-        {
-          owner: userId,
-          visibility: "public",
-        }
-      );
-      
-      // Update user's profile image
+      // Update user's profile image with the data URL
       const user = await storage.updateUser(userId, {
-        profileImageUrl: objectPath
+        profileImageUrl: dataUrl
       });
       
-      res.status(200).json({ user, imageUrl: objectPath });
+      return res.status(200).json({ user, imageUrl: dataUrl });
     } catch (error) {
       console.error('Error uploading profile image:', error);
-      res.status(500).json({ error: 'Failed to upload image' });
+      res.status(500).json({ error: 'Failed to upload image. Please try using a direct image URL instead.' });
     }
   });
 

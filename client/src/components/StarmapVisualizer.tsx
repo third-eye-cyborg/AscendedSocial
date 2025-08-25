@@ -11,6 +11,21 @@ import { Sparkles, Eye, Users, Filter, Home, Zap, RotateCcw, Maximize2, X } from
 import { useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 
+const zodiacEmojis: { [key: string]: string } = {
+  "aries": "♈",
+  "taurus": "♉", 
+  "gemini": "♊",
+  "cancer": "♋",
+  "leo": "♌",
+  "virgo": "♍",
+  "libra": "♎",
+  "scorpio": "♏",
+  "sagittarius": "♐",
+  "capricorn": "♑",
+  "aquarius": "♒",
+  "pisces": "♓"
+};
+
 // Error Boundary for 3D Canvas
 interface CanvasErrorBoundaryState {
   hasError: boolean;
@@ -749,7 +764,7 @@ function StarmapScene() {
                       <SelectItem value="all" className="text-white hover:!bg-gray-800 hover:!text-white data-[highlighted]:!bg-gray-800 data-[highlighted]:!text-white">All Signs</SelectItem>
                       {['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'].map(sign => (
                         <SelectItem key={sign} value={sign} className="text-white hover:!bg-gray-800 hover:!text-white data-[highlighted]:!bg-gray-800 data-[highlighted]:!text-white">
-                          <span className="capitalize text-white">♦ {sign}</span>
+                          <span className="capitalize text-white">{zodiacEmojis[sign] || "♦"} {sign}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>

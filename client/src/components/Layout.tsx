@@ -52,26 +52,9 @@ export default function Layout({ children }: LayoutProps) {
               </h1>
             </div>
 
-            {/* Main Navigation - Hidden on mobile */}
-            <nav className="hidden md:flex items-center space-x-6 ml-8">
-              <Link href="/energy">
-                <button className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location === '/energy' ? 'text-primary' : 'text-white/90'
-                }`} data-testid="nav-energy">
-                  Energy
-                </button>
-              </Link>
-              <Link href="/community">
-                <button className={`text-sm font-medium transition-colors hover:text-primary ${
-                  location === '/community' ? 'text-primary' : 'text-white/90'
-                }`} data-testid="nav-community">
-                  Community
-                </button>
-              </Link>
-            </nav>
 
             {/* Search Bar - Hidden on mobile and small tablets */}
-            <div className="hidden lg:block flex-1 max-w-md mx-8">
+            <div className="hidden lg:block flex-1 max-w-lg mx-8">
               <div 
                 className="relative w-full cursor-pointer"
                 onClick={() => setIsSearchOpen(true)}
@@ -110,18 +93,10 @@ export default function Layout({ children }: LayoutProps) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-cosmic-light border-primary/30 w-48">
                   <DropdownMenuItem asChild>
-                    <Link href="/energy" className="w-full">
+                    <Link href="/settings" className="w-full">
                       <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
-                        <i className="fas fa-bolt mr-2"></i>
-                        Energy
-                      </button>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/community" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
-                        <i className="fas fa-users mr-2"></i>
-                        Community
+                        <i className="fas fa-cog mr-2"></i>
+                        Settings
                       </button>
                     </Link>
                   </DropdownMenuItem>

@@ -144,11 +144,13 @@ export default function PostCard({ post }: PostCardProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
       
-      // Trigger click effect
-      setClickEffects(prev => ({ ...prev, [variables.type]: true }));
-      setTimeout(() => {
-        setClickEffects(prev => ({ ...prev, [variables.type]: false }));
-      }, 600);
+      // Only trigger click effect when ADDING an engagement (not removing)
+      if (!variables.remove) {
+        setClickEffects(prev => ({ ...prev, [variables.type]: true }));
+        setTimeout(() => {
+          setClickEffects(prev => ({ ...prev, [variables.type]: false }));
+        }, 600);
+      }
     },
     onError: (error) => {
       toast({

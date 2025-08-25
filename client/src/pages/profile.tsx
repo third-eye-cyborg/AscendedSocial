@@ -382,7 +382,7 @@ export default function Profile() {
                         ) : (
                           <>
                             <i className="fas fa-plus mr-2"></i>
-                            Follow
+                            Connect
                           </>
                         )}
                       </Button>

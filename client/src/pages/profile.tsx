@@ -86,6 +86,26 @@ export default function Profile() {
     },
   });
 
+  // Mutation for following users
+  const followMutation = useMutation({
+    mutationFn: async (targetUserId: string) => {
+      return apiRequest("POST", "/api/connections/request", { receiverId: targetUserId });
+    },
+    onSuccess: () => {
+      toast({
+        title: "✨ Connection Request Sent!",
+        description: "Your spiritual connection request has been sent",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Connection Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Initialize form when profile data loads
   useEffect(() => {
     if (userProfile) {
@@ -106,6 +126,19 @@ export default function Profile() {
       return;
     }
     updateProfileMutation.mutate(editForm);
+  };
+
+  const handleFollowUser = () => {
+    if (userId) {
+      followMutation.mutate(userId);
+    }
+  };
+
+  const handleMessageUser = () => {
+    toast({
+      title: "Coming Soon! 🌟",
+      description: "Direct messaging is being prepared for our mystical community",
+    });
   };
 
   if (userLoading) {
@@ -336,13 +369,25 @@ export default function Profile() {
                   ) : (
                     <>
                       <Button 
+                        onClick={handleFollowUser}
+                        disabled={followMutation.isPending}
                         className="w-full bg-primary hover:bg-primary/80"
                         data-testid="button-follow"
                       >
-                        <i className="fas fa-plus mr-2"></i>
-                        Follow
+                        {followMutation.isPending ? (
+                          <>
+                            <i className="fas fa-spinner animate-spin mr-2"></i>
+                            Connecting...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-plus mr-2"></i>
+                            Follow
+                          </>
+                        )}
                       </Button>
                       <Button 
+                        onClick={handleMessageUser}
                         variant="outline"
                         className="w-full border-primary/50 text-primary hover:bg-primary/10"
                         data-testid="button-message"

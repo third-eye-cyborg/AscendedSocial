@@ -174,7 +174,7 @@ export default function NotificationsModal({ isOpen, onClose }: NotificationsMod
           </div>
 
           {/* Notifications List */}
-          <div className="max-h-96 overflow-y-auto space-y-3">
+          <div className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent space-y-3">
             {isLoading ? (
               <div className="space-y-3">
                 {Array.from({ length: 5 }).map((_, i) => (

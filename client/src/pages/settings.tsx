@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
@@ -33,6 +34,11 @@ import {
   Eye,
   EyeOff
 } from "lucide-react";
+
+const zodiacSigns = [
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+];
 
 interface Post {
   id: string;
@@ -64,6 +70,7 @@ export default function Settings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [username, setUsername] = useState((user as any)?.username || "");
+  const [astrologySign, setAstrologySign] = useState((user as any)?.astrologySign || "");
   
   // Privacy settings state
   const [profileVisibility, setProfileVisibility] = useState(true);
@@ -177,9 +184,34 @@ export default function Settings() {
     },
   });
 
+  const updateAstrologySignMutation = useMutation({
+    mutationFn: (newSign: string) => 
+      apiRequest("PUT", `/api/users/${(user as any)?.id}`, { astrologySign: newSign }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Success",
+        description: "Astrology sign updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update astrology sign",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleUpdateUsername = () => {
     if (username.trim()) {
       updateUsernameMutation.mutate(username.trim());
+    }
+  };
+
+  const handleUpdateAstrologySign = () => {
+    if (astrologySign) {
+      updateAstrologySignMutation.mutate(astrologySign);
     }
   };
 
@@ -345,6 +377,42 @@ export default function Settings() {
                   className="bg-primary hover:bg-primary/90 text-white"
                 >
                   {updateUsernameMutation.isPending ? "Updating..." : "Update Username"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Astrology Sign Section */}
+            <Card className="bg-cosmic-light border-cosmic-light">
+              <CardHeader>
+                <CardTitle className="text-white">Astrology Sign</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="astrology-sign" className="text-white">Your Zodiac Sign</Label>
+                  <Select value={astrologySign} onValueChange={setAstrologySign}>
+                    <SelectTrigger className="bg-cosmic border-primary/30 text-white focus:border-primary" data-testid="select-astrology-sign">
+                      <SelectValue placeholder="Select your zodiac sign" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-cosmic border-primary/30 max-h-48 overflow-y-auto">
+                      {zodiacSigns.map((sign) => (
+                        <SelectItem 
+                          key={sign} 
+                          value={sign}
+                          className="text-white hover:bg-primary/20 focus:bg-primary/20"
+                        >
+                          {sign}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button 
+                  onClick={handleUpdateAstrologySign}
+                  disabled={updateAstrologySignMutation.isPending || !astrologySign}
+                  className="bg-primary hover:bg-primary/90 text-white"
+                  data-testid="button-update-astrology-sign"
+                >
+                  {updateAstrologySignMutation.isPending ? "Updating..." : "Update Astrology Sign"}
                 </Button>
               </CardContent>
             </Card>

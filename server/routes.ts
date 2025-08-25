@@ -16,6 +16,7 @@ import {
   insertPostSchema, 
   insertCommentSchema, 
   insertEngagementSchema,
+  insertReportSchema,
   type EngagementType 
 } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError, parseObjectPath, objectStorageClient } from "./objectStorage";
@@ -925,6 +926,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Report routes
+  app.post('/api/reports', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const reportData = insertReportSchema.parse(req.body);
+      
+      // Validate that we're reporting something valid
+      if (reportData.postId) {
+        const post = await storage.getPost(reportData.postId);
+        if (!post) {
+          return res.status(404).json({ message: "Post not found" });
+        }
+      }
+      
+      if (reportData.reportedUserId) {
+        const user = await storage.getUser(reportData.reportedUserId);
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Can't report yourself
+        if (reportData.reportedUserId === userId) {
+          return res.status(400).json({ message: "You cannot report yourself" });
+        }
+      }
+      
+      const report = await storage.createReport(reportData, userId);
+      res.status(201).json(report);
+    } catch (error) {
+      console.error("Error creating report:", error);
+      res.status(500).json({ message: "Failed to create report" });
+    }
+  });
+
+  app.get('/api/reports/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const reports = await storage.getUserReports(userId);
+      res.json(reports);
+    } catch (error) {
+      console.error("Error fetching user reports:", error);
+      res.status(500).json({ message: "Failed to fetch reports" });
     }
   });
 

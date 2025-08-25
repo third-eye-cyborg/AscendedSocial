@@ -13,7 +13,14 @@ import { getChakraColor, getChakraGlow } from "@/lib/chakras";
 import { formatDistanceToNow } from "date-fns";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import Comments from "./Comments";
-import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles, Gem } from "lucide-react";
+import ReportDialog from "./ReportDialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { Zap, Heart, ChevronUp, ChevronDown, MessageCircle, Share2, Bookmark, BookmarkCheck, Settings, Sparkles, Gem, MoreHorizontal } from "lucide-react";
 import { useLocation } from "wouter";
 
 interface PostCardProps {
@@ -895,6 +902,23 @@ export default function PostCard({ post }: PostCardProps) {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Report functionality */}
+        <div className="flex justify-end mt-2 px-4">
+          <ReportDialog 
+            postId={post.id}
+            trigger={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-400/70 hover:text-red-300 hover:bg-red-400/10 p-2 rounded-lg text-xs transition-colors"
+                data-testid={`button-report-post-${post.id}`}
+              >
+                Report
+              </Button>
+            }
+          />
         </div>
 
         {/* Comments Section */}

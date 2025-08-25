@@ -323,6 +323,63 @@ export const insertSpiritualMarkSchema = createInsertSchema(spiritualMarks);
 export type SpiritualMark = typeof spiritualMarks.$inferSelect;
 export type InsertSpiritualMark = z.infer<typeof insertSpiritualMarkSchema>;
 
+// Report type enum for flagging posts and users
+export const reportTypeEnum = pgEnum("report_type", [
+  "spam",
+  "harassment",
+  "inappropriate_content",
+  "hate_speech",
+  "violence",
+  "misinformation",
+  "copyright_violation",
+  "fake_profile",
+  "other"
+]);
+
+// Report status enum for moderation
+export const reportStatusEnum = pgEnum("report_status", [
+  "pending",
+  "reviewed", 
+  "resolved",
+  "dismissed"
+]);
+
+// Reports table for user flagging system
+export const reports = pgTable("reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reporterId: varchar("reporter_id").notNull().references(() => users.id),
+  type: reportTypeEnum("type").notNull(),
+  reason: text("reason"), // Additional context from user
+  
+  // Either report a post or a user (one will be null)
+  postId: varchar("post_id").references(() => posts.id, { onDelete: 'cascade' }),
+  reportedUserId: varchar("reported_user_id").references(() => users.id),
+  
+  status: reportStatusEnum("status").default("pending"),
+  moderatorNotes: text("moderator_notes"),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: varchar("reviewed_by").references(() => users.id),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertReportSchema = createInsertSchema(reports).omit({
+  id: true,
+  reporterId: true,
+  status: true,
+  moderatorNotes: true,
+  reviewedAt: true,
+  reviewedBy: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type Report = typeof reports.$inferSelect;
+export type InsertReport = z.infer<typeof insertReportSchema>;
+export type ReportType = "spam" | "harassment" | "inappropriate_content" | "hate_speech" | "violence" | "misinformation" | "copyright_violation" | "fake_profile" | "other";
+export type ReportStatus = "pending" | "reviewed" | "resolved" | "dismissed";
+
 // Newsletter subscriptions table - for marketing emails
 export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),

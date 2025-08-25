@@ -9,7 +9,7 @@ const openai = new OpenAI({
 });
 
 // Utility function to download image from URL and save to persistent storage
-async function downloadAndSaveImage(imageUrl: string, filename: string): Promise<string> {
+export async function downloadAndSaveImage(imageUrl: string, filename: string): Promise<string> {
   try {
     if (!imageUrl) {
       throw new Error("No image URL provided");

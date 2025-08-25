@@ -721,62 +721,62 @@ function StarmapScene() {
 
   return (
     <div className="w-full h-screen relative">
-      {/* Control Panel */}
-      <div className="absolute top-4 left-4 z-20">
-        <div className="flex space-x-2 mb-3">
+      {/* Mobile-Responsive Control Panel */}
+      <div className="absolute top-2 left-2 md:top-4 md:left-4 z-20">
+        <div className="flex space-x-1 md:space-x-2 mb-3">
           <Button
             size="sm"
             variant="outline"
             onClick={() => setLocation('/')}
-            className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+            className="bg-black/70 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40 h-8 w-8 md:h-9 md:w-9 p-0"
           >
-            <Home className="w-4 h-4" />
+            <Home className="w-3 h-3 md:w-4 md:h-4" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+            className="bg-black/70 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40 h-8 w-8 md:h-9 md:w-9 p-0"
           >
-            <Filter className="w-4 h-4" />
+            <Filter className="w-3 h-3 md:w-4 md:h-4" />
           </Button>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="bg-black/60 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40"
+            className="bg-black/70 backdrop-blur-sm border-purple-500/30 text-white hover:bg-purple-900/40 h-8 w-8 md:h-9 md:w-9 p-0"
           >
-            <Maximize2 className="w-4 h-4" />
+            <Maximize2 className="w-3 h-3 md:w-4 md:h-4" />
           </Button>
         </div>
       </div>
         
-      {/* Filter Panel - Separate positioning to avoid overlap */}
+      {/* Mobile-Responsive Filter Panel */}
       {showFilters && (
-        <div className="absolute top-16 left-4 z-20">
-          <Card className="p-3 bg-black/90 backdrop-blur-md border-purple-500/50 shadow-2xl w-64">
+        <div className="absolute top-12 left-2 md:top-16 md:left-4 z-20 max-w-[calc(100vw-1rem)] md:max-w-none">
+          <Card className="p-2 md:p-3 bg-black/95 backdrop-blur-md border-purple-500/50 shadow-2xl w-[280px] md:w-64 max-w-[calc(100vw-1rem)]">
             <CardHeader className="p-0 pb-2">
-              <CardTitle className="text-sm font-medium text-white flex items-center justify-between">
+              <CardTitle className="text-xs md:text-sm font-medium text-white flex items-center justify-between">
                 <div className="flex items-center">
-                  <Filter className="w-4 h-4 mr-2 text-purple-400" />
-                  Spiritual Filters
+                  <Filter className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2 text-purple-400" />
+                  <span className="text-xs md:text-sm">Filters</span>
                 </div>
                 <Button
                   size="sm"
                   variant="ghost"
                   onClick={() => setShowFilters(false)}
-                  className="text-purple-300 hover:text-white p-1 h-6 w-6"
+                  className="text-purple-300 hover:text-white p-1 h-6 w-6 md:h-6 md:w-6"
                 >
                   <X className="w-3 h-3" />
                 </Button>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 <div>
-                  <label className="text-xs text-white font-medium mb-2 block">Chakra Energy</label>
+                  <label className="text-[10px] md:text-xs text-white font-medium mb-1 md:mb-2 block">Chakra Energy</label>
                   <Select onValueChange={(chakra) => setFilters((f) => ({ ...f, chakra: chakra === 'all' ? undefined : chakra }))}>
-                    <SelectTrigger className="h-8 text-xs bg-black/60 border-purple-400/50 text-white">
+                    <SelectTrigger className="h-7 md:h-8 text-[10px] md:text-xs bg-black/60 border-purple-400/50 text-white">
                       <SelectValue placeholder="All Chakras" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
@@ -797,9 +797,9 @@ function StarmapScene() {
                 </div>
 
                 <div>
-                  <label className="text-xs text-white font-medium mb-2 block">Astrology Sign</label>
+                  <label className="text-[10px] md:text-xs text-white font-medium mb-1 md:mb-2 block">Astrology Sign</label>
                   <Select onValueChange={(sign) => setFilters((f) => ({ ...f, astrologySign: sign === 'all' ? undefined : sign }))}>
-                    <SelectTrigger className="h-8 text-xs bg-black/60 border-purple-400/50 text-white">
+                    <SelectTrigger className="h-7 md:h-8 text-[10px] md:text-xs bg-black/60 border-purple-400/50 text-white">
                       <SelectValue placeholder="All Signs" className="text-white" />
                     </SelectTrigger>
                     <SelectContent className="bg-black/95 backdrop-blur-md border-purple-500/50">
@@ -818,7 +818,7 @@ function StarmapScene() {
                     size="sm"
                     variant="ghost"
                     onClick={() => setFilters({})}
-                    className="w-full text-xs text-purple-300 hover:text-white hover:bg-purple-900/40"
+                    className="w-full text-[10px] md:text-xs text-purple-300 hover:text-white hover:bg-purple-900/40 h-7 md:h-8"
                   >
                     Clear All Filters
                   </Button>
@@ -829,34 +829,34 @@ function StarmapScene() {
         </div>
       )}
 
-      {/* Mode indicator */}
-      <div className="absolute top-4 right-4 z-10">
-        <Card className="p-3 bg-black/80 backdrop-blur-md border-purple-500/30 shadow-2xl min-w-[260px]">
-          <div className="flex items-center space-x-3 text-white mb-2">
+      {/* Mobile-Responsive Mode indicator */}
+      <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
+        <Card className="p-2 md:p-3 bg-black/90 backdrop-blur-md border-purple-500/30 shadow-2xl min-w-[200px] md:min-w-[260px] max-w-[calc(100vw-1rem)]">
+          <div className="flex items-center space-x-2 md:space-x-3 text-white mb-1 md:mb-2">
             {mode === 'starmap' ? (
               <>
-                <div className="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-purple-300" />
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-purple-600/30 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-3 h-3 md:w-4 md:h-4 text-purple-300" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold whitespace-nowrap">Cosmic Starfield</div>
-                  <div className="text-xs text-purple-300">Universal Overview</div>
+                  <div className="text-xs md:text-sm font-semibold">Cosmic Starfield</div>
+                  <div className="text-[10px] md:text-xs text-purple-300">Universal Overview</div>
                 </div>
               </>
             ) : (
               <>
-                <div className="w-8 h-8 rounded-full bg-green-600/30 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4 text-green-300" />
+                <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-green-600/30 flex items-center justify-center flex-shrink-0">
+                  <Users className="w-3 h-3 md:w-4 md:h-4 text-green-300" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold whitespace-nowrap">Mycelium Network</div>
-                  <div className="text-xs text-green-300">Connection Web</div>
+                  <div className="text-xs md:text-sm font-semibold">Mycelium Network</div>
+                  <div className="text-[10px] md:text-xs text-green-300">Connection Web</div>
                 </div>
               </>
             )}
           </div>
-          <div className="text-xs text-gray-300 border-t border-purple-500/20 pt-2">
-            {mode === 'starmap' ? '🔍 Zoom in to reveal the fungal network' : '🔍 Zoom out to see the cosmic starfield'}
+          <div className="text-[10px] md:text-xs text-gray-300 border-t border-purple-500/20 pt-1 md:pt-2">
+            {mode === 'starmap' ? '🔍 Zoom in to reveal network' : '🔍 Zoom out to see starfield'}
           </div>
           {mode === 'fungus' && (
             <div className="mt-2 pt-2 border-t border-green-500/20">
@@ -920,13 +920,13 @@ function StarmapScene() {
             <Canvas
               key={retryKey}
               camera={{ position: [0, 25, 55], fov: 50 }}
-              className="bg-gradient-to-b from-black via-purple-950/20 to-black"
-              dpr={1}
+              className="bg-gradient-to-b from-black via-purple-950/20 to-black touch-pan-y touch-pinch-zoom"
+              dpr={window.devicePixelRatio > 1 ? 1 : 0.8}
               legacy={true}
               gl={{ 
                 antialias: false, 
                 alpha: false,
-                powerPreference: "default",
+                powerPreference: "low-power",
                 preserveDrawingBuffer: false,
                 stencil: false,
                 depth: false,
@@ -994,6 +994,24 @@ function StarmapScene() {
                 )}
                 
                 <CameraController onModeChange={setMode} />
+                <OrbitControls 
+                  enablePan={true}
+                  enableZoom={true}
+                  enableRotate={true}
+                  zoomSpeed={0.6}
+                  panSpeed={0.8}
+                  rotateSpeed={0.4}
+                  maxDistance={100}
+                  minDistance={10}
+                  maxPolarAngle={Math.PI}
+                  minPolarAngle={0}
+                  enableDamping={true}
+                  dampingFactor={0.1}
+                  touches={{
+                    ONE: 2, // TOUCH.ROTATE
+                    TWO: 1  // TOUCH.DOLLY_PAN
+                  }}
+                />
                 
                 {userPositions.map(({ user, position }, index) => (
                   <StarUser

@@ -371,8 +371,8 @@ export default function Profile() {
                       <Button 
                         onClick={handleFollowUser}
                         disabled={followMutation.isPending}
-                        className="w-full bg-primary hover:bg-primary/80"
-                        data-testid="button-follow"
+                        className="w-full bg-primary text-white hover:bg-primary/80 hover:text-white"
+                        data-testid="button-connect"
                       >
                         {followMutation.isPending ? (
                           <>
@@ -453,14 +453,14 @@ export default function Profile() {
                       : "This seeker hasn't shared their insights yet"
                     }
                   </p>
-                  {isOwnProfile && (
+                  {isOwnProfile ? (
                     <Button 
                       onClick={() => window.location.href = '/'}
-                      className="bg-primary hover:bg-primary/80"
+                      className="bg-primary text-white hover:bg-primary/80 hover:text-white"
                     >
                       Create Your First Post
                     </Button>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>

@@ -99,6 +99,7 @@ export interface IStorage {
   deleteUserSpirit(userId: string): Promise<void>;
   updateSpiritLevel(spiritId: string, level: number, experience: number): Promise<any>;
   updateSpiritImage(userId: string, imageUrl: string): Promise<any>;
+  updateSpiritEvolution(spiritId: string, evolution: any[]): Promise<any>;
 
   // Connections  
   createConnection(requesterId: string, receiverId: string): Promise<any>;
@@ -839,6 +840,15 @@ export class DatabaseStorage implements IStorage {
       .update(spirits)
       .set({ imageUrl, updatedAt: new Date() })
       .where(eq(spirits.userId, userId))
+      .returning();
+    return spirit;
+  }
+
+  async updateSpiritEvolution(spiritId: string, evolution: any[]): Promise<any> {
+    const [spirit] = await db
+      .update(spirits)
+      .set({ evolution, updatedAt: new Date() })
+      .where(eq(spirits.id, spiritId))
       .returning();
     return spirit;
   }

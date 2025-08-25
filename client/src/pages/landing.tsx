@@ -24,83 +24,86 @@ export default function Landing() {
         <div className="absolute top-1/6 right-1/6 w-1 h-1 bg-white rounded-full animate-pulse opacity-70" style={{animationDelay: '0.8s'}}></div>
       </div>
 
-      {/* Premium Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-cosmic/80 backdrop-blur-2xl border-b border-primary/20 shadow-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/30 rounded-xl blur-md animate-pulse"></div>
-                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                  <img src={logoImage} alt="Ascended Social Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+      {/* Premium Navigation */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/5 backdrop-blur-3xl border-b border-white/10 shadow-2xl">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <div className="flex items-center space-x-4">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                <div className="relative w-10 h-10 lg:w-12 lg:h-12 rounded-2xl bg-gradient-to-br from-primary via-purple-500 to-secondary flex items-center justify-center shadow-2xl border border-white/10">
+                  <img src={logoImage} alt="Ascended Social Logo" className="w-6 h-6 lg:w-8 lg:h-8" />
                 </div>
               </div>
-              <div>
-                <h1 className="text-lg sm:text-2xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  <span className="hidden sm:inline">Ascended Social</span>
-                  <span className="sm:hidden">Ascended</span>
+              <div className="hidden sm:block">
+                <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent">
+                  Ascended Social
                 </h1>
-                <p className="text-xs text-muted font-medium tracking-wide hidden sm:block">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-white/60 font-medium tracking-[0.1em] uppercase">Transcend • Connect • Evolve</p>
               </div>
             </div>
             
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-4">
-              <Button 
-                variant="ghost"
-                onClick={() => window.location.href = '/about'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                data-testid="button-about"
-              >
-                About
-              </Button>
-              <Button 
-                variant="ghost"
-                onClick={() => window.location.href = '/features'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                data-testid="button-features"
-              >
-                Features
-              </Button>
-              <Button 
-                variant="ghost"
-                onClick={() => window.location.href = '/pricing'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                data-testid="button-pricing"
-              >
-                Pricing
-              </Button>
+            {/* Premium Navigation */}
+            <div className="hidden lg:flex items-center space-x-1">
+              <nav className="flex items-center space-x-1 bg-white/5 rounded-2xl p-1 border border-white/10 backdrop-blur-xl">
+                <Button 
+                  variant="ghost"
+                  onClick={() => window.location.href = '/about'}
+                  className="text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl px-4 py-2.5 text-sm font-medium"
+                  data-testid="button-about"
+                >
+                  About
+                </Button>
+                <Button 
+                  variant="ghost"
+                  onClick={() => window.location.href = '/features'}
+                  className="text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl px-4 py-2.5 text-sm font-medium"
+                  data-testid="button-features"
+                >
+                  Features
+                </Button>
+                <Button 
+                  variant="ghost"
+                  onClick={() => window.location.href = '/pricing'}
+                  className="text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl px-4 py-2.5 text-sm font-medium"
+                  data-testid="button-pricing"
+                >
+                  Pricing
+                </Button>
+              </nav>
               <Button 
                 onClick={() => window.location.href = '/api/login'}
-                className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/25 hover:shadow-xl"
+                className="relative group bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-medium px-8 py-3 rounded-2xl transition-all duration-500 hover:scale-105 border border-white/20 ml-4"
                 data-testid="button-login"
               >
-                <span className="relative z-10">Enter the Realm</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <span className="relative z-10 flex items-center gap-2">
+                  Enter the Realm
+                  <i className="fas fa-arrow-right text-sm group-hover:translate-x-0.5 transition-transform duration-300"></i>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </Button>
             </div>
 
-            {/* Mobile Hamburger Menu */}
-            <div className="md:hidden flex items-center space-x-2">
+            {/* Mobile Actions */}
+            <div className="lg:hidden flex items-center space-x-3">
               <Button 
-                size="sm"
                 onClick={() => window.location.href = '/api/login'}
-                className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-3 py-2 rounded-xl transition-all duration-300 shadow-lg"
+                className="relative group bg-gradient-to-r from-primary to-secondary text-white font-medium px-6 py-2.5 rounded-xl transition-all duration-300 shadow-xl border border-white/20"
                 data-testid="button-login-mobile"
               >
-                <span className="relative z-10">Login</span>
+                <span className="relative z-10 text-sm">Enter</span>
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-white hover:text-primary p-2"
+                className="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-xl transition-all duration-300"
                 data-testid="button-mobile-menu"
               >
-                <div className="space-y-1">
-                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
-                  <div className={`w-5 h-0.5 bg-current transition-all duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
+                <div className="space-y-1.5">
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-500 ${isMobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-500 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></div>
+                  <div className={`w-5 h-0.5 bg-current transition-all duration-500 ${isMobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></div>
                 </div>
               </Button>
             </div>
@@ -108,18 +111,18 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Mobile Navigation Menu */}
+      {/* Premium Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-cosmic/95 backdrop-blur-xl border-b border-primary/30 md:hidden">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <nav className="flex flex-col space-y-3">
+        <div className="fixed top-20 left-0 right-0 z-40 bg-black/20 backdrop-blur-3xl border-b border-white/10 lg:hidden">
+          <div className="max-w-7xl mx-auto px-6 py-6">
+            <nav className="flex flex-col space-y-1">
               <Button
                 variant="ghost"
                 onClick={() => {
                   window.location.href = '/about';
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-left justify-start text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl py-3 px-4 text-base font-medium"
                 data-testid="mobile-nav-about"
               >
                 About
@@ -130,7 +133,7 @@ export default function Landing() {
                   window.location.href = '/features';
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-left justify-start text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl py-3 px-4 text-base font-medium"
                 data-testid="mobile-nav-features"
               >
                 Features
@@ -141,7 +144,7 @@ export default function Landing() {
                   window.location.href = '/pricing';
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-left justify-start text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl py-3 px-4 text-base font-medium"
                 data-testid="mobile-nav-pricing"
               >
                 Pricing
@@ -152,7 +155,7 @@ export default function Landing() {
                   window.location.href = '/community';
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-left justify-start text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-left justify-start text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-xl py-3 px-4 text-base font-medium"
                 data-testid="mobile-nav-community"
               >
                 Community
@@ -163,72 +166,93 @@ export default function Landing() {
       )}
 
       {/* Hero Section */}
-      <main className="relative pt-20 sm:pt-24">
-        <div className="max-w-8xl mx-auto px-4 sm:px-6 py-12 sm:py-20 text-center relative z-10">
+      <main className="relative pt-28 lg:pt-32">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 lg:py-24 text-center relative z-10">
           {/* Premium Hero Content */}
           <div className="relative">
-            {/* Floating Elements */}
-            <div className="absolute -top-20 left-1/4 w-2 h-2 bg-primary rounded-full animate-float opacity-60"></div>
-            <div className="absolute -top-10 right-1/3 w-1.5 h-1.5 bg-secondary rounded-full animate-float opacity-80" style={{animationDelay: '1s'}}></div>
-            <div className="absolute top-32 left-1/6 w-1 h-1 bg-chakra-heart rounded-full animate-float opacity-70" style={{animationDelay: '2s'}}></div>
+            {/* Floating Orbs */}
+            <div className="absolute -top-12 left-1/4 w-3 h-3 bg-gradient-to-r from-primary to-purple-400 rounded-full animate-float opacity-40 blur-sm"></div>
+            <div className="absolute -top-6 right-1/3 w-2 h-2 bg-gradient-to-r from-secondary to-pink-400 rounded-full animate-float opacity-60 blur-sm" style={{animationDelay: '1s'}}></div>
+            <div className="absolute top-40 left-1/6 w-2 h-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full animate-float opacity-50 blur-sm" style={{animationDelay: '2s'}}></div>
             
             {/* Main Hero Text */}
-            <div className="mb-8 animate-fade-in">
-              <div className="inline-block px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-medium mb-6 backdrop-blur-sm">
-                ✨ The Future of Spiritual Connection
+            <div className="mb-12 lg:mb-16 space-y-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full text-white/90 text-sm font-medium backdrop-blur-xl">
+                <div className="w-2 h-2 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"></div>
+                The Future of Spiritual Connection
               </div>
-              <h2 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-display font-bold mb-6 sm:mb-8 leading-tight sm:leading-none">
-                <span className="bg-gradient-to-r from-white via-primary to-secondary bg-clip-text text-transparent animate-gradient-x">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-8 leading-[0.9] tracking-tight">
+                <span className="block bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent">
                   Ascend Your
                 </span>
-                <br />
-                <span className="bg-gradient-to-r from-secondary via-chakra-crown to-primary bg-clip-text text-transparent">
+                <span className="block bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent animate-gradient-x">
                   Social Reality
                 </span>
-              </h2>
-              <p className="text-lg sm:text-xl lg:text-2xl text-subtle mb-8 sm:mb-12 leading-relaxed max-w-4xl mx-auto font-light px-4">
-                Where ancient wisdom meets cutting-edge technology. Connect with enlightened souls,
-                <br className="hidden lg:block" />
-                share your spiritual journey, and unlock your highest potential in a sacred digital space.
+              </h1>
+              <p className="text-xl lg:text-2xl text-white/70 mb-12 leading-relaxed max-w-4xl mx-auto font-light">
+                Where ancient wisdom meets cutting-edge technology.
+                <span className="hidden lg:inline"><br /></span>
+                <span className="lg:hidden"> </span>
+                Connect with enlightened souls and unlock your highest potential.
               </p>
             </div>
             
-            {/* Premium CTA Buttons */}
-            <div className="flex justify-center items-center mb-12 sm:mb-16 animate-slide-up px-4">
+            {/* Premium CTA */}
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16 lg:mb-20">
               <Button 
-                size="lg" 
                 onClick={() => window.location.href = '/api/login'}
-                className="group relative bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold px-8 sm:px-12 py-3 sm:py-4 rounded-2xl text-base sm:text-lg transition-all duration-500 shadow-2xl hover:shadow-primary/30 hover:scale-105 w-full max-w-sm sm:max-w-none sm:min-w-[280px]"
+                className="group relative bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-semibold px-10 py-4 rounded-2xl text-lg transition-all duration-500 hover:scale-105 border border-white/20 min-w-[280px]"
                 data-testid="button-join"
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
-                  <span className="hidden sm:inline">Begin Your Ascension</span>
-                  <span className="sm:hidden">Start Journey</span>
-                  <i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                  Begin Your Ascension
+                  <i className="fas fa-sparkles group-hover:rotate-12 transition-transform duration-300"></i>
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur-lg opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              </Button>
+              <Button 
+                variant="ghost"
+                onClick={() => window.location.href = '/features'}
+                className="group text-white/80 hover:text-white border border-white/20 hover:border-white/40 font-medium px-8 py-4 rounded-2xl text-lg transition-all duration-300 hover:bg-white/5 backdrop-blur-xl min-w-[200px]"
+                data-testid="button-learn-more"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  Learn More
+                  <i className="fas fa-arrow-right text-sm group-hover:translate-x-1 transition-transform duration-300"></i>
+                </span>
               </Button>
             </div>
             
             {/* Trust Indicators */}
-            <div className="flex flex-col lg:flex-row justify-center items-center gap-8 text-sm text-muted animate-fade-in" style={{animationDelay: '0.5s'}}>
-              <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">A</div>
-                  <div className="w-8 h-8 bg-gradient-to-br from-chakra-heart to-chakra-crown rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">S</div>
-                  <div className="w-8 h-8 bg-gradient-to-br from-secondary to-chakra-throat rounded-full border-2 border-cosmic flex items-center justify-center text-xs font-bold">M</div>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-8 lg:gap-12 text-white/60">
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-primary to-purple-500 rounded-full border-2 border-white/20 flex items-center justify-center text-sm font-bold backdrop-blur-xl">A</div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-secondary rounded-full border-2 border-white/20 flex items-center justify-center text-sm font-bold backdrop-blur-xl">S</div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-secondary to-pink-500 rounded-full border-2 border-white/20 flex items-center justify-center text-sm font-bold backdrop-blur-xl">+</div>
                 </div>
-                <span className="font-medium">Join the Community</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex text-yellow-400">
-                  {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star text-sm"></i>)}
+                <div className="text-left">
+                  <div className="text-white font-medium text-sm">Growing Community</div>
+                  <div className="text-white/50 text-xs">Spiritual seekers worldwide</div>
                 </div>
-                <span className="font-medium">Premium Experience</span>
               </div>
-              <div className="flex items-center gap-2">
-                <i className="fas fa-shield-alt text-primary"></i>
-                <span className="font-medium">Sacred & Secure</span>
+              <div className="flex items-center gap-3">
+                <div className="flex text-amber-400 text-lg">
+                  {[...Array(5)].map((_, i) => <i key={i} className="fas fa-star"></i>)}
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium text-sm">Premium Experience</div>
+                  <div className="text-white/50 text-xs">Crafted with care</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/10 rounded-full border border-white/20 flex items-center justify-center backdrop-blur-xl">
+                  <i className="fas fa-shield-alt text-primary text-lg"></i>
+                </div>
+                <div className="text-left">
+                  <div className="text-white font-medium text-sm">Sacred & Secure</div>
+                  <div className="text-white/50 text-xs">Privacy protected</div>
+                </div>
               </div>
             </div>
           </div>

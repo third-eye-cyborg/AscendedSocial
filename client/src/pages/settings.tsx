@@ -85,11 +85,11 @@ export default function Settings() {
   const { data: userSettings } = useQuery({
     queryKey: ["/api/users/settings"],
     enabled: !!(user as any)?.id,
-  });
+  }) as { data: any };
 
   // Update state when settings are loaded
   React.useEffect(() => {
-    if (userSettings) {
+    if (userSettings && userSettings.privacy && userSettings.notifications) {
       // Privacy settings
       setProfileVisibility(userSettings.privacy.profileVisibility);
       setPostsVisibility(userSettings.privacy.postsVisibility);

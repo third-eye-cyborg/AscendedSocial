@@ -27,17 +27,25 @@ export default function Sidebar() {
       <Card className="bg-cosmic-light rounded-xl mb-6 aura-visualization border border-primary/30 hover-lift animate-slide-up">
         <CardContent className="p-4">
           <div className="flex items-center space-x-3 mb-3">
-            <ProfileIcon 
-              user={user}
-              size="lg"
-              className="sigil-container"
-              testId="sidebar-profile"
-            />
+            <Link href={`/profile/${(user as any)?.id}`}>
+              <div data-testid="link-profile">
+                <ProfileIcon 
+                  user={user}
+                  size="lg"
+                  className="sigil-container hover:opacity-80 transition-opacity"
+                  testId="sidebar-profile"
+                />
+              </div>
+            </Link>
             <div className="flex-1 min-w-0 overflow-hidden">
-              <h3 className="font-semibold text-white text-sm truncate max-w-full" data-testid="text-sidebar-username" title={(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}>
-                {(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}
-              </h3>
-              <p className="text-xs text-primary truncate">Ascending Soul</p>
+              <Link href={`/profile/${(user as any)?.id}`}>
+                <div className="cursor-pointer hover:opacity-80 transition-opacity" data-testid="link-profile-info">
+                  <h3 className="font-semibold text-white text-sm truncate max-w-full" data-testid="text-sidebar-username" title={(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}>
+                    {(user as any)?.username || (user as any)?.email || 'Spiritual Seeker'}
+                  </h3>
+                  <p className="text-xs text-primary truncate">Ascending Soul</p>
+                </div>
+              </Link>
             </div>
           </div>
           

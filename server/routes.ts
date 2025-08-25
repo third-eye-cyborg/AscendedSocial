@@ -539,6 +539,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Refresh community oracle content - generates fresh random posts for mystical guidance
+  app.post('/api/oracle/community', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get fresh random posts from the community, excluding the current user's posts
+      const randomPosts = await storage.getRandomPosts(5, userId);
+      
+      // Transform posts into oracle-style guidance
+      const oracleContent = randomPosts.map(post => ({
+        id: post.id,
+        type: 'community_wisdom',
+        title: `Wisdom from ${post.author.username || post.author.email || 'a fellow seeker'}`,
+        content: post.content,
+        guidance: `The universe has guided you to this message from a spiritual companion on their journey.`,
+        chakra: post.chakra,
+        author: {
+          id: post.author.id,
+          username: post.author.username,
+          email: post.author.email,
+          sigil: post.author.sigil
+        },
+        createdAt: post.createdAt
+      }));
+      
+      res.json(oracleContent);
+    } catch (error) {
+      console.error("Error refreshing community oracle:", error);
+      res.status(500).json({ message: "Failed to refresh community oracle" });
+    }
+  });
+
   // Generate personalized oracle reading based on user's recent activity
   app.post('/api/oracle/personalized', isAuthenticated, async (req: any, res) => {
     try {

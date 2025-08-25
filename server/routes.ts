@@ -1480,7 +1480,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Deduct energy cost
       await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
       
-      // Delete old spirit and create new one with preserved level/experience
+      // Preserve evolution history and add regeneration entry
+      const preservedEvolution = [...((existingSpirit as any).evolution || [])];
+      const regenerationEntry = {
+        timestamp: new Date().toISOString(),
+        action: "spirit_regeneration",
+        experienceGain: 0,
+        newExperience: (existingSpirit as any).experience || 0,
+        newLevel: (existingSpirit as any).level || 1,
+        leveledUp: false
+      };
+      preservedEvolution.push(regenerationEntry);
+      
+      // Delete old spirit and create new one with preserved level/experience AND evolution history
       await storage.deleteUserSpirit(userId);
       
       const newSpirit = await storage.createSpirit(userId, {
@@ -1495,6 +1507,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           regeneratedAt: new Date().toISOString()
         }
       });
+
+      // Update the new spirit with preserved evolution history
+      if (newSpirit) {
+        await storage.updateSpiritEvolution((newSpirit as any).id, preservedEvolution);
+      }
 
       res.json(newSpirit);
     } catch (error) {

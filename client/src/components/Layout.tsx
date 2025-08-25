@@ -147,7 +147,7 @@ export default function Layout({ children }: LayoutProps) {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 xl:ml-64 2xl:mr-80">
+        <div className="flex-1 xl:ml-64 2xl:mr-80 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent h-screen">
           <div className="pb-20 xl:pb-0">
             {children}
           </div>

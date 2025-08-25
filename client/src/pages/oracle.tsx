@@ -242,7 +242,7 @@ export default function Oracle() {
                   ))}
                 </div>
               ) : recommendations && (recommendations as any[])?.length > 0 ? (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
                   {(recommendations as any[])?.slice(0, 4).map((rec, index) => (
                     <div key={index} className="border-l-2 border-primary/30 pl-3 py-1">
                       <h4 className="font-semibold text-white text-xs mb-1 line-clamp-1">
@@ -310,7 +310,7 @@ export default function Oracle() {
                   ))}
                 </div>
               ) : communityOracle && (communityOracle as any[])?.length > 0 ? (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
+                <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
                   {(communityOracle as any[])?.slice(0, 2).map((oracle, index) => (
                     <div key={oracle.id} className="border-l-2 border-accent/30 pl-3 py-2">
                       <div className="flex items-center space-x-2 mb-2">

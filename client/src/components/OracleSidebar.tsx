@@ -129,7 +129,7 @@ export default function OracleSidebar() {
               ))}
             </div>
           ) : recommendations && Array.isArray(recommendations) && recommendations.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
               {(recommendations as any[]).map((rec: any, index: number) => (
                 <div 
                   key={index}

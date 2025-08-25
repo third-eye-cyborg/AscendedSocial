@@ -162,6 +162,53 @@ PROD_API_KEY=prod_api_key_678
 
 ## 🔄 Sync Instructions
 
+### GitHub Integration for Feature Development
+
+#### Version Control Strategy
+We use **GitHub repositories for small feature development** within larger Replit projects to provide additional isolation and version control granularity.
+
+##### GitHub + Replit Workflow
+```bash
+# 1. Create feature-specific GitHub repository
+git init [feature-name]-development
+git remote add origin https://github.com/[org]/[feature-name]-dev.git
+
+# 2. Sync with main Replit project
+git remote add replit-main https://github.com/[org]/[main-project].git
+git fetch replit-main
+
+# 3. Create isolated feature branch
+git checkout -b feature/[feature-name]
+git checkout -b feature/[feature-name]-staging
+```
+
+##### Small Feature Development Process
+1. **Create GitHub Repository** for each significant feature
+   - Repository naming: `[main-project]-[feature-name]-dev`
+   - Example: `ascended-social-ai-oracle-dev`
+
+2. **Link to Replit Development Environment**
+   ```bash
+   # In Replit development environment
+   git remote add feature-repo https://github.com/[org]/[feature-repo].git
+   git fetch feature-repo
+   git checkout -b feature/[name]
+   ```
+
+3. **Isolated Development & Testing**
+   - Develop feature in isolation
+   - Test against development Replit environment
+   - Maintain separate database migrations if needed
+   - Document feature-specific environment variables
+
+4. **Integration Back to Main Project**
+   ```bash
+   # Merge tested feature back to main development
+   git checkout development
+   git merge feature/[name]
+   git push origin development
+   ```
+
 ### Initial Project Sync
 
 #### 1. Code Synchronization
@@ -206,11 +253,13 @@ psql [dev-db] < schema.sql
 ### Ongoing Sync Process
 
 #### Daily Sync Checklist
-- [ ] Code changes pushed to appropriate branches
+- [ ] Code changes pushed to appropriate branches (main + feature repos)
 - [ ] Database migrations tested in development
 - [ ] New secrets added to appropriate environments
 - [ ] Storage configurations updated if needed
 - [ ] Dependencies updated across environments
+- [ ] Feature repository changes synced to main development
+- [ ] GitHub feature branch status reviewed
 
 #### Weekly Sync Checklist  
 - [ ] Development → Staging deployment test
@@ -218,6 +267,27 @@ psql [dev-db] < schema.sql
 - [ ] Secret rotation if scheduled
 - [ ] Performance metrics comparison
 - [ ] Security audit completion
+- [ ] Feature repository merge/archive decisions
+- [ ] GitHub repository cleanup (completed features)
+
+#### Feature Repository Sync Protocol
+```bash
+# Daily feature development sync
+git checkout development
+git pull origin development
+
+# Sync with feature repository
+git fetch feature-repo
+git merge feature-repo/main
+
+# Push updates back to main development
+git push origin development
+
+# Sync feature repo with latest main changes
+git checkout feature/[name]
+git merge development
+git push feature-repo feature/[name]
+```
 
 ---
 
@@ -291,18 +361,47 @@ PROD_DEEPLINK_SCHEME=myapp://
 
 ### Git Workflow Strategy
 
-#### Branch Structure
+#### Multi-Repository Branch Structure
 ```
+📁 Main Project Repository (Replit)
 main (production)
 ├── staging
 │   ├── feature/user-auth-improvement
-│   ├── feature/new-dashboard
+│   ├── feature/new-dashboard  
 │   └── bugfix/login-error-handling
 └── development
     ├── feature/experimental-ui
     ├── feature/ai-integration
     └── hotfix/critical-security-patch
+
+📁 Feature-Specific GitHub Repositories
+├── ascended-social-ai-oracle-dev
+│   ├── main
+│   ├── feature/oracle-improvements
+│   └── feature/tarot-integration
+├── ascended-social-3d-starmap-dev  
+│   ├── main
+│   ├── feature/fungal-mode
+│   └── feature/cosmic-animations
+└── ascended-social-mobile-auth-dev
+    ├── main
+    ├── feature/biometric-auth
+    └── feature/social-login
 ```
+
+#### GitHub Feature Repository Management
+##### Repository Creation Guidelines
+1. **Naming Convention**: `[main-project]-[feature-area]-dev`
+2. **Repository Scope**: Single feature or closely related feature set
+3. **Lifespan**: Temporary - merged back and archived after completion
+4. **Team Access**: Limited to feature development team members
+
+##### Feature Development Isolation Benefits
+- **Resource Isolation**: Separate GitHub Actions, CI/CD pipelines
+- **Access Control**: Feature-specific team permissions  
+- **Experimentation Safety**: Break things without affecting main project
+- **Code Review Granularity**: Feature-focused pull request reviews
+- **Deployment Testing**: Deploy feature branches to isolated Replit instances
 
 #### Merge Process Documentation
 

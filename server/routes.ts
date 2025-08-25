@@ -1559,10 +1559,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         astrologySign
       });
 
+      // Preserve evolution history and add questionnaire evolution entry
+      const preservedEvolution = [...((existingSpirit as any).evolution || [])];
+      const questEvolutionEntry = {
+        timestamp: new Date().toISOString(),
+        action: "questionnaire_evolution",
+        experienceGain: 0,
+        newExperience: (existingSpirit as any).experience || 0,
+        newLevel: (existingSpirit as any).level || 1,
+        leveledUp: false,
+        spiritName: spiritData.name,
+        updatedBeliefs: beliefs,
+        updatedPath: spiritualPath
+      };
+      preservedEvolution.push(questEvolutionEntry);
+      
       // Deduct energy cost
       await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
       
-      // Delete old spirit and create new one with preserved level/experience
+      // Delete old spirit and create new one with preserved level/experience AND evolution history
       await storage.deleteUserSpirit(userId);
       
       const newSpirit = await storage.createSpirit(userId, {
@@ -1584,6 +1599,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           previousQuestionnaire: (existingSpirit as any).questionnaire
         }
       });
+
+      // Update the new spirit with preserved evolution history
+      if (newSpirit) {
+        await storage.updateSpiritEvolution((newSpirit as any).id, preservedEvolution);
+      }
 
       res.json(newSpirit);
     } catch (error) {

@@ -483,7 +483,7 @@ export default function PostCard({ post }: PostCardProps) {
                           className="w-full h-full object-contain rounded-lg"
                         />
                         <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
-                          {index + 1} of {post.imageUrls.length}
+                          {index + 1} of {post.imageUrls?.length || 0}
                         </div>
                       </div>
                     </DialogContent>
@@ -509,7 +509,7 @@ export default function PostCard({ post }: PostCardProps) {
                         className="w-full h-full object-contain rounded-lg"
                       />
                       <div className="absolute top-2 left-2 text-white text-sm bg-black/70 px-3 py-1 rounded-full">
-                        1 of {post.imageUrls.length}
+                        1 of {post.imageUrls?.length || 0}
                       </div>
                     </div>
                   </DialogContent>

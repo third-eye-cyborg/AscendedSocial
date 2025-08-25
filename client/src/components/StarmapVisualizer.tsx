@@ -259,12 +259,12 @@ interface StarmapUser {
   postCount: number;
 }
 
-// Get position based on spiritual attributes
+// Get position based on spiritual attributes - Enhanced 3D positioning
 const getStarPosition = (user: StarmapUser, index: number): Vector3 => {
   // Safe access to user properties with fallbacks
   const chakraIndex = user?.dominantChakra 
     ? Object.keys(chakraColors).indexOf(user.dominantChakra)
-    : (index % 7); // Use index for consistent positioning instead of random
+    : (index % 7);
   
   const auraLevel = user?.aura || 0;
   const energyLevel = user?.energy || 500;
@@ -274,14 +274,26 @@ const getStarPosition = (user: StarmapUser, index: number): Vector3 => {
   const safeAuraLevel = Number.isFinite(auraLevel) ? auraLevel : 0;
   const safeEnergyLevel = Number.isFinite(energyLevel) ? energyLevel : 500;
   
-  const angle = (safeChakraIndex / 7) * Math.PI * 2 + (Math.sin(index) * 0.5);
-  const radius = Math.max(5, 10 + (safeAuraLevel / 100) + (index % 5));
-  const height = Math.max(-5, Math.min(15, (safeEnergyLevel / 1000) * 10 + (Math.sin(index * 1.5) * 2.5)));
+  // Enhanced 3D positioning with dramatic depth but simplified calculations
+  const baseAngle = (safeChakraIndex / 7) * Math.PI * 2;
+  const spiralOffset = (index * 0.5) % (Math.PI * 2); // Simpler spiral
+  const angle = baseAngle + spiralOffset;
+  const radius = Math.max(10, 20 + (safeAuraLevel / 100) + (index % 6));
+  
+  // Create dramatic 3D depth layers for true 3D experience
+  const depthLayer = index % 4;
+  const depthMultiplier = 1 + (depthLayer * 2.5); // More dramatic depth
+  const finalRadius = radius * depthMultiplier;
+  
+  // Dramatic height variation for 3D distribution
+  const baseHeight = (depthLayer - 1.5) * 15; // Larger Y spread
+  const spiritualHeight = (safeEnergyLevel / 1000) * 8;
+  const height = baseHeight + spiritualHeight + (Math.sin(index * 1.618) * 4);
   
   return new Vector3(
-    Math.cos(angle) * radius,
+    Math.cos(angle) * finalRadius,
     height,
-    Math.sin(angle) * radius
+    Math.sin(angle) * finalRadius
   );
 };
 
@@ -298,23 +310,53 @@ function StarUser({ user, position, mode, onClick }: {
   useFrame((state, delta) => {
     try {
       if (meshRef.current) {
-        // Enhanced rotation with gentle bobbing
-        meshRef.current.rotation.y += delta * (hovered ? 1.2 : 0.4);
-        meshRef.current.rotation.x += delta * 0.1;
+        const time = state.clock?.elapsedTime || 0;
+        const userSeed = user.id?.charCodeAt(0) || 0;
         
-        // Smooth scale animation with spiritual pulsing
-        const targetScale = hovered ? (mode === 'starmap' ? 1.8 : 1.5) : 1;
-        const currentScale = meshRef.current.scale.x;
-        const newScale = currentScale + (targetScale - currentScale) * delta * 6;
-        
-        // Add gentle spiritual pulsing
-        const pulse = 1 + Math.sin((state.clock?.elapsedTime || 0) * 3 + (user.id?.charCodeAt(0) || 0)) * 0.08;
-        meshRef.current.scale.setScalar(newScale * pulse);
-        
-        // Subtle vertical floating motion
-        const baseY = position.y || 0;
-        const floatOffset = Math.sin((state.clock?.elapsedTime || 0) * 2 + (user.id?.charCodeAt(0) || 0)) * 0.3;
-        meshRef.current.position.y = baseY + floatOffset;
+        if (mode === 'starmap') {
+          // Simplified 3D orbital motion for better performance
+          const orbitSpeed = 0.05 + (user.aura || 0) / 20000; // Gentler orbit for higher aura
+          const orbitRadius = 1 + (user.energy || 500) / 1000;
+          
+          // Create realistic orbital motion
+          const orbitX = Math.cos(time * orbitSpeed + userSeed) * orbitRadius;
+          const orbitZ = Math.sin(time * orbitSpeed + userSeed) * orbitRadius;
+          
+          meshRef.current.position.x = position.x + orbitX;
+          meshRef.current.position.z = position.z + orbitZ;
+          
+          // Dramatic 3D rotation with multiple axes
+          meshRef.current.rotation.y += delta * (hovered ? 2.5 : 0.8);
+          meshRef.current.rotation.x += delta * 0.3;
+          meshRef.current.rotation.z += delta * 0.15;
+          
+          // Enhanced pulsing with cosmic breathing
+          const cosmicPulse = 1 + Math.sin(time * 2 + userSeed) * 0.15;
+          const spiritualBreath = 1 + Math.sin(time * 0.5 + userSeed * 0.1) * 0.05;
+          const targetScale = hovered ? 2.2 : 1;
+          const currentScale = meshRef.current.scale.x;
+          const newScale = currentScale + (targetScale - currentScale) * delta * 8;
+          
+          meshRef.current.scale.setScalar(newScale * cosmicPulse * spiritualBreath);
+          
+          // Simplified floating motion for better performance
+          const floatY = Math.sin(time * 1.5 + userSeed) * 0.5;
+          meshRef.current.position.y = position.y + floatY;
+        } else {
+          // Fungus mode - more grounded but still 3D
+          meshRef.current.rotation.y += delta * (hovered ? 1.5 : 0.5);
+          meshRef.current.rotation.x += delta * 0.2;
+          
+          const targetScale = hovered ? 1.8 : 1;
+          const currentScale = meshRef.current.scale.x;
+          const newScale = currentScale + (targetScale - currentScale) * delta * 6;
+          const pulse = 1 + Math.sin(time * 3 + userSeed) * 0.1;
+          
+          meshRef.current.scale.setScalar(newScale * pulse);
+          
+          const floatOffset = Math.sin(time * 2 + userSeed) * 0.4;
+          meshRef.current.position.y = position.y + floatOffset;
+        }
       }
     } catch (error) {
       console.warn('Error in StarUser useFrame:', error);
@@ -562,10 +604,10 @@ function CameraController({ onModeChange }: { onModeChange: (mode: 'starmap' | '
     const distance = camera.position.distanceTo(new Vector3(0, 0, 0));
     
     // Use hysteresis to prevent flickering between modes
-    if (distance > 25 && lastMode !== 'starmap') {
+    if (distance > 35 && lastMode !== 'starmap') {
       onModeChange('starmap');  // Far = cosmic starfield view
       setLastMode('starmap');
-    } else if (distance < 18 && lastMode !== 'fungus') {
+    } else if (distance < 25 && lastMode !== 'fungus') {
       onModeChange('fungus');   // Close = fungal network view
       setLastMode('fungus');
     }
@@ -877,7 +919,7 @@ function StarmapScene() {
           {userPositions.length > 0 ? (
             <Canvas
               key={retryKey}
-              camera={{ position: [0, 10, 35], fov: 75 }}
+              camera={{ position: [0, 25, 55], fov: 50 }}
               className="bg-gradient-to-b from-black via-purple-950/20 to-black"
               dpr={1}
               legacy={true}
@@ -939,8 +981,11 @@ function StarmapScene() {
                 
                 {mode === 'starmap' && (
                   <>
-                    <Stars radius={300} depth={150} count={8000} factor={3} saturation={0.3} fade speed={0.3} />
-                    <fog attach="fog" args={['#000033', 80, 200]} />
+                    {/* Minimal cosmic background for 3D depth */}
+                    <Stars radius={200} depth={150} count={2000} factor={2} saturation={0.4} fade speed={0.3} />
+                    
+                    {/* Deep space fog for 3D perspective */}
+                    <fog attach="fog" args={['#000033', 50, 200]} />
                   </>
                 )}
                 

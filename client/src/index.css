@@ -168,7 +168,20 @@ html, body {
 }
 
 [data-radix-select-item]:hover,
-[data-radix-select-item][data-highlighted] {
+[data-radix-select-item][data-highlighted],
+[data-radix-select-content] [data-radix-select-item]:hover,
+[data-radix-select-content] [data-radix-select-item][data-highlighted],
+.select-item:hover,
+.select-item[data-highlighted] {
+  background: hsl(232, 45%, 15%, 0.9) !important;
+  color: white !important;
+}
+
+/* Additional specific targeting for select items */
+[role="option"]:hover,
+[role="option"][data-highlighted],
+[data-state="checked"]:hover,
+[data-state="checked"][data-highlighted] {
   background: hsl(232, 45%, 15%, 0.9) !important;
   color: white !important;
 }

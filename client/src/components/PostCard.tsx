@@ -651,11 +651,11 @@ export default function PostCard({ post }: PostCardProps) {
                 
                 <div className="px-2 sm:px-3 md:px-4 text-center">
                   <div 
-                    className={`text-base sm:text-lg font-bold transition-colors duration-300 ${
-                      post.frequency >= 0 
-                        ? 'text-green-100 drop-shadow-[0_0_6px_rgba(34,197,94,0.4)]' 
-                        : 'text-red-100 drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]'
-                    }`}
+                    className="text-base sm:text-lg font-bold transition-colors duration-300"
+                    style={{ 
+                      color: chakraColor,
+                      filter: `drop-shadow(0 0 6px ${chakraColor}40)`
+                    }}
                     data-testid={`frequency-display-${post.id}`}
                   >
                     {post.frequency > 0 ? '+' : ''}{post.frequency}

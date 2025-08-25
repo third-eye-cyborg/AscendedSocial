@@ -1,13 +1,13 @@
 export type ChakraType = "root" | "sacral" | "solar" | "heart" | "throat" | "third_eye" | "crown";
 
 export const chakraColors: Record<ChakraType, string> = {
-  root: "#FF0000",      // Red
-  sacral: "#FF7F00",    // Orange  
-  solar: "#FFFF00",     // Yellow
-  heart: "#00FF00",     // Green
-  throat: "#0000FF",    // Blue
-  third_eye: "#4B0082", // Indigo
-  crown: "#9400D3"      // Violet
+  root: "hsl(0, 100%, 50%)",        // Red
+  sacral: "hsl(30, 100%, 50%)",     // Orange  
+  solar: "hsl(60, 100%, 50%)",      // Yellow
+  heart: "hsl(340, 82%, 52%)",      // Pink/Red (matching CSS)
+  throat: "hsl(240, 100%, 50%)",    // Blue
+  third_eye: "hsl(260, 100%, 25%)", // Indigo
+  crown: "hsl(280, 100%, 41%)"      // Violet
 };
 
 export const chakraNames: Record<ChakraType, string> = {

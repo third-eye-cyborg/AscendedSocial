@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SpiritAvatar from "@/components/SpiritAvatar";
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles, TrendingUp, Zap, Star, Heart, Users, MessageCircle } from "lucide-react";
+import { Sparkles, TrendingUp, Zap, Star, Heart, Users, MessageCircle, Clock, Trophy, ArrowUp } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import type { Spirit } from "@shared/schema";
 
 export default function SpiritPage() {
@@ -252,6 +253,67 @@ export default function SpiritPage() {
                 <div className="text-sm text-gray-300">Aura Level</div>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Evolution Timeline */}
+        <Card className="bg-cosmic-light border-primary/30" data-testid="spirit-timeline">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center">
+              <Clock className="w-5 h-5 mr-2 text-accent-light" />
+              Evolution Timeline
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="max-h-96 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/30 scrollbar-track-transparent">
+            {spirit?.evolution && (spirit.evolution as any[]).length > 0 ? (
+              <div className="space-y-4">
+                {(spirit.evolution as any[])
+                  .slice()
+                  .reverse()
+                  .map((event: any, index: number) => (
+                    <div key={index} className="flex items-start space-x-4 p-4 bg-cosmic/30 rounded-lg hover:bg-cosmic/50 transition-colors">
+                      <div className="flex-shrink-0">
+                        {event.leveledUp ? (
+                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
+                            <Trophy className="w-5 h-5 text-white" data-testid="icon-level-up" />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 bg-cosmic rounded-full flex items-center justify-center border border-primary/30">
+                            <ArrowUp className="w-5 h-5 text-accent-light" data-testid="icon-experience-gain" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="text-white font-semibold" data-testid={`text-timeline-action-${index}`}>
+                            {event.leveledUp ? `Leveled up to Level ${event.newLevel}!` : event.action}
+                          </h4>
+                          <Badge variant="outline" className="text-green-400 border-green-400/30 text-xs">
+                            +{event.experienceGain} XP
+                          </Badge>
+                        </div>
+                        <p className="text-gray-300 text-sm mb-2" data-testid={`text-timeline-details-${index}`}>
+                          {event.leveledUp 
+                            ? `Reached ${event.newExperience} total experience points and advanced to the next level!`
+                            : `Total experience: ${event.newExperience} XP`
+                          }
+                        </p>
+                        <p className="text-gray-400 text-xs" data-testid={`text-timeline-time-${index}`}>
+                          {formatDistanceToNow(new Date(event.timestamp), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-white font-semibold mb-2">No Evolution History Yet</h3>
+                <p className="text-gray-300 text-sm">
+                  Start engaging with the community to see your spirit's growth journey!
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

@@ -137,9 +137,13 @@ export default function ReportDialog({
               <SelectTrigger className="bg-cosmic-light border-primary/30 text-white" data-testid="select-report-type">
                 <SelectValue placeholder="Select a reason..." />
               </SelectTrigger>
-              <SelectContent className="bg-cosmic-dark border-primary/30">
+              <SelectContent className="bg-cosmic-dark border-primary/30 shadow-xl z-50">
                 {reportTypeOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="text-white hover:bg-primary/10">
+                  <SelectItem 
+                    key={option.value} 
+                    value={option.value} 
+                    className="text-white hover:bg-primary/20 focus:bg-primary/20 focus:text-white data-[highlighted]:bg-primary/20 data-[highlighted]:text-white"
+                  >
                     <div>
                       <div className="font-medium">{option.label}</div>
                       <div className="text-sm text-white/60">{option.description}</div>

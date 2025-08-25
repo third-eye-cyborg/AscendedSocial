@@ -326,6 +326,7 @@ html, body {
   
   /* Spiritual/Mystical Colors */
   --cosmic: hsl(245, 58%, 10%);
+  --cosmic-dark: hsl(245, 70%, 6%);
   --cosmic-light: hsl(245, 35%, 15%);
   --accent-light: hsl(340, 82%, 70%);
   
@@ -721,6 +722,14 @@ html, body {
 
   .bg-cosmic-light {
     background-color: var(--cosmic-light);
+  }
+
+  .text-cosmic-dark {
+    color: var(--cosmic-dark);
+  }
+
+  .bg-cosmic-dark {
+    background-color: var(--cosmic-dark);
   }
 
   .text-accent-light {

@@ -21,6 +21,21 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 
+const zodiacEmojis: { [key: string]: string } = {
+  "Aries": "♈",
+  "Taurus": "♉", 
+  "Gemini": "♊",
+  "Cancer": "♋",
+  "Leo": "♌",
+  "Virgo": "♍",
+  "Libra": "♎",
+  "Scorpio": "♏",
+  "Sagittarius": "♐",
+  "Capricorn": "♑",
+  "Aquarius": "♒",
+  "Pisces": "♓"
+};
+
 export default function Profile() {
   const { userId } = useParams();
   const { user: currentUser } = useAuth();
@@ -189,7 +204,9 @@ export default function Profile() {
                   {profile?.astrologySign && (
                     <div className="flex items-center justify-center mb-3">
                       <div className="flex items-center space-x-2 px-3 py-1 bg-primary/20 rounded-full border border-primary/30">
-                        <i className="fas fa-star text-primary text-sm"></i>
+                        <span className="text-lg" data-testid="emoji-astrology-sign">
+                          {zodiacEmojis[profile.astrologySign] || "⭐"}
+                        </span>
                         <span className="text-sm text-white font-medium" data-testid="text-profile-astrology-sign">
                           {profile.astrologySign}
                         </span>

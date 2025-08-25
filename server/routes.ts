@@ -8,6 +8,7 @@ import {
   generateTarotReading,
   generateUserSigil,
   generateSigilImage,
+  generateSpiritImage,
   generateOracleRecommendations,
   generateSpirit
 } from "./openai";
@@ -61,8 +62,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Generate sigil if user doesn't have one
-      if (!user.sigil) {
+      // Generate sigil if user doesn't have one OR if sigil image is broken (temporary URL)
+      if (!user.sigil || (user.sigilImageUrl && user.sigilImageUrl.includes('oaidalleapiprodscus.blob.core.windows.net'))) {
+        console.log(`Regenerating sigil for user ${userId} - broken image detected`);
         const sigil = await generateUserSigil(user.username || user.email || userId);
         const sigilImageUrl = await generateSigilImage({ beliefs: 'spiritual growth', astrologySign: user.astrologySign || 'universal' });
         await storage.updateUserSigil(userId, sigil, sigilImageUrl);
@@ -370,6 +372,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const spirit = await storage.getUserSpirit(userId);
+      
+      // Check if spirit has broken image (temporary DALL-E URL) and regenerate
+      if (spirit && spirit.imageUrl && spirit.imageUrl.includes('oaidalleapiprodscus.blob.core.windows.net')) {
+        console.log(`Regenerating broken spirit image for user ${userId}`);
+        const newImageUrl = await generateSpiritImage({
+          name: spirit.name,
+          description: spirit.description,
+          element: spirit.element,
+          level: spirit.level
+        });
+        
+        // Update the spirit with the new image
+        await storage.updateSpiritImage(userId, newImageUrl);
+        spirit.imageUrl = newImageUrl;
+      }
+      
       res.json(spirit);
     } catch (error) {
       console.error("Error fetching spirit:", error);

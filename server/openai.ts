@@ -15,6 +15,8 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
       throw new Error("No image URL provided");
     }
 
+    console.log(`Starting image download for ${filename} from ${imageUrl.substring(0, 50)}...`);
+
     // Download the image from OpenAI's temporary URL
     const response = await fetch(imageUrl);
     if (!response.ok) {
@@ -22,43 +24,57 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
     }
 
     const imageBuffer = Buffer.from(await response.arrayBuffer());
+    console.log(`Downloaded image buffer: ${imageBuffer.length} bytes`);
     
-    // Save to object storage using the existing service method
-    const objectStorageService = new ObjectStorageService();
-    const privateObjectDir = objectStorageService.getPrivateObjectDir();
-    
-    // Create a full path for the image
-    let normalizedDir = privateObjectDir;
-    if (!normalizedDir.endsWith('/')) {
-      normalizedDir += '/';
-    }
-    const fullPath = `${normalizedDir}ai-images/${filename}`;
-    
-    // Parse the object path to get bucket and object names 
-    const { bucketName, objectName } = parseObjectPath(fullPath);
-    
-    // Upload to Google Cloud Storage using the imported client
-    const { objectStorageClient } = await import('./objectStorage');
-    const bucket = objectStorageClient.bucket(bucketName);
-    const file = bucket.file(objectName);
-    
-    await file.save(imageBuffer, {
-      metadata: {
-        contentType: 'image/png',
-        metadata: {
-          'generated-by': 'openai-dalle3',
-          'created-at': new Date().toISOString()
-        }
+    try {
+      // Try to save to object storage using the existing service method
+      const objectStorageService = new ObjectStorageService();
+      const privateObjectDir = objectStorageService.getPrivateObjectDir();
+      
+      // Create a full path for the image
+      let normalizedDir = privateObjectDir;
+      if (!normalizedDir.endsWith('/')) {
+        normalizedDir += '/';
       }
-    });
-    
-    console.log(`Successfully saved image to: ${bucketName}/${objectName}`);
-    
-    // Return the path that can be served via our API
-    return `/objects/ai-images/${filename}`;
+      const fullPath = `${normalizedDir}ai-images/${filename}`;
+      
+      // Parse the object path to get bucket and object names 
+      const { bucketName, objectName } = parseObjectPath(fullPath);
+      
+      // Upload to Google Cloud Storage using the imported client
+      const { objectStorageClient } = await import('./objectStorage');
+      const bucket = objectStorageClient.bucket(bucketName);
+      const file = bucket.file(objectName);
+      
+      await file.save(imageBuffer, {
+        metadata: {
+          contentType: 'image/png',
+          metadata: {
+            'generated-by': 'openai-dalle3',
+            'created-at': new Date().toISOString()
+          }
+        }
+      });
+      
+      console.log(`Successfully saved image to cloud storage: ${bucketName}/${objectName}`);
+      
+      // Return the path that can be served via our API
+      return `/objects/ai-images/${filename}`;
+      
+    } catch (storageError) {
+      console.warn(`Object storage failed for ${filename}, falling back to base64 encoding:`, storageError);
+      
+      // Fallback: Convert to base64 data URL for immediate use
+      const base64Data = imageBuffer.toString('base64');
+      const dataUrl = `data:image/png;base64,${base64Data}`;
+      
+      console.log(`Created base64 fallback for ${filename} (${base64Data.length} chars)`);
+      return dataUrl;
+    }
   } catch (error) {
-    console.error("Error downloading and saving image:", error);
-    // Return the original URL as fallback
+    console.error("Error downloading image:", error);
+    // Return the original URL as final fallback
+    console.warn(`Returning original URL as final fallback: ${imageUrl}`);
     return imageUrl;
   }
 }

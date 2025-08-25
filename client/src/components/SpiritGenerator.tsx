@@ -19,6 +19,7 @@ export default function SpiritGenerator() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEvolutionMode, setIsEvolutionMode] = useState(false);
   const [questionnaire, setQuestionnaire] = useState({
     isReligious: false,
     isSpiritual: true,
@@ -37,14 +38,16 @@ export default function SpiritGenerator() {
 
   const generateSpiritMutation = useMutation({
     mutationFn: async (questionnaireData: typeof questionnaire) => {
-      return apiRequest("POST", "/api/spirit/generate", questionnaireData);
+      const endpoint = isEvolutionMode ? "/api/spirit/evolve-with-questionnaire" : "/api/spirit/generate";
+      return apiRequest("POST", endpoint, questionnaireData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/spirit"] });
       setIsModalOpen(false);
+      setIsEvolutionMode(false);
       toast({
-        title: "✨ Spirit Generated!",
-        description: "Your new AI spiritual companion has been created",
+        title: isEvolutionMode ? "✨ Spirit Evolved!" : "✨ Spirit Generated!",
+        description: isEvolutionMode ? "Your spiritual companion has evolved with updated insights" : "Your new AI spiritual companion has been created",
       });
       // Reset form
       setQuestionnaire({
@@ -195,25 +198,51 @@ export default function SpiritGenerator() {
             </div>
             
             {/* Evolve Button - More Prominent */}
-            <Button
-              onClick={() => regenerateSpiritMutation.mutate()}
-              disabled={regenerateSpiritMutation.isPending || ((user as any)?.energy || 0) < 100}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
-              size="default"
-              data-testid="button-regenerate-spirit"
-            >
-              {regenerateSpiritMutation.isPending ? (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  Evolving...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Evolve
-                </>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => regenerateSpiritMutation.mutate()}
+                disabled={regenerateSpiritMutation.isPending || ((user as any)?.energy || 0) < 100}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                size="default"
+                data-testid="button-regenerate-spirit"
+              >
+                {regenerateSpiritMutation.isPending ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Evolving...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Quick Evolve
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={() => {
+                  // Pre-fill questionnaire with existing data
+                  const existingQuestionnaire = (currentSpirit as any)?.questionnaire || {};
+                  setQuestionnaire({
+                    isReligious: existingQuestionnaire.isReligious || false,
+                    isSpiritual: existingQuestionnaire.isSpiritual !== undefined ? existingQuestionnaire.isSpiritual : true,
+                    religion: existingQuestionnaire.religion || "",
+                    spiritualPath: existingQuestionnaire.spiritualPath || "",
+                    beliefs: existingQuestionnaire.beliefs || "",
+                    offerings: existingQuestionnaire.offerings || "",
+                    astrologySign: existingQuestionnaire.astrologySign || ""
+                  });
+                  setIsEvolutionMode(true);
+                  setIsModalOpen(true);
+                }}
+                disabled={((user as any)?.energy || 0) < 100}
+                className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-indigo-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                size="default"
+                data-testid="button-evolve-with-questionnaire"
+              >
+                <Wand2 className="w-4 h-4 mr-2" />
+                Evolve & Update
+              </Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -231,8 +260,13 @@ export default function SpiritGenerator() {
             <DialogHeader>
               <DialogTitle className="text-accent-light flex items-center">
                 <Sparkles className="w-5 h-5 mr-2" />
-                Generate Your AI Spirit Guide
+                {isEvolutionMode ? "Evolve Your AI Spirit Guide" : "Generate Your AI Spirit Guide"}
               </DialogTitle>
+              {isEvolutionMode && (
+                <p className="text-sm text-gray-400 mt-2">
+                  Update your spiritual insights to evolve your companion. Cost: 100 Energy
+                </p>
+              )}
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -319,7 +353,7 @@ export default function SpiritGenerator() {
                   <SelectTrigger className="bg-cosmic border-primary/30 text-white" data-testid="select-astrology">
                     <SelectValue placeholder="Select your zodiac sign" />
                   </SelectTrigger>
-                  <SelectContent className="bg-cosmic-light border-primary/30">
+                  <SelectContent className="bg-cosmic-light border-primary/30 max-h-[200px] overflow-y-auto">
                     {zodiacSigns.map((sign) => (
                       <SelectItem key={sign} value={sign} className="text-white hover:bg-primary/20">
                         {sign}
@@ -333,7 +367,7 @@ export default function SpiritGenerator() {
                 <Button
                   variant="outline"
                   onClick={() => setIsModalOpen(false)}
-                  className="flex-1 border-primary/50 text-white hover:bg-cosmic"
+                  className="flex-1 border-primary/50 text-white bg-slate-800 hover:bg-cosmic"
                 >
                   Cancel
                 </Button>
@@ -351,7 +385,7 @@ export default function SpiritGenerator() {
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Generate Spirit
+                      {isEvolutionMode ? "Evolve Spirit" : "Generate Spirit"}
                     </>
                   )}
                 </Button>

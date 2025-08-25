@@ -6,17 +6,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import SigilGenerator from "@/components/SigilGenerator";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import ProfilePictureChanger from "@/components/ProfilePictureChanger";
 
+const zodiacSigns = [
+  "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+  "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+];
+
 export default function ProfileSettings() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [username, setUsername] = useState((user as any)?.username || "");
+  const [astrologySign, setAstrologySign] = useState((user as any)?.astrologySign || "");
 
   const regenerateSigilMutation = useMutation({
     mutationFn: () => apiRequest("/api/users/regenerate-sigil", "POST"),
@@ -55,6 +62,25 @@ export default function ProfileSettings() {
     },
   });
 
+  const updateAstrologySignMutation = useMutation({
+    mutationFn: (newSign: string) => 
+      apiRequest(`/api/users/${(user as any)?.id}`, "PUT", { astrologySign: newSign }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({
+        title: "Success",
+        description: "Astrology sign updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update astrology sign",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleRegenerateSigil = () => {
     regenerateSigilMutation.mutate();
   };
@@ -62,6 +88,12 @@ export default function ProfileSettings() {
   const handleUpdateUsername = () => {
     if (username.trim()) {
       updateUsernameMutation.mutate(username.trim());
+    }
+  };
+
+  const handleUpdateAstrologySign = () => {
+    if (astrologySign) {
+      updateAstrologySignMutation.mutate(astrologySign);
     }
   };
 
@@ -113,7 +145,7 @@ export default function ProfileSettings() {
         </Card>
 
         {/* Username Section */}
-        <Card className="bg-cosmic-light border-primary/30">
+        <Card className="bg-cosmic-light border-primary/30 mb-6">
           <CardHeader>
             <CardTitle className="text-white">Username</CardTitle>
           </CardHeader>
@@ -138,6 +170,45 @@ export default function ProfileSettings() {
               >
                 <i className="fas fa-save mr-2"></i>
                 Update Username
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Astrology Sign Section */}
+        <Card className="bg-cosmic-light border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-white">Astrology Sign</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="astrology-sign" className="text-subtle">Your Zodiac Sign</Label>
+                <Select value={astrologySign} onValueChange={setAstrologySign}>
+                  <SelectTrigger className="bg-cosmic border-primary/30 text-white" data-testid="select-astrology-sign">
+                    <SelectValue placeholder="Select your zodiac sign" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-cosmic border-primary/30 max-h-48 overflow-y-auto">
+                    {zodiacSigns.map((sign) => (
+                      <SelectItem 
+                        key={sign} 
+                        value={sign}
+                        className="text-white hover:bg-primary/20 focus:bg-primary/20"
+                      >
+                        {sign}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={handleUpdateAstrologySign}
+                disabled={updateAstrologySignMutation.isPending || !astrologySign}
+                className="bg-primary hover:bg-primary/90 text-black font-semibold"
+                data-testid="button-update-astrology-sign"
+              >
+                <i className="fas fa-star mr-2"></i>
+                Update Astrology Sign
               </Button>
             </div>
           </CardContent>

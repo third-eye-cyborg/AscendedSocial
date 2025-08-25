@@ -64,6 +64,9 @@ async function upsertUser(
     lastName: claims["last_name"],
     profileImageUrl: claims["profile_image_url"],
   });
+  
+  // Return the user from database
+  return await storage.getUser(claims["sub"]);
 }
 
 export async function setupAuth(app: Express) {
@@ -81,9 +84,13 @@ export async function setupAuth(app: Express) {
     try {
       const claims = tokens.claims();
       const dbUser = await upsertUser(claims);
-      const user = { ...dbUser } as any;
-      updateUserSession(user, tokens);
-      verified(null, user);
+      const user = dbUser ? { ...dbUser } as any : null;
+      if (user) {
+        updateUserSession(user, tokens);
+        verified(null, user);
+      } else {
+        verified(new Error("Failed to create user"), null);
+      }
     } catch (error) {
       console.error("Error in verify function:", error);
       verified(error, null);

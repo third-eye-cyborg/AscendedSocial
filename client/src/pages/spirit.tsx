@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SpiritAvatar from "@/components/SpiritAvatar";
 import { useQuery } from "@tanstack/react-query";
-import { Sparkles, TrendingUp, Zap, Star, Heart, Users, MessageCircle, Clock, Trophy, ArrowUp } from "lucide-react";
+import { Sparkles, TrendingUp, Zap, Star, Heart, Users, MessageCircle, Clock, Trophy, ArrowUp, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useLocation } from "wouter";
 import type { Spirit } from "@shared/schema";
 
 export default function SpiritPage() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
 
   const { data: spirit, isLoading } = useQuery<Spirit | null>({
     queryKey: ["/api/spirit"],
@@ -111,13 +113,25 @@ export default function SpiritPage() {
     <div className="min-h-screen bg-cosmic p-4" data-testid="spirit-page">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent mb-2">
-            Your Spirit Guide
-          </h1>
-          <p className="text-gray-300">
-            Your spiritual companion that grows through your journey
-          </p>
+        <div className="relative mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation('/')}
+            className="absolute left-0 top-0 text-gray-400 hover:text-white hover:bg-purple-500/20 transition-colors"
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" />
+            Back
+          </Button>
+          <div className="text-center">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-violet-400 to-indigo-400 bg-clip-text text-transparent mb-2">
+              Your Spirit Guide
+            </h1>
+            <p className="text-gray-300">
+              Your spiritual companion that grows through your journey
+            </p>
+          </div>
         </div>
 
         {/* Main Spirit Display */}

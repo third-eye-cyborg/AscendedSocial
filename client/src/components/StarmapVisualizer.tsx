@@ -168,15 +168,14 @@ function Starmap2DFallback({ onRetry }: { onRetry: () => void }) {
         </Button>
       </div>
 
-
-      {/* 2D Starmap Grid */}
-      <div className="pt-20 pb-8 px-4">
+      {/* 2D Starmap Grid - Enhanced Mobile Scrolling */}
+      <div className="pt-20 pb-8 px-4 h-screen overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-transparent">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Spiritual Community Map</h1>
+          <h1 className="text-4xl sm:text-3xl font-bold text-white mb-2">Spiritual Community Map</h1>
           <p className="text-purple-300">Explore souls in the astral plane</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto pb-20">
           {users.filter(user => user?.id).map((user) => (
             <Card 
               key={user.id}
@@ -920,7 +919,8 @@ function StarmapScene() {
             <Canvas
               key={retryKey}
               camera={{ position: [0, 25, 55], fov: 50 }}
-              className="bg-gradient-to-b from-black via-purple-950/20 to-black touch-pan-y touch-pinch-zoom"
+              className="bg-gradient-to-b from-black via-purple-950/20 to-black touch-pan-y touch-pinch-zoom touch-manipulation h-full w-full"
+              style={{ touchAction: 'pan-y pinch-zoom' }}
               dpr={window.devicePixelRatio > 1 ? 1 : 0.8}
               legacy={true}
               gl={{ 
@@ -998,15 +998,15 @@ function StarmapScene() {
                   enablePan={true}
                   enableZoom={true}
                   enableRotate={true}
-                  zoomSpeed={0.6}
-                  panSpeed={0.8}
-                  rotateSpeed={0.4}
+                  zoomSpeed={1.2}
+                  panSpeed={1.5}
+                  rotateSpeed={0.8}
                   maxDistance={100}
                   minDistance={10}
                   maxPolarAngle={Math.PI}
                   minPolarAngle={0}
                   enableDamping={true}
-                  dampingFactor={0.1}
+                  dampingFactor={0.08}
                   touches={{
                     ONE: 2, // TOUCH.ROTATE
                     TWO: 1  // TOUCH.DOLLY_PAN
@@ -1053,18 +1053,18 @@ function StarmapScene() {
           )}
         </CanvasErrorBoundary>
       ) : (
-        <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full flex items-center justify-center">
-          <div className="text-center text-white max-w-2xl mx-auto p-8">
-            <div className="text-8xl mb-6">✨</div>
-            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">
+        <div className="bg-gradient-to-b from-black via-purple-950/20 to-black h-full flex items-center justify-center overflow-hidden">
+          <div className="text-center text-white max-w-2xl mx-auto p-4 sm:p-8 overflow-y-auto max-h-full scrollbar-thin scrollbar-thumb-purple-600 scrollbar-track-transparent">
+            <div className="text-6xl sm:text-8xl mb-6">✨</div>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4 bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">
               Spiritual Community Starmap
             </h2>
-            <p className="text-purple-300 mb-6 text-lg leading-relaxed">
+            <p className="text-purple-300 mb-6 text-base sm:text-lg leading-relaxed">
               Your cosmic community visualization is currently in stable 2D mode for optimal performance.
             </p>
             
             {users.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 px-2">
                 {users.slice(0, 8).map((user, index) => (
                   <div 
                     key={user.id}

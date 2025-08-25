@@ -4,9 +4,9 @@ export const chakraColors: Record<ChakraType, string> = {
   root: "hsl(0, 100%, 50%)",        // Red
   sacral: "hsl(30, 100%, 50%)",     // Orange  
   solar: "hsl(60, 100%, 50%)",      // Yellow
-  heart: "hsl(340, 82%, 52%)",      // Pink/Red (matching CSS)
-  throat: "hsl(240, 100%, 50%)",    // Blue
-  third_eye: "hsl(260, 100%, 25%)", // Indigo
+  heart: "hsl(120, 100%, 35%)",     // Green (traditional heart chakra)
+  throat: "hsl(240, 100%, 50%)",    // Blue (only blue in the system)
+  third_eye: "hsl(260, 100%, 45%)", // Indigo (brighter so it's clearly indigo, not dark blue)
   crown: "hsl(280, 100%, 41%)"      // Violet
 };
 

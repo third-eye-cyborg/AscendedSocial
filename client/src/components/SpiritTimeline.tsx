@@ -14,6 +14,9 @@ interface EvolutionEntry {
   newExperience: number;
   newLevel: number;
   leveledUp: boolean;
+  spiritName?: string;
+  updatedBeliefs?: string;
+  updatedPath?: string;
 }
 
 interface SpiritQuestionnaire {
@@ -93,16 +96,46 @@ export default function SpiritTimeline() {
   // Evolution events from experience gains
   if (currentSpirit.evolution && currentSpirit.evolution.length > 0) {
     currentSpirit.evolution.forEach((evolution, index) => {
-      timelineEvents.push({
-        type: "evolution",
-        timestamp: evolution.timestamp,
-        title: evolution.leveledUp ? `Leveled Up to ${evolution.newLevel}!` : "Experience Gained",
-        description: `${evolution.action} (+${evolution.experienceGain} XP)`,
-        level: evolution.newLevel,
-        experience: evolution.newExperience,
-        icon: evolution.leveledUp ? TrendingUp : Zap,
-        color: evolution.leveledUp ? "from-yellow-500 to-orange-500" : "from-blue-500 to-cyan-500"
-      });
+      if (evolution.action === "questionnaire_evolution") {
+        // Special handling for questionnaire-based evolutions
+        timelineEvents.push({
+          type: "questionnaire_evolution",
+          timestamp: evolution.timestamp,
+          title: `Spirit Evolved: ${evolution.spiritName || 'New Form'}`,
+          description: `Updated spiritual path led to transformation`,
+          level: evolution.newLevel,
+          experience: evolution.newExperience,
+          spiritName: evolution.spiritName,
+          updatedBeliefs: evolution.updatedBeliefs,
+          updatedPath: evolution.updatedPath,
+          icon: User,
+          color: "from-pink-500 to-rose-500"
+        });
+      } else if (evolution.action === "spirit_regeneration") {
+        // Spirit regeneration events
+        timelineEvents.push({
+          type: "regeneration",
+          timestamp: evolution.timestamp,
+          title: "Spirit Regenerated",
+          description: "Guide transformed while keeping the same spiritual essence",
+          level: evolution.newLevel,
+          experience: evolution.newExperience,
+          icon: Star,
+          color: "from-purple-500 to-indigo-500"
+        });
+      } else {
+        // Regular experience gain events
+        timelineEvents.push({
+          type: "evolution",
+          timestamp: evolution.timestamp,
+          title: evolution.leveledUp ? `Leveled Up to ${evolution.newLevel}!` : "Experience Gained",
+          description: `${evolution.action} (+${evolution.experienceGain} XP)`,
+          level: evolution.newLevel,
+          experience: evolution.newExperience,
+          icon: evolution.leveledUp ? TrendingUp : Zap,
+          color: evolution.leveledUp ? "from-yellow-500 to-orange-500" : "from-blue-500 to-cyan-500"
+        });
+      }
     });
   }
 
@@ -239,6 +272,36 @@ export default function SpiritTimeline() {
                           </div>
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Show evolution details for questionnaire-based evolutions */}
+                  {event.type === "questionnaire_evolution" && (event.spiritName || event.updatedBeliefs || event.updatedPath) && (
+                    <div className="mt-3 p-3 bg-pink-900/20 rounded-lg border border-pink-600/30">
+                      <h4 className="text-sm font-medium text-pink-300 mb-2 flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        Evolution Details
+                      </h4>
+                      <div className="space-y-2 text-xs">
+                        {event.spiritName && (
+                          <div>
+                            <span className="text-pink-400 font-medium">New Spirit Name:</span>
+                            <span className="text-white ml-2">{event.spiritName}</span>
+                          </div>
+                        )}
+                        {event.updatedBeliefs && (
+                          <div>
+                            <span className="text-pink-400 font-medium">Updated Beliefs:</span>
+                            <p className="text-white text-xs mt-1 line-clamp-3">{event.updatedBeliefs}</p>
+                          </div>
+                        )}
+                        {event.updatedPath && (
+                          <div>
+                            <span className="text-pink-400 font-medium">Updated Path:</span>
+                            <span className="text-white ml-2">{event.updatedPath}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

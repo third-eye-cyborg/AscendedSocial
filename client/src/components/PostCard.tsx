@@ -21,6 +21,7 @@ interface PostCardProps {
     id: string;
     content: string;
     imageUrl?: string;
+    imageUrls?: string[];
     videoUrl?: string;
     chakra: string;
     frequency: number;
@@ -349,34 +350,34 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <Card className={`post-card-container bg-cosmic-light rounded-xl border-2 ${chakraGlow} hover-lift animate-fade-in`}>
-      {/* Post Header */}
-      <div className="p-4">
+      {/* Post Header - Mobile Responsive */}
+      <div className="p-3 sm:p-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
             <ProfileIcon 
               user={post.author}
               size="md"
-              className="shadow-lg"
+              className="shadow-lg flex-shrink-0"
               onClick={() => setLocation(`/profile/${post.author.id}`)}
               testId={`post-author-${post.id}`}
             />
-            <div>
+            <div className="min-w-0 flex-1">
               <h4 
-                className="font-semibold text-white cursor-pointer hover:text-primary transition-colors duration-200" 
+                className="font-semibold text-white cursor-pointer hover:text-primary transition-colors duration-200 text-sm sm:text-base truncate" 
                 onClick={() => setLocation(`/profile/${post.author.id}`)}
                 data-testid={`text-author-${post.id}`}
               >
                 {post.author.username || post.author.email || 'Anonymous'}
               </h4>
-              <p className="text-sm text-white/70" data-testid={`text-time-${post.id}`}>
+              <p className="text-xs sm:text-sm text-white/70" data-testid={`text-time-${post.id}`}>
                 {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
               </p>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
             {/* Chakra Indicator */}
             <div 
-              className={`w-4 h-4 rounded-full animate-pulse`}
+              className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full animate-pulse`}
               style={{ backgroundColor: chakraColor }}
               title={`${post.chakra.replace('_', ' ')} Chakra`}
               data-testid={`chakra-indicator-${post.id}`}
@@ -386,7 +387,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div 
-                    className="text-sm font-medium cursor-help hover:scale-105 transition-transform" 
+                    className="text-xs sm:text-sm font-medium cursor-help hover:scale-105 transition-transform" 
                     style={{ color: chakraColor }}
                     data-testid={`frequency-${post.id}`}
                   >
@@ -429,10 +430,10 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       </div>
 
-      {/* Post Content */}
-      <div className="px-4 pb-3">
+      {/* Post Content - Mobile Responsive */}
+      <div className="px-3 sm:px-4 pb-2 sm:pb-3">
         <div 
-          className="post-content text-white leading-relaxed" 
+          className="post-content text-white leading-relaxed text-sm sm:text-base" 
           data-testid={`content-${post.id}`}
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
@@ -441,14 +442,14 @@ export default function PostCard({ post }: PostCardProps) {
       {/* Post Media - Expandable */}
       {post.imageUrls && post.imageUrls.length > 0 && (
         <>
-          <div className="relative mx-4 mb-4 rounded-lg overflow-hidden">
+          <div className="relative mx-3 sm:mx-4 mb-3 sm:mb-4 rounded-lg overflow-hidden">
             {post.imageUrls.length === 1 ? (
               <Dialog>
                 <DialogTrigger asChild>
                   <img 
                     src={post.imageUrls[0]} 
                     alt="Post image" 
-                    className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                    className="w-full h-48 sm:h-64 md:h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                     data-testid={`image-${post.id}-0`}
                   />
                 </DialogTrigger>
@@ -470,7 +471,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <img
                         src={url}
                         alt={`Post image ${index + 1}`}
-                        className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
+                        className="w-full h-48 sm:h-64 md:h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                         data-testid={`image-${post.id}-${index}`}
                       />
                     </DialogTrigger>
@@ -496,7 +497,7 @@ export default function PostCard({ post }: PostCardProps) {
                     <img
                       src={post.imageUrls[0]}
                       alt="Post image 1"
-                      className="w-full h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                      className="w-full h-48 sm:h-64 md:h-80 object-cover cursor-pointer hover:opacity-90 transition-opacity"
                       data-testid={`image-${post.id}-0`}
                     />
                   </DialogTrigger>
@@ -519,7 +520,7 @@ export default function PostCard({ post }: PostCardProps) {
                       <img
                         src={post.imageUrls[1]}
                         alt="Post image 2"
-                        className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
+                        className="w-full h-24 sm:h-32 md:h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                         data-testid={`image-${post.id}-1`}
                       />
                     </DialogTrigger>
@@ -542,7 +543,7 @@ export default function PostCard({ post }: PostCardProps) {
                         <img
                           src={post.imageUrls[2]}
                           alt="Post image 3"
-                          className="w-full h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
+                          className="w-full h-24 sm:h-32 md:h-40 object-cover cursor-pointer hover:opacity-90 transition-opacity rounded-lg"
                           data-testid={`image-${post.id}-2`}
                         />
                       </DialogTrigger>
@@ -568,7 +569,7 @@ export default function PostCard({ post }: PostCardProps) {
                 </div>
               </div>
             )}
-            <div className="absolute top-2 right-2 bg-black/70 backdrop-blur text-white text-xs px-2 py-1 rounded-full">
+            <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-black/70 backdrop-blur text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
               📸 {post.imageUrls.length} image{post.imageUrls.length > 1 ? 's' : ''}
             </div>
           </div>
@@ -617,18 +618,18 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       )}
 
-      {/* Enhanced Engagement Bar */}
-      <div className="p-3 sm:p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
-        <div className="flex flex-col space-y-3">
+      {/* Enhanced Engagement Bar - Mobile Responsive */}
+      <div className="p-2 sm:p-3 md:p-4 border-t border-primary/20 bg-gradient-to-r from-transparent via-primary/5 to-transparent">
+        <div className="flex flex-col space-y-2 sm:space-y-3">
           {/* Main Engagement Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-1 sm:gap-2 md:gap-4">
             {/* Spiritual Frequency Voting */}
-            <div className="flex items-center bg-black/40 rounded-xl p-1.5 sm:p-2 border border-primary/30 shadow-lg flex-shrink-0">
+            <div className="flex items-center bg-black/40 rounded-xl p-1 sm:p-1.5 md:p-2 border border-primary/30 shadow-lg flex-shrink-0">
               <div className="flex items-center">
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`relative p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+                  className={`relative p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
                     userEngagements.includes('upvote') 
                       ? 'text-green-100 bg-gradient-to-r from-green-600 to-green-500 shadow-md' 
                       : 'text-white/80 hover:text-green-300 hover:bg-green-900/20'
@@ -640,32 +641,32 @@ export default function PostCard({ post }: PostCardProps) {
                   title="✨ Raise Spiritual Frequency"
                   data-testid={`button-upvote-${post.id}`}
                 >
-                  <ChevronUp className="w-5 h-5" />
+                  <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" />
                   {clickEffects.upvote && (
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-green-300 text-xs font-bold animate-bounce pointer-events-none">
+                    <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 text-green-300 text-xs font-bold animate-bounce pointer-events-none">
                       +1 ✨
                     </div>
                   )}
                 </Button>
                 
-                <div className="px-4 text-center">
+                <div className="px-2 sm:px-3 md:px-4 text-center">
                   <div 
-                    className={`text-lg font-bold transition-colors duration-300 ${
+                    className={`text-base sm:text-lg font-bold transition-colors duration-300 ${
                       post.frequency >= 0 
-                        ? 'text-green-200 drop-shadow-lg' 
-                        : 'text-red-200 drop-shadow-lg'
+                        ? 'text-green-100 drop-shadow-[0_0_6px_rgba(34,197,94,0.4)]' 
+                        : 'text-red-100 drop-shadow-[0_0_6px_rgba(239,68,68,0.4)]'
                     }`}
-                    data-testid={`votes-${post.id}`}
+                    data-testid={`frequency-display-${post.id}`}
                   >
                     {post.frequency > 0 ? '+' : ''}{post.frequency}
                   </div>
-                  <div className="text-xs text-white/70 font-medium tracking-wide">FREQUENCY</div>
+                  <div className="text-[10px] sm:text-xs text-white/60 font-medium">FREQUENCY</div>
                 </div>
                 
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`relative p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
+                  className={`relative p-1.5 sm:p-2 rounded-lg transition-all duration-200 hover:scale-105 ${
                     userEngagements.includes('downvote') 
                       ? 'text-red-100 bg-gradient-to-r from-red-600 to-red-500 shadow-md' 
                       : 'text-white/80 hover:text-red-300 hover:bg-red-900/20'
@@ -677,9 +678,9 @@ export default function PostCard({ post }: PostCardProps) {
                   title="🌊 Provide Constructive Balance"
                   data-testid={`button-downvote-${post.id}`}
                 >
-                  <ChevronDown className="w-5 h-5" />
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
                   {clickEffects.downvote && (
-                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-blue-300 text-xs font-bold animate-bounce pointer-events-none">
+                    <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 text-blue-300 text-xs font-bold animate-bounce pointer-events-none">
                       -1 🌊
                     </div>
                   )}
@@ -693,7 +694,7 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className={`flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 rounded-xl transition-all duration-300 hover:scale-105 min-w-0 ${
+                className={`flex items-center space-x-1 px-1.5 sm:px-2 md:px-3 py-1.5 sm:py-2 rounded-xl transition-all duration-300 hover:scale-105 min-w-0 ${
                   showComments 
                     ? 'text-white bg-purple-800/60 shadow-lg shadow-purple-400/30' 
                     : 'text-white/80 hover:text-purple-300 hover:bg-purple-900/30'
@@ -702,8 +703,8 @@ export default function PostCard({ post }: PostCardProps) {
                 title="💬 Join the Sacred Discussion"
                 data-testid={`button-comment-${post.id}`}
               >
-                <MessageCircle className="w-4 h-4 flex-shrink-0" />
-                <span className={`text-xs sm:text-sm font-bold bg-purple-900/20 px-1 rounded flex-shrink-0 ${
+                <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                <span className={`text-xs font-bold bg-purple-900/20 px-1 rounded flex-shrink-0 ${
                   showComments ? 'text-white' : 'text-purple-100'
                 }`} data-testid={`comments-${post.id}`}>
                   {(post.engagements as any)?.comments || 0}
@@ -713,17 +714,17 @@ export default function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="p-1.5 sm:p-2 rounded-xl text-white/80 hover:text-cyan-300 hover:bg-cyan-900/30 transition-all duration-300 hover:scale-110 min-w-[36px] min-h-[36px] flex-shrink-0"
+                className="p-1 sm:p-1.5 md:p-2 rounded-xl text-white/80 hover:text-cyan-300 hover:bg-cyan-900/30 transition-all duration-300 hover:scale-110 min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] flex-shrink-0"
                 onClick={handleShare}
                 title="🔗 Share Sacred Wisdom"
                 data-testid={`button-share-${post.id}`}
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`p-1.5 sm:p-2 rounded-xl transition-all duration-300 hover:scale-110 min-w-[36px] min-h-[36px] flex-shrink-0 ${
+                className={`p-1 sm:p-1.5 md:p-2 rounded-xl transition-all duration-300 hover:scale-110 min-w-[32px] sm:min-w-[36px] min-h-[32px] sm:min-h-[36px] flex-shrink-0 ${
                   isSaved 
                     ? 'text-amber-300 hover:text-amber-200 bg-amber-900/40 shadow-lg shadow-amber-500/30' 
                     : 'text-white/80 hover:text-amber-300 hover:bg-amber-900/30'
@@ -732,7 +733,7 @@ export default function PostCard({ post }: PostCardProps) {
                 title={isSaved ? "📜 Remove from Sacred Collection" : "📜 Save to Sacred Collection"}
                 data-testid={`button-save-${post.id}`}
               >
-                <Bookmark className={`w-4 h-4 transition-all duration-300 ${
+                <Bookmark className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-all duration-300 ${
                   isSaved ? 'fill-amber-400 stroke-amber-400' : 'fill-transparent stroke-current'
                 }`} />
               </Button>

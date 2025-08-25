@@ -865,7 +865,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Can only update your own profile" });
       }
       
-      const { username, bio } = req.body;
+      const { username, bio, astrologySign } = req.body;
       
       if (username && username.trim().length < 3) {
         return res.status(400).json({ message: "Username must be at least 3 characters" });
@@ -874,6 +874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updateData: any = {};
       if (username) updateData.username = username.trim();
       if (bio !== undefined) updateData.bio = bio.trim();
+      if (astrologySign !== undefined) updateData.astrologySign = astrologySign;
       
       const updatedUser = await storage.updateUser(userId, updateData);
       res.json(updatedUser);
@@ -1455,6 +1456,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error regenerating spirit:", error);
       res.status(500).json({ message: "Failed to regenerate spirit" });
+    }
+  });
+
+  // Evolve spirit with updated questionnaire
+  app.post("/api/spirit/evolve-with-questionnaire", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
+      
+      // Validate required fields
+      if (!beliefs || !astrologySign) {
+        return res.status(400).json({ message: "Beliefs and astrology sign are required" });
+      }
+      
+      // Check user energy first
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      const evolutionCost = 100;
+      if ((user.energy || 0) < evolutionCost) {
+        return res.status(400).json({ message: `Evolution requires ${evolutionCost} energy. You have ${user.energy || 0} energy.` });
+      }
+      
+      // Get existing spirit for level and experience preservation
+      const existingSpirit = await storage.getUserSpirit(userId);
+      if (!existingSpirit) {
+        return res.status(404).json({ message: "No spirit found to evolve" });
+      }
+
+      // Generate new spirit with updated questionnaire
+      const spiritData = await generateSpirit({
+        isReligious,
+        isSpiritual,
+        religion,
+        spiritualPath,
+        beliefs,
+        offerings,
+        astrologySign
+      });
+
+      // Deduct energy cost
+      await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
+      
+      // Delete old spirit and create new one with preserved level/experience
+      await storage.deleteUserSpirit(userId);
+      
+      const newSpirit = await storage.createSpirit(userId, {
+        name: spiritData.name,
+        description: spiritData.description,
+        element: spiritData.element,
+        imageUrl: spiritData.imageUrl,
+        level: (existingSpirit as any).level || 1,
+        experience: (existingSpirit as any).experience || 0,
+        questionnaire: {
+          isReligious,
+          isSpiritual,
+          religion,
+          spiritualPath,
+          beliefs,
+          offerings,
+          astrologySign,
+          evolvedAt: new Date().toISOString(),
+          previousQuestionnaire: (existingSpirit as any).questionnaire
+        }
+      });
+
+      res.json(newSpirit);
+    } catch (error) {
+      console.error("Error evolving spirit with questionnaire:", error);
+      res.status(500).json({ message: "Failed to evolve spirit" });
     }
   });
 

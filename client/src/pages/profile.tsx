@@ -181,9 +181,21 @@ export default function Profile() {
                   <h2 className="text-xl font-semibold text-white mb-1" data-testid="text-profile-name">
                     {profile?.username || profile?.email || 'Spiritual Seeker'}
                   </h2>
-                  <p className="text-sm text-muted mb-3">
+                  <p className="text-sm text-muted mb-1">
                     Joined {formatDistanceToNow(new Date(profile?.createdAt || Date.now()), { addSuffix: true })}
                   </p>
+                  
+                  {/* Astrology Sign */}
+                  {profile?.astrologySign && (
+                    <div className="flex items-center justify-center mb-3">
+                      <div className="flex items-center space-x-2 px-3 py-1 bg-primary/20 rounded-full border border-primary/30">
+                        <i className="fas fa-star text-primary text-sm"></i>
+                        <span className="text-sm text-white font-medium" data-testid="text-profile-astrology-sign">
+                          {profile.astrologySign}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Aura Level */}
                   <div className="w-full mb-4">

@@ -323,21 +323,21 @@ export default function Oracle() {
                             <i className="fas fa-user text-[7px] text-white/60"></i>
                           )}
                         </div>
-                        <h4 className="font-semibold text-accent text-xs line-clamp-1">
+                        <h4 className="font-semibold text-accent text-xs">
                           {oracle.title}
                         </h4>
                       </div>
-                      <p className="text-white text-xs leading-relaxed mb-2 italic line-clamp-2">
+                      <p className="text-white text-xs leading-relaxed mb-2 italic break-words">
                         "{oracle.content}"
                       </p>
-                      <p className="text-xs text-white/95 italic line-clamp-2">
+                      <p className="text-xs text-white/95 italic break-words">
                         {oracle.guidance}
                       </p>
                       <div className="flex items-center justify-between mt-2 text-xs text-white/90">
                         <span className={`capitalize font-medium ${oracle.chakra === 'heart' ? 'text-green-400' : 'text-primary'}`}>
                           {oracle.chakra} chakra
                         </span>
-                        <span className="truncate ml-2">{formatDistanceToNow(new Date(oracle.createdAt), { addSuffix: true })}</span>
+                        <span className="text-right text-xs">{formatDistanceToNow(new Date(oracle.createdAt), { addSuffix: true })}</span>
                       </div>
                     </div>
                   ))}
@@ -419,8 +419,8 @@ export default function Oracle() {
                           <i className="fas fa-star text-accent-light mb-1 text-xs"></i>
                           <span className="text-[10px] text-white/80 uppercase">{card.position}</span>
                         </div>
-                        <div className="text-[10px] text-white font-semibold truncate">{card.name}</div>
-                        <div className="text-[10px] text-white/70 truncate">{card.meaning}</div>
+                        <div className="text-[10px] text-white font-semibold break-words text-center">{card.name}</div>
+                        <div className="text-[10px] text-white/70 break-words text-center">{card.meaning}</div>
                       </div>
                     )) || []}
                   </div>
@@ -436,7 +436,7 @@ export default function Oracle() {
                       </p>
                     )}
                     <div className="flex items-center justify-between text-[10px] text-white/70">
-                      <span className="truncate">Question: {lastTarotReading.metadata?.question || "General guidance"}</span>
+                      <span className="break-words">Question: {lastTarotReading.metadata?.question || "General guidance"}</span>
                       <span className="text-accent-light flex-shrink-0 ml-2">•••</span>
                     </div>
                   </div>

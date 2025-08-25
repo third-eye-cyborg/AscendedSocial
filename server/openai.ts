@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import type { ChakraType } from "@shared/schema";
-import { ObjectStorageService } from "./objectStorage";
+import { ObjectStorageService, parseObjectPath } from "./objectStorage";
 import { randomUUID } from "crypto";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -23,17 +23,21 @@ async function downloadAndSaveImage(imageUrl: string, filename: string): Promise
 
     const imageBuffer = Buffer.from(await response.arrayBuffer());
     
-    // Save to object storage
+    // Save to object storage using the existing service method
     const objectStorageService = new ObjectStorageService();
     const privateObjectDir = objectStorageService.getPrivateObjectDir();
-    const objectPath = `${privateObjectDir}/ai-images/${filename}`;
     
-    // Parse the object path to get bucket and object names
-    const pathParts = objectPath.split('/');
-    const bucketName = pathParts[1];
-    const objectName = pathParts.slice(2).join('/');
+    // Create a full path for the image
+    let normalizedDir = privateObjectDir;
+    if (!normalizedDir.endsWith('/')) {
+      normalizedDir += '/';
+    }
+    const fullPath = `${normalizedDir}ai-images/${filename}`;
     
-    // Upload to Google Cloud Storage
+    // Parse the object path to get bucket and object names 
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+    
+    // Upload to Google Cloud Storage using the imported client
     const { objectStorageClient } = await import('./objectStorage');
     const bucket = objectStorageClient.bucket(bucketName);
     const file = bucket.file(objectName);
@@ -47,6 +51,8 @@ async function downloadAndSaveImage(imageUrl: string, filename: string): Promise
         }
       }
     });
+    
+    console.log(`Successfully saved image to: ${bucketName}/${objectName}`);
     
     // Return the path that can be served via our API
     return `/objects/ai-images/${filename}`;

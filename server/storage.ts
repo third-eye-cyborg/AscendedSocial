@@ -1106,6 +1106,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .select({
         id: posts.id,
+        authorId: posts.authorId,
         content: posts.content,
         imageUrl: posts.imageUrl,
         imageUrls: posts.imageUrls,
@@ -1113,16 +1114,11 @@ export class DatabaseStorage implements IStorage {
         chakra: posts.chakra,
         frequency: posts.frequency,
         type: posts.type,
+        isPremium: posts.isPremium,
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
-        authorId: posts.authorId,
-        author: {
-          id: users.id,
-          email: users.email,
-          username: users.username,
-          sigil: users.sigil,
-          sigilImageUrl: users.sigilImageUrl,
-        },
+        updatedAt: posts.updatedAt,
+        author: users,
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
@@ -1143,6 +1139,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .select({
         id: posts.id,
+        authorId: posts.authorId,
         content: posts.content,
         imageUrl: posts.imageUrl,
         imageUrls: posts.imageUrls,
@@ -1150,16 +1147,11 @@ export class DatabaseStorage implements IStorage {
         chakra: posts.chakra,
         frequency: posts.frequency,
         type: posts.type,
+        isPremium: posts.isPremium,
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
-        authorId: posts.authorId,
-        author: {
-          id: users.id,
-          email: users.email,
-          username: users.username,
-          sigil: users.sigil,
-          sigilImageUrl: users.sigilImageUrl,
-        },
+        updatedAt: posts.updatedAt,
+        author: users,
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
@@ -1180,6 +1172,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .select({
         id: posts.id,
+        authorId: posts.authorId,
         content: posts.content,
         imageUrl: posts.imageUrl,
         imageUrls: posts.imageUrls,
@@ -1187,16 +1180,11 @@ export class DatabaseStorage implements IStorage {
         chakra: posts.chakra,
         frequency: posts.frequency,
         type: posts.type,
+        isPremium: posts.isPremium,
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
-        authorId: posts.authorId,
-        author: {
-          id: users.id,
-          email: users.email,
-          username: users.username,
-          sigil: users.sigil,
-          sigilImageUrl: users.sigilImageUrl,
-        },
+        updatedAt: posts.updatedAt,
+        author: users,
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
@@ -1220,6 +1208,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .selectDistinct({
         id: posts.id,
+        authorId: posts.authorId,
         content: posts.content,
         imageUrl: posts.imageUrl,
         imageUrls: posts.imageUrls,
@@ -1227,17 +1216,12 @@ export class DatabaseStorage implements IStorage {
         chakra: posts.chakra,
         frequency: posts.frequency,
         type: posts.type,
+        isPremium: posts.isPremium,
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
-        authorId: posts.authorId,
+        updatedAt: posts.updatedAt,
         commentCreatedAt: comments.createdAt,
-        author: {
-          id: users.id,
-          email: users.email,
-          username: users.username,
-          sigil: users.sigil,
-          sigilImageUrl: users.sigilImageUrl,
-        },
+        author: users,
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
@@ -1253,6 +1237,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .select({
         id: posts.id,
+        authorId: posts.authorId,
         content: posts.content,
         imageUrl: posts.imageUrl,
         imageUrls: posts.imageUrls,
@@ -1260,16 +1245,11 @@ export class DatabaseStorage implements IStorage {
         chakra: posts.chakra,
         frequency: posts.frequency,
         type: posts.type,
+        isPremium: posts.isPremium,
         isSpiritual: posts.isSpiritual,
         createdAt: posts.createdAt,
-        authorId: posts.authorId,
-        author: {
-          id: users.id,
-          email: users.email,
-          username: users.username,
-          sigil: users.sigil,
-          sigilImageUrl: users.sigilImageUrl,
-        },
+        updatedAt: posts.updatedAt,
+        author: users,
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))

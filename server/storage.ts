@@ -10,6 +10,7 @@ import {
   connections,
   spiritualMarks,
   newsletterSubscriptions,
+  reports,
   type User,
   type UpsertUser,
   type Post,
@@ -27,6 +28,8 @@ import {
   type InsertNotification,
   type NewsletterSubscription,
   type InsertNewsletterSubscription,
+  type Report,
+  type InsertReport,
   type ChakraType,
   type EngagementType,
   notifications,
@@ -139,6 +142,12 @@ export interface IStorage {
   updateNewsletterPreferences(token: string, preferences: Record<string, any>): Promise<NewsletterSubscription>;
   getActiveNewsletterSubscriptions(): Promise<NewsletterSubscription[]>;
   updateNewsletterLastEmailSent(email: string): Promise<void>;
+
+  // Report operations
+  createReport(report: InsertReport, reporterId: string): Promise<Report>;
+  getReport(id: string): Promise<Report | undefined>;
+  getUserReports(reporterId: string): Promise<Report[]>;
+  getPendingReports(): Promise<Report[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1342,6 +1351,48 @@ export class DatabaseStorage implements IStorage {
       .update(newsletterSubscriptions)
       .set({ lastEmailSent: new Date(), updatedAt: new Date() })
       .where(eq(newsletterSubscriptions.email, email));
+  }
+
+  // Report operations
+  async createReport(report: InsertReport, reporterId: string): Promise<Report> {
+    // Validate that either postId or reportedUserId is provided, but not both
+    if ((report.postId && report.reportedUserId) || (!report.postId && !report.reportedUserId)) {
+      throw new Error("Must report either a post OR a user, not both or neither");
+    }
+
+    const [newReport] = await db
+      .insert(reports)
+      .values({
+        ...report,
+        reporterId,
+      })
+      .returning();
+
+    return newReport;
+  }
+
+  async getReport(id: string): Promise<Report | undefined> {
+    const [report] = await db
+      .select()
+      .from(reports)
+      .where(eq(reports.id, id));
+    return report;
+  }
+
+  async getUserReports(reporterId: string): Promise<Report[]> {
+    return await db
+      .select()
+      .from(reports)
+      .where(eq(reports.reporterId, reporterId))
+      .orderBy(desc(reports.createdAt));
+  }
+
+  async getPendingReports(): Promise<Report[]> {
+    return await db
+      .select()
+      .from(reports)
+      .where(eq(reports.status, 'pending'))
+      .orderBy(desc(reports.createdAt));
   }
 }
 

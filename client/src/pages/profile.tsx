@@ -248,7 +248,7 @@ export default function Profile() {
                       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
                         <DialogTrigger asChild>
                           <Button 
-                            className="w-full bg-primary hover:bg-primary/80"
+                            className="w-full bg-primary hover:bg-primary/80 text-white"
                             data-testid="button-edit-profile"
                           >
                             <i className="fas fa-edit mr-2"></i>

@@ -7,7 +7,7 @@ async function syncDocsToNotion() {
         console.log('📚 Syncing documentation to Notion...');
         
         // Read the replit.md file
-        const docContent = readFileSync('./replit.md', 'utf-8');
+        const docContent = readFileSync('../replit.md', 'utf-8');
         
         // Upload to Notion
         const pageId = await createOrUpdateDocumentationPage(docContent);

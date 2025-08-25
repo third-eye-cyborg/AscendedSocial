@@ -37,6 +37,7 @@ function Router() {
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />
           <Route path="/pricing" component={Pricing} />
+          <Route path="/energy" component={EnergyPage} />
           <Route path="/community" component={Community} />
           <Route path="/subscribe" component={Subscribe} />
           <Route path="/unsubscribe" component={Unsubscribe} />

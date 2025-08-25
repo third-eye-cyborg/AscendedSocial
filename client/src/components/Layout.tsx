@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import Sidebar from "./Sidebar";
 import OracleSidebar from "./OracleSidebar";
 import SearchModal from "./SearchModal";
 import NotificationsModal from "./NotificationsModal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
@@ -51,6 +52,38 @@ export default function Layout({ children }: LayoutProps) {
               </h1>
             </div>
 
+            {/* Main Navigation - Hidden on mobile */}
+            <nav className="hidden md:flex items-center space-x-6 ml-8">
+              <Link href="/features">
+                <button className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location === '/features' ? 'text-primary' : 'text-white/90'
+                }`} data-testid="nav-features">
+                  Features
+                </button>
+              </Link>
+              <Link href="/energy">
+                <button className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location === '/energy' ? 'text-primary' : 'text-white/90'
+                }`} data-testid="nav-energy">
+                  Energy
+                </button>
+              </Link>
+              <Link href="/community">
+                <button className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location === '/community' ? 'text-primary' : 'text-white/90'
+                }`} data-testid="nav-community">
+                  Community
+                </button>
+              </Link>
+              <Link href="/pricing">
+                <button className={`text-sm font-medium transition-colors hover:text-primary ${
+                  location === '/pricing' ? 'text-primary' : 'text-white/90'
+                }`} data-testid="nav-pricing">
+                  Pricing
+                </button>
+              </Link>
+            </nav>
+
             {/* Search Bar - Hidden on mobile and small tablets */}
             <div className="hidden lg:block flex-1 max-w-md mx-8">
               <div 
@@ -67,8 +100,8 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </div>
 
-            {/* Mobile/Tablet Search Button */}
-            <div className="lg:hidden">
+            {/* Mobile Menu and Search */}
+            <div className="md:hidden flex items-center space-x-2">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -78,6 +111,52 @@ export default function Layout({ children }: LayoutProps) {
               >
                 <i className="fas fa-search"></i>
               </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-gray-300 hover:text-primary"
+                    data-testid="button-menu-mobile"
+                  >
+                    <i className="fas fa-bars"></i>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-cosmic-light border-primary/30 w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href="/features" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-star mr-2"></i>
+                        Features
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/energy" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-bolt mr-2"></i>
+                        Energy
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/community" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-users mr-2"></i>
+                        Community
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/pricing" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-tag mr-2"></i>
+                        Pricing
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* User Menu and Energy Indicator */}

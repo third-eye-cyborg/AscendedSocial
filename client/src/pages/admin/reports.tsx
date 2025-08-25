@@ -26,7 +26,10 @@ export default function AdminReportsPage() {
 
   const { data: pendingReports = [], isLoading } = useQuery({
     queryKey: ["/api/reports", "pending"],
-    queryFn: () => apiRequest("GET", "/api/reports/pending"),
+    queryFn: async () => {
+      const response = await apiRequest("GET", "/api/reports/pending");
+      return Array.isArray(response) ? response : [];
+    },
   });
 
   const updateReportMutation = useMutation({
@@ -134,12 +137,12 @@ export default function AdminReportsPage() {
                               {report.reportedUserId && <User className="w-4 h-4 ml-2 text-purple-400" />}
                             </CardTitle>
                             <CardDescription className="text-white/70">
-                              Reported {formatDistanceToNow(new Date(report.createdAt), { addSuffix: true })}
+                              Reported {formatDistanceToNow(new Date(report.createdAt || new Date()), { addSuffix: true })}
                             </CardDescription>
                           </div>
                         </div>
-                        <Badge className={`${getStatusColor(report.status)} border`}>
-                          {report.status.toUpperCase()}
+                        <Badge className={`${getStatusColor(report.status || 'pending')} border`}>
+                          {(report.status || 'pending').toUpperCase()}
                         </Badge>
                       </div>
                     </CardHeader>

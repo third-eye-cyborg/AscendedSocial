@@ -13,7 +13,8 @@ import {
   Users, 
   Sparkles,
   Clock,
-  AlertCircle
+  AlertCircle,
+  ArrowLeft
 } from "lucide-react";
 
 export default function EnergyPage() {
@@ -58,7 +59,16 @@ export default function EnergyPage() {
     <div className="min-h-screen bg-cosmic p-4" data-testid="energy-page">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          <Button
+            variant="ghost"
+            onClick={() => window.history.back()}
+            className="absolute left-0 top-0 text-white hover:text-primary hover:bg-primary/10 transition-all duration-300"
+            data-testid="button-back"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </Button>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 bg-clip-text text-transparent mb-2">
             Spiritual Energy
           </h1>

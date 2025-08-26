@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ArrowLeft } from "lucide-react";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 
 export default function Community() {
@@ -38,6 +39,15 @@ export default function Community() {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
+              <Button 
+                variant="ghost"
+                onClick={() => window.history.back()}
+                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                data-testid="button-back"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                Back
+              </Button>
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}

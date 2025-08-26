@@ -306,6 +306,11 @@ function StarUser({ user, position, mode, onClick }: {
   const meshRef = useRef<Mesh>(null!);
   const [hovered, setHovered] = useState(false);
   
+  // Early validation to prevent render issues
+  if (!user?.id || !position) {
+    return null;
+  }
+  
   useFrame((state, delta) => {
     try {
       if (meshRef.current) {
@@ -362,11 +367,6 @@ function StarUser({ user, position, mode, onClick }: {
     }
   });
 
-  // Defensive programming for user data
-  if (!user?.id) {
-    return null;
-  }
-
   const color = (user?.dominantChakra && chakraColors[user.dominantChakra]) ? chakraColors[user.dominantChakra] : '#ffffff';
   
   // Safety check to ensure color is valid
@@ -389,7 +389,7 @@ function StarUser({ user, position, mode, onClick }: {
           <>
             <sphereGeometry args={[size, 8, 8]} />
             <meshBasicMaterial 
-              color={color} 
+              color={color || '#ffffff'} 
               transparent
               opacity={0.8 + auraIntensity * 0.2}
             />
@@ -405,7 +405,7 @@ function StarUser({ user, position, mode, onClick }: {
                 <mesh position={[0, 0, 0]}>
                   <sphereGeometry args={[size * 1.6, 12, 12]} />
                   <meshBasicMaterial 
-                    color={color} 
+                    color={color || '#ffffff'} 
                     transparent 
                     opacity={0.15}
                   />
@@ -461,7 +461,7 @@ function StarUser({ user, position, mode, onClick }: {
                 <mesh position={[size * 0.3, size * 0.4, size * 0.2]}>
                   <sphereGeometry args={[size * 0.05, 6, 6]} />
                   <meshBasicMaterial 
-                    color={color}
+                    color={color || '#ffffff'}
                     transparent
                     opacity={0.7}
                   />
@@ -469,7 +469,7 @@ function StarUser({ user, position, mode, onClick }: {
                 <mesh position={[-size * 0.2, size * 0.5, -size * 0.1]}>
                   <sphereGeometry args={[size * 0.04, 6, 6]} />
                   <meshBasicMaterial 
-                    color={color}
+                    color={color || '#ffffff'}
                     transparent
                     opacity={0.6}
                   />
@@ -477,7 +477,7 @@ function StarUser({ user, position, mode, onClick }: {
                 <mesh position={[size * 0.1, size * 0.6, -size * 0.3]}>
                   <sphereGeometry args={[size * 0.03, 6, 6]} />
                   <meshBasicMaterial 
-                    color={color}
+                    color={color || '#ffffff'}
                     transparent
                     opacity={0.5}
                   />
@@ -636,7 +636,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
-  const [enable3D, setEnable3D] = useState(false); // Default to 2D for stability
+  const [enable3D, setEnable3D] = useState(false); // Disabled due to WebGL context issues
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -915,8 +915,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Enhanced 3D Starmap with improved compatibility */}
-      {enable3D ? (
+      {/* Enhanced 3D Starmap - temporarily disabled */}
+      {false ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -927,7 +927,7 @@ function StarmapScene() {
               camera={{ position: [0, 25, 55], fov: 50 }}
               className="bg-gradient-to-b from-black via-purple-950/20 to-black touch-pan-y touch-pinch-zoom touch-manipulation h-full w-full"
               style={{ touchAction: 'pan-y pinch-zoom' }}
-              dpr={window.devicePixelRatio > 1 ? 1 : 0.8}
+              dpr={1}
               legacy={true}
               gl={{ 
                 antialias: false, 
@@ -935,9 +935,8 @@ function StarmapScene() {
                 powerPreference: "low-power",
                 preserveDrawingBuffer: false,
                 stencil: false,
-                depth: false,
-                failIfMajorPerformanceCaveat: true,
-                precision: "lowp"
+                depth: true,
+                failIfMajorPerformanceCaveat: false
               }}
               onError={(error) => {
                 console.warn('Canvas error caught:', error);
@@ -1113,15 +1112,16 @@ function StarmapScene() {
             
             <div className="mt-6 space-y-2">
               <Button 
-                onClick={() => setEnable3D(true)}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105"
+                disabled={true}
+                className="bg-gray-600/50 text-gray-400 px-6 py-2 rounded-full cursor-not-allowed"
                 data-testid="button-enable-3d"
+                title="3D mode temporarily unavailable due to technical issues"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                Enter 3D Cosmos
+                3D Cosmos (Coming Soon)
               </Button>
               <p className="text-xs text-gray-400">
-                Experience the full immersive starmap
+                3D mode temporarily disabled for stability
               </p>
             </div>
           </div>

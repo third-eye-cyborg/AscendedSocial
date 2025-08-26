@@ -915,8 +915,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Enhanced 3D Starmap with improved compatibility */}
-      {enable3D ? (
+      {/* Enhanced 3D Starmap - temporarily disabled due to WebGL issues */}
+      {false ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -1112,15 +1112,16 @@ function StarmapScene() {
             
             <div className="mt-6 space-y-2">
               <Button 
-                onClick={() => setEnable3D(true)}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105"
+                disabled={true}
+                className="bg-gray-600/50 text-gray-400 px-6 py-2 rounded-full cursor-not-allowed"
                 data-testid="button-enable-3d"
+                title="3D mode temporarily unavailable - working on fixing WebGL compatibility"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                Enter 3D Cosmos
+                3D Cosmos (Under Maintenance)
               </Button>
               <p className="text-xs text-gray-400">
-                Experience the full immersive starmap
+                3D mode temporarily disabled while we fix compatibility issues
               </p>
             </div>
           </div>

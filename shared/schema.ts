@@ -380,6 +380,138 @@ export type InsertReport = z.infer<typeof insertReportSchema>;
 export type ReportType = "spam" | "harassment" | "inappropriate_content" | "hate_speech" | "violence" | "misinformation" | "copyright_violation" | "fake_profile" | "other";
 export type ReportStatus = "pending" | "reviewed" | "resolved" | "dismissed";
 
+// Vision privacy enum
+export const visionPrivacyEnum = pgEnum("vision_privacy", [
+  "public",    // Visible to everyone
+  "friends",   // Visible to connected users only
+  "private"    // Visible to author only
+]);
+
+// Visions table - spiritual visions and insights
+export const visions = pgTable("visions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  imageUrl: varchar("image_url"), // Cloudflare Images URL
+  videoUrl: varchar("video_url"), // Cloudflare Stream URL
+  audioUrl: varchar("audio_url"), // Audio recording URL
+  privacy: visionPrivacyEnum("privacy").default("public"),
+  chakra: chakraEnum("chakra").notNull(), // AI-assigned chakra category
+  symbols: text("symbols").array(), // Associated spiritual symbols
+  keywords: text("keywords").array(), // AI-extracted keywords
+  spiritualInsights: jsonb("spiritual_insights"), // AI-generated insights
+  energyLevel: integer("energy_level").default(0), // Spiritual energy rating
+  manifestationDate: timestamp("manifestation_date"), // When vision manifested
+  isManifested: boolean("is_manifested").default(false),
+  cloudflareImageId: varchar("cloudflare_image_id"), // Cloudflare Images ID
+  cloudflareVideoId: varchar("cloudflare_video_id"), // Cloudflare Stream ID
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Vision engagements (likes, spiritual marks, etc.)
+export const visionEngagements = pgTable("vision_engagements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  visionId: varchar("vision_id").notNull().references(() => visions.id),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  type: engagementTypeEnum("type").notNull(),
+  energyAmount: integer("energy_amount").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Communities table - spiritual groups and circles
+export const communities = pgTable("communities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull(),
+  description: text("description").notNull(),
+  creatorId: varchar("creator_id").notNull().references(() => users.id),
+  imageUrl: varchar("image_url"), // Cloudflare Images URL
+  bannerUrl: varchar("banner_url"), // Cloudflare Images URL
+  isPrivate: boolean("is_private").default(false),
+  requiresApproval: boolean("requires_approval").default(false),
+  memberCount: integer("member_count").default(0),
+  maxMembers: integer("max_members").default(1000),
+  primaryChakra: chakraEnum("primary_chakra"), // Main spiritual focus
+  tags: text("tags").array(), // Community tags/interests
+  guidelines: text("guidelines"), // Community rules
+  spiritualFocus: text("spiritual_focus").array(), // Areas of focus
+  meetingSchedule: jsonb("meeting_schedule"), // Regular meeting times
+  cloudflareImageId: varchar("cloudflare_image_id"), // Cloudflare Images ID
+  cloudflareBannerId: varchar("cloudflare_banner_id"), // Cloudflare Images ID
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Community membership status enum
+export const membershipStatusEnum = pgEnum("membership_status", [
+  "pending",
+  "active",
+  "moderator",
+  "admin",
+  "banned"
+]);
+
+// Community memberships
+export const communityMemberships = pgTable("community_memberships", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  communityId: varchar("community_id").notNull().references(() => communities.id),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  status: membershipStatusEnum("status").default("pending"),
+  joinedAt: timestamp("joined_at").defaultNow(),
+  invitedBy: varchar("invited_by").references(() => users.id),
+  role: varchar("role").default("member"), // member, moderator, admin
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
+});
+
+// Community posts/discussions
+export const communityPosts = pgTable("community_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  communityId: varchar("community_id").notNull().references(() => communities.id),
+  authorId: varchar("author_id").notNull().references(() => users.id),
+  title: varchar("title"),
+  content: text("content").notNull(),
+  imageUrl: varchar("image_url"), // Cloudflare Images URL
+  videoUrl: varchar("video_url"), // Cloudflare Stream URL
+  type: varchar("type").default("discussion"), // discussion, announcement, event
+  isPinned: boolean("is_pinned").default(false),
+  chakra: chakraEnum("chakra"), // Optional chakra category
+  cloudflareImageId: varchar("cloudflare_image_id"), // Cloudflare Images ID
+  cloudflareVideoId: varchar("cloudflare_video_id"), // Cloudflare Stream ID
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Community events
+export const communityEvents = pgTable("community_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  communityId: varchar("community_id").notNull().references(() => communities.id),
+  creatorId: varchar("creator_id").notNull().references(() => users.id),
+  title: varchar("title").notNull(),
+  description: text("description").notNull(),
+  startTime: timestamp("start_time").notNull(),
+  endTime: timestamp("end_time").notNull(),
+  location: varchar("location"), // Physical or virtual location
+  maxAttendees: integer("max_attendees"),
+  currentAttendees: integer("current_attendees").default(0),
+  isVirtual: boolean("is_virtual").default(false),
+  meetingUrl: varchar("meeting_url"), // Virtual meeting link
+  imageUrl: varchar("image_url"), // Cloudflare Images URL
+  chakraFocus: chakraEnum("chakra_focus"), // Event's spiritual focus
+  cloudflareImageId: varchar("cloudflare_image_id"), // Cloudflare Images ID
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Event attendance tracking
+export const eventAttendances = pgTable("event_attendances", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar("event_id").notNull().references(() => communityEvents.id),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  status: varchar("status").default("going"), // going, maybe, not_going
+  registeredAt: timestamp("registered_at").defaultNow(),
+});
+
 // Newsletter subscriptions table - for marketing emails
 export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
@@ -398,3 +530,89 @@ export const newsletterSubscriptions = pgTable('newsletter_subscriptions', {
 export const insertNewsletterSubscriptionSchema = createInsertSchema(newsletterSubscriptions);
 export type NewsletterSubscription = typeof newsletterSubscriptions.$inferSelect;
 export type InsertNewsletterSubscription = z.infer<typeof insertNewsletterSubscriptionSchema>;
+
+// Insert schemas for new tables
+export const insertVisionSchema = createInsertSchema(visions).omit({
+  id: true,
+  authorId: true,
+  chakra: true,
+  spiritualInsights: true,
+  energyLevel: true,
+  cloudflareImageId: true,
+  cloudflareVideoId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCommunitySchema = createInsertSchema(communities).omit({
+  id: true,
+  creatorId: true,
+  memberCount: true,
+  cloudflareImageId: true,
+  cloudflareBannerId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCommunityMembershipSchema = createInsertSchema(communityMemberships).omit({
+  id: true,
+  joinedAt: true,
+  lastActiveAt: true,
+});
+
+export const insertCommunityPostSchema = createInsertSchema(communityPosts).omit({
+  id: true,
+  authorId: true,
+  cloudflareImageId: true,
+  cloudflareVideoId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCommunityEventSchema = createInsertSchema(communityEvents).omit({
+  id: true,
+  creatorId: true,
+  currentAttendees: true,
+  cloudflareImageId: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEventAttendanceSchema = createInsertSchema(eventAttendances).omit({
+  id: true,
+  registeredAt: true,
+});
+
+export const insertVisionEngagementSchema = createInsertSchema(visionEngagements).omit({
+  id: true,
+  userId: true,
+  createdAt: true,
+});
+
+// Types for new features
+export type Vision = typeof visions.$inferSelect;
+export type InsertVision = z.infer<typeof insertVisionSchema>;
+export type VisionWithAuthor = Vision & { author: User };
+export type VisionPrivacy = "public" | "friends" | "private";
+
+export type Community = typeof communities.$inferSelect;
+export type InsertCommunity = z.infer<typeof insertCommunitySchema>;
+export type CommunityWithCreator = Community & { creator: User };
+
+export type CommunityMembership = typeof communityMemberships.$inferSelect;
+export type InsertCommunityMembership = z.infer<typeof insertCommunityMembershipSchema>;
+export type MembershipStatus = "pending" | "active" | "moderator" | "admin" | "banned";
+
+export type CommunityPost = typeof communityPosts.$inferSelect;
+export type InsertCommunityPost = z.infer<typeof insertCommunityPostSchema>;
+export type CommunityPostWithAuthor = CommunityPost & { author: User };
+
+export type CommunityEvent = typeof communityEvents.$inferSelect;
+export type InsertCommunityEvent = z.infer<typeof insertCommunityEventSchema>;
+export type CommunityEventWithCreator = CommunityEvent & { creator: User };
+
+export type EventAttendance = typeof eventAttendances.$inferSelect;
+export type InsertEventAttendance = z.infer<typeof insertEventAttendanceSchema>;
+
+export type VisionEngagement = typeof visionEngagements.$inferSelect;
+export type InsertVisionEngagement = z.infer<typeof insertVisionEngagementSchema>;

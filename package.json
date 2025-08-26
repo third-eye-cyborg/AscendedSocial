@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
+    "@aws-sdk/client-s3": "^3.873.0",
+    "@aws-sdk/lib-storage": "^3.873.0",
+    "@aws-sdk/s3-request-presigner": "^3.873.0",
     "@google-cloud/storage": "^7.17.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
@@ -68,6 +71,7 @@
     "embla-carousel-react": "^8.6.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "form-data": "^4.0.4",
     "framer-motion": "^11.13.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.453.0",

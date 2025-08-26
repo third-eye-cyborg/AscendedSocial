@@ -37,6 +37,8 @@ const upload = multer({
   }
 });
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
+import { registerVisionsRoutes } from "./visionsApi";
+import { registerCommunitiesRoutes } from "./communitiesApi";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 
@@ -1930,6 +1932,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register Scrapybara routes for authenticated screenshot testing
   registerScrapybaraRoutes(app);
+  registerVisionsRoutes(app);
+  registerCommunitiesRoutes(app);
 
 
   const httpServer = createServer(app);

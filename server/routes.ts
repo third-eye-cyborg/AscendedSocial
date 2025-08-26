@@ -39,6 +39,7 @@ const upload = multer({
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
+import { registerZeroTrustRoutes } from "./zeroTrustApi";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 
@@ -1934,6 +1935,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerScrapybaraRoutes(app);
   registerVisionsRoutes(app);
   registerCommunitiesRoutes(app);
+  registerZeroTrustRoutes(app);
 
 
   const httpServer = createServer(app);

@@ -636,7 +636,7 @@ function StarmapScene() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [retryKey, setRetryKey] = useState(0);
-  const [enable3D, setEnable3D] = useState(false); // Disabled due to WebGL context issues
+  const [enable3D, setEnable3D] = useState(false); // Default to 2D for stability
   const { toast } = useToast();
 
   const { data: users = [], isLoading, error } = useQuery<StarmapUser[]>({
@@ -915,8 +915,8 @@ function StarmapScene() {
         </Card>
       </div>
 
-      {/* Enhanced 3D Starmap - temporarily disabled */}
-      {false ? (
+      {/* Enhanced 3D Starmap with improved compatibility */}
+      {enable3D ? (
         <CanvasErrorBoundary onRetry={() => {
           setRetryKey(k => k + 1);
           setEnable3D(false); // Fall back to 2D on error
@@ -1112,16 +1112,15 @@ function StarmapScene() {
             
             <div className="mt-6 space-y-2">
               <Button 
-                disabled={true}
-                className="bg-gray-600/50 text-gray-400 px-6 py-2 rounded-full cursor-not-allowed"
+                onClick={() => setEnable3D(true)}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-2 rounded-full transition-all duration-300 hover:scale-105"
                 data-testid="button-enable-3d"
-                title="3D mode temporarily unavailable due to technical issues"
               >
                 <Sparkles className="w-4 h-4 mr-2" />
-                3D Cosmos (Coming Soon)
+                Enter 3D Cosmos
               </Button>
               <p className="text-xs text-gray-400">
-                3D mode temporarily disabled for stability
+                Experience the full immersive starmap
               </p>
             </div>
           </div>

@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
 import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
 import { ProfileIcon } from "@/components/ProfileIcon";
+import { Settings } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -129,6 +130,18 @@ export default function Layout({ children }: LayoutProps) {
                   )}
                 </Button>
               </div>
+
+              {/* Settings Icon */}
+              <Link href="/settings">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-gray-300 hover:text-white hover:bg-slate-700"
+                  data-testid="button-settings"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </Link>
 
               {/* Energy Indicator - Hidden on mobile and tablet */}
               {(user as any) && (

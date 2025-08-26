@@ -24,6 +24,7 @@ import SpiritPage from "@/pages/spirit";
 import EnergyPage from "@/pages/energy";
 import StarmapPage from "@/pages/starmap";
 import ExplorePage from "@/pages/explore";
+import ZeroTrustPage from "@/pages/zero-trust";
 import Unsubscribe from "@/pages/unsubscribe";
 
 function Router() {
@@ -56,6 +57,7 @@ function Router() {
           <Route path="/energy" component={EnergyPage} />
           <Route path="/starmap" component={StarmapPage} />
           <Route path="/explore" component={ExplorePage} />
+          <Route path="/zero-trust" component={ZeroTrustPage} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />

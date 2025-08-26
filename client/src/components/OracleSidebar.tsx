@@ -159,12 +159,12 @@ export default function OracleSidebar() {
           )}
 
           <Button 
-            className="w-full mt-3 text-primary text-sm font-medium hover:text-primary/80 bg-transparent border-none p-0"
+            className="w-full mt-3 bg-primary/20 hover:bg-primary/30 text-white border border-primary/40 hover:border-primary/60 text-sm font-medium transition-all duration-200 rounded-lg"
             onClick={() => refreshOracleMutation.mutate()}
             disabled={refreshOracleMutation.isPending}
             data-testid="button-refresh-oracle"
           >
-            <i className={`fas ${refreshOracleMutation.isPending ? 'fa-spinner animate-spin' : 'fa-sync-alt'} mr-1`}></i>
+            <i className={`fas ${refreshOracleMutation.isPending ? 'fa-spinner animate-spin' : 'fa-sync-alt'} mr-2 text-primary`}></i>
             {refreshOracleMutation.isPending ? 'Channeling...' : 'Refresh Oracle'}
           </Button>
         </CardContent>

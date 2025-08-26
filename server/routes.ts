@@ -41,6 +41,7 @@ import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
 import { turnstileService } from "./turnstileService";
+import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 
@@ -54,6 +55,9 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 }) : null;
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Analytics middleware (before auth to track all requests)
+  app.use(analyticsMiddleware());
+
   // Auth middleware
   await setupAuth(app);
 
@@ -1815,6 +1819,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         console.log('🧪 Newsletter subscription on testing domain - Turnstile bypassed');
       }
+
+      // Track newsletter subscription analytics
+      await AnalyticsService.trackNewsletter(email, 'subscribed', {
+        first_name: firstName,
+        turnstile_verified: isProductionDomain,
+        source: 'website_form',
+      });
 
       // Check if email already exists
       const existingSubscription = await storage.getNewsletterSubscription(email);

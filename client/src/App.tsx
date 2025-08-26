@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { ClientAnalytics } from "@/lib/analytics";
+import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -28,7 +30,19 @@ import ZeroTrustPage from "@/pages/zero-trust";
 import Unsubscribe from "@/pages/unsubscribe";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
+
+  // Initialize analytics when user loads
+  useEffect(() => {
+    if (user) {
+      ClientAnalytics.identify(user.id, {
+        email: user.email,
+        username: user.username || user.displayName,
+        signup_date: user.createdAt,
+        is_premium: user.isPremium || false,
+      });
+    }
+  }, [user]);
 
   return (
     <Switch>

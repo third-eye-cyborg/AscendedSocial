@@ -27,12 +27,10 @@ export default function OracleSidebar() {
       if (!response.ok) {
         throw new Error('Failed to generate new reading');
       }
-      return await response.json();
-    },
-    onSuccess: (data) => {
-      // Force refetch the daily reading
-      queryClient.invalidateQueries({ queryKey: ["/api/readings/daily"] });
-      queryClient.refetchQueries({ queryKey: ["/api/readings/daily"] });
+      const newReading = await response.json();
+      // Immediately update the cache with new data
+      queryClient.setQueryData(["/api/readings/daily"], newReading);
+      return newReading;
     },
     onError: (error) => {
       console.error('Failed to generate new reading:', error);
@@ -46,12 +44,10 @@ export default function OracleSidebar() {
       if (!response.ok) {
         throw new Error('Failed to refresh oracle recommendations');
       }
-      return await response.json();
-    },
-    onSuccess: (data) => {
-      // Force refetch the oracle recommendations
-      queryClient.invalidateQueries({ queryKey: ["/api/oracle/recommendations"] });
-      queryClient.refetchQueries({ queryKey: ["/api/oracle/recommendations"] });
+      const newRecommendations = await response.json();
+      // Immediately update the cache with new data
+      queryClient.setQueryData(["/api/oracle/recommendations"], newRecommendations);
+      return newRecommendations;
     },
     onError: (error) => {
       console.error('Failed to refresh oracle recommendations:', error);

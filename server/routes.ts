@@ -40,6 +40,7 @@ import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
+import { turnstileService } from "./turnstileService";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 

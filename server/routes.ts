@@ -1781,10 +1781,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Newsletter subscription routes
   app.post('/api/newsletter/subscribe', async (req, res) => {
     try {
-      const { email, firstName, lastName } = req.body;
+      const { email, firstName, lastName, turnstileToken } = req.body;
       
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ message: "Valid email is required" });
+      }
+
+      // Verify Turnstile token for bot protection
+      if (turnstileToken) {
+        const clientIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+        const verification = await turnstileService.verifyToken(turnstileToken, clientIp);
+        
+        if (!verification.success) {
+          console.warn('Newsletter subscription blocked - Turnstile verification failed:', verification.errorCodes);
+          return res.status(400).json({ 
+            message: turnstileService.getErrorMessage(verification.errorCodes || []),
+            code: 'TURNSTILE_VERIFICATION_FAILED'
+          });
+        }
+        
+        console.log('✅ Newsletter subscription - Turnstile verification successful');
+      } else {
+        // In development, log warning if no token provided
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('⚠️ Newsletter subscription without Turnstile token (development mode)');
+        } else {
+          return res.status(400).json({ 
+            message: "Security verification required. Please refresh the page and try again.",
+            code: 'TURNSTILE_REQUIRED'
+          });
+        }
       }
 
       // Check if email already exists

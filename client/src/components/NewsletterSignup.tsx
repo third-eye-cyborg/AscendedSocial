@@ -152,7 +152,7 @@ export function NewsletterSignup() {
             <div className="bg-cosmic-dark/30 border border-primary/20 rounded-lg p-4 backdrop-blur-sm">
               <Turnstile
                 siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
-                onVerify={(token) => {
+                onSuccess={(token) => {
                   setTurnstileToken(token);
                   console.log('✅ Turnstile verification successful');
                 }}
@@ -172,10 +172,6 @@ export function NewsletterSignup() {
                     variant: "destructive",
                   });
                 }}
-                theme="dark"
-                size="normal"
-                retry="auto"
-                refreshExpired="auto"
               />
               <p className="text-xs text-muted/70 mt-2 flex items-center gap-1">
                 <Shield className="w-3 h-3" />

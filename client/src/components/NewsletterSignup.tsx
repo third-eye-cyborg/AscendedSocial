@@ -16,11 +16,20 @@ export function NewsletterSignup() {
   const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast();
 
+  // Check if Turnstile should be enabled based on domain
+  const isProductionDomain = () => {
+    if (typeof window === 'undefined') return false;
+    const hostname = window.location.hostname;
+    return hostname === 'ascended.social' || hostname === 'dev.ascended.social';
+  };
+
+  const shouldUseTurnstile = isProductionDomain();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check if Turnstile verification is complete
-    if (!turnstileToken) {
+    // Check if Turnstile verification is complete (only for production domains)
+    if (shouldUseTurnstile && !turnstileToken) {
       toast({
         title: "Security verification required",
         description: "Please complete the security verification to continue.",
@@ -40,7 +49,7 @@ export function NewsletterSignup() {
         body: JSON.stringify({
           email,
           firstName: firstName || undefined,
-          turnstileToken,
+          turnstileToken: shouldUseTurnstile ? turnstileToken : undefined,
         }),
       });
 
@@ -143,45 +152,47 @@ export function NewsletterSignup() {
             />
           </div>
           
-          {/* Turnstile Security Verification */}
-          <div className="space-y-3">
-            <Label className="text-white font-medium text-sm flex items-center gap-2">
-              <Shield className="w-4 h-4 text-primary" />
-              Security Verification
-            </Label>
-            <div className="bg-cosmic-dark/30 border border-primary/20 rounded-lg p-4 backdrop-blur-sm">
-              <Turnstile
-                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
-                onSuccess={(token) => {
-                  setTurnstileToken(token);
-                  console.log('✅ Turnstile verification successful');
-                }}
-                onError={() => {
-                  setTurnstileToken('');
-                  toast({
-                    title: "Security verification failed",
-                    description: "Please try refreshing the page and completing verification again.",
-                    variant: "destructive",
-                  });
-                }}
-                onExpire={() => {
-                  setTurnstileToken('');
-                  toast({
-                    title: "Security verification expired",
-                    description: "Please complete the verification again.",
-                    variant: "destructive",
-                  });
-                }}
-              />
-              <p className="text-xs text-muted/70 mt-2 flex items-center gap-1">
-                <Shield className="w-3 h-3" />
-                Protected by Cloudflare security to prevent spam
-              </p>
+          {/* Turnstile Security Verification - Only on Production Domains */}
+          {shouldUseTurnstile && (
+            <div className="space-y-3">
+              <Label className="text-white font-medium text-sm flex items-center gap-2">
+                <Shield className="w-4 h-4 text-primary" />
+                Security Verification
+              </Label>
+              <div className="bg-cosmic-dark/30 border border-primary/20 rounded-lg p-4 backdrop-blur-sm">
+                <Turnstile
+                  siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '1x00000000000000000000AA'}
+                  onSuccess={(token) => {
+                    setTurnstileToken(token);
+                    console.log('✅ Turnstile verification successful');
+                  }}
+                  onError={() => {
+                    setTurnstileToken('');
+                    toast({
+                      title: "Security verification failed",
+                      description: "Please try refreshing the page and completing verification again.",
+                      variant: "destructive",
+                    });
+                  }}
+                  onExpire={() => {
+                    setTurnstileToken('');
+                    toast({
+                      title: "Security verification expired",
+                      description: "Please complete the verification again.",
+                      variant: "destructive",
+                    });
+                  }}
+                />
+                <p className="text-xs text-muted/70 mt-2 flex items-center gap-1">
+                  <Shield className="w-3 h-3" />
+                  Protected by Cloudflare security to prevent spam
+                </p>
+              </div>
             </div>
-          </div>
+          )}
           <Button
             type="submit"
-            disabled={isLoading || !email || !turnstileToken}
+            disabled={isLoading || !email || (shouldUseTurnstile && !turnstileToken)}
             className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-4 h-12 rounded-lg shadow-lg hover:shadow-primary/40 transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             data-testid="button-newsletter-subscribe"
           >

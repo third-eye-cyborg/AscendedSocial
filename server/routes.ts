@@ -1787,8 +1787,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Valid email is required" });
       }
 
-      // Verify Turnstile token for bot protection
-      if (turnstileToken) {
+      // Check if this is a production domain that requires Turnstile
+      const hostname = req.get('host') || '';
+      const isProductionDomain = hostname.includes('ascended.social');
+      
+      // Verify Turnstile token for bot protection (only on production domains)
+      if (isProductionDomain) {
+        if (!turnstileToken) {
+          return res.status(400).json({ 
+            message: "Security verification required. Please refresh the page and try again.",
+            code: 'TURNSTILE_REQUIRED'
+          });
+        }
+
         const clientIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
         const verification = await turnstileService.verifyToken(turnstileToken, clientIp);
         
@@ -1800,17 +1811,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
         
-        console.log('✅ Newsletter subscription - Turnstile verification successful');
+        console.log('✅ Newsletter subscription - Turnstile verification successful for production domain');
       } else {
-        // In development, log warning if no token provided
-        if (process.env.NODE_ENV === 'development') {
-          console.warn('⚠️ Newsletter subscription without Turnstile token (development mode)');
-        } else {
-          return res.status(400).json({ 
-            message: "Security verification required. Please refresh the page and try again.",
-            code: 'TURNSTILE_REQUIRED'
-          });
-        }
+        console.log('🧪 Newsletter subscription on testing domain - Turnstile bypassed');
       }
 
       // Check if email already exists

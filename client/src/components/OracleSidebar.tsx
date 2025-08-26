@@ -24,10 +24,18 @@ export default function OracleSidebar() {
   const newReadingMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/readings/daily");
+      if (!response.ok) {
+        throw new Error('Failed to generate new reading');
+      }
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Force refetch the daily reading
       queryClient.invalidateQueries({ queryKey: ["/api/readings/daily"] });
+      queryClient.refetchQueries({ queryKey: ["/api/readings/daily"] });
+    },
+    onError: (error) => {
+      console.error('Failed to generate new reading:', error);
     },
   });
 
@@ -35,10 +43,18 @@ export default function OracleSidebar() {
   const refreshOracleMutation = useMutation({
     mutationFn: async () => {
       const response = await apiRequest("POST", "/api/oracle/recommendations");
+      if (!response.ok) {
+        throw new Error('Failed to refresh oracle recommendations');
+      }
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Force refetch the oracle recommendations
       queryClient.invalidateQueries({ queryKey: ["/api/oracle/recommendations"] });
+      queryClient.refetchQueries({ queryKey: ["/api/oracle/recommendations"] });
+    },
+    onError: (error) => {
+      console.error('Failed to refresh oracle recommendations:', error);
     },
   });
 
@@ -85,7 +101,10 @@ export default function OracleSidebar() {
 
               <Button 
                 className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-white font-medium transition-colors duration-200"
-                onClick={() => newReadingMutation.mutate()}
+                onClick={() => {
+                  console.log('Get New Reading button clicked');
+                  newReadingMutation.mutate();
+                }}
                 disabled={newReadingMutation.isPending}
                 data-testid="button-new-reading"
               >
@@ -160,7 +179,10 @@ export default function OracleSidebar() {
 
           <Button 
             className="w-full mt-3 bg-primary/20 hover:bg-primary/30 text-white border border-primary/40 hover:border-primary/60 text-sm font-medium transition-all duration-200 rounded-lg"
-            onClick={() => refreshOracleMutation.mutate()}
+            onClick={() => {
+              console.log('Refresh Oracle button clicked');
+              refreshOracleMutation.mutate();
+            }}
             disabled={refreshOracleMutation.isPending}
             data-testid="button-refresh-oracle"
           >

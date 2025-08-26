@@ -120,7 +120,7 @@ export default function Post() {
           <Button 
             variant="ghost" 
             onClick={() => setLocation('/')}
-            className="text-white hover:text-primary transition-colors"
+            className="text-white hover:text-primary transition-colors bg-cosmic-light/50 hover:bg-cosmic-light/70 border border-primary/20"
             data-testid="button-back-to-home"
           >
             ← Back to Home

@@ -419,7 +419,17 @@ export default function PostCard({ post }: PostCardProps) {
   const chakraGlow = getChakraGlow(post.chakra);
 
   return (
-    <Card className={`post-card-container bg-cosmic-light rounded-xl border-2 ${chakraGlow} hover-lift animate-fade-in`}>
+    <Card 
+      className={`post-card-container bg-cosmic-light rounded-xl border-2 ${chakraGlow} hover-lift animate-fade-in cursor-pointer`}
+      onClick={(e) => {
+        // Don't navigate if clicking on interactive elements
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('[role="button"]') || target.closest('a') || target.closest('.popover-trigger')) {
+          return;
+        }
+        setLocation(`/post/${post.id}`);
+      }}
+    >
       {/* Post Header - Mobile Responsive */}
       <div className="p-3 sm:p-4">
         <div className="flex items-center justify-between">

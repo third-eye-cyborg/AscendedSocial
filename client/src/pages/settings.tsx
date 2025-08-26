@@ -293,7 +293,7 @@ export default function Settings() {
                 {posts.map((post) => (
                   <Link
                     key={post.id}
-                    href={`/?post=${post.id}`}
+                    href={`/post/${post.id}`}
                     className="block cursor-pointer"
                     data-testid={`activity-post-link-${post.id}`}
                   >

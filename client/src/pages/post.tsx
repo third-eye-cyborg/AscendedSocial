@@ -14,7 +14,7 @@ export default function Post() {
   const [, setLocation] = useLocation();
 
   const { data: post, isLoading, error } = useQuery({
-    queryKey: ['/api/posts', postId],
+    queryKey: [`/api/posts/${postId}`],
     enabled: !!postId,
   });
 
@@ -130,7 +130,7 @@ export default function Post() {
         {/* Post Content */}
         <div className="animate-fade-in">
           <PostCard 
-            post={post}
+            post={post as any}
           />
         </div>
       </div>

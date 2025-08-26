@@ -3,12 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 
 export default function OracleSidebar() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [location, navigate] = useLocation();
 
   const { data: dailyReading, isLoading: readingLoading } = useQuery({
     queryKey: ["/api/readings/daily"],
@@ -241,18 +242,34 @@ export default function OracleSidebar() {
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
               onClick={() => {
-                // Scroll to the create post form and focus on the Quill editor
-                const createPostForm = document.querySelector('[data-testid="create-post-avatar"]')?.closest('.bg-gradient-to-br') as HTMLElement;
-                if (createPostForm) {
-                  createPostForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  
-                  // Try to focus on the Quill editor after a short delay
+                // If not on dashboard, navigate there first
+                if (location !== '/') {
+                  navigate('/');
+                  // Wait for navigation to complete, then scroll to create post
                   setTimeout(() => {
-                    const quillEditor = createPostForm.querySelector('.ql-editor') as HTMLElement;
-                    if (quillEditor) {
-                      quillEditor.focus();
+                    const createPostForm = document.querySelector('[data-testid="create-post-avatar"]')?.closest('.bg-gradient-to-br') as HTMLElement;
+                    if (createPostForm) {
+                      createPostForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      setTimeout(() => {
+                        const quillEditor = createPostForm.querySelector('.ql-editor') as HTMLElement;
+                        if (quillEditor) {
+                          quillEditor.focus();
+                        }
+                      }, 500);
                     }
-                  }, 500);
+                  }, 1000);
+                } else {
+                  // Already on dashboard, just scroll to create post form
+                  const createPostForm = document.querySelector('[data-testid="create-post-avatar"]')?.closest('.bg-gradient-to-br') as HTMLElement;
+                  if (createPostForm) {
+                    createPostForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                      const quillEditor = createPostForm.querySelector('.ql-editor') as HTMLElement;
+                      if (quillEditor) {
+                        quillEditor.focus();
+                      }
+                    }, 500);
+                  }
                 }
               }}
               data-testid="button-create-post"

@@ -94,7 +94,7 @@ export default function Subscribe() {
             <div className="w-16 h-16 mx-auto mb-4 bg-destructive/20 rounded-full flex items-center justify-center">
               <i className="fas fa-exclamation-triangle text-destructive text-2xl"></i>
             </div>
-            <h2 className="text-xl font-semibold mb-2">Payment Error</h2>
+            <h2 className="text-xl font-semibold mb-2 text-white">Payment Error</h2>
             <p className="text-muted mb-4">{error}</p>
             <Button 
               onClick={() => window.location.href = '/'}

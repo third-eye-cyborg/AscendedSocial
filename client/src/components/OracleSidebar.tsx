@@ -84,7 +84,7 @@ export default function OracleSidebar() {
               </div>
 
               <Button 
-                className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-primary font-medium transition-colors duration-200"
+                className="w-full mt-3 bg-primary/30 hover:bg-primary/50 text-white font-medium transition-colors duration-200"
                 onClick={() => newReadingMutation.mutate()}
                 disabled={newReadingMutation.isPending}
                 data-testid="button-new-reading"

@@ -241,11 +241,18 @@ export default function OracleSidebar() {
               variant="ghost"
               className="w-full justify-start px-3 py-2 text-white hover:text-accent-light hover:bg-cosmic-light"
               onClick={() => {
-                // Focus on the create post form
-                const createPostInput = document.querySelector('[data-testid="textarea-content"]') as HTMLTextAreaElement;
-                if (createPostInput) {
-                  createPostInput.focus();
-                  createPostInput.scrollIntoView({ behavior: 'smooth' });
+                // Scroll to the create post form and focus on the Quill editor
+                const createPostForm = document.querySelector('[data-testid="create-post-avatar"]')?.closest('.bg-gradient-to-br') as HTMLElement;
+                if (createPostForm) {
+                  createPostForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  
+                  // Try to focus on the Quill editor after a short delay
+                  setTimeout(() => {
+                    const quillEditor = createPostForm.querySelector('.ql-editor') as HTMLElement;
+                    if (quillEditor) {
+                      quillEditor.focus();
+                    }
+                  }, 500);
                 }
               }}
               data-testid="button-create-post"

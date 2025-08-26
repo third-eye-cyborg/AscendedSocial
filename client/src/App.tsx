@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ClientAnalytics } from "@/lib/analytics";
+import { NotificationService } from "@/lib/notifications";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -32,14 +33,27 @@ import Unsubscribe from "@/pages/unsubscribe";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Initialize analytics when user loads
+  // Initialize analytics and notifications when user loads
   useEffect(() => {
-    if (user) {
-      ClientAnalytics.identify(user.id, {
-        email: user.email,
-        username: user.username || user.displayName,
-        signup_date: user.createdAt,
-        is_premium: user.isPremium || false,
+    // Initialize push notifications
+    NotificationService.initialize().catch(console.error);
+    
+    if (user && typeof user === 'object' && 'id' in user) {
+      const userId = String(user.id);
+      const userData = user as any;
+      
+      ClientAnalytics.identify(userId, {
+        email: userData.email || '',
+        username: userData.username || userData.displayName || '',
+        signup_date: userData.createdAt || new Date().toISOString(),
+        is_premium: userData.isPremium || false,
+      });
+      
+      // Set up spiritual profile for notifications
+      NotificationService.setSpiritualProfile(userId, {
+        username: userData.username || userData.displayName,
+        isPremium: userData.isPremium || false,
+        journeyStage: 'active'
       });
     }
   }, [user]);

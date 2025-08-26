@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/Layout";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import { NotificationPrompt } from "@/components/NotificationPrompt";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
@@ -63,6 +64,9 @@ export default function Home() {
   return (
     <Layout>
       <div className="w-full max-w-full sm:max-w-2xl mx-auto px-3 sm:px-4 py-3 sm:py-6 xl:px-6 2xl:px-4 overflow-hidden">
+        {/* Notification Prompt */}
+        <NotificationPrompt className="mb-6" />
+        
         {/* Navigation Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 w-full">
           {/* Featured: Starmap Visualizer */}

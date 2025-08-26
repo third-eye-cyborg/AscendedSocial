@@ -42,6 +42,7 @@ import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
 import { turnstileService } from "./turnstileService";
 import { AnalyticsService, analyticsMiddleware } from "./analytics";
+import { ServerNotificationService } from "./notificationService";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 

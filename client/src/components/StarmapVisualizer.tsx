@@ -368,6 +368,12 @@ function StarUser({ user, position, mode, onClick }: {
   }
 
   const color = (user?.dominantChakra && chakraColors[user.dominantChakra]) ? chakraColors[user.dominantChakra] : '#ffffff';
+  
+  // Safety check to ensure color is valid
+  if (!color || typeof color !== 'string') {
+    console.warn('Invalid color for user:', user.id, 'chakra:', user.dominantChakra);
+    return null;
+  }
   const auraIntensity = Math.min((user?.aura || 0) / 1000, 1);
   const size = mode === 'starmap' ? 0.2 + auraIntensity * 0.3 : 0.6 + auraIntensity * 0.4;
   
@@ -532,7 +538,7 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
     users.forEach((user, index) => {
       if (user?.connections && Array.isArray(user.connections) && user.connections.length > 0) {
         const userPos = getStarPosition(user, index);
-        const userColor = new Color(user?.dominantChakra ? chakraColors[user.dominantChakra] : '#ffffff');
+        const userColor = new Color(user?.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#ffffff');
         
         user.connections.forEach((connection) => {
           if (!connection?.id) return;
@@ -541,7 +547,7 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
             const connectedUser = users[connectedUserIndex];
             if (!connectedUser?.id) return;
             const connectedPos = getStarPosition(connectedUser, connectedUserIndex);
-            const connectedColor = new Color(connectedUser?.dominantChakra ? chakraColors[connectedUser.dominantChakra] : '#ffffff');
+            const connectedColor = new Color(connectedUser?.dominantChakra && chakraColors[connectedUser.dominantChakra] ? chakraColors[connectedUser.dominantChakra] : '#ffffff');
             
             // Create gradient effect between chakra colors
             const midColor = userColor.clone().lerp(connectedColor, 0.5);

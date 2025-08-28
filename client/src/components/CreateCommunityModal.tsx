@@ -393,6 +393,7 @@ export function CreateCommunityModal({ isOpen, onClose, onSuccess }: CreateCommu
                       checked={isPrivate}
                       onCheckedChange={setIsPrivate}
                       data-testid="switch-private-community"
+                      className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600 border-gray-400"
                     />
                     <Lock className={`w-4 h-4 ${isPrivate ? 'text-red-500' : 'text-gray-400'}`} />
                   </div>
@@ -407,6 +408,7 @@ export function CreateCommunityModal({ isOpen, onClose, onSuccess }: CreateCommu
                     checked={requiresApproval}
                     onCheckedChange={setRequiresApproval}
                     data-testid="switch-requires-approval"
+                    className="data-[state=checked]:bg-primary data-[state=unchecked]:bg-gray-600 border-gray-400"
                   />
                 </div>
               </div>
@@ -432,7 +434,7 @@ export function CreateCommunityModal({ isOpen, onClose, onSuccess }: CreateCommu
               type="button"
               variant="outline"
               onClick={onClose}
-              className="flex-1 border-primary/30 text-primary hover:bg-primary/10"
+              className="flex-1 border-gray-400 text-gray-100 hover:bg-gray-700 hover:text-white hover:border-gray-300"
               data-testid="button-cancel-community"
             >
               Cancel

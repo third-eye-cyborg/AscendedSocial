@@ -128,7 +128,7 @@ export function CreateCommunityModal({ isOpen, onClose, onSuccess }: CreateCommu
       description: description.trim(),
       isPrivate,
       requiresApproval,
-      primaryChakra: primaryChakra || null,
+      primaryChakra: primaryChakra && primaryChakra !== "none" ? primaryChakra : null,
       tags: tags.length > 0 ? tags : null,
       guidelines: guidelines.trim() || null,
       spiritualFocus: spiritualFocus.length > 0 ? spiritualFocus : null,
@@ -246,7 +246,7 @@ export function CreateCommunityModal({ isOpen, onClose, onSuccess }: CreateCommu
                       <SelectValue placeholder="Select primary chakra (optional)" />
                     </SelectTrigger>
                     <SelectContent className="bg-cosmic border-primary/30">
-                      <SelectItem value="">No primary focus</SelectItem>
+                      <SelectItem value="none">No primary focus</SelectItem>
                       {Object.entries(chakraLabels).map(([chakra, label]) => (
                         <SelectItem key={chakra} value={chakra}>
                           <div className="flex items-center">

@@ -9,6 +9,7 @@ import { ArrowLeft, Plus, Search, Users, Calendar, Settings, Heart, Star, Crown,
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import Layout from "@/components/Layout";
+import { CreateCommunityModal } from "@/components/CreateCommunityModal";
 
 export default function Community() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +17,7 @@ export default function Community() {
   const [selectedPrivacy, setSelectedPrivacy] = useState("all");
   const [selectedSort, setSelectedSort] = useState("members");
   const [activeTab, setActiveTab] = useState("discover");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -90,6 +92,7 @@ export default function Community() {
               <p className="text-gray-300">Connect with souls on similar paths and grow together</p>
             </div>
             <Button 
+              onClick={() => setIsCreateModalOpen(true)}
               className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
               data-testid="button-create-community"
             >
@@ -190,15 +193,15 @@ export default function Community() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {communities?.map((community: any) => (
+                  {communities && Array.isArray(communities) && communities.map((community: any) => (
                     <CommunityCard 
-                      key={community.community.id} 
+                      key={community.community?.id || community.id} 
                       community={community} 
                       onJoin={handleJoinCommunity}
                     />
                   ))}
                   
-                  {(!communities || communities.length === 0) && (
+                  {(!communities || !Array.isArray(communities) || communities.length === 0) && (
                     <div className="col-span-full text-center py-12">
                       <Users className="w-16 h-16 text-gray-500 mx-auto mb-4" />
                       <h3 className="text-xl font-semibold text-gray-300 mb-2">No communities found</h3>
@@ -206,6 +209,7 @@ export default function Community() {
                         {searchQuery ? "Try adjusting your search filters" : "Be the first to create a spiritual community"}
                       </p>
                       <Button 
+                        onClick={() => setIsCreateModalOpen(true)}
                         className="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80"
                         data-testid="button-create-first-community"
                       >
@@ -220,16 +224,16 @@ export default function Community() {
 
             <TabsContent value="my-communities" className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userCommunities?.map((community: any) => (
+                {userCommunities && Array.isArray(userCommunities) && userCommunities.map((community: any) => (
                   <CommunityCard 
-                    key={community.community.id} 
+                    key={community.community?.id || community.id} 
                     community={community} 
                     onJoin={handleJoinCommunity}
                     isOwned={true}
                   />
                 ))}
                 
-                {(!userCommunities || userCommunities.length === 0) && (
+                {(!userCommunities || !Array.isArray(userCommunities) || userCommunities.length === 0) && (
                   <div className="col-span-full text-center py-12">
                     <Crown className="w-16 h-16 text-gray-500 mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-gray-300 mb-2">No communities yet</h3>
@@ -259,6 +263,15 @@ export default function Community() {
           </Tabs>
         </div>
       </div>
+
+      {/* Create Community Modal */}
+      <CreateCommunityModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          // Modal handles its own success logic
+        }}
+      />
     </Layout>
   );
 }

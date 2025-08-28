@@ -143,6 +143,17 @@ export default function Sidebar() {
             <span>Oracle</span>
           </button>
         </Link>
+        <Link href="/community">
+          <button 
+            className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
+              location === "/community" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
+            }`}
+            data-testid="link-community"
+          >
+            <i className="fas fa-users"></i>
+            <span>Community</span>
+          </button>
+        </Link>
         <Link href="/explore">
           <button 
             className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
@@ -184,17 +195,6 @@ export default function Sidebar() {
           Discover
         </h4>
         <nav className="space-y-2">
-          <Link href="/community">
-            <button 
-              className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${
-                location === "/community" ? "bg-primary text-white" : "hover:bg-cosmic-light text-white hover:text-accent-light"
-              }`}
-              data-testid="link-community"
-            >
-              <i className="fas fa-users"></i>
-              <span>Community</span>
-            </button>
-          </Link>
           <Link href="/energy">
             <button 
               className={`flex items-center space-x-3 px-3 py-2 rounded-lg w-full text-left transition-colors ${

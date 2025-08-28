@@ -381,7 +381,7 @@ export function CreateVisionModal({ isOpen, onClose, onSuccess }: CreateVisionMo
               type="button"
               variant="outline"
               onClick={onClose}
-              className="flex-1 border-primary/20 text-white hover:bg-primary/10"
+              className="flex-1 bg-gray-800 border-gray-600 text-gray-100 hover:bg-gray-700 hover:text-white hover:border-gray-500"
               data-testid="button-cancel-vision"
             >
               Cancel

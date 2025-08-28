@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -79,10 +80,8 @@ export default function Visions() {
   };
 
   return (
-    <div className="min-h-screen bg-cosmic text-white">
-      {/* Header */}
-      <div className="border-b border-primary/20 bg-cosmic-light/30 backdrop-blur-md">
-        <div className="max-w-6xl mx-auto px-6 py-8">
+    <Layout>
+      <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">
@@ -138,10 +137,7 @@ export default function Visions() {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-6 py-8">
         <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             <TabsList className="bg-cosmic-light/50 border border-primary/20">
@@ -274,17 +270,16 @@ export default function Visions() {
             )}
           </TabsContent>
         </Tabs>
-      </div>
 
-      {/* Create Vision Modal */}
-      <CreateVisionModal 
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={() => {
-          setShowCreateModal(false);
-          queryClient.invalidateQueries({ queryKey: ['/api/visions'] });
-        }}
-      />
-    </div>
+        {/* Create Vision Modal */}
+        <CreateVisionModal 
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            setShowCreateModal(false);
+            queryClient.invalidateQueries({ queryKey: ['/api/visions'] });
+          }}
+        />
+    </Layout>
   );
 }

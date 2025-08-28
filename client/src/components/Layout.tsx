@@ -152,14 +152,78 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               )}
               
-              {/* User Profile/Avatar */}
-              <ProfileIcon 
-                user={user}
-                size="md"
-                showGlow={true}
-                onClick={() => window.location.href = `/profile/${(user as any)?.id}`}
-                testId="profile"
-              />
+              {/* User Profile/Avatar Dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="cursor-pointer" data-testid="profile-dropdown">
+                    <ProfileIcon 
+                      user={user}
+                      size="md"
+                      showGlow={true}
+                      testId="profile"
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-cosmic-light border-primary/30 w-48">
+                  <DropdownMenuItem asChild>
+                    <Link href="/community" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-users mr-2"></i>
+                        Community
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/visions" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-eye mr-2"></i>
+                        Visions
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/energy" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-bolt mr-2"></i>
+                        Energy
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/starmap" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-star mr-2"></i>
+                        Starmap
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-cog mr-2"></i>
+                        Settings
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={`/profile/${(user as any)?.id}`} className="w-full">
+                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
+                        <i className="fas fa-user mr-2"></i>
+                        Profile
+                      </button>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button 
+                      onClick={() => window.location.href = '/api/logout'}
+                      className="flex items-center w-full px-2 py-2 text-white hover:text-primary"
+                    >
+                      <i className="fas fa-sign-out-alt mr-2"></i>
+                      Logout
+                    </button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Logout Button - Hidden on mobile and tablet */}
               <div className="hidden xl:block">

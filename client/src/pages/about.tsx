@@ -303,6 +303,25 @@ export default function About() {
           </div>
         </div>
       </main>
+
+      {/* Footer with Privacy Links */}
+      <footer className="relative z-10 bg-cosmic/80 backdrop-blur-lg border-t border-primary/20 py-8">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-400">
+            <span>© 2025 Ascended Social</span>
+            <span>•</span>
+            <a 
+              href="#manage_cookies" 
+              className="hover:text-primary transition-colors"
+              data-testid="link-cookie-preferences"
+            >
+              Cookie Preferences
+            </a>
+            <span>•</span>
+            <span>Privacy First Analytics</span>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

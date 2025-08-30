@@ -553,6 +553,32 @@ export default function Settings() {
             </Card>
 
             {/* Cookie Consent Management */}
+            <Card className="bg-cosmic-light border-cosmic-light">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <i className="fas fa-cookie-bite text-primary"></i>
+                  Cookie Preferences
+                </CardTitle>
+                <p className="text-gray-400 text-sm">Manage your cookie consent and preferences</p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-gray-300">
+                  Control which cookies we use to improve your experience on our platform.
+                </p>
+                <Button 
+                  onClick={() => window.location.hash = 'manage_cookies'}
+                  className="bg-primary hover:bg-primary/90 text-white font-medium"
+                  data-testid="button-manage-cookies"
+                >
+                  <i className="fas fa-cog mr-2"></i>
+                  Manage Cookie Settings
+                </Button>
+                <p className="text-xs text-gray-400">
+                  This will open the cookie preference center where you can adjust your consent for different types of cookies.
+                </p>
+              </CardContent>
+            </Card>
+
             <PrivacySettings />
           </TabsContent>
 

@@ -103,6 +103,16 @@ export default function Layout({ children }: LayoutProps) {
                       </button>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button 
+                      onClick={() => window.location.hash = 'manage_cookies'}
+                      className="flex items-center w-full px-2 py-2 text-white hover:text-primary"
+                      data-testid="button-cookie-preferences"
+                    >
+                      <i className="fas fa-cookie-bite mr-2"></i>
+                      Cookie Preferences
+                    </button>
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

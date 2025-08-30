@@ -16,22 +16,23 @@ export default function CookiePolicy() {
   const [enzuzoLoaded, setEnzuzoLoaded] = useState(false);
 
   useEffect(() => {
-    // Remove any existing script and div to ensure clean reload
-    const existingScript = document.getElementById('__enzuzo-cookie-script');
+    // Check if script already exists to prevent duplicates
+    const existingScript = document.getElementById('__enzuzo-root-script');
     if (existingScript) {
-      existingScript.remove();
+      setEnzuzoLoaded(true);
+      return;
     }
     
-    // Clear the div content
+    // Clear the root div content
     const rootDiv = document.getElementById('__enzuzo-root');
     if (rootDiv) {
       rootDiv.innerHTML = '';
     }
     
-    // Add the Enzuzo cookie policy script (similar to CCPA script but for cookie management)
+    // Add the proper Enzuzo cookie policy script
     const script = document.createElement('script');
-    script.id = '__enzuzo-cookie-script';
-    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=cookie-manager&apiHost=https://app.enzuzo.com&qt=1756588733437&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1ODgyODN9.k5Y0Vix9GgLtIfBefvTbfkVc4SkyttgkXW5m9_dSFPU';
+    script.id = '__enzuzo-root-script';
+    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
     script.async = true;
     
     // Add load event listener
@@ -45,14 +46,6 @@ export default function CookiePolicy() {
     };
     
     document.head.appendChild(script);
-    
-    // Clean up function
-    return () => {
-      const scriptToRemove = document.getElementById('__enzuzo-cookie-script');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
-    };
   }, []);
 
   return (

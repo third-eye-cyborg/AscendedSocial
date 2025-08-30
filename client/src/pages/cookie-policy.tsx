@@ -65,6 +65,33 @@ export default function CookiePolicy() {
 
           {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
+            <style>{`
+              /* Enzuzo dropdown styling fixes */
+              #__enzuzo-root select {
+                background-color: white !important;
+                color: black !important;
+                border: 1px solid #ccc !important;
+                padding: 8px !important;
+                border-radius: 4px !important;
+              }
+              
+              #__enzuzo-root select option {
+                background-color: white !important;
+                color: black !important;
+              }
+              
+              /* Fix for any dropdown containers */
+              #__enzuzo-root .MuiSelect-root,
+              #__enzuzo-root .MuiInputBase-root {
+                background-color: white !important;
+                color: black !important;
+              }
+              
+              /* Fix dropdown arrows and icons */
+              #__enzuzo-root .MuiSelect-icon {
+                color: black !important;
+              }
+            `}</style>
             <div 
               id="__enzuzo-root"
               className="min-h-[400px] text-black"

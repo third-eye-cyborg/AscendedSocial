@@ -16,9 +16,14 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Ensure no elements exceed viewport width */
+/* Exclude Enzuzo elements from global styles */
+*:not(#__enzuzo-root):not(#__enzuzo-root *) {
+  /* This ensures our global styles don't affect Enzuzo */
+}
+
+/* Ensure no elements exceed viewport width, except Enzuzo */
 @media (max-width: 640px) {
-  * {
+  *:not(#__enzuzo-root):not(#__enzuzo-root *) {
     max-width: 100vw !important;
   }
   

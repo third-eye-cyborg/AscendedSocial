@@ -72,7 +72,7 @@ export default function Layout({ children }: LayoutProps) {
               </div>
             </div>
 
-            {/* Mobile Menu and Search */}
+            {/* Mobile Search */}
             <div className="md:hidden flex items-center space-x-2">
               <Button 
                 variant="ghost" 
@@ -83,38 +83,6 @@ export default function Layout({ children }: LayoutProps) {
               >
                 <i className="fas fa-search"></i>
               </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-gray-300 hover:text-primary"
-                    data-testid="button-menu-mobile"
-                  >
-                    <i className="fas fa-bars"></i>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-cosmic-light border-primary/30 w-48">
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary">
-                        <i className="fas fa-cog mr-2"></i>
-                        Settings
-                      </button>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <button 
-                      onClick={() => window.location.hash = 'manage_cookies'}
-                      className="flex items-center w-full px-2 py-2 text-white hover:text-primary"
-                      data-testid="button-cookie-preferences"
-                    >
-                      <i className="fas fa-cookie-bite mr-2"></i>
-                      Cookie Preferences
-                    </button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
 
             {/* User Menu and Energy Indicator */}
@@ -141,17 +109,19 @@ export default function Layout({ children }: LayoutProps) {
                 </Button>
               </div>
 
-              {/* Settings Icon */}
-              <Link href="/settings">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-gray-300 hover:text-white hover:bg-slate-700"
-                  data-testid="button-settings"
-                >
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </Link>
+              {/* Settings Icon - Desktop only */}
+              <div className="hidden md:block">
+                <Link href="/settings">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-gray-300 hover:text-white hover:bg-slate-700"
+                    data-testid="button-settings"
+                  >
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
 
               {/* Energy Indicator - Hidden on mobile and tablet */}
               {(user as any) && (
@@ -214,6 +184,16 @@ export default function Layout({ children }: LayoutProps) {
                         Settings
                       </div>
                     </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
+                    <button 
+                      onClick={() => window.location.hash = 'manage_cookies'}
+                      className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors"
+                      data-testid="button-cookie-preferences"
+                    >
+                      <i className="fas fa-cookie-bite mr-2"></i>
+                      Cookie Preferences
+                    </button>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href={`/profile/${(user as any)?.id}`} className="w-full">

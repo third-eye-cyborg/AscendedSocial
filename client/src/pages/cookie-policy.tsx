@@ -11,55 +11,39 @@ export default function CookiePolicy() {
     // Ensure Enzuzo script is loaded
     consentManager.initializeEnzuzo();
     
-    // Wait for Enzuzo to be available and render the cookie policy
-    const checkAndRenderPolicy = () => {
-      if (typeof window !== 'undefined' && containerRef.current) {
+    // Display the cookie manager when the page loads
+    const showCookieManager = () => {
+      if (typeof window !== 'undefined') {
         const enzuzo = (window as any).Enzuzo || (window as any).ezCookieSettings;
         
         if (enzuzo && !enzuzoLoaded.current) {
           enzuzoLoaded.current = true;
           
-          // Try to render the cookie policy in the container
-          if (enzuzo.renderPolicy) {
-            enzuzo.renderPolicy(containerRef.current);
-          } else if (enzuzo.showPolicy) {
-            enzuzo.showPolicy();
+          // Show the cookie preferences/manager
+          if (enzuzo.showPreferencesManager) {
+            enzuzo.showPreferencesManager();
+          } else if (enzuzo.showPreferences) {
+            enzuzo.showPreferences();
+          } else if (enzuzo.showCookieManager) {
+            enzuzo.showCookieManager();
           } else {
-            // Fallback: render the cookie preferences center
-            if (enzuzo.showPreferences) {
-              enzuzo.showPreferences();
-            } else {
-              // Final fallback: show a message that the policy is loading
-              if (containerRef.current) {
-                containerRef.current.innerHTML = `
-                  <div class="text-center py-12">
-                    <div class="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-                    <p class="text-white/80">Loading cookie policy...</p>
-                    <p class="text-white/60 text-sm mt-2">If this takes too long, please refresh the page.</p>
-                  </div>
-                `;
-              }
+            // If no preference manager available, show the banner
+            if (enzuzo.showBanner) {
+              enzuzo.showBanner();
             }
           }
         } else if (!enzuzo) {
           // Enzuzo not loaded yet, keep checking
-          setTimeout(checkAndRenderPolicy, 100);
+          setTimeout(showCookieManager, 100);
         }
       }
     };
 
     // Start checking for Enzuzo availability
-    checkAndRenderPolicy();
-    
-    // Listen for Enzuzo to load
-    const handleEnzuzoLoad = () => {
-      checkAndRenderPolicy();
-    };
-    
-    window.addEventListener('enzuzoLoaded', handleEnzuzoLoad);
+    const timer = setTimeout(showCookieManager, 1000); // Give Enzuzo time to load
     
     return () => {
-      window.removeEventListener('enzuzoLoaded', handleEnzuzoLoad);
+      clearTimeout(timer);
     };
   }, []);
 
@@ -113,15 +97,93 @@ export default function CookiePolicy() {
             </p>
           </div>
 
-          {/* Enzuzo Cookie Policy Embed */}
+          {/* Cookie Policy Information and Management */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
-            {/* Enzuzo root div - exactly as their instructions specify */}
-            <div 
-              ref={containerRef}
-              id="__enzuzo-root" 
-              className="min-h-[500px]" 
-              data-testid="enzuzo-cookie-policy"
-            ></div>
+            <div className="text-center mb-8">
+              <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Preferences Center</h3>
+              <p className="text-white/80 text-lg leading-relaxed">
+                Click the button below to open your cookie preferences and manage your privacy settings. 
+                You can choose which types of cookies you'd like to allow and adjust your preferences at any time.
+              </p>
+            </div>
+            
+            <div className="text-center mb-8">
+              <button
+                onClick={() => {
+                  const enzuzo = (window as any).Enzuzo || (window as any).ezCookieSettings;
+                  if (enzuzo) {
+                    if (enzuzo.showPreferencesManager) {
+                      enzuzo.showPreferencesManager();
+                    } else if (enzuzo.showPreferences) {
+                      enzuzo.showPreferences();
+                    } else if (enzuzo.showCookieManager) {
+                      enzuzo.showCookieManager();
+                    } else if (enzuzo.showBanner) {
+                      enzuzo.showBanner();
+                    }
+                  }
+                }}
+                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg"
+                data-testid="button-manage-cookies"
+              >
+                <span className="relative z-10 flex items-center space-x-2">
+                  <i className="fas fa-cog"></i>
+                  <span>Manage Cookie Preferences</span>
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+              </button>
+            </div>
+
+            {/* Cookie Categories Information */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-cosmic/50 rounded-2xl p-6 border border-primary/20">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-check text-white text-sm"></i>
+                  </div>
+                  <h4 className="text-xl font-semibold text-white">Essential Cookies</h4>
+                </div>
+                <p className="text-white/80">
+                  Required for basic website functionality, security, and user authentication. These cannot be disabled.
+                </p>
+              </div>
+
+              <div className="bg-cosmic/50 rounded-2xl p-6 border border-blue-400/20">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-chart-bar text-white text-sm"></i>
+                  </div>
+                  <h4 className="text-xl font-semibold text-white">Analytics Cookies</h4>
+                </div>
+                <p className="text-white/80">
+                  Help us understand how you interact with our platform to improve your spiritual journey experience.
+                </p>
+              </div>
+
+              <div className="bg-cosmic/50 rounded-2xl p-6 border border-purple-400/20">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-bullhorn text-white text-sm"></i>
+                  </div>
+                  <h4 className="text-xl font-semibold text-white">Marketing Cookies</h4>
+                </div>
+                <p className="text-white/80">
+                  Enable personalized content recommendations and spiritual guidance tailored to your interests.
+                </p>
+              </div>
+
+              <div className="bg-cosmic/50 rounded-2xl p-6 border border-yellow-400/20">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
+                    <i className="fas fa-user-cog text-white text-sm"></i>
+                  </div>
+                  <h4 className="text-xl font-semibold text-white">Preference Cookies</h4>
+                </div>
+                <p className="text-white/80">
+                  Remember your settings, language preferences, and customizations for a personalized experience.
+                </p>
+              </div>
+            </div>
           </div>
 
           {/* Additional Information */}

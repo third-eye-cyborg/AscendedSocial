@@ -25,7 +25,7 @@ export default function CookiePolicy() {
     // Add the cookie policy script (same pattern as working CCPA page)
     const script = document.createElement('script');
     script.id = '__enzuzo-root-script';
-    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
+    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=cookies&apiHost=https://app.enzuzo.com&qt=1756588733437&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1ODgyODN9.k5Y0Vix9GgLtIfBefvTbfkVc4SkyttgkXW5m9_dSFPU';
     script.async = true;
     
     // Add load event listener

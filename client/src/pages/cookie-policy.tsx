@@ -16,16 +16,10 @@ export default function CookiePolicy() {
   const [enzuzoLoaded, setEnzuzoLoaded] = useState(false);
 
   useEffect(() => {
-    // Remove any existing script and div to ensure clean reload (like CCPA page)
-    const existingScript = document.getElementById('__enzuzo-root-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    // Clear the div content
-    const rootDiv = document.getElementById('__enzuzo-root');
-    if (rootDiv) {
-      rootDiv.innerHTML = '';
+    // Check if script already exists to prevent duplicates
+    if (document.getElementById('__enzuzo-root-script')) {
+      setEnzuzoLoaded(true);
+      return;
     }
     
     // Add the cookie policy script (same pattern as working CCPA page)

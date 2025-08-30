@@ -128,6 +128,16 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/data-request">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-data-request"
+                  >
+                    Data Request
+                  </span>
+                </Link>
+              </li>
+              <li>
                 <a 
                   href="#"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"

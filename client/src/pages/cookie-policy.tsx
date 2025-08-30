@@ -16,35 +16,44 @@ export default function CookiePolicy() {
   const [enzuzoLoaded, setEnzuzoLoaded] = useState(false);
 
   useEffect(() => {
-    // Check if Enzuzo is loaded and set up monitoring
-    const checkEnzuzo = () => {
-      if (window.Enzuzo) {
-        setEnzuzoLoaded(true);
-        console.log('Enzuzo cookie widget loaded successfully');
-      }
+    // Remove any existing script and div to ensure clean reload
+    const existingScript = document.getElementById('__enzuzo-cookie-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
+    
+    // Clear the div content
+    const rootDiv = document.getElementById('__enzuzo-root');
+    if (rootDiv) {
+      rootDiv.innerHTML = '';
+    }
+    
+    // Add the Enzuzo cookie policy script (similar to CCPA script but for cookie management)
+    const script = document.createElement('script');
+    script.id = '__enzuzo-cookie-script';
+    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=cookie-manager&apiHost=https://app.enzuzo.com&qt=1756588733437&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1ODgyODN9.k5Y0Vix9GgLtIfBefvTbfkVc4SkyttgkXW5m9_dSFPU';
+    script.async = true;
+    
+    // Add load event listener
+    script.onload = () => {
+      console.log('Enzuzo cookie policy script loaded');
+      setEnzuzoLoaded(true);
     };
-
-    // Initial check
-    checkEnzuzo();
-
-    // Monitor for Enzuzo loading
-    const interval = setInterval(() => {
-      if (window.Enzuzo && !enzuzoLoaded) {
-        setEnzuzoLoaded(true);
-        clearInterval(interval);
-      }
-    }, 1000);
-
-    // Clean up interval after 10 seconds
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-    }, 10000);
-
+    
+    script.onerror = () => {
+      console.error('Failed to load Enzuzo cookie policy script');
+    };
+    
+    document.head.appendChild(script);
+    
+    // Clean up function
     return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
+      const scriptToRemove = document.getElementById('__enzuzo-cookie-script');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
     };
-  }, [enzuzoLoaded]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -96,158 +105,22 @@ export default function CookiePolicy() {
             </p>
           </div>
 
-          {/* Cookie Policy Content */}
+          {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
-            <div className="prose prose-lg max-w-none text-white/90">
-              
-              {/* Cookie Preferences Button */}
-              <div className="text-center mb-8 p-6 bg-primary/10 rounded-2xl border border-primary/30">
-                <h3 className="text-xl font-semibold text-primary mb-3">Manage Your Cookie Preferences</h3>
-                <p className="text-white/80 mb-4">
-                  Click below to customize your cookie settings and privacy preferences.
-                  {!enzuzoLoaded && (
-                    <span className="block text-sm text-secondary mt-2">
-                      <i className="fas fa-spinner fa-spin mr-2"></i>
-                      Loading cookie preferences widget...
-                    </span>
-                  )}
-                </p>
-                <button 
-                  onClick={() => {
-                    // Try multiple Enzuzo methods for better compatibility
-                    if (window.Enzuzo) {
-                      if (window.Enzuzo.showBanner) {
-                        window.Enzuzo.showBanner();
-                      } else if (window.Enzuzo.showSettings) {
-                        window.Enzuzo.showSettings();
-                      } else if (window.Enzuzo.openWidget) {
-                        window.Enzuzo.openWidget();
-                      } else {
-                        console.warn('Enzuzo methods not available');
-                        alert('Cookie preferences panel will be available shortly. Please refresh the page if this message persists.');
-                      }
-                    } else {
-                      console.warn('Enzuzo not loaded');
-                      alert('Cookie preferences are still loading. Please wait a moment and try again.');
-                    }
-                  }}
-                  className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  data-testid="button-cookie-preferences"
-                >
-                  <i className="fas fa-cog mr-2"></i>
-                  Manage Cookie Preferences
-                </button>
-              </div>
-
-              {/* Cookie Policy Content */}
-              <div className="space-y-8">
-                <section>
-                  <h3 className="text-2xl font-bold text-primary mb-4">What Are Cookies?</h3>
-                  <p className="leading-relaxed">
-                    Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and enabling certain features of our spiritual platform.
-                  </p>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-primary mb-4">Types of Cookies We Use</h3>
-                  
-                  <div className="space-y-6">
-                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
-                      <h4 className="text-xl font-semibold text-secondary mb-3">Essential Cookies</h4>
-                      <p className="leading-relaxed mb-3">
-                        These cookies are necessary for the website to function properly. They enable core functionality such as security, network management, and accessibility.
-                      </p>
-                      <p className="text-sm text-white/70">
-                        <strong>Examples:</strong> Session management, authentication, load balancing
-                      </p>
-                    </div>
-
-                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
-                      <h4 className="text-xl font-semibold text-secondary mb-3">Analytics Cookies</h4>
-                      <p className="leading-relaxed mb-3">
-                        These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our spiritual platform.
-                      </p>
-                      <p className="text-sm text-white/70">
-                        <strong>Examples:</strong> PostHog analytics, page views, user journeys
-                      </p>
-                    </div>
-
-                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
-                      <h4 className="text-xl font-semibold text-secondary mb-3">Functional Cookies</h4>
-                      <p className="leading-relaxed mb-3">
-                        These cookies enable enhanced functionality and personalization, such as remembering your spiritual preferences and customization settings.
-                      </p>
-                      <p className="text-sm text-white/70">
-                        <strong>Examples:</strong> Theme preferences, language settings, user preferences
-                      </p>
-                    </div>
-
-                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
-                      <h4 className="text-xl font-semibold text-secondary mb-3">Marketing Cookies</h4>
-                      <p className="leading-relaxed mb-3">
-                        These cookies are used to deliver relevant content and track the effectiveness of our spiritual community outreach.
-                      </p>
-                      <p className="text-sm text-white/70">
-                        <strong>Examples:</strong> Social media integration, content personalization
-                      </p>
-                    </div>
+            <div 
+              id="__enzuzo-root"
+              className="min-h-[500px]"
+              data-testid="enzuzo-cookie-policy"
+            >
+              {!enzuzoLoaded && (
+                <div className="text-center py-12">
+                  <div className="animate-pulse mb-4">
+                    <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
+                    <div className="font-medium text-[#6f788c]">Loading cookie policy widget...</div>
+                    <div className="text-white/60 text-sm mt-2">This may take a few moments</div>
                   </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-primary mb-4">Your Choices</h3>
-                  <div className="space-y-4">
-                    <p className="leading-relaxed">
-                      You have several options for managing cookies on Ascended Social:
-                    </p>
-                    <ul className="list-disc list-inside space-y-2 ml-4">
-                      <li>Use our cookie preference center (button above) to customize your settings</li>
-                      <li>Modify your browser settings to block or delete cookies</li>
-                      <li>Opt out of analytics tracking while maintaining essential functionality</li>
-                      <li>Contact us if you have questions about our cookie practices</li>
-                    </ul>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-primary mb-4">Third-Party Services</h3>
-                  <p className="leading-relaxed mb-4">
-                    Our spiritual platform integrates with several trusted third-party services that may set their own cookies:
-                  </p>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
-                      <h5 className="font-semibold text-secondary mb-2">Enzuzo Privacy</h5>
-                      <p className="text-sm text-white/80">Cookie consent management and privacy compliance</p>
-                    </div>
-                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
-                      <h5 className="font-semibold text-secondary mb-2">PostHog Analytics</h5>
-                      <p className="text-sm text-white/80">Privacy-first analytics for improving user experience</p>
-                    </div>
-                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
-                      <h5 className="font-semibold text-secondary mb-2">Google Cloud Storage</h5>
-                      <p className="text-sm text-white/80">Secure storage for your spiritual content and media</p>
-                    </div>
-                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
-                      <h5 className="font-semibold text-secondary mb-2">Stripe Payments</h5>
-                      <p className="text-sm text-white/80">Secure payment processing for premium features</p>
-                    </div>
-                  </div>
-                </section>
-
-                <section>
-                  <h3 className="text-2xl font-bold text-primary mb-4">Contact Us</h3>
-                  <p className="leading-relaxed">
-                    If you have any questions about our cookie policy or privacy practices, please contact us. We're committed to transparency in our spiritual community.
-                  </p>
-                  <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
-                    <p className="text-sm text-white/80">
-                      <strong>Last Updated:</strong> December 2024<br/>
-                      <strong>Effective Date:</strong> This policy is effective immediately upon posting.<br/>
-                      <strong>Cookie Management:</strong> Powered by Enzuzo privacy compliance platform.
-                    </p>
-                  </div>
-                </section>
-              </div>
+                </div>
+              )}
             </div>
           </div>
 

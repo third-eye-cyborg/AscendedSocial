@@ -164,63 +164,63 @@ export default function Layout({ children }: LayoutProps) {
                     />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="bg-slate-900/95 border-primary/30 w-48">
-                  <DropdownMenuItem asChild>
+                <DropdownMenuContent align="end" className="bg-cosmic border-primary/30 w-48 shadow-xl">
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/community" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-users mr-2"></i>
                         Community
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/visions" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-eye mr-2"></i>
                         Visions
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/energy" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-bolt mr-2"></i>
                         Energy
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/starmap" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-star mr-2"></i>
                         Starmap
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/settings" className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-cog mr-2"></i>
                         Settings
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href={`/profile/${(user as any)?.id}`} className="w-full">
-                      <button className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
                         <i className="fas fa-user mr-2"></i>
                         Profile
-                      </button>
+                      </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <button 
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
+                    <div 
                       onClick={() => window.location.href = '/api/logout'}
-                      className="flex items-center w-full px-2 py-2 text-white hover:text-primary hover:bg-primary/20 rounded-md transition-colors"
+                      className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors cursor-pointer"
                     >
                       <i className="fas fa-sign-out-alt mr-2"></i>
                       Logout
-                    </button>
+                    </div>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

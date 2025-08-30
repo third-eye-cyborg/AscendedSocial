@@ -1,4 +1,43 @@
+import { useEffect } from "react";
+
 export default function CookiePolicy() {
+  useEffect(() => {
+    // Clean up any existing script
+    const existingScript = document.getElementById('enzuzo-cookie-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
+
+    // Clear the container
+    const container = document.getElementById('__enzuzo-root');
+    if (container) {
+      container.innerHTML = '';
+    }
+
+    // Create and append the script
+    const script = document.createElement('script');
+    script.id = 'enzuzo-cookie-script';
+    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('✅ Enzuzo cookie policy script loaded successfully');
+    };
+    
+    script.onerror = () => {
+      console.error('❌ Failed to load Enzuzo cookie policy script');
+    };
+
+    document.head.appendChild(script);
+
+    // Cleanup function
+    return () => {
+      const scriptToRemove = document.getElementById('enzuzo-cookie-script');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -53,13 +92,45 @@ export default function CookiePolicy() {
           {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <style>{`
-              /* Enzuzo dropdown styling fixes */
+              /* Comprehensive Enzuzo styling fixes for cookie policy */
+              #__enzuzo-root * {
+                color: black !important;
+              }
+              
+              #__enzuzo-root h1,
+              #__enzuzo-root h2,
+              #__enzuzo-root h3,
+              #__enzuzo-root h4,
+              #__enzuzo-root h5,
+              #__enzuzo-root h6 {
+                color: black !important;
+                font-weight: 600 !important;
+                margin-bottom: 16px !important;
+              }
+              
+              #__enzuzo-root p,
+              #__enzuzo-root span,
+              #__enzuzo-root div {
+                color: black !important;
+                line-height: 1.5 !important;
+              }
+              
+              #__enzuzo-root label {
+                color: black !important;
+                font-weight: 500 !important;
+                display: block !important;
+                margin-bottom: 8px !important;
+              }
+              
               #__enzuzo-root select {
                 background-color: white !important;
                 color: black !important;
-                border: 1px solid #ccc !important;
-                padding: 8px !important;
-                border-radius: 4px !important;
+                border: 2px solid #d1d5db !important;
+                padding: 12px !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+                width: 100% !important;
+                margin-bottom: 16px !important;
               }
               
               #__enzuzo-root select option {
@@ -67,28 +138,62 @@ export default function CookiePolicy() {
                 color: black !important;
               }
               
-              /* Fix for any dropdown containers */
+              #__enzuzo-root button {
+                background-color: #8b5cf6 !important;
+                color: white !important;
+                border: none !important;
+                padding: 12px 24px !important;
+                border-radius: 8px !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                margin-top: 16px !important;
+              }
+              
+              #__enzuzo-root button:hover {
+                background-color: #7c3aed !important;
+              }
+              
+              /* Material-UI component fixes */
               #__enzuzo-root .MuiSelect-root,
               #__enzuzo-root .MuiInputBase-root {
                 background-color: white !important;
                 color: black !important;
               }
               
-              /* Fix dropdown arrows and icons */
               #__enzuzo-root .MuiSelect-icon {
                 color: black !important;
+              }
+              
+              #__enzuzo-root .MuiTypography-root {
+                color: black !important;
+              }
+              
+              #__enzuzo-root .MuiFormLabel-root,
+              #__enzuzo-root .MuiInputLabel-root {
+                color: black !important;
+              }
+              
+              /* Accordion and toggle fixes */
+              #__enzuzo-root .MuiAccordion-root {
+                background-color: white !important;
+                margin-bottom: 16px !important;
+              }
+              
+              #__enzuzo-root .MuiSwitch-root {
+                margin: 8px !important;
               }
             `}</style>
             <div 
               id="__enzuzo-root"
-              className="min-h-[400px] text-black"
+              className="min-h-[400px] text-black bg-white/5 rounded-lg p-4"
               data-testid="enzuzo-cookie-policy"
-            ></div>
-            <script 
-              id="__enzuzo-root-script" 
-              src="https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"
-              async
-            ></script>
+            >
+              <div className="text-center py-8">
+                <div className="animate-pulse">
+                  <div className="text-black/60">Loading cookie policy widget...</div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Additional Information */}

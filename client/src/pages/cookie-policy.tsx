@@ -1,45 +1,7 @@
-import { useEffect, useState } from "react";
-
-// Extend Window interface to include Enzuzo
-declare global {
-  interface Window {
-    Enzuzo?: {
-      showBanner?: () => void;
-      showSettings?: () => void;
-      openWidget?: () => void;
-      hideBanner?: () => void;
-    };
-  }
-}
+import { useState } from "react";
 
 export default function CookiePolicy() {
-  const [enzuzoLoaded, setEnzuzoLoaded] = useState(false);
-
-  useEffect(() => {
-    // Skip if script already loaded to prevent conflicts
-    if (document.getElementById('__enzuzo-root-script')) {
-      setEnzuzoLoaded(true);
-      return;
-    }
-    
-    // Add the cookie policy script (same pattern as working CCPA page)
-    const script = document.createElement('script');
-    script.id = '__enzuzo-root-script';
-    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-    script.async = true;
-    
-    // Add load event listener
-    script.onload = () => {
-      console.log('Enzuzo cookie policy script loaded');
-      setEnzuzoLoaded(true);
-    };
-    
-    script.onerror = () => {
-      console.error('Failed to load Enzuzo cookie policy script');
-    };
-    
-    document.head.appendChild(script);
-  }, []);
+  const [enzuzoLoaded] = useState(true); // Script is now loaded globally in HTML head
 
   return (
     <div className="min-h-screen bg-cosmic text-white">

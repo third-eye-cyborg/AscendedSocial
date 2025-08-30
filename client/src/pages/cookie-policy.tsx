@@ -1,23 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export default function CookiePolicy() {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     // Check if script is already loaded to prevent duplicates
     if (document.getElementById('__enzuzo-root-script')) {
       return;
     }
 
-    // Create the __enzuzo-root div in our container
-    if (containerRef.current) {
-      const enzuzoDiv = document.createElement('div');
-      enzuzoDiv.id = '__enzuzo-root';
-      containerRef.current.innerHTML = '';
-      containerRef.current.appendChild(enzuzoDiv);
-    }
-
-    // Create and load the script as per Enzuzo instructions
+    // Create script element and load it exactly as Enzuzo instructions specify
     const script = document.createElement('script');
     script.id = '__enzuzo-root-script';
     script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
@@ -94,19 +84,8 @@ export default function CookiePolicy() {
 
           {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
-            <div 
-              ref={containerRef}
-              className="min-h-[500px]"
-              data-testid="enzuzo-cookie-policy"
-            >
-              <div className="text-center py-12">
-                <div className="animate-pulse mb-4">
-                  <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
-                  <div className="font-medium text-[#6f788c]">Loading cookie policy widget...</div>
-                  <div className="text-white/60 text-sm mt-2">This may take a few moments</div>
-                </div>
-              </div>
-            </div>
+            {/* Enzuzo root div - exactly as their instructions specify */}
+            <div id="__enzuzo-root" className="min-h-[500px]" data-testid="enzuzo-cookie-policy"></div>
           </div>
 
           {/* Additional Information */}

@@ -37,8 +37,71 @@ html, body {
   max-width: none !important;
 }
 
+/* GLOBAL ENZUZO DROPDOWN FIX - Target dropdowns anywhere on page */
+/* This targets Enzuzo dropdowns that might be rendered outside the main container */
+
+/* Global Material-UI dropdown override for Enzuzo - exclude our app's dropdowns */
+.MuiPaper-root:not([data-app-dropdown]) .MuiMenuItem-root,
+.MuiMenu-paper:not([data-app-dropdown]) .MuiMenuItem-root,
+.MuiPopover-paper:not([data-app-dropdown]) [role="option"],
+.MuiPopover-paper:not([data-app-dropdown]) [role="menuitem"],
+.MuiPopover-paper:not([data-app-dropdown]) li {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #374151 !important;
+  opacity: 1 !important;
+}
+
+.MuiPaper-root:not([data-app-dropdown]) .MuiMenuItem-root:hover,
+.MuiMenu-paper:not([data-app-dropdown]) .MuiMenuItem-root:hover,
+.MuiPopover-paper:not([data-app-dropdown]) [role="option"]:hover,
+.MuiPopover-paper:not([data-app-dropdown]) [role="menuitem"]:hover,
+.MuiPopover-paper:not([data-app-dropdown]) li:hover {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Global dropdown container styling for Enzuzo */
+.MuiPaper-root:not([data-app-dropdown]),
+.MuiMenu-paper:not([data-app-dropdown]),
+.MuiPopover-paper:not([data-app-dropdown]) {
+  background-color: #1f2937 !important;
+  border: 2px solid #9ca3af !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Force text visibility in all Enzuzo dropdown elements */
+.MuiPaper-root:not([data-app-dropdown]) *,
+.MuiMenu-paper:not([data-app-dropdown]) *,
+.MuiPopover-paper:not([data-app-dropdown]) * {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Backup targeting - any dropdown that appears near Enzuzo forms */
+[id*="enzuzo"] ~ * .MuiMenuItem-root,
+[class*="enzuzo"] ~ * .MuiMenuItem-root,
+[id*="enzuzo"] ~ * [role="option"],
+[class*="enzuzo"] ~ * [role="option"] {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Target dropdowns within 500px of Enzuzo elements */
+div[id*="enzuzo"] + * .MuiMenuItem-root,
+div[class*="enzuzo"] + * .MuiMenuItem-root {
+  background-color: #1f2937 !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
 /* CRITICAL FIX: Override our app's dropdown styles for Enzuzo language/country selectors */
-/* Maximum specificity targeting */
+/* Maximum specificity targeting for elements inside Enzuzo containers */
 body #__enzuzo-root [role="option"],
 body #__enzuzo-root [role="menuitem"],
 body #__enzuzo-root .MuiMenuItem-root,

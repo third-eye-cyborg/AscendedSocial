@@ -36,7 +36,7 @@ import {
   bookmarks,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count, ilike, or, ne, sum } from "drizzle-orm";
+import { eq, desc, sql, and, count, ilike, or, ne, sum, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -1119,7 +1119,7 @@ export class DatabaseStorage implements IStorage {
         count: count()
       })
       .from(spiritualMarks)
-      .where(sql`${spiritualMarks.postId} IN (${postIds.map(id => `'${id}'`).join(',')})`)
+      .where(inArray(spiritualMarks.postId, postIds))
       .groupBy(spiritualMarks.postId);
 
     const countMap: Record<string, number> = {};

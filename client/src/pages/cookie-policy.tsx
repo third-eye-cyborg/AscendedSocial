@@ -1,7 +1,15 @@
-import { useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function CookiePolicy() {
-  const [enzuzoLoaded] = useState(true); // Script is now loaded globally in HTML head
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Create the Enzuzo elements exactly as their instructions specify
+    if (containerRef.current && !containerRef.current.querySelector('#__enzuzo-root')) {
+      // Add the div and script exactly as Enzuzo instructions show
+      containerRef.current.innerHTML = '<div id="__enzuzo-root"></div><script id="__enzuzo-root-script" src="https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"></script>';
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -56,19 +64,17 @@ export default function CookiePolicy() {
           {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <div 
-              id="__enzuzo-root"
+              ref={containerRef}
               className="min-h-[500px]"
               data-testid="enzuzo-cookie-policy"
             >
-              {!enzuzoLoaded && (
-                <div className="text-center py-12">
-                  <div className="animate-pulse mb-4">
-                    <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
-                    <div className="font-medium text-[#6f788c]">Loading cookie policy widget...</div>
-                    <div className="text-white/60 text-sm mt-2">This may take a few moments</div>
-                  </div>
+              <div className="text-center py-12">
+                <div className="animate-pulse mb-4">
+                  <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
+                  <div className="font-medium text-[#6f788c]">Loading cookie policy widget...</div>
+                  <div className="text-white/60 text-sm mt-2">This may take a few moments</div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 

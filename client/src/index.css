@@ -38,38 +38,61 @@ html, body {
 }
 
 /* CRITICAL FIX: Override our app's dropdown styles for Enzuzo language/country selectors */
-#__enzuzo-root [role="option"],
-#__enzuzo-root [role="menuitem"] {
+/* Maximum specificity targeting */
+body #__enzuzo-root [role="option"],
+body #__enzuzo-root [role="menuitem"],
+body #__enzuzo-root .MuiMenuItem-root,
+body #__enzuzo-root li {
   background-color: #1f2937 !important;
-  color: #f9fafb !important;
+  color: #ffffff !important;
   padding: 12px 16px !important;
   border-bottom: 1px solid #374151 !important;
+  opacity: 1 !important;
 }
 
-#__enzuzo-root [role="option"]:hover,
-#__enzuzo-root [role="option"][data-highlighted],
-#__enzuzo-root [role="menuitem"]:hover,
-#__enzuzo-root [role="menuitem"][data-highlighted] {
+body #__enzuzo-root [role="option"]:hover,
+body #__enzuzo-root [role="option"][data-highlighted],
+body #__enzuzo-root [role="menuitem"]:hover,
+body #__enzuzo-root [role="menuitem"][data-highlighted],
+body #__enzuzo-root .MuiMenuItem-root:hover,
+body #__enzuzo-root li:hover {
   background-color: #374151 !important;
   color: #ffffff !important;
+  opacity: 1 !important;
 }
 
 /* Ensure Enzuzo dropdown containers have proper styling */
-#__enzuzo-root .MuiPaper-root,
-#__enzuzo-root .MuiMenu-paper,
-#__enzuzo-root .MuiPopover-paper {
+body #__enzuzo-root .MuiPaper-root,
+body #__enzuzo-root .MuiMenu-paper,
+body #__enzuzo-root .MuiPopover-paper {
   background-color: #1f2937 !important;
   border: 2px solid #9ca3af !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Force all text in Enzuzo dropdowns to be visible */
-#__enzuzo-root [role="option"] *,
-#__enzuzo-root [role="menuitem"] *,
-#__enzuzo-root .MuiMenuItem-root *,
-#__enzuzo-root li * {
-  color: #f9fafb !important;
+/* Nuclear option - Force all text in Enzuzo dropdowns to be visible with maximum specificity */
+body #__enzuzo-root [role="option"] *,
+body #__enzuzo-root [role="menuitem"] *,
+body #__enzuzo-root .MuiMenuItem-root *,
+body #__enzuzo-root li *,
+body #__enzuzo-root [role="option"] span,
+body #__enzuzo-root [role="menuitem"] span,
+body #__enzuzo-root .MuiMenuItem-root span,
+body #__enzuzo-root li span {
+  color: #ffffff !important;
   opacity: 1 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Target any inline styles that might be overriding */
+body #__enzuzo-root [style*="color"] {
+  color: #ffffff !important;
+}
+
+/* Override any Material-UI theme colors */
+body #__enzuzo-root .MuiTypography-root {
+  color: #ffffff !important;
 }
 
 /* Uppy Modal Complete Styling */

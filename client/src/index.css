@@ -16,14 +16,9 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Exclude Enzuzo elements from global styles */
-*:not(#__enzuzo-root):not(#__enzuzo-root *) {
-  /* This ensures our global styles don't affect Enzuzo */
-}
-
-/* Ensure no elements exceed viewport width, except Enzuzo */
+/* Ensure no elements exceed viewport width */
 @media (max-width: 640px) {
-  *:not(#__enzuzo-root):not(#__enzuzo-root *) {
+  * {
     max-width: 100vw !important;
   }
   
@@ -31,6 +26,15 @@ html, body {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
+}
+
+/* Override to ensure Enzuzo forms are not affected by global styles */
+#__enzuzo-root {
+  max-width: none !important;
+}
+
+#__enzuzo-root * {
+  max-width: none !important;
 }
 
 /* Uppy Modal Complete Styling */

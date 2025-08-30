@@ -7,7 +7,7 @@ export default function CookiePolicy() {
     if (!document.getElementById('__enzuzo-root-script')) {
       const script = document.createElement('script');
       script.id = '__enzuzo-root-script';
-      script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=dns&apiHost=https://app.enzuzo.com&qt=1756588305442&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1ODgyODN9.k5Y0Vix9GgLtIfBefvTbfkVc4SkyttgkXW5m9_dSFPU';
+      script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
       script.async = true;
       document.body.appendChild(script);
     }

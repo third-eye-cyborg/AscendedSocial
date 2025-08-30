@@ -1,63 +1,4 @@
-import { useEffect, useRef } from 'react';
-import { ConsentManager } from '@/lib/consent';
-
 export default function CookiePolicy() {
-  const enzuzoLoaded = useRef(false);
-
-  useEffect(() => {
-    const consentManager = ConsentManager.getInstance();
-    
-    // Ensure Enzuzo script is loaded
-    consentManager.initializeEnzuzo();
-  }, []);
-
-  const openCookieManager = () => {
-    console.log('Cookie manager button clicked');
-    const enzuzo = (window as any).Enzuzo || (window as any).ezCookieSettings;
-    console.log('Enzuzo object:', enzuzo);
-    
-    if (enzuzo) {
-      console.log('Available Enzuzo methods:', Object.keys(enzuzo));
-      
-      // Try different methods to show cookie preferences
-      if (typeof enzuzo.showPreferencesManager === 'function') {
-        console.log('Calling showPreferencesManager');
-        enzuzo.showPreferencesManager();
-      } else if (typeof enzuzo.showPreferences === 'function') {
-        console.log('Calling showPreferences');
-        enzuzo.showPreferences();
-      } else if (typeof enzuzo.showCookieManager === 'function') {
-        console.log('Calling showCookieManager');
-        enzuzo.showCookieManager();
-      } else if (typeof enzuzo.showBanner === 'function') {
-        console.log('Calling showBanner');
-        enzuzo.showBanner();
-      } else if (typeof enzuzo.show === 'function') {
-        console.log('Calling show');
-        enzuzo.show();
-      } else {
-        console.log('No recognized methods found. Trying to trigger manually...');
-        
-        // Try triggering the cookie banner click event
-        const cookieLinks = document.querySelectorAll('a[href*="cookie"], a[href*="preferences"], button[data-enzuzo]');
-        if (cookieLinks.length > 0) {
-          console.log('Found cookie link, clicking it');
-          (cookieLinks[0] as HTMLElement).click();
-        } else {
-          console.log('No cookie links found. Trying to show banner directly.');
-          // Force show the banner if nothing else works
-          if (enzuzo.display) {
-            enzuzo.display();
-          } else {
-            alert('Cookie preferences manager is not available. Please accept the cookie banner first to access preferences.');
-          }
-        }
-      }
-    } else {
-      console.log('Enzuzo not loaded yet. Waiting...');
-      alert('Cookie manager is still loading. Please wait a moment and try again.');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -112,25 +53,26 @@ export default function CookiePolicy() {
           {/* Cookie Policy Information and Management */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <div className="text-center mb-8">
-              <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Preferences Center</h3>
+              <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Policy & Preferences</h3>
               <p className="text-white/80 text-lg leading-relaxed">
-                Click the button below to open your cookie preferences and manage your privacy settings. 
-                You can choose which types of cookies you'd like to allow and adjust your preferences at any time.
+                View our complete cookie policy and manage your privacy preferences using our secure hosted policy center.
               </p>
             </div>
             
             <div className="text-center mb-8">
-              <button
-                onClick={openCookieManager}
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg"
-                data-testid="button-manage-cookies"
+              <a
+                href="https://app.enzuzo.com/policies/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
+                data-testid="link-cookie-policy"
               >
                 <span className="relative z-10 flex items-center space-x-2">
-                  <i className="fas fa-cog"></i>
-                  <span>Manage Cookie Preferences</span>
+                  <i className="fas fa-external-link-alt"></i>
+                  <span>View Cookie Policy & Manage Preferences</span>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-              </button>
+              </a>
             </div>
 
             {/* Cookie Categories Information */}

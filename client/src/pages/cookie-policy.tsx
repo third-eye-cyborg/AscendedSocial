@@ -274,6 +274,21 @@ export default function CookiePolicy() {
                   </div>
                 </div>
 
+                {/* Custom Privacy Section */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-orange-400/20">
+                  <h4 className="text-xl font-semibold text-orange-400 mb-4 flex items-center">
+                    <i className="fas fa-star mr-3"></i>
+                    Spiritual Data & Energy Privacy
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Sacred Information:</strong> Your spiritual journey data, including visions, energy readings, and personal insights, are treated with the highest level of privacy and respect.</p>
+                    <p><strong>Energy Algorithms:</strong> Our spiritual guidance algorithms use anonymized patterns to provide personalized recommendations without storing identifiable spiritual content.</p>
+                    <p><strong>Community Sharing:</strong> You have complete control over what spiritual content you share publicly versus keep private in your personal spiritual journal.</p>
+                    <p><strong>Third-Party Spiritual Services:</strong> We may integrate with trusted spiritual service providers (tarot readers, astrologers) but never share your personal data without explicit consent.</p>
+                    <p><strong>Meditation & Mindfulness:</strong> Session data from guided meditations and mindfulness exercises is processed locally on your device when possible to maintain privacy.</p>
+                  </div>
+                </div>
+
                 {/* Contact Information */}
                 <div className="bg-cosmic/50 rounded-2xl p-6 border border-secondary/20">
                   <h4 className="text-xl font-semibold text-secondary mb-4 flex items-center">

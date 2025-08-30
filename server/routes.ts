@@ -67,7 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -115,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const file = req.file;
-      
+
       if (!file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }
@@ -124,12 +124,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // This avoids the Google Cloud Storage authentication issues
       const base64Data = file.buffer.toString('base64');
       const dataUrl = `data:${file.mimetype};base64,${base64Data}`;
-      
+
       // Update user's profile image with the data URL
       const user = await storage.updateUser(userId, {
         profileImageUrl: dataUrl
       });
-      
+
       return res.status(200).json({ user, imageUrl: dataUrl });
     } catch (error) {
       console.error('Error uploading profile image:', error);
@@ -142,7 +142,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { imageUrl } = req.body;
-      
+
       // Allow null to remove profile picture
       if (imageUrl !== null && (!imageUrl || typeof imageUrl !== 'string')) {
         return res.status(400).json({ error: 'Valid imageUrl is required (or null to remove)' });
@@ -165,17 +165,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const postData = insertPostSchema.parse(req.body);
-      
+
       // Create post
       const post = await storage.createPost(postData, userId);
-      
+
       // Analyze content and images for chakra categorization
       const chakraAnalysis = await analyzePostChakra(postData.content, postData.imageUrls || undefined);
       await storage.updatePostChakra(post.id, chakraAnalysis.chakra);
-      
+
       // Fetch complete post with author
       const postWithAuthor = await storage.getPost(post.id);
-      
+
       res.json(postWithAuthor);
     } catch (error) {
       console.error("Error creating post:", error);
@@ -187,13 +187,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const limit = parseInt(req.query.limit as string) || 20;
       const offset = parseInt(req.query.offset as string) || 0;
-      
+
       const posts = await storage.getPosts(limit, offset);
-      
+
       // Get engagement counts and spiritual counts for each post
       const postIds = posts.map(p => p.id);
       const spiritualCounts = await storage.getSpiritualCountForPosts(postIds);
-      
+
       const postsWithEngagements = await Promise.all(
         posts.map(async (post) => {
           const engagements = await storage.getPostEngagements(post.id);
@@ -204,7 +204,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
       );
-      
+
       res.json(postsWithEngagements);
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -218,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
-      
+
       const engagements = await storage.getPostEngagements(post.id);
       res.json({ ...post, engagements });
     } catch (error) {
@@ -233,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { postId } = req.params;
       const { type, energyAmount } = req.body;
-      
+
       if (!['upvote', 'downvote', 'like', 'energy'].includes(type)) {
         return res.status(400).json({ message: "Invalid engagement type" });
       }
@@ -265,7 +265,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (expGain > 0) {
         await storage.updateSpiritExperience(userId, expGain, `${type}_engagement`);
       }
-      
+
       res.json(engagement);
     } catch (error: any) {
       console.error("Error creating engagement:", error);
@@ -277,7 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { postId, type } = req.params;
-      
+
       await storage.removeEngagement(postId, userId, type as EngagementType);
       res.json({ success: true });
     } catch (error: any) {
@@ -292,7 +292,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { postId } = req.params;
       const { isSpiritual } = req.body;
       const userId = req.user.claims.sub;
-      
+
       await storage.updatePostSpiritual(postId, userId, isSpiritual);
       res.json({ success: true });
     } catch (error: any) {
@@ -307,13 +307,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { postId } = req.params;
       const { bookmarked } = req.body;
       const userId = req.user.claims.sub;
-      
+
       if (bookmarked) {
         await storage.addBookmark(userId, postId);
       } else {
         await storage.removeBookmark(userId, postId);
       }
-      
+
       res.json({ success: true });
     } catch (error: any) {
       console.error("Error updating bookmark:", error);
@@ -336,10 +336,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { postId } = req.params;
-      
+
       const engagements = await storage.getUserEngagement(postId, userId);
       const userEngagementTypes = engagements.map(engagement => engagement.type);
-      
+
       res.json({ engagements: userEngagementTypes });
     } catch (error) {
       console.error("Error fetching user engagements:", error);
@@ -353,12 +353,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { postId } = req.params;
       const commentData = insertCommentSchema.parse({ ...req.body, postId });
-      
+
       const comment = await storage.createComment(commentData, userId);
-      
+
       // Award spirit experience for commenting (community engagement)
       await storage.updateSpiritExperience(userId, 8, 'comment_creation');
-      
+
       res.json(comment);
     } catch (error) {
       console.error("Error creating comment:", error);
@@ -382,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const spirit = await storage.getUserSpirit(userId);
-      
+
       // Check if spirit has broken image (temporary DALL-E URL) and regenerate
       if (spirit && spirit.imageUrl && spirit.imageUrl.includes('oaidalleapiprodscus.blob.core.windows.net')) {
         console.log(`Regenerating broken spirit image for user ${userId}`);
@@ -392,12 +392,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           element: spirit.element,
           level: spirit.level
         });
-        
+
         // Update the spirit with the new image
         await storage.updateSpiritImage(userId, newImageUrl);
         spirit.imageUrl = newImageUrl;
       }
-      
+
       res.json(spirit);
     } catch (error) {
       console.error("Error fetching spirit:", error);
@@ -409,10 +409,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/readings/daily', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Check if user already has a daily reading
       let reading = await storage.getUserDailyReading(userId);
-      
+
       if (!reading) {
         // Generate new daily reading
         const aiReading = await generateDailyReading();
@@ -427,7 +427,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }, userId);
       }
-      
+
       res.json(reading);
     } catch (error) {
       console.error("Error fetching daily reading:", error);
@@ -439,7 +439,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/readings/daily', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Force generate new daily reading
       const aiReading = await generateDailyReading();
       const reading = await storage.createReading({
@@ -452,7 +452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           guidance: aiReading.guidance
         }
       }, userId);
-      
+
       res.json(reading);
     } catch (error) {
       console.error("Error generating new daily reading:", error);
@@ -464,15 +464,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { question } = req.body;
-      
+
       // Check if user is premium
       const user = await storage.getUser(userId);
       if (!user?.isPremium) {
         return res.status(403).json({ message: "Premium subscription required" });
       }
-      
+
       const tarotReading = await generateTarotReading(question || "What guidance do I need today?");
-      
+
       const reading = await storage.createReading({
         type: "tarot",
         content: tarotReading.interpretation,
@@ -482,7 +482,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           guidance: tarotReading.guidance
         }
       }, userId);
-      
+
       res.json(reading);
     } catch (error) {
       console.error("Error generating tarot reading:", error);
@@ -495,7 +495,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -503,7 +503,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user's recent posts for context
       const userPosts = await storage.getUserPosts(userId, 5);
       const userHistory = userPosts.map(post => post.content);
-      
+
       const recommendations = await generateOracleRecommendations(userHistory, user.aura || 0);
       res.json(recommendations);
     } catch (error) {
@@ -517,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -525,7 +525,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user's recent posts for context
       const userPosts = await storage.getUserPosts(userId, 5);
       const userHistory = userPosts.map(post => post.content);
-      
+
       // Force generate fresh recommendations
       const recommendations = await generateOracleRecommendations(userHistory, user.aura || 0);
       res.json(recommendations);
@@ -539,10 +539,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/oracle/community', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Get random posts from the community, excluding the current user's posts
       const randomPosts = await storage.getRandomPosts(5, userId);
-      
+
       // Transform posts into oracle-style guidance
       const oracleContent = randomPosts.map(post => ({
         id: post.id,
@@ -559,7 +559,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         createdAt: post.createdAt
       }));
-      
+
       res.json(oracleContent);
     } catch (error) {
       console.error("Error fetching community oracle:", error);
@@ -571,10 +571,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/oracle/community', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Get fresh random posts from the community, excluding the current user's posts
       const randomPosts = await storage.getRandomPosts(5, userId);
-      
+
       // Transform posts into oracle-style guidance
       const oracleContent = randomPosts.map(post => ({
         id: post.id,
@@ -591,7 +591,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         createdAt: post.createdAt
       }));
-      
+
       res.json(oracleContent);
     } catch (error) {
       console.error("Error refreshing community oracle:", error);
@@ -604,11 +604,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { question } = req.body;
-      
+
       // Get user's recent posts and activity
       const userPosts = await storage.getUserPosts(userId, 5);
       const userStats = await storage.getUserStats(userId);
-      
+
       // Generate personalized oracle reading using AI with user context
       const contextPrompt = `
         User Context:
@@ -616,12 +616,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         - Total posts: ${userStats.totalPosts}
         - Total engagements: ${userStats.totalEngagements}
         - Question asked: ${question || 'General guidance'}
-        
+
         Generate a personalized oracle reading that incorporates the user's actual spiritual journey and activity.
       `;
-      
+
       const aiReading = await generateDailyReading(); // We'll enhance this function later
-      
+
       const reading = await storage.createReading({
         type: "personalized",
         content: `${aiReading.content}\n\nThis guidance reflects your recent spiritual journey and the wisdom you've shared with the community.`,
@@ -632,7 +632,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           basedOnActivity: true
         }
       }, userId);
-      
+
       res.json(reading);
     } catch (error) {
       console.error("Error generating personalized oracle:", error);
@@ -645,13 +645,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const query = req.query.query as string;
       const type = req.query.type as string || 'all';
-      
+
       if (!query || query.length < 2) {
         return res.status(400).json({ message: "Query must be at least 2 characters" });
       }
-      
+
       const results: any[] = [];
-      
+
       // Search posts if type is 'all' or 'posts'
       if (type === 'all' || type === 'posts') {
         const posts = await storage.searchPosts(query, 10);
@@ -666,7 +666,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }));
         results.push(...postResults);
       }
-      
+
       // Search users if type is 'all' or 'users' 
       if (type === 'all' || type === 'users') {
         const users = await storage.searchUsers(query, 10);
@@ -684,7 +684,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }));
         results.push(...userResults);
       }
-      
+
       res.json(results);
     } catch (error) {
       console.error("Error searching:", error);
@@ -697,7 +697,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const limit = parseInt(req.query.limit as string) || 20;
-      
+
       const notifications = await storage.getUserNotifications(userId, limit);
       res.json(notifications);
     } catch (error) {
@@ -721,7 +721,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { notificationId } = req.params;
-      
+
       await storage.markNotificationAsRead(notificationId, userId);
       res.json({ success: true });
     } catch (error) {
@@ -746,27 +746,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Check energy cost first
       const sigilCost = 100;
       if ((user.energy || 0) < sigilCost) {
         return res.status(400).json({ message: `Sigil regeneration requires ${sigilCost} energy. You have ${user.energy || 0} energy.` });
       }
-      
+
       // Deduct energy cost
       await storage.updateUserEnergy(userId, (user.energy || 0) - sigilCost);
-      
+
       // Generate new sigil (6 random characters)
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()+=[]{}|;:,.<>?';
       let newSigil = '';
       for (let i = 0; i < 6; i++) {
         newSigil += characters.charAt(Math.floor(Math.random() * characters.length));
       }
-      
+
       const updatedUser = await storage.updateUser(userId, { sigil: newSigil });
       res.json(updatedUser);
     } catch (error) {
@@ -779,20 +779,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Check energy cost first
       const sigilCost = 100;
       if ((user.energy || 0) < sigilCost) {
         return res.status(400).json({ message: `Sigil regeneration requires ${sigilCost} energy. You have ${user.energy || 0} energy.` });
       }
-      
+
       // Deduct energy cost
       await storage.updateUserEnergy(userId, (user.energy || 0) - sigilCost);
-      
+
       // Generate AI-powered sigil using username and traits
       const sigil = await generateUserSigil(user.username || user.email || userId);
       const sigilImageUrl = await generateSigilImage({ 
@@ -800,7 +800,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         astrologySign: user.astrologySign || 'universal',
         spiritualPath: 'mystical journey'
       });
-      
+
       res.json({ sigil, sigilImageUrl });
     } catch (error) {
       console.error("Error generating sigil:", error);
@@ -814,13 +814,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { sigil, imageUrl } = req.body;
-      
+
       if (!sigil || !imageUrl) {
         return res.status(400).json({ error: 'Both sigil and imageUrl are required' });
       }
 
       let finalImageUrl = imageUrl;
-      
+
       // If this is a temporary DALL-E URL, download and save it permanently
       if (imageUrl.includes('oaidalleapiprodscus.blob.core.windows.net')) {
         console.log('Detected temporary DALL-E URL, downloading and saving permanently...');
@@ -853,7 +853,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { imageUrl } = req.body;
-      
+
       if (!imageUrl) {
         return res.status(400).json({ error: 'imageUrl is required' });
       }
@@ -874,7 +874,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { sigil } = req.body;
-      
+
       if (!sigil) {
         return res.status(400).json({ error: 'sigil is required' });
       }
@@ -896,11 +896,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { username } = req.body;
-      
+
       if (!username || username.trim().length < 3) {
         return res.status(400).json({ message: "Username must be at least 3 characters" });
       }
-      
+
       const updatedUser = await storage.updateUser(userId, { username: username.trim() });
       res.json(updatedUser);
     } catch (error) {
@@ -913,23 +913,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const currentUserId = req.user.claims.sub;
-      
+
       // Users can only update their own profile
       if (userId !== currentUserId) {
         return res.status(403).json({ message: "Can only update your own profile" });
       }
-      
+
       const { username, bio, astrologySign } = req.body;
-      
+
       if (username && username.trim().length < 3) {
         return res.status(400).json({ message: "Username must be at least 3 characters" });
       }
-      
+
       const updateData: any = {};
       if (username) updateData.username = username.trim();
       if (bio !== undefined) updateData.bio = bio.trim();
       if (astrologySign !== undefined) updateData.astrologySign = astrologySign;
-      
+
       const updatedUser = await storage.updateUser(userId, updateData);
       res.json(updatedUser);
     } catch (error) {
@@ -943,7 +943,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const reportData = insertReportSchema.parse(req.body);
-      
+
       // Validate that we're reporting something valid
       if (reportData.postId) {
         const post = await storage.getPost(reportData.postId);
@@ -951,19 +951,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(404).json({ message: "Post not found" });
         }
       }
-      
+
       if (reportData.reportedUserId) {
         const user = await storage.getUser(reportData.reportedUserId);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
-        
+
         // Can't report yourself
         if (reportData.reportedUserId === userId) {
           return res.status(400).json({ message: "You cannot report yourself" });
         }
       }
-      
+
       const report = await storage.createReport(reportData, userId);
       res.status(201).json(report);
     } catch (error) {
@@ -995,7 +995,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         showActivityStatus,
         allowTagging
       } = req.body;
-      
+
       const updateData: any = {};
       if (profileVisibility !== undefined) updateData.profileVisibility = profileVisibility;
       if (postsVisibility !== undefined) updateData.postsVisibility = postsVisibility;
@@ -1003,7 +1003,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (allowDirectMessages !== undefined) updateData.allowDirectMessages = allowDirectMessages;
       if (showActivityStatus !== undefined) updateData.showActivityStatus = showActivityStatus;
       if (allowTagging !== undefined) updateData.allowTagging = allowTagging;
-      
+
       const updatedUser = await storage.updateUser(userId, updateData);
       res.json({ success: true, settings: updateData });
     } catch (error) {
@@ -1023,7 +1023,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         oracleNotifications,
         emailNotifications
       } = req.body;
-      
+
       const updateData: any = {};
       if (likeNotifications !== undefined) updateData.likeNotifications = likeNotifications;
       if (commentNotifications !== undefined) updateData.commentNotifications = commentNotifications;
@@ -1031,7 +1031,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (followNotifications !== undefined) updateData.followNotifications = followNotifications;
       if (oracleNotifications !== undefined) updateData.oracleNotifications = oracleNotifications;
       if (emailNotifications !== undefined) updateData.emailNotifications = emailNotifications;
-      
+
       const updatedUser = await storage.updateUser(userId, updateData);
       res.json({ success: true, settings: updateData });
     } catch (error) {
@@ -1044,11 +1044,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Return only settings-related fields
       const settings = {
         privacy: {
@@ -1068,7 +1068,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           emailNotifications: user.emailNotifications ?? false,
         }
       };
-      
+
       res.json(settings);
     } catch (error) {
       console.error("Error fetching user settings:", error);
@@ -1080,7 +1080,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -1107,9 +1107,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const limit = parseInt(req.query.limit as string) || 20;
-      
+
       const posts = await storage.getUserPosts(userId, limit);
-      
+
       // Get engagement counts for each post
       const postsWithEngagements = await Promise.all(
         posts.map(async (post) => {
@@ -1117,7 +1117,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return { ...post, engagements };
         })
       );
-      
+
       res.json(postsWithEngagements);
     } catch (error) {
       console.error("Error fetching user posts:", error);
@@ -1203,7 +1203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         return;
       }
-      
+
       if (!user.email) {
         return res.status(400).json({ error: 'No user email on file' });
       }
@@ -1232,7 +1232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
 
         await storage.updateUserStripeInfo(user.id, customer.id, subscription.id);
-    
+
         res.send({
           subscriptionId: subscription.id,
           clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
@@ -1247,7 +1247,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/starmap/users', isAuthenticated, async (req: any, res) => {
     try {
       const filters: any = {};
-      
+
       if (req.query.chakra) filters.chakra = req.query.chakra;
       if (req.query.minAura) filters.minAura = parseInt(req.query.minAura);
       if (req.query.maxAura) filters.maxAura = parseInt(req.query.maxAura);
@@ -1268,7 +1268,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, birthDate, astrologySign } = req.body;
-      
+
       // Update user with onboarding info
       await storage.updateUser(userId, {
         hasCompletedOnboarding: true,
@@ -1340,7 +1340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
-      
+
       // Validate required fields
       if (!beliefs || !astrologySign) {
         return res.status(400).json({ message: "Beliefs and astrology sign are required" });
@@ -1393,7 +1393,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/spirit/regenerate", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Get existing spirit
       const existingSpirit = await storage.getUserSpirit(userId);
       if (!existingSpirit) {
@@ -1402,7 +1402,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Use existing questionnaire data for regeneration
       const questionnaire = (existingSpirit as any).questionnaire || {};
-      
+
       // Generate new spirit with same questionnaire
       const spiritData = await generateSpirit({
         isReligious: questionnaire.isReligious || false,
@@ -1416,7 +1416,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Delete old spirit and create new one
       await storage.deleteUserSpirit(userId);
-      
+
       const newSpirit = await storage.createSpirit(userId, {
         name: spiritData.name,
         description: spiritData.description,
@@ -1454,7 +1454,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
-      
+
       // Validate required fields
       if (!beliefs || !astrologySign) {
         return res.status(400).json({ message: "Beliefs and astrology sign are required" });
@@ -1500,18 +1500,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/spirit/regenerate", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Check user energy first
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       const evolutionCost = 100;
       if ((user.energy || 0) < evolutionCost) {
         return res.status(400).json({ message: `Evolution requires ${evolutionCost} energy. You have ${user.energy || 0} energy.` });
       }
-      
+
       // Get existing spirit
       const existingSpirit = await storage.getUserSpirit(userId);
       if (!existingSpirit) {
@@ -1520,7 +1520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Use existing questionnaire data for regeneration
       const questionnaire = (existingSpirit as any).questionnaire || {};
-      
+
       // Generate new spirit with same questionnaire
       const spiritData = await generateSpirit({
         isReligious: questionnaire.isReligious || false,
@@ -1532,9 +1532,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         astrologySign: questionnaire.astrologySign || "Aquarius"
       });
 
-      // Deduct energy cost
-      await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
-      
       // Preserve evolution history and add regeneration entry
       const preservedEvolution = [...((existingSpirit as any).evolution || [])];
       const regenerationEntry = {
@@ -1546,10 +1543,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         leveledUp: false
       };
       preservedEvolution.push(regenerationEntry);
-      
+
       // Delete old spirit and create new one with preserved level/experience AND evolution history
       await storage.deleteUserSpirit(userId);
-      
+
       const newSpirit = await storage.createSpirit(userId, {
         name: spiritData.name,
         description: spiritData.description,
@@ -1580,23 +1577,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { isReligious, isSpiritual, religion, spiritualPath, beliefs, offerings, astrologySign } = req.body;
-      
+
       // Validate required fields
       if (!beliefs || !astrologySign) {
         return res.status(400).json({ message: "Beliefs and astrology sign are required" });
       }
-      
+
       // Check user energy first
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       const evolutionCost = 100;
       if ((user.energy || 0) < evolutionCost) {
         return res.status(400).json({ message: `Evolution requires ${evolutionCost} energy. You have ${user.energy || 0} energy.` });
       }
-      
+
       // Get existing spirit for level and experience preservation
       const existingSpirit = await storage.getUserSpirit(userId);
       if (!existingSpirit) {
@@ -1628,13 +1625,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedPath: spiritualPath
       };
       preservedEvolution.push(questEvolutionEntry);
-      
+
       // Deduct energy cost
       await storage.updateUserEnergy(userId, (user.energy || 0) - evolutionCost);
-      
+
       // Delete old spirit and create new one with preserved level/experience AND evolution history
       await storage.deleteUserSpirit(userId);
-      
+
       const newSpirit = await storage.createSpirit(userId, {
         name: spiritData.name,
         description: spiritData.description,
@@ -1672,7 +1669,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const requesterId = req.user.claims.sub;
       const { receiverId } = req.body;
-      
+
       if (requesterId === receiverId) {
         return res.status(400).json({ message: "Cannot connect to yourself" });
       }
@@ -1691,7 +1688,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { connectionId } = req.params;
       const { status } = req.body;
-      
+
       const connection = await storage.updateConnection(connectionId, userId, status);
       res.json(connection);
     } catch (error) {
@@ -1761,7 +1758,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { postId } = req.params;
       const userId = req.user.claims.sub;
-      
+
       const result = await storage.toggleSpiritualMark(userId, postId);
       res.json(result);
     } catch (error) {
@@ -1774,7 +1771,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { postId } = req.params;
       const userId = req.user.claims.sub;
-      
+
       const result = await storage.getSpiritualMarkStatus(userId, postId);
       res.json(result);
     } catch (error) {
@@ -1787,7 +1784,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/newsletter/subscribe', async (req, res) => {
     try {
       const { email, firstName, lastName, turnstileToken } = req.body;
-      
+
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ message: "Valid email is required" });
       }
@@ -1795,7 +1792,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Check if this is a production domain that requires Turnstile
       const hostname = req.get('host') || '';
       const isProductionDomain = hostname.includes('ascended.social');
-      
+
       // Verify Turnstile token for bot protection (only on production domains)
       if (isProductionDomain) {
         if (!turnstileToken) {
@@ -1807,7 +1804,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         const clientIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
         const verification = await turnstileService.verifyToken(turnstileToken, clientIp);
-        
+
         if (!verification.success) {
           console.warn('Newsletter subscription blocked - Turnstile verification failed:', verification.errorCodes);
           return res.status(400).json({ 
@@ -1815,7 +1812,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             code: 'TURNSTILE_VERIFICATION_FAILED'
           });
         }
-        
+
         console.log('✅ Newsletter subscription - Turnstile verification successful for production domain');
       } else {
         console.log('🧪 Newsletter subscription on testing domain - Turnstile bypassed');
@@ -1867,7 +1864,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/newsletter/unsubscribe', async (req, res) => {
     try {
       const { token } = req.query;
-      
+
       if (!token || typeof token !== 'string') {
         return res.status(400).json({ message: "Unsubscribe token is required" });
       }
@@ -1888,7 +1885,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/newsletter/preferences', async (req, res) => {
     try {
       const { token } = req.query;
-      
+
       if (!token || typeof token !== 'string') {
         return res.status(400).json({ message: "Token is required" });
       }
@@ -1913,7 +1910,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { token } = req.query;
       const { preferences } = req.body;
-      
+
       if (!token || typeof token !== 'string') {
         return res.status(400).json({ message: "Token is required" });
       }
@@ -1934,14 +1931,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/newsletter/send', isAuthenticated, async (req: any, res) => {
     try {
       const { subject, content } = req.body;
-      
+
       if (!subject || !content) {
         return res.status(400).json({ message: "Subject and content are required" });
       }
 
       // Get all active subscriptions
       const subscriptions = await storage.getActiveNewsletterSubscriptions();
-      
+
       let sentCount = 0;
       let failedCount = 0;
 
@@ -1978,7 +1975,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { email, dataTypes } = req.body;
-      
+
       if (!email || !dataTypes || !Array.isArray(dataTypes)) {
         return res.status(400).json({ error: 'Email and dataTypes array are required' });
       }
@@ -1998,11 +1995,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // 1. Queue the export job
       // 2. Generate the data export
       // 3. Send an email with the download link
-      
+
       // For now, we'll simulate the request being processed
       console.log(`📤 Data export requested for user ${userId} (${email})`);
       console.log(`Requested data types: ${dataTypes.join(', ')}`);
-      
+
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
         await emailService.sendTransactionalEmail({
@@ -2035,7 +2032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const { email, deleteTypes, reason } = req.body;
-      
+
       if (!email || !deleteTypes || !Array.isArray(deleteTypes)) {
         return res.status(400).json({ error: 'Email and deleteTypes array are required' });
       }
@@ -2055,18 +2052,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
       console.log(`Delete types: ${deleteTypes.join(', ')}`);
       if (reason) console.log(`Reason: ${reason}`);
-      
+
       // In a real implementation, you would:
       // 1. Queue the deletion job
       // 2. Anonymize or delete user data based on deleteTypes
       // 3. Send confirmation email
-      
+
       // For now, if 'all' is requested, we could mark user for deletion
       if (deleteTypes.includes('all')) {
         // Mark user account for deletion (in real implementation)
         console.log(`⚠️ Full account deletion requested for user ${userId}`);
       }
-      
+
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
         await emailService.sendTransactionalEmail({
@@ -2099,7 +2096,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/privacy/status', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      
+
       // Get user data for privacy report
       const user = await storage.getUser(userId);
       if (!user) {
@@ -2128,6 +2125,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
           { service: 'Stripe', purpose: 'Payment processing', dataTypes: ['billing'] },
+          { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
+          { service: 'OneSignal (Notifications)', purpose: 'Push notifications for mobile app', dataTypes: ['notification'] },
+          { service: 'Replit', purpose: 'Application infrastructure', dataTypes: ['infrastructure'] },
         ],
         lastUpdated: new Date().toISOString(),
       };

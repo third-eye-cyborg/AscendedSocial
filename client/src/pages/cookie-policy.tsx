@@ -79,7 +79,7 @@ export default function CookiePolicy() {
               </span>
             </h2>
             <p className="text-xl text-white/80 leading-relaxed max-w-3xl mx-auto">
-              Manage your privacy preferences and understand how we use cookies to enhance your spiritual journey on Ascended Social.
+              Manage your privacy preferences and understand how we use cookies to enhance your spiritual journey on Ascended Social, including video streaming and media features.
             </p>
           </div>
 

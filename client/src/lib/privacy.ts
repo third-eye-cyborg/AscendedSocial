@@ -35,6 +35,8 @@ export class PrivacyManager {
         cookies: [
           { name: 'ph_*', purpose: 'PostHog analytics tracking', domain: '.posthog.com' },
           { name: '_ga', purpose: 'Google Analytics (if used)', domain: '.google-analytics.com' },
+          { name: '__cf_bm', purpose: 'Cloudflare bot management', domain: '.cloudflare.com' },
+          { name: 'cf_*', purpose: 'Cloudflare Stream video analytics', domain: '.cloudflarestream.com' },
         ],
         required: false,
       },
@@ -51,6 +53,8 @@ export class PrivacyManager {
         name: 'Functional',
         description: 'Enhance your experience with personalized features',
         cookies: [
+          { name: 'cf_stream_*', purpose: 'Cloudflare Stream video playback optimization', domain: '.cloudflarestream.com' },
+          { name: 'stream_session', purpose: 'Video streaming session management', domain: '.cloudflarestream.com' },
           { name: 'theme_preference', purpose: 'Remember your dark/light mode choice' },
           { name: 'language_preference', purpose: 'Remember your language setting' },
           { name: 'notification_settings', purpose: 'Manage your notification preferences' },

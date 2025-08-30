@@ -1,9 +1,50 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+// Extend Window interface to include Enzuzo
+declare global {
+  interface Window {
+    Enzuzo?: {
+      showBanner?: () => void;
+      showSettings?: () => void;
+      openWidget?: () => void;
+      hideBanner?: () => void;
+    };
+  }
+}
 
 export default function CookiePolicy() {
+  const [enzuzoLoaded, setEnzuzoLoaded] = useState(false);
+
   useEffect(() => {
-    // No special script loading needed for static cookie policy content
-  }, []);
+    // Check if Enzuzo is loaded and set up monitoring
+    const checkEnzuzo = () => {
+      if (window.Enzuzo) {
+        setEnzuzoLoaded(true);
+        console.log('Enzuzo cookie widget loaded successfully');
+      }
+    };
+
+    // Initial check
+    checkEnzuzo();
+
+    // Monitor for Enzuzo loading
+    const interval = setInterval(() => {
+      if (window.Enzuzo && !enzuzoLoaded) {
+        setEnzuzoLoaded(true);
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    // Clean up interval after 10 seconds
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [enzuzoLoaded]);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -62,19 +103,39 @@ export default function CookiePolicy() {
               {/* Cookie Preferences Button */}
               <div className="text-center mb-8 p-6 bg-primary/10 rounded-2xl border border-primary/30">
                 <h3 className="text-xl font-semibold text-primary mb-3">Manage Your Cookie Preferences</h3>
-                <p className="text-white/80 mb-4">Click below to customize your cookie settings and privacy preferences.</p>
+                <p className="text-white/80 mb-4">
+                  Click below to customize your cookie settings and privacy preferences.
+                  {!enzuzoLoaded && (
+                    <span className="block text-sm text-secondary mt-2">
+                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      Loading cookie preferences widget...
+                    </span>
+                  )}
+                </p>
                 <button 
                   onClick={() => {
-                    if (window.Enzuzo && window.Enzuzo.showBanner) {
-                      window.Enzuzo.showBanner();
+                    // Try multiple Enzuzo methods for better compatibility
+                    if (window.Enzuzo) {
+                      if (window.Enzuzo.showBanner) {
+                        window.Enzuzo.showBanner();
+                      } else if (window.Enzuzo.showSettings) {
+                        window.Enzuzo.showSettings();
+                      } else if (window.Enzuzo.openWidget) {
+                        window.Enzuzo.openWidget();
+                      } else {
+                        console.warn('Enzuzo methods not available');
+                        alert('Cookie preferences panel will be available shortly. Please refresh the page if this message persists.');
+                      }
                     } else {
-                      alert('Cookie preferences are loading. Please try again in a moment.');
+                      console.warn('Enzuzo not loaded');
+                      alert('Cookie preferences are still loading. Please wait a moment and try again.');
                     }
                   }}
-                  className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-primary/30 hover:scale-105"
+                  className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-primary/30 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/50"
                   data-testid="button-cookie-preferences"
                 >
-                  Open Cookie Preferences
+                  <i className="fas fa-cog mr-2"></i>
+                  Manage Cookie Preferences
                 </button>
               </div>
 
@@ -155,6 +216,10 @@ export default function CookiePolicy() {
                   </p>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
+                      <h5 className="font-semibold text-secondary mb-2">Enzuzo Privacy</h5>
+                      <p className="text-sm text-white/80">Cookie consent management and privacy compliance</p>
+                    </div>
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
                       <h5 className="font-semibold text-secondary mb-2">PostHog Analytics</h5>
                       <p className="text-sm text-white/80">Privacy-first analytics for improving user experience</p>
                     </div>
@@ -166,10 +231,6 @@ export default function CookiePolicy() {
                       <h5 className="font-semibold text-secondary mb-2">Stripe Payments</h5>
                       <p className="text-sm text-white/80">Secure payment processing for premium features</p>
                     </div>
-                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
-                      <h5 className="font-semibold text-secondary mb-2">Replit Authentication</h5>
-                      <p className="text-sm text-white/80">Secure login and user management</p>
-                    </div>
                   </div>
                 </section>
 
@@ -180,8 +241,9 @@ export default function CookiePolicy() {
                   </p>
                   <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
                     <p className="text-sm text-white/80">
-                      <strong>Last Updated:</strong> August 30, 2025<br/>
-                      <strong>Effective Date:</strong> This policy is effective immediately upon posting.
+                      <strong>Last Updated:</strong> December 2024<br/>
+                      <strong>Effective Date:</strong> This policy is effective immediately upon posting.<br/>
+                      <strong>Cookie Management:</strong> Powered by Enzuzo privacy compliance platform.
                     </p>
                   </div>
                 </section>

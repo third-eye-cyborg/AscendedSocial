@@ -4,11 +4,42 @@ export default function CookiePolicy() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Create the Enzuzo elements exactly as their instructions specify
-    if (containerRef.current && !containerRef.current.querySelector('#__enzuzo-root')) {
-      // Add the div and script exactly as Enzuzo instructions show
-      containerRef.current.innerHTML = '<div id="__enzuzo-root"></div><script id="__enzuzo-root-script" src="https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"></script>';
+    // Check if script is already loaded to prevent duplicates
+    if (document.getElementById('__enzuzo-root-script')) {
+      return;
     }
+
+    // Create the __enzuzo-root div in our container
+    if (containerRef.current) {
+      const enzuzoDiv = document.createElement('div');
+      enzuzoDiv.id = '__enzuzo-root';
+      containerRef.current.innerHTML = '';
+      containerRef.current.appendChild(enzuzoDiv);
+    }
+
+    // Create and load the script as per Enzuzo instructions
+    const script = document.createElement('script');
+    script.id = '__enzuzo-root-script';
+    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
+    script.async = true;
+    
+    script.onload = () => {
+      console.log('Enzuzo cookie policy script loaded successfully');
+    };
+    
+    script.onerror = () => {
+      console.error('Failed to load Enzuzo cookie policy script');
+    };
+    
+    document.head.appendChild(script);
+
+    // Cleanup function to remove script when component unmounts
+    return () => {
+      const existingScript = document.getElementById('__enzuzo-root-script');
+      if (existingScript) {
+        document.head.removeChild(existingScript);
+      }
+    };
   }, []);
 
   return (

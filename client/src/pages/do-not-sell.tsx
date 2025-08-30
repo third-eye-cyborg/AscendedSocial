@@ -176,6 +176,17 @@ export default function DoNotSell() {
                 margin-bottom: 16px !important;
               }
               
+              #__enzuzo-root .MuiSelect-root {
+                background-color: white !important;
+                color: black !important;
+              }
+              
+              #__enzuzo-root .MuiSelect-select {
+                background-color: white !important;
+                color: black !important;
+                padding: 12px !important;
+              }
+              
               #__enzuzo-root .MuiSelect-icon {
                 color: black !important;
               }
@@ -187,6 +198,31 @@ export default function DoNotSell() {
               
               #__enzuzo-root .MuiTypography-root {
                 color: black !important;
+              }
+              
+              /* Dropdown menu styling */
+              .MuiPaper-root.MuiMenu-paper {
+                background-color: white !important;
+              }
+              
+              .MuiMenuItem-root {
+                background-color: white !important;
+                color: black !important;
+              }
+              
+              .MuiMenuItem-root:hover {
+                background-color: #f3f4f6 !important;
+                color: black !important;
+              }
+              
+              /* Specific fixes for country and state dropdowns */
+              #__enzuzo-root [role="button"],
+              #__enzuzo-root [role="combobox"] {
+                background-color: white !important;
+                color: black !important;
+                border: 2px solid #d1d5db !important;
+                border-radius: 8px !important;
+                padding: 12px !important;
               }
               
               /* Form group styling */

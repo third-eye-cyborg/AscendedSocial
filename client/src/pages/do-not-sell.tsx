@@ -24,6 +24,79 @@ export default function DoNotSell() {
     // Add load event listener
     script.onload = () => {
       console.log('Enzuzo CCPA script loaded');
+      
+      // Apply dark mode styling after form loads
+      setTimeout(() => {
+        const styleEnzuzoForm = () => {
+          // Target all buttons and dropdowns in the Enzuzo form
+          const enzuzoRoot = document.getElementById('__enzuzo-root');
+          if (enzuzoRoot) {
+            // Style all buttons, especially language/country dropdowns
+            const buttons = enzuzoRoot.querySelectorAll('button, [role="button"], .MuiButton-root, .MuiButtonBase-root');
+            buttons.forEach(button => {
+              if (button instanceof HTMLElement) {
+                button.style.backgroundColor = '#374151';
+                button.style.color = '#f9fafb';
+                button.style.border = '2px solid #4b5563';
+                button.style.borderRadius = '8px';
+                button.style.padding = '8px 16px';
+                button.style.fontSize = '14px';
+                button.style.fontWeight = '500';
+                button.style.minHeight = '40px';
+                button.style.display = 'flex';
+                button.style.alignItems = 'center';
+                button.style.justifyContent = 'space-between';
+                
+                // Style all text inside buttons
+                const textElements = button.querySelectorAll('*');
+                textElements.forEach(el => {
+                  if (el instanceof HTMLElement) {
+                    el.style.color = '#f9fafb';
+                    el.style.backgroundColor = 'transparent';
+                  }
+                });
+              }
+            });
+            
+            // Style form inputs
+            const inputs = enzuzoRoot.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+              if (input instanceof HTMLElement) {
+                input.style.backgroundColor = '#374151';
+                input.style.color = '#f9fafb';
+                input.style.border = '2px solid #4b5563';
+                input.style.borderRadius = '8px';
+                input.style.padding = '12px 16px';
+              }
+            });
+            
+            // Style all text elements
+            const textElements = enzuzoRoot.querySelectorAll('p, span, div, label, h1, h2, h3, h4, h5, h6');
+            textElements.forEach(el => {
+              if (el instanceof HTMLElement && !el.querySelector('button')) {
+                el.style.color = '#e5e7eb';
+              }
+            });
+          }
+        };
+        
+        // Apply styling initially
+        styleEnzuzoForm();
+        
+        // Watch for changes and reapply styling
+        const observer = new MutationObserver(() => {
+          styleEnzuzoForm();
+        });
+        
+        const enzuzoRoot = document.getElementById('__enzuzo-root');
+        if (enzuzoRoot) {
+          observer.observe(enzuzoRoot, { 
+            childList: true, 
+            subtree: true, 
+            attributes: true 
+          });
+        }
+      }, 1000); // Wait 1 second for form to fully load
     };
     
     script.onerror = () => {

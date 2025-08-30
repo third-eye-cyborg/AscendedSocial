@@ -206,7 +206,7 @@ export default function MarketingFooter() {
         <div className="border-t border-primary/20 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
             <div className="mb-4 md:mb-0">
-              <span>© 2025 Ascended Social. All rights reserved.</span>
+              <span>© 2025 Ascended Social, a product of Third Eye Cyborg, LLC. All rights reserved.</span>
             </div>
             <div className="flex items-center space-x-1">
               <span>Made with</span>

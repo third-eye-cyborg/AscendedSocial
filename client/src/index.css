@@ -769,6 +769,69 @@ html, body {
     box-shadow: 0 0 20px rgba(87, 113, 255, 0.3);
   }
 
+/* Cloudflare Security Message Styling */
+[data-cloudflare] *,
+.cf-turnstile *,
+.cf-footer *,
+.cloudflare-security *,
+.cf-security *,
+#cf-security *,
+.cf-spam-protection *,
+#cf-spam-protection *,
+iframe[src*="cloudflare"] *,
+iframe[src*="turnstile"] *,
+div[class*="cloudflare"] *,
+div[id*="cloudflare"] *,
+div[class*="cf-"] *,
+div[id*="cf-"] *,
+span[class*="cloudflare"] *,
+span[id*="cloudflare"] *,
+p[class*="cloudflare"] *,
+p[id*="cloudflare"] *,
+small[class*="cloudflare"] *,
+small[id*="cloudflare"] * {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Target specific Cloudflare footer elements */
+.cf-footer,
+.cf-footer *,
+#cf-footer,
+#cf-footer *,
+.cloudflare-footer,
+.cloudflare-footer *,
+div[style*="position: fixed"] span,
+div[style*="position: fixed"] p,
+div[style*="position: fixed"] div,
+div[style*="position: fixed"] small {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Override any text color on landing page for Cloudflare elements */
+.bg-gradient-to-br.from-cosmic * {
+  /* Target any elements containing Cloudflare text */
+}
+
+/* Force white color on all fixed positioned elements that might be Cloudflare */
+div[style*="position: fixed"]:not(.header):not(.navigation):not(.menu) {
+  color: white !important;
+}
+
+div[style*="position: fixed"]:not(.header):not(.navigation):not(.menu) * {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Additional targeting for any external security badges/text */
+iframe + div,
+iframe + span,
+iframe + p,
+iframe + small {
+  color: white !important;
+}
+
   .glow-secondary {
     box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
   }

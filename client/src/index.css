@@ -37,6 +37,41 @@ html, body {
   max-width: none !important;
 }
 
+/* CRITICAL FIX: Override our app's dropdown styles for Enzuzo language/country selectors */
+#__enzuzo-root [role="option"],
+#__enzuzo-root [role="menuitem"] {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  padding: 12px 16px !important;
+  border-bottom: 1px solid #374151 !important;
+}
+
+#__enzuzo-root [role="option"]:hover,
+#__enzuzo-root [role="option"][data-highlighted],
+#__enzuzo-root [role="menuitem"]:hover,
+#__enzuzo-root [role="menuitem"][data-highlighted] {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure Enzuzo dropdown containers have proper styling */
+#__enzuzo-root .MuiPaper-root,
+#__enzuzo-root .MuiMenu-paper,
+#__enzuzo-root .MuiPopover-paper {
+  background-color: #1f2937 !important;
+  border: 2px solid #9ca3af !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Force all text in Enzuzo dropdowns to be visible */
+#__enzuzo-root [role="option"] *,
+#__enzuzo-root [role="menuitem"] *,
+#__enzuzo-root .MuiMenuItem-root *,
+#__enzuzo-root li * {
+  color: #f9fafb !important;
+  opacity: 1 !important;
+}
+
 /* Uppy Modal Complete Styling */
 .uppy-Root {
   color: white !important;

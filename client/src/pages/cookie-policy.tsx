@@ -1,37 +1,4 @@
-import { useEffect } from "react";
-
 export default function CookiePolicy() {
-  // Ensure the Enzuzo script loads when the component mounts
-  useEffect(() => {
-    // Remove any existing script and div to ensure clean reload
-    const existingScript = document.getElementById('__enzuzo-root-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    // Clear the div content
-    const rootDiv = document.getElementById('__enzuzo-root');
-    if (rootDiv) {
-      rootDiv.innerHTML = '';
-    }
-    
-    // Add the script
-    const script = document.createElement('script');
-    script.id = '__enzuzo-root-script';
-    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-    script.async = true;
-    
-    // Add load event listener
-    script.onload = () => {
-      console.log('Enzuzo cookie policy script loaded');
-    };
-    
-    script.onerror = () => {
-      console.error('Failed to load Enzuzo cookie policy script');
-    };
-    
-    document.head.appendChild(script);
-  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -117,6 +84,11 @@ export default function CookiePolicy() {
               className="min-h-[400px] text-black"
               data-testid="enzuzo-cookie-policy"
             ></div>
+            <script 
+              id="__enzuzo-root-script" 
+              src="https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"
+              async
+            ></script>
           </div>
 
           {/* Additional Information */}

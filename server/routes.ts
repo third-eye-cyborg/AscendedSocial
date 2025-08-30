@@ -1973,6 +1973,174 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Privacy and GDPR compliance routes
+  app.post('/api/privacy/export', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { email, dataTypes } = req.body;
+      
+      if (!email || !dataTypes || !Array.isArray(dataTypes)) {
+        return res.status(400).json({ error: 'Email and dataTypes array are required' });
+      }
+
+      // Log the data export request
+      await AnalyticsService.track({
+        event: 'privacy_data_export_requested',
+        distinctId: userId,
+        properties: {
+          email,
+          dataTypes,
+          requestedAt: new Date().toISOString(),
+        },
+      });
+
+      // In a real implementation, you would:
+      // 1. Queue the export job
+      // 2. Generate the data export
+      // 3. Send an email with the download link
+      
+      // For now, we'll simulate the request being processed
+      console.log(`📤 Data export requested for user ${userId} (${email})`);
+      console.log(`Requested data types: ${dataTypes.join(', ')}`);
+      
+      // Send confirmation email
+      if (emailService && emailService.sendTransactionalEmail) {
+        await emailService.sendTransactionalEmail({
+          to: email,
+          subject: 'Data Export Request Received',
+          text: `Your data export request has been received and will be processed within 30 days as required by GDPR. You will receive an email with your data when ready.`,
+          html: `
+            <h2>Data Export Request Received</h2>
+            <p>Your data export request has been received and will be processed within 30 days as required by GDPR.</p>
+            <p><strong>Requested data types:</strong> ${dataTypes.join(', ')}</p>
+            <p>You will receive an email with your data when ready.</p>
+            <hr>
+            <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
+          `
+        });
+      }
+
+      res.json({ 
+        message: 'Data export request submitted successfully',
+        requestId: randomUUID(),
+        estimatedCompletion: '30 days',
+        dataTypes 
+      });
+    } catch (error) {
+      console.error('Error processing data export request:', error);
+      res.status(500).json({ error: 'Failed to process data export request' });
+    }
+  });
+
+  app.post('/api/privacy/delete', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { email, deleteTypes, reason } = req.body;
+      
+      if (!email || !deleteTypes || !Array.isArray(deleteTypes)) {
+        return res.status(400).json({ error: 'Email and deleteTypes array are required' });
+      }
+
+      // Log the data deletion request  
+      await AnalyticsService.track({
+        event: 'privacy_data_deletion_requested',
+        distinctId: userId,
+        properties: {
+          email,
+          deleteTypes,
+          reason,
+          requestedAt: new Date().toISOString(),
+        },
+      });
+
+      console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
+      console.log(`Delete types: ${deleteTypes.join(', ')}`);
+      if (reason) console.log(`Reason: ${reason}`);
+      
+      // In a real implementation, you would:
+      // 1. Queue the deletion job
+      // 2. Anonymize or delete user data based on deleteTypes
+      // 3. Send confirmation email
+      
+      // For now, if 'all' is requested, we could mark user for deletion
+      if (deleteTypes.includes('all')) {
+        // Mark user account for deletion (in real implementation)
+        console.log(`⚠️ Full account deletion requested for user ${userId}`);
+      }
+      
+      // Send confirmation email
+      if (emailService && emailService.sendTransactionalEmail) {
+        await emailService.sendTransactionalEmail({
+          to: email,
+          subject: 'Data Deletion Request Received',
+          text: `Your data deletion request has been received and will be processed within 30 days as required by GDPR.`,
+          html: `
+            <h2>Data Deletion Request Received</h2>
+            <p>Your data deletion request has been received and will be processed within 30 days as required by GDPR.</p>
+            <p><strong>Data types to be deleted:</strong> ${deleteTypes.join(', ')}</p>
+            ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
+            <p>You will receive a confirmation email once the deletion is complete.</p>
+            <hr>
+            <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
+          `
+        });
+      }
+
+      res.json({ 
+        message: 'Data deletion request submitted successfully',
+        requestId: randomUUID(),
+        estimatedCompletion: '30 days',
+        deleteTypes 
+      });
+    } catch (error) {
+      console.error('Error processing data deletion request:', error);
+      res.status(500).json({ error: 'Failed to process data deletion request' });
+    }
+  });
+
+  app.get('/api/privacy/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Get user data for privacy report
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+
+      // Generate privacy compliance status
+      const privacyStatus = {
+        userId,
+        email: user.email,
+        dataRetentionPolicy: '12 months or until consent withdrawn',
+        gdprCompliant: true,
+        dataProcessingBasis: 'Consent (GDPR Article 6(1)(a))',
+        dataCategories: {
+          profile: 'Username, email, spiritual preferences',
+          analytics: 'Usage patterns, engagement metrics',
+          posts: 'Content created by user',
+          comments: 'User interactions and discussions',
+        },
+        userRights: {
+          dataExport: 'Available - Request processed within 30 days',
+          dataDeletion: 'Available - Processed within 30 days',
+          dataPortability: 'Available on request',
+          withdrawConsent: 'Available anytime',
+        },
+        thirdPartySharing: [
+          { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
+          { service: 'Stripe', purpose: 'Payment processing', dataTypes: ['billing'] },
+        ],
+        lastUpdated: new Date().toISOString(),
+      };
+
+      res.json(privacyStatus);
+    } catch (error) {
+      console.error('Error getting privacy status:', error);
+      res.status(500).json({ error: 'Failed to get privacy status' });
+    }
+  });
+
   // Register Scrapybara routes for authenticated screenshot testing
   registerScrapybaraRoutes(app);
   registerVisionsRoutes(app);

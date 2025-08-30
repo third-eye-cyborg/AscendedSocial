@@ -1,6 +1,7 @@
 import posthog from 'posthog-js';
+import { consentManager } from './consent';
 
-// Initialize PostHog on the client side
+// Initialize PostHog with privacy-first configuration
 const initializePostHog = () => {
   const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
   const host = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com';
@@ -8,30 +9,128 @@ const initializePostHog = () => {
   if (apiKey && typeof window !== 'undefined') {
     posthog.init(apiKey, {
       api_host: host,
-      autocapture: true,
-      capture_pageview: true,
-      disable_session_recording: false,
+      
+      // Privacy-first settings
+      autocapture: false, // Disabled by default, enabled only with consent
+      capture_pageview: false, // Disabled by default, enabled only with consent
+      disable_session_recording: true, // Disabled by default
+      
+      // Enhanced privacy settings
+      respect_dnt: true, // Respect Do Not Track
+      opt_out_capturing_by_default: true, // Opt-out by default
+      opt_out_persistence_by_default: true,
+      disable_cookie: false, // We'll manage this through consent
+      
+      // Data minimization
+      property_blacklist: [
+        '$current_url', // Can contain sensitive data
+        '$screen_height',
+        '$screen_width',
+        '$viewport_height', 
+        '$viewport_width',
+        '$referrer', // May contain sensitive data
+        '$referring_domain'
+      ],
+      
+      // Session recording with privacy protection
       session_recording: {
         maskAllInputs: true,
         maskInputOptions: {
           password: true,
-          email: false,
+          email: true, // Enhanced privacy - mask emails
+          tel: true,
         },
+        maskTextSelector: '.sensitive, .private, .pii',
+        blockClass: 'ph-no-capture',
+        blockSelector: '.sensitive-block',
+        collectFonts: false, // Privacy enhancement
+        recordCrossOriginIframes: false,
       },
+      
+      // Advanced privacy settings
+      sanitize_properties: (properties, event) => {
+        // Remove or sanitize sensitive properties
+        const sanitized = { ...properties };
+        
+        // Remove IP-related data
+        delete sanitized.$ip;
+        delete sanitized.$geoip_city_name;
+        delete sanitized.$geoip_country_code;
+        delete sanitized.$geoip_subdivision_1_code;
+        
+        // Sanitize URLs to remove query parameters that might contain PII
+        if (sanitized.$current_url) {
+          try {
+            const url = new URL(sanitized.$current_url);
+            sanitized.$current_url = `${url.origin}${url.pathname}`;
+          } catch (e) {
+            delete sanitized.$current_url;
+          }
+        }
+        
+        return sanitized;
+      },
+      
       loaded: (posthog) => {
         if (import.meta.env.DEV) {
           console.log('🔍 PostHog analytics initialized (development mode)');
           posthog.debug();
         }
+        
+        // Set up consent management
+        setupConsentManagement(posthog);
       },
     });
 
-    console.log('✅ PostHog client analytics initialized');
+    console.log('✅ PostHog client analytics initialized with privacy protection');
     return true;
   } else {
     console.warn('⚠️ PostHog client not configured - analytics disabled');
     return false;
   }
+};
+
+// Setup consent management integration
+const setupConsentManagement = (posthogInstance: typeof posthog) => {
+  // Check initial consent state
+  const hasConsent = consentManager.hasAnalyticsConsent();
+  
+  if (hasConsent) {
+    enableAnalytics(posthogInstance);
+  } else {
+    disableAnalytics(posthogInstance);
+  }
+  
+  // Listen for consent changes
+  consentManager.onConsentChange((consentState) => {
+    if (consentState.preferences.analytics) {
+      enableAnalytics(posthogInstance);
+    } else {
+      disableAnalytics(posthogInstance);
+    }
+  });
+};
+
+// Enable analytics features with consent
+const enableAnalytics = (posthogInstance: typeof posthog) => {
+  posthogInstance.opt_in_capturing();
+  posthogInstance.set_config({ 
+    autocapture: true,
+    capture_pageview: true,
+    disable_session_recording: false
+  });
+  console.log('📊 Analytics enabled with user consent');
+};
+
+// Disable analytics features without consent
+const disableAnalytics = (posthogInstance: typeof posthog) => {
+  posthogInstance.opt_out_capturing();
+  posthogInstance.set_config({ 
+    autocapture: false,
+    capture_pageview: false,
+    disable_session_recording: true
+  });
+  console.log('🚫 Analytics disabled - no user consent');
 };
 
 // Initialize PostHog
@@ -46,12 +145,17 @@ export interface SpiritualEventProperties {
 }
 
 export class ClientAnalytics {
+  // Check if tracking is allowed
+  private static canTrack(): boolean {
+    return isInitialized && consentManager.hasAnalyticsConsent();
+  }
+
   // Track spiritual journey events
   static trackSpiritualEvent(
     eventType: 'meditation_started' | 'oracle_reading_requested' | 'post_created' | 'community_joined' | 'chakra_selected' | 'vision_uploaded',
     properties: SpiritualEventProperties = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture(`spiritual_${eventType}`, {
       ...properties,
@@ -67,7 +171,7 @@ export class ClientAnalytics {
     targetId: string,
     properties: Record<string, any> = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture('user_engagement', {
       engagement_type: engagementType,
@@ -79,7 +183,7 @@ export class ClientAnalytics {
 
   // Track navigation and page views
   static trackPageView(pageName: string, properties: Record<string, any> = {}): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture('page_viewed', {
       page_name: pageName,
@@ -89,9 +193,9 @@ export class ClientAnalytics {
     });
   }
 
-  // Track errors and exceptions
+  // Track errors and exceptions (allowed for necessary functionality)
   static trackError(error: Error, context: Record<string, any> = {}): void {
-    if (!isInitialized) return;
+    if (!isInitialized) return; // Only check if initialized, errors are necessary
 
     posthog.capture('error_occurred', {
       error_name: error.name,
@@ -109,7 +213,7 @@ export class ClientAnalytics {
     eventType: 'started' | 'completed' | 'abandoned' | 'error',
     properties: Record<string, any> = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture(`form_${eventType}`, {
       form_name: formName,
@@ -123,7 +227,7 @@ export class ClientAnalytics {
     category: 'navigation' | 'spiritual' | 'social' | 'content' | 'subscription',
     properties: Record<string, any> = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture('user_action', {
       action_name: actionName,
@@ -139,7 +243,7 @@ export class ClientAnalytics {
     resultsCount: number,
     properties: Record<string, any> = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture('search_performed', {
       search_term: searchTerm,
@@ -155,7 +259,7 @@ export class ClientAnalytics {
     tier: string,
     properties: Record<string, any> = {}
   ): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture(`subscription_${eventType}`, {
       subscription_tier: tier,
@@ -165,7 +269,7 @@ export class ClientAnalytics {
 
   // Identify users
   static identify(userId: string, properties: Record<string, any> = {}): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.identify(userId, {
       ...properties,
@@ -176,14 +280,14 @@ export class ClientAnalytics {
 
   // Update user properties
   static updateProfile(properties: Record<string, any>): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.people.set(properties);
   }
 
   // Track feature flag usage
   static trackFeatureFlag(flagName: string, flagValue: any, properties: Record<string, any> = {}): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
 
     posthog.capture('feature_flag_used', {
       flag_name: flagName,
@@ -192,9 +296,9 @@ export class ClientAnalytics {
     });
   }
 
-  // Start session recording
+  // Start session recording (only with consent)
   static startRecording(): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
     posthog.startSessionRecording();
   }
 
@@ -224,12 +328,41 @@ export class ClientAnalytics {
 
   // Group analytics (for communities, organizations)
   static group(groupType: string, groupKey: string, properties: Record<string, any> = {}): void {
-    if (!isInitialized) return;
+    if (!this.canTrack()) return;
     posthog.group(groupType, groupKey, properties);
+  }
+
+  // Privacy controls
+  static clearUserData(): void {
+    if (!isInitialized) return;
+    posthog.reset();
+    console.log('🗑️ User analytics data cleared');
+  }
+
+  // Get consent status
+  static getConsentStatus() {
+    return {
+      hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
+      hasMarketingConsent: consentManager.hasMarketingConsent(),
+      hasFunctionalConsent: consentManager.hasFunctionalConsent(),
+      isInitialized: isInitialized,
+    };
+  }
+
+  // Enable analytics with consent
+  static enableWithConsent(): void {
+    if (!isInitialized) return;
+    enableAnalytics(posthog);
+  }
+
+  // Disable analytics
+  static disable(): void {
+    if (!isInitialized) return;
+    disableAnalytics(posthog);
   }
 }
 
-// Global error handler
+// Global error handler (essential functionality - no consent required)
 if (typeof window !== 'undefined') {
   window.addEventListener('error', (event) => {
     ClientAnalytics.trackError(new Error(event.message), {

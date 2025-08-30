@@ -30,7 +30,7 @@ export default function Pricing() {
                   <span className="hidden sm:inline">Ascended Social</span>
                   <span className="sm:hidden">Ascended</span>
                 </h1>
-                <p className="text-xs text-muted font-medium tracking-wide hidden sm:block">TRANSCEND • CONNECT • EVOLVE</p>
+                <p className="text-xs text-white/90 font-medium tracking-wide hidden sm:block">TRANSCEND • CONNECT • EVOLVE</p>
               </div>
             </div>
             
@@ -39,7 +39,7 @@ export default function Pricing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-white/90 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-home"
               >
                 Home
@@ -47,7 +47,7 @@ export default function Pricing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/about'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-white/90 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-about"
               >
                 About
@@ -55,7 +55,7 @@ export default function Pricing() {
               <Button 
                 variant="ghost"
                 onClick={() => window.location.href = '/features'}
-                className="text-subtle hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                className="text-white/90 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                 data-testid="button-features"
               >
                 Features
@@ -162,7 +162,7 @@ export default function Pricing() {
                 Choose Your Path
               </span>
             </h2>
-            <p className="text-lg sm:text-xl lg:text-2xl text-subtle mb-6 sm:mb-8 leading-relaxed max-w-4xl mx-auto px-4">
+            <p className="text-lg sm:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 leading-relaxed max-w-4xl mx-auto px-4">
               Select the subscription that aligns with your spiritual journey and unlock the full potential of conscious connection.
             </p>
           </div>
@@ -177,7 +177,7 @@ export default function Pricing() {
                     <i className="fas fa-seedling text-white text-2xl"></i>
                   </div>
                   <h3 className="text-2xl font-display font-bold text-chakra-heart mb-2">Seeker</h3>
-                  <p className="text-subtle mb-4">Perfect for those beginning their spiritual journey</p>
+                  <p className="text-white/80 mb-4">Perfect for those beginning their spiritual journey</p>
                   <div className="mb-6">
                     <span className="text-5xl font-bold text-white">Free</span>
                   </div>
@@ -186,19 +186,19 @@ export default function Pricing() {
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-heart mr-3"></i>
-                    <span className="text-secondary">Basic community access</span>
+                    <span className="text-white/90">Basic community access</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-heart mr-3"></i>
-                    <span className="text-secondary">Share posts & connect</span>
+                    <span className="text-white/90">Share posts & connect</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-heart mr-3"></i>
-                    <span className="text-secondary">Basic energy tracking</span>
+                    <span className="text-white/90">Basic energy tracking</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-heart mr-3"></i>
-                    <span className="text-secondary">Weekly oracle reading</span>
+                    <span className="text-white/90">Weekly oracle reading</span>
                   </li>
                 </ul>
                 
@@ -224,37 +224,37 @@ export default function Pricing() {
                     <i className="fas fa-eye text-white text-2xl"></i>
                   </div>
                   <h3 className="text-2xl font-display font-bold text-primary mb-2">Mystic</h3>
-                  <p className="text-subtle mb-4">For dedicated practitioners seeking deeper insights</p>
+                  <p className="text-white/80 mb-4">For dedicated practitioners seeking deeper insights</p>
                   <div className="mb-6">
                     <span className="text-5xl font-bold text-white">$12</span>
-                    <span className="text-muted">/month</span>
+                    <span className="text-white/70">/month</span>
                   </div>
                 </div>
                 
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Everything in Seeker</span>
+                    <span className="text-white/90">Everything in Seeker</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Personal AI sigil generation</span>
+                    <span className="text-white/90">Personal AI sigil generation</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Daily oracle readings</span>
+                    <span className="text-white/90">Daily oracle readings</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Chakra intelligence system</span>
+                    <span className="text-white/90">Chakra intelligence system</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Advanced aura tracking</span>
+                    <span className="text-white/90">Advanced aura tracking</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-primary mr-3"></i>
-                    <span className="text-secondary">Sacred circles access</span>
+                    <span className="text-white/90">Sacred circles access</span>
                   </li>
                 </ul>
                 
@@ -276,37 +276,37 @@ export default function Pricing() {
                     <i className="fas fa-crown text-white text-2xl"></i>
                   </div>
                   <h3 className="text-2xl font-display font-bold text-chakra-crown mb-2">Ascended</h3>
-                  <p className="text-subtle mb-4">For spiritual leaders and advanced practitioners</p>
+                  <p className="text-white/80 mb-4">For spiritual leaders and advanced practitioners</p>
                   <div className="mb-6">
                     <span className="text-5xl font-bold text-white">$24</span>
-                    <span className="text-muted">/month</span>
+                    <span className="text-white/70">/month</span>
                   </div>
                 </div>
                 
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">Everything in Mystic</span>
+                    <span className="text-white/90">Everything in Mystic</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">AI tarot readings</span>
+                    <span className="text-white/90">AI tarot readings</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">Create sacred circles</span>
+                    <span className="text-white/90">Create sacred circles</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">Advanced energy analytics</span>
+                    <span className="text-white/90">Advanced energy analytics</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">Priority community support</span>
+                    <span className="text-white/90">Priority community support</span>
                   </li>
                   <li className="flex items-center">
                     <i className="fas fa-check text-chakra-crown mr-3"></i>
-                    <span className="text-secondary">Unlimited visions & sparks</span>
+                    <span className="text-white/90">Unlimited visions & sparks</span>
                   </li>
                 </ul>
                 
@@ -334,7 +334,7 @@ export default function Pricing() {
                 <Card className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/30 glass-effect shadow-lg rounded-2xl">
                   <CardContent className="p-6">
                     <h4 className="text-xl font-display font-bold text-primary mb-3">Can I change plans anytime?</h4>
-                    <p className="text-secondary leading-relaxed">
+                    <p className="text-white/90 leading-relaxed">
                       Absolutely! You can upgrade, downgrade, or cancel your subscription at any time. Changes take effect at the next billing cycle.
                     </p>
                   </CardContent>
@@ -343,7 +343,7 @@ export default function Pricing() {
                 <Card className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/30 glass-effect shadow-lg rounded-2xl">
                   <CardContent className="p-6">
                     <h4 className="text-xl font-display font-bold text-primary mb-3">Is there a free trial?</h4>
-                    <p className="text-secondary leading-relaxed">
+                    <p className="text-white/90 leading-relaxed">
                       The Seeker plan is completely free forever. For premium plans, we offer a 7-day free trial to experience all features.
                     </p>
                   </CardContent>
@@ -354,7 +354,7 @@ export default function Pricing() {
                 <Card className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/30 glass-effect shadow-lg rounded-2xl">
                   <CardContent className="p-6">
                     <h4 className="text-xl font-display font-bold text-primary mb-3">What payment methods do you accept?</h4>
-                    <p className="text-secondary leading-relaxed">
+                    <p className="text-white/90 leading-relaxed">
                       We accept all major credit cards, PayPal, and bank transfers. All payments are securely processed and encrypted.
                     </p>
                   </CardContent>
@@ -363,7 +363,7 @@ export default function Pricing() {
                 <Card className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/30 glass-effect shadow-lg rounded-2xl">
                   <CardContent className="p-6">
                     <h4 className="text-xl font-display font-bold text-primary mb-3">Do you offer refunds?</h4>
-                    <p className="text-secondary leading-relaxed">
+                    <p className="text-white/90 leading-relaxed">
                       We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied, we'll provide a full refund.
                     </p>
                   </CardContent>
@@ -381,7 +381,7 @@ export default function Pricing() {
                     Ready to Ascend?
                   </span>
                 </h3>
-                <p className="text-xl text-secondary mb-8 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
                   Join thousands of souls on their journey to higher consciousness. Start with our free plan or unlock premium features today.
                 </p>
                 <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">

@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ClientAnalytics } from "@/lib/analytics";
 import { NotificationService } from "@/lib/notifications";
-import { PrivacyConsentBanner } from "@/components/PrivacyConsent";
+import { consentManager } from "@/lib/consent";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -34,8 +34,11 @@ import Unsubscribe from "@/pages/unsubscribe";
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
-  // Initialize analytics and notifications when user loads
+  // Initialize analytics, notifications, and privacy banner when user loads
   useEffect(() => {
+    // Initialize Enzuzo cookie banner integration
+    consentManager.initializeEnzuzo();
+    
     // Initialize push notifications
     NotificationService.initialize().catch(console.error);
     
@@ -106,7 +109,6 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
-        <PrivacyConsentBanner />
       </TooltipProvider>
     </QueryClientProvider>
   );

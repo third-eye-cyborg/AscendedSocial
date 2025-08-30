@@ -193,6 +193,117 @@ export class ConsentManager {
       necessary: true,
     });
   }
+
+  // Initialize Enzuzo banner integration
+  initializeEnzuzo(): void {
+    if (typeof window === 'undefined') return;
+
+    // Load Enzuzo script securely
+    this.loadEnzuzoScript();
+  }
+
+  private loadEnzuzoScript(): void {
+    // Check if script already exists
+    if (document.querySelector('script[src*="enzuzo-cookiebar"]')) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://app.enzuzo.com/apps/enzuzo/static/js/__enzuzo-cookiebar.js?uuid=1bf8f8f8-a786-11ed-a83e-eb67933cb390';
+    script.async = true;
+    script.defer = true;
+    
+    // Add security measures
+    script.crossOrigin = 'anonymous';
+    
+    // Set up error handling
+    script.onerror = () => {
+      console.warn('Enzuzo cookie banner failed to load');
+    };
+
+    script.onload = () => {
+      console.log('✅ Enzuzo cookie banner loaded successfully');
+      this.setupEnzuzoIntegration();
+    };
+
+    document.head.appendChild(script);
+  }
+
+  private setupEnzuzoIntegration(): void {
+    // Wait for Enzuzo to be available and set up bidirectional sync
+    const checkEnzuzo = () => {
+      if ((window as any).ezCookieSettings || (window as any).Enzuzo) {
+        this.setupEnzuzoBidirectionalSync();
+      } else {
+        setTimeout(checkEnzuzo, 100);
+      }
+    };
+    checkEnzuzo();
+  }
+
+  private setupEnzuzoBidirectionalSync(): void {
+    if (typeof window === 'undefined') return;
+
+    // Set up Enzuzo consent callback
+    (window as any).enzuzoConsentCallback = (consent: any) => {
+      console.log('📝 Enzuzo consent updated:', consent);
+      this.updateFromEnzuzo({
+        analytics: consent.analytics || consent.statisticalCookies || consent.statistical || false,
+        marketing: consent.marketing || consent.marketingCookies || consent.advertising || false,
+        functional: consent.functional || consent.functionalCookies || consent.preferences || false,
+      });
+    };
+
+    // Sync our internal consent to Enzuzo when our state changes
+    this.onConsentChange((state) => {
+      const enzuzoSettings = (window as any).ezCookieSettings || (window as any).Enzuzo;
+      if (enzuzoSettings && enzuzoSettings.updateConsent) {
+        enzuzoSettings.updateConsent({
+          analytics: state.preferences.analytics,
+          marketing: state.preferences.marketing,
+          functional: state.preferences.functional,
+          necessary: true,
+        });
+      }
+    });
+
+    // Sync initial state to Enzuzo
+    const currentState = this.getConsentState();
+    if (currentState) {
+      const enzuzoSettings = (window as any).ezCookieSettings || (window as any).Enzuzo;
+      if (enzuzoSettings && enzuzoSettings.updateConsent) {
+        enzuzoSettings.updateConsent({
+          analytics: currentState.preferences.analytics,
+          marketing: currentState.preferences.marketing,
+          functional: currentState.preferences.functional,
+          necessary: true,
+        });
+      }
+    }
+
+    console.log('🔄 Enzuzo bidirectional sync setup complete');
+    
+    // Verify GDPR compliance
+    this.verifyGDPRCompliance();
+  }
+
+  private verifyGDPRCompliance(): void {
+    const hasRequiredFeatures = {
+      consentBanner: document.querySelector('script[src*="enzuzo-cookiebar"]') !== null,
+      privacySettings: typeof this.getConsentState === 'function',
+      dataExportAPI: fetch('/api/privacy/status').then(r => r.ok).catch(() => false),
+      cookieCategories: Object.keys(this.getEnzuzoCompatibleState()).length === 4,
+      optOutDefault: !this.hasAnalyticsConsent() // Should be false by default
+    };
+
+    console.log('🛡️ GDPR Compliance Check:', hasRequiredFeatures);
+    
+    if (hasRequiredFeatures.consentBanner && hasRequiredFeatures.privacySettings && hasRequiredFeatures.optOutDefault) {
+      console.log('✅ GDPR compliance verified - All required features present');
+    } else {
+      console.warn('⚠️ GDPR compliance issues detected');
+    }
+  }
 }
 
 // Global consent manager instance

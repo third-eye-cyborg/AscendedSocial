@@ -2,55 +2,7 @@ import { useEffect } from "react";
 
 export default function CookiePolicy() {
   useEffect(() => {
-    // Clean up any existing script
-    const existingScript = document.getElementById('enzuzo-cookie-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-
-    // Clear the container
-    const container = document.getElementById('__enzuzo-root');
-    if (container) {
-      container.innerHTML = '';
-    }
-
-    // Add a delay to ensure DOM is ready
-    setTimeout(() => {
-      // Create a button to trigger the existing cookie banner preferences
-      const container = document.getElementById('__enzuzo-root');
-      if (container) {
-        container.innerHTML = `
-          <div class="p-8 text-center">
-            <div class="mb-6">
-              <h3 class="text-xl font-semibold text-black mb-4">Manage Your Cookie Preferences</h3>
-              <p class="text-black/80 mb-6">Click the button below to access your cookie preferences and manage how we use cookies on your spiritual journey.</p>
-            </div>
-            <button 
-              onclick="if(window.Enzuzo && window.Enzuzo.showBanner) { window.Enzuzo.showBanner(); } else { alert('Cookie preferences are loading. Please try again in a moment.'); }"
-              class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg"
-            >
-              Open Cookie Preferences
-            </button>
-            <div class="mt-6 text-sm text-black/60">
-              <p>This will open the cookie banner where you can:</p>
-              <ul class="mt-2 space-y-1">
-                <li>• Accept or decline optional cookies</li>
-                <li>• View detailed information about each cookie type</li>
-                <li>• Manage your privacy preferences</li>
-              </ul>
-            </div>
-          </div>
-        `;
-      }
-    }, 100);
-
-    // Cleanup function
-    return () => {
-      const scriptToRemove = document.getElementById('enzuzo-cookie-script');
-      if (scriptToRemove) {
-        scriptToRemove.remove();
-      }
-    };
+    // No special script loading needed for static cookie policy content
   }, []);
 
   return (
@@ -103,19 +55,136 @@ export default function CookiePolicy() {
             </p>
           </div>
 
-          {/* Enzuzo Cookie Policy Embed */}
+          {/* Cookie Policy Content */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
-            <div 
-              id="__enzuzo-root"
-              className="min-h-[500px]"
-              data-testid="enzuzo-cookie-policy"
-            >
-              <div className="text-center py-12">
-                <div className="animate-pulse mb-4">
-                  <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
-                  <div className="text-black font-medium">Loading cookie policy widget...</div>
-                  <div className="text-black/60 text-sm mt-2">This may take a few moments</div>
-                </div>
+            <div className="prose prose-lg max-w-none text-white/90">
+              
+              {/* Cookie Preferences Button */}
+              <div className="text-center mb-8 p-6 bg-primary/10 rounded-2xl border border-primary/30">
+                <h3 className="text-xl font-semibold text-primary mb-3">Manage Your Cookie Preferences</h3>
+                <p className="text-white/80 mb-4">Click below to customize your cookie settings and privacy preferences.</p>
+                <button 
+                  onClick={() => {
+                    if (window.Enzuzo && window.Enzuzo.showBanner) {
+                      window.Enzuzo.showBanner();
+                    } else {
+                      alert('Cookie preferences are loading. Please try again in a moment.');
+                    }
+                  }}
+                  className="bg-gradient-to-r from-primary to-secondary text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-lg hover:shadow-primary/30 hover:scale-105"
+                  data-testid="button-cookie-preferences"
+                >
+                  Open Cookie Preferences
+                </button>
+              </div>
+
+              {/* Cookie Policy Content */}
+              <div className="space-y-8">
+                <section>
+                  <h3 className="text-2xl font-bold text-primary mb-4">What Are Cookies?</h3>
+                  <p className="leading-relaxed">
+                    Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and enabling certain features of our spiritual platform.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold text-primary mb-4">Types of Cookies We Use</h3>
+                  
+                  <div className="space-y-6">
+                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
+                      <h4 className="text-xl font-semibold text-secondary mb-3">Essential Cookies</h4>
+                      <p className="leading-relaxed mb-3">
+                        These cookies are necessary for the website to function properly. They enable core functionality such as security, network management, and accessibility.
+                      </p>
+                      <p className="text-sm text-white/70">
+                        <strong>Examples:</strong> Session management, authentication, load balancing
+                      </p>
+                    </div>
+
+                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
+                      <h4 className="text-xl font-semibold text-secondary mb-3">Analytics Cookies</h4>
+                      <p className="leading-relaxed mb-3">
+                        These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our spiritual platform.
+                      </p>
+                      <p className="text-sm text-white/70">
+                        <strong>Examples:</strong> PostHog analytics, page views, user journeys
+                      </p>
+                    </div>
+
+                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
+                      <h4 className="text-xl font-semibold text-secondary mb-3">Functional Cookies</h4>
+                      <p className="leading-relaxed mb-3">
+                        These cookies enable enhanced functionality and personalization, such as remembering your spiritual preferences and customization settings.
+                      </p>
+                      <p className="text-sm text-white/70">
+                        <strong>Examples:</strong> Theme preferences, language settings, user preferences
+                      </p>
+                    </div>
+
+                    <div className="border border-primary/20 rounded-lg p-6 bg-cosmic/30">
+                      <h4 className="text-xl font-semibold text-secondary mb-3">Marketing Cookies</h4>
+                      <p className="leading-relaxed mb-3">
+                        These cookies are used to deliver relevant content and track the effectiveness of our spiritual community outreach.
+                      </p>
+                      <p className="text-sm text-white/70">
+                        <strong>Examples:</strong> Social media integration, content personalization
+                      </p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold text-primary mb-4">Your Choices</h3>
+                  <div className="space-y-4">
+                    <p className="leading-relaxed">
+                      You have several options for managing cookies on Ascended Social:
+                    </p>
+                    <ul className="list-disc list-inside space-y-2 ml-4">
+                      <li>Use our cookie preference center (button above) to customize your settings</li>
+                      <li>Modify your browser settings to block or delete cookies</li>
+                      <li>Opt out of analytics tracking while maintaining essential functionality</li>
+                      <li>Contact us if you have questions about our cookie practices</li>
+                    </ul>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold text-primary mb-4">Third-Party Services</h3>
+                  <p className="leading-relaxed mb-4">
+                    Our spiritual platform integrates with several trusted third-party services that may set their own cookies:
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
+                      <h5 className="font-semibold text-secondary mb-2">PostHog Analytics</h5>
+                      <p className="text-sm text-white/80">Privacy-first analytics for improving user experience</p>
+                    </div>
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
+                      <h5 className="font-semibold text-secondary mb-2">Google Cloud Storage</h5>
+                      <p className="text-sm text-white/80">Secure storage for your spiritual content and media</p>
+                    </div>
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
+                      <h5 className="font-semibold text-secondary mb-2">Stripe Payments</h5>
+                      <p className="text-sm text-white/80">Secure payment processing for premium features</p>
+                    </div>
+                    <div className="border border-primary/20 rounded-lg p-4 bg-cosmic/20">
+                      <h5 className="font-semibold text-secondary mb-2">Replit Authentication</h5>
+                      <p className="text-sm text-white/80">Secure login and user management</p>
+                    </div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-2xl font-bold text-primary mb-4">Contact Us</h3>
+                  <p className="leading-relaxed">
+                    If you have any questions about our cookie policy or privacy practices, please contact us. We're committed to transparency in our spiritual community.
+                  </p>
+                  <div className="mt-4 p-4 bg-primary/10 rounded-lg border border-primary/30">
+                    <p className="text-sm text-white/80">
+                      <strong>Last Updated:</strong> August 30, 2025<br/>
+                      <strong>Effective Date:</strong> This policy is effective immediately upon posting.
+                    </p>
+                  </div>
+                </section>
               </div>
             </div>
           </div>

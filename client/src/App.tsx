@@ -32,6 +32,7 @@ import ZeroTrustPage from "@/pages/zero-trust";
 import Unsubscribe from "@/pages/unsubscribe";
 import CookiePolicy from "@/pages/cookie-policy";
 import DoNotSell from "@/pages/do-not-sell";
+import DataRequest from "@/pages/data-request";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -78,6 +79,7 @@ function Router() {
           <Route path="/unsubscribe" component={Unsubscribe} />
           <Route path="/cookie-policy" component={CookiePolicy} />
           <Route path="/do-not-sell" component={DoNotSell} />
+          <Route path="/data-request" component={DataRequest} />
         </>
       ) : (
         <>
@@ -102,6 +104,7 @@ function Router() {
           <Route path="/unsubscribe" component={Unsubscribe} />
           <Route path="/cookie-policy" component={CookiePolicy} />
           <Route path="/do-not-sell" component={DoNotSell} />
+          <Route path="/data-request" component={DataRequest} />
         </>
       )}
       <Route component={NotFound} />

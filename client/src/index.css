@@ -159,29 +159,6 @@ body #__enzuzo-root .MuiTypography-root {
   color: #ffffff !important;
 }
 
-/* Additional specific targeting for cookie policy dropdowns */
-body #__enzuzo-root select,
-body #__enzuzo-root .MuiSelect-root,
-body #__enzuzo-root .MuiInputBase-root,
-body #__enzuzo-root .MuiFormControl-root,
-body #__enzuzo-root .MuiOutlinedInput-root {
-  background-color: #374151 !important;
-  border: 1px solid #9ca3af !important;
-  color: #ffffff !important;
-}
-
-/* Force dropdown arrow and select elements */
-body #__enzuzo-root .MuiSelect-icon,
-body #__enzuzo-root .MuiSelect-iconOpen {
-  color: #ffffff !important;
-}
-
-/* Ensure dropdown panel background for both CCPA and cookie forms */
-.MuiPaper-root:not(.MuiDialog-paper):not(.MuiDrawer-paper) {
-  background-color: #1f2937 !important;
-  border: 2px solid #9ca3af !important;
-}
-
 /* Uppy Modal Complete Styling */
 .uppy-Root {
   color: white !important;

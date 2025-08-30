@@ -40,12 +40,13 @@ html, body {
 /* GLOBAL ENZUZO DROPDOWN FIX - Target dropdowns anywhere on page */
 /* This targets Enzuzo dropdowns that might be rendered outside the main container */
 
-/* Global Material-UI dropdown override for Enzuzo - exclude our app's dropdowns */
-.MuiPaper-root:not([data-app-dropdown]) .MuiMenuItem-root,
-.MuiMenu-paper:not([data-app-dropdown]) .MuiMenuItem-root,
-.MuiPopover-paper:not([data-app-dropdown]) [role="option"],
-.MuiPopover-paper:not([data-app-dropdown]) [role="menuitem"],
-.MuiPopover-paper:not([data-app-dropdown]) li {
+/* ONLY target dropdown MENU items (when opened), NOT the buttons themselves */
+/* These selectors are very specific to only affect opened dropdown menus */
+.MuiPaper-root[role="presentation"] .MuiMenuItem-root,
+.MuiMenu-paper .MuiMenuItem-root,
+.MuiPopover-paper[role="presentation"] [role="option"],
+.MuiPopover-paper[role="presentation"] [role="menuitem"],
+.MuiPopover-paper[role="presentation"] li {
   background-color: #1f2937 !important;
   color: #ffffff !important;
   padding: 12px 16px !important;
@@ -53,48 +54,29 @@ html, body {
   opacity: 1 !important;
 }
 
-.MuiPaper-root:not([data-app-dropdown]) .MuiMenuItem-root:hover,
-.MuiMenu-paper:not([data-app-dropdown]) .MuiMenuItem-root:hover,
-.MuiPopover-paper:not([data-app-dropdown]) [role="option"]:hover,
-.MuiPopover-paper:not([data-app-dropdown]) [role="menuitem"]:hover,
-.MuiPopover-paper:not([data-app-dropdown]) li:hover {
+.MuiPaper-root[role="presentation"] .MuiMenuItem-root:hover,
+.MuiMenu-paper .MuiMenuItem-root:hover,
+.MuiPopover-paper[role="presentation"] [role="option"]:hover,
+.MuiPopover-paper[role="presentation"] [role="menuitem"]:hover,
+.MuiPopover-paper[role="presentation"] li:hover {
   background-color: #374151 !important;
   color: #ffffff !important;
   opacity: 1 !important;
 }
 
-/* Global dropdown container styling for Enzuzo */
-.MuiPaper-root:not([data-app-dropdown]),
-.MuiMenu-paper:not([data-app-dropdown]),
-.MuiPopover-paper:not([data-app-dropdown]) {
+/* Global dropdown container styling ONLY for opened menus */
+.MuiPaper-root[role="presentation"],
+.MuiMenu-paper,
+.MuiPopover-paper[role="presentation"] {
   background-color: #1f2937 !important;
   border: 2px solid #9ca3af !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Fix Enzuzo dropdown buttons - make them transparent/inherit from parent */
-#__enzuzo-root .MuiButtonBase-root,
-#__enzuzo-root .MuiButton-root,
-#__enzuzo-root .MuiInputBase-root,
-#__enzuzo-root .MuiInput-root {
-  background-color: transparent !important;
-  color: #f9fafb !important;
-  border: 1px solid #6b7280 !important;
-  border-radius: 6px !important;
-}
-
-#__enzuzo-root .MuiButtonBase-root:hover,
-#__enzuzo-root .MuiButton-root:hover,
-#__enzuzo-root .MuiInputBase-root:hover,
-#__enzuzo-root .MuiInput-root:hover {
-  background-color: rgba(75, 85, 99, 0.3) !important;
-  border-color: #9ca3af !important;
-}
-
-/* Force text visibility in all Enzuzo dropdown elements */
-.MuiPaper-root:not([data-app-dropdown]) *,
-.MuiMenu-paper:not([data-app-dropdown]) *,
-.MuiPopover-paper:not([data-app-dropdown]) * {
+/* Force text visibility ONLY in opened dropdown menus */
+.MuiPaper-root[role="presentation"] *,
+.MuiMenu-paper *,
+.MuiPopover-paper[role="presentation"] * {
   color: #ffffff !important;
   opacity: 1 !important;
   text-shadow: none !important;

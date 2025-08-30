@@ -6,7 +6,7 @@ export default function CookiePolicy() {
 
   useEffect(() => {
     const consentManager = ConsentManager.getInstance();
-
+    
     // Ensure Enzuzo script is loaded
     consentManager.initializeEnzuzo();
   }, []);
@@ -15,10 +15,10 @@ export default function CookiePolicy() {
     console.log('Cookie manager button clicked');
     const enzuzo = (window as any).Enzuzo || (window as any).ezCookieSettings;
     console.log('Enzuzo object:', enzuzo);
-
+    
     if (enzuzo) {
       console.log('Available Enzuzo methods:', Object.keys(enzuzo));
-
+      
       // Try different methods to show cookie preferences
       if (typeof enzuzo.showPreferencesManager === 'function') {
         console.log('Calling showPreferencesManager');
@@ -37,7 +37,7 @@ export default function CookiePolicy() {
         enzuzo.show();
       } else {
         console.log('No recognized methods found. Trying to trigger manually...');
-
+        
         // Try triggering the cookie banner click event
         const cookieLinks = document.querySelectorAll('a[href*="cookie"], a[href*="preferences"], button[data-enzuzo]');
         if (cookieLinks.length > 0) {
@@ -80,7 +80,7 @@ export default function CookiePolicy() {
                 <p className="text-xs text-muted font-medium tracking-wide hidden sm:block">PRIVACY • TRANSPARENCY • TRUST</p>
               </div>
             </div>
-
+            
             <div className="flex items-center space-x-4">
               <button 
                 onClick={() => window.location.href = '/'}
@@ -118,7 +118,7 @@ export default function CookiePolicy() {
                 You can choose which types of cookies you'd like to allow and adjust your preferences at any time.
               </p>
             </div>
-
+            
             <div className="text-center mb-8">
               <button
                 onClick={openCookieManager}

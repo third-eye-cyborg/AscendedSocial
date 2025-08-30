@@ -14,21 +14,33 @@ export default function CookiePolicy() {
       container.innerHTML = '';
     }
 
-    // Create and append the script
-    const script = document.createElement('script');
-    script.id = 'enzuzo-cookie-script';
-    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-    script.async = true;
-    
-    script.onload = () => {
-      console.log('✅ Enzuzo cookie policy script loaded successfully');
-    };
-    
-    script.onerror = () => {
-      console.error('❌ Failed to load Enzuzo cookie policy script');
-    };
+    // Add a delay to ensure DOM is ready
+    setTimeout(() => {
+      // Try the main Enzuzo script instead of specific cookie script
+      const script = document.createElement('script');
+      script.id = 'enzuzo-cookie-script';
+      script.src = 'https://app.enzuzo.com/scripts/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
+      script.async = true;
+      
+      script.onload = () => {
+        console.log('✅ Enzuzo cookie policy script loaded successfully');
+        // Try to trigger widget initialization
+        if (window.Enzuzo && window.Enzuzo.init) {
+          window.Enzuzo.init();
+        }
+      };
+      
+      script.onerror = () => {
+        console.error('❌ Failed to load Enzuzo cookie policy script');
+        // Show fallback message
+        const fallbackContainer = document.getElementById('__enzuzo-root');
+        if (fallbackContainer) {
+          fallbackContainer.innerHTML = '<div class="p-8 text-center"><p class="text-black">Cookie policy widget is temporarily unavailable. Please contact support for assistance with privacy preferences.</p></div>';
+        }
+      };
 
-    document.head.appendChild(script);
+      document.head.appendChild(script);
+    }, 100);
 
     // Cleanup function
     return () => {
@@ -78,7 +90,7 @@ export default function CookiePolicy() {
       {/* Main Content */}
       <main className="pt-20 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16 mt-8">
             <h2 className="text-4xl sm:text-5xl font-display font-bold mb-6">
               <span className="bg-gradient-to-r from-primary via-chakra-heart to-secondary bg-clip-text text-transparent">
                 Cookie Policy & Privacy Preferences
@@ -185,12 +197,14 @@ export default function CookiePolicy() {
             `}</style>
             <div 
               id="__enzuzo-root"
-              className="min-h-[400px] text-black bg-white/5 rounded-lg p-4"
+              className="min-h-[500px] text-black bg-white/10 rounded-lg p-6"
               data-testid="enzuzo-cookie-policy"
             >
-              <div className="text-center py-8">
-                <div className="animate-pulse">
-                  <div className="text-black/60">Loading cookie policy widget...</div>
+              <div className="text-center py-12">
+                <div className="animate-pulse mb-4">
+                  <div className="w-8 h-8 bg-primary/30 rounded-full mx-auto mb-4 animate-bounce"></div>
+                  <div className="text-black font-medium">Loading cookie policy widget...</div>
+                  <div className="text-black/60 text-sm mt-2">This may take a few moments</div>
                 </div>
               </div>
             </div>

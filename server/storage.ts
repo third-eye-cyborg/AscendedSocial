@@ -335,7 +335,7 @@ export class DatabaseStorage implements IStorage {
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
-      .where(ilike(posts.content, `%${query}%`))
+      .where(ilike(posts.content, `%${query.replace(/[%_\\]/g, '\\$&')}%`))
       .orderBy(desc(posts.createdAt))
       .limit(limit);
     return result;
@@ -347,8 +347,8 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .where(
         or(
-          ilike(users.username, `%${query}%`),
-          ilike(users.email, `%${query}%`)
+          ilike(users.username, `%${query.replace(/[%_\\]/g, '\\$&')}%`),
+          ilike(users.email, `%${query.replace(/[%_\\]/g, '\\$&')}%`)
         )
       )
       .orderBy(desc(users.createdAt))

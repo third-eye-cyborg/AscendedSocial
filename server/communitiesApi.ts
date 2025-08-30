@@ -1,5 +1,5 @@
 import type { Express } from "express";
-import { eq, and, desc, sql, asc, like, or } from "drizzle-orm";
+import { eq, and, desc, sql, asc, like, ilike, or } from "drizzle-orm";
 import { db } from "./db";
 import { 
   communities, 
@@ -44,13 +44,16 @@ export function registerCommunitiesRoutes(app: Express): void {
       let conditions = [];
 
       if (search) {
-        conditions.push(
-          or(
-            like(communities.name, `%${search}%`),
-            like(communities.description, `%${search}%`),
-            like(communities.description, `%${search}%`)
-          )
-        );
+        const searchTerm = Array.isArray(search) ? search[0] : search;
+        if (searchTerm && typeof searchTerm === 'string') {
+          const escapedSearch = searchTerm.replace(/[%_\\]/g, '\\$&');
+          conditions.push(
+            or(
+              ilike(communities.name, `%${escapedSearch}%`),
+              ilike(communities.description, `%${escapedSearch}%`)
+            )
+          );
+        }
       }
 
       if (category && category !== "all") {

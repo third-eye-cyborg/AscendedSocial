@@ -9,12 +9,18 @@ import { NotificationService } from "@/lib/notifications";
 import { consentManager } from "@/lib/consent";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
+import Landing from './pages/landing';
+import About from './pages/about';
+import Features from './pages/features';
+import Pricing from './pages/pricing';
+import CookiePolicy from './pages/cookie-policy';
+import DoNotSell from './pages/do-not-sell';
+import KidsLanding from './pages/kids-landing';
+import KidsOnboarding from './pages/kids-onboarding';
+import KidsHome from './pages/kids-home';
+import ParentInfo from './pages/parent-info';
 import Home from "@/pages/home";
 import Subscribe from "@/pages/subscribe";
-import About from "@/pages/about";
-import Features from "@/pages/features";
-import Pricing from "@/pages/pricing";
 import Profile from "@/pages/profile";
 import ProfileSettings from "@/pages/profileSettings";
 import Post from "@/pages/post";
@@ -30,8 +36,6 @@ import StarmapPage from "@/pages/starmap";
 import ExplorePage from "@/pages/explore";
 import ZeroTrustPage from "@/pages/zero-trust";
 import Unsubscribe from "@/pages/unsubscribe";
-import CookiePolicy from "@/pages/cookie-policy";
-import DoNotSell from "@/pages/do-not-sell";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -40,21 +44,21 @@ function Router() {
   useEffect(() => {
     // Initialize Enzuzo cookie banner integration
     consentManager.initializeEnzuzo();
-    
+
     // Initialize push notifications
     NotificationService.initialize().catch(console.error);
-    
+
     if (user && typeof user === 'object' && 'id' in user) {
       const userId = String(user.id);
       const userData = user as any;
-      
+
       ClientAnalytics.identify(userId, {
         email: userData.email || '',
         username: userData.username || userData.displayName || '',
         signup_date: userData.createdAt || new Date().toISOString(),
         is_premium: userData.isPremium || false,
       });
-      
+
       // Set up spiritual profile for notifications
       NotificationService.setSpiritualProfile(userId, {
         username: userData.username || userData.displayName,
@@ -104,7 +108,11 @@ function Router() {
           <Route path="/do-not-sell" component={DoNotSell} />
         </>
       )}
-      <Route component={NotFound} />
+            <Route path="/kids" component={KidsLanding} />
+            <Route path="/kids/onboarding" component={KidsOnboarding} />
+            <Route path="/kids/home" component={KidsHome} />
+            <Route path="/kids/parent-info" component={ParentInfo} />
+            <Route component={NotFound} />
     </Switch>
   );
 }

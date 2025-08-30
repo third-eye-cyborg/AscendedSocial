@@ -40,6 +40,7 @@ import { registerScrapybaraRoutes } from "./scrapybara-routes";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
+import { registerKidsRoutes } from "./kidsRoutes";
 import { turnstileService } from "./turnstileService";
 import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import { ServerNotificationService } from "./notificationService";
@@ -2144,6 +2145,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
   registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected
+  registerKidsRoutes(app);        // Kids-safe features - Enhanced moderation and COPPA compliance
 
 
   const httpServer = createServer(app);

@@ -30,6 +30,7 @@ import StarmapPage from "@/pages/starmap";
 import ExplorePage from "@/pages/explore";
 import ZeroTrustPage from "@/pages/zero-trust";
 import Unsubscribe from "@/pages/unsubscribe";
+import CookiePolicy from "@/pages/cookie-policy";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -74,6 +75,7 @@ function Router() {
           <Route path="/community" component={Community} />
           <Route path="/subscribe" component={Subscribe} />
           <Route path="/unsubscribe" component={Unsubscribe} />
+          <Route path="/cookie-policy" component={CookiePolicy} />
         </>
       ) : (
         <>
@@ -96,6 +98,7 @@ function Router() {
           <Route path="/pricing" component={Pricing} />
           <Route path="/subscribe" component={Subscribe} />
           <Route path="/unsubscribe" component={Unsubscribe} />
+          <Route path="/cookie-policy" component={CookiePolicy} />
         </>
       )}
       <Route component={NotFound} />

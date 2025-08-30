@@ -1,36 +1,5 @@
-import { useEffect } from "react";
-
 export default function CookiePolicy() {
-  useEffect(() => {
-    // Check if script is already loaded to prevent duplicates
-    if (document.getElementById('__enzuzo-root-script')) {
-      return;
-    }
-
-    // Create script element and load it exactly as Enzuzo instructions specify
-    const script = document.createElement('script');
-    script.id = '__enzuzo-root-script';
-    script.src = 'https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-    script.async = true;
-    
-    script.onload = () => {
-      console.log('Enzuzo cookie policy script loaded successfully');
-    };
-    
-    script.onerror = () => {
-      console.error('Failed to load Enzuzo cookie policy script');
-    };
-    
-    document.head.appendChild(script);
-
-    // Cleanup function to remove script when component unmounts
-    return () => {
-      const existingScript = document.getElementById('__enzuzo-root-script');
-      if (existingScript) {
-        document.head.removeChild(existingScript);
-      }
-    };
-  }, []);
+  // Enzuzo script is loaded globally in HTML head as per their exact instructions
 
   return (
     <div className="min-h-screen bg-cosmic text-white">

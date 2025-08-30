@@ -16,30 +16,32 @@ export default function CookiePolicy() {
 
     // Add a delay to ensure DOM is ready
     setTimeout(() => {
-      // Try the main Enzuzo script instead of specific cookie script
-      const script = document.createElement('script');
-      script.id = 'enzuzo-cookie-script';
-      script.src = 'https://app.enzuzo.com/scripts/1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-      script.async = true;
-      
-      script.onload = () => {
-        console.log('✅ Enzuzo cookie policy script loaded successfully');
-        // Try to trigger widget initialization
-        if (window.Enzuzo && window.Enzuzo.init) {
-          window.Enzuzo.init();
-        }
-      };
-      
-      script.onerror = () => {
-        console.error('❌ Failed to load Enzuzo cookie policy script');
-        // Show fallback message
-        const fallbackContainer = document.getElementById('__enzuzo-root');
-        if (fallbackContainer) {
-          fallbackContainer.innerHTML = '<div class="p-8 text-center"><p class="text-black">Cookie policy widget is temporarily unavailable. Please contact support for assistance with privacy preferences.</p></div>';
-        }
-      };
-
-      document.head.appendChild(script);
+      // Create a button to trigger the existing cookie banner preferences
+      const container = document.getElementById('__enzuzo-root');
+      if (container) {
+        container.innerHTML = `
+          <div class="p-8 text-center">
+            <div class="mb-6">
+              <h3 class="text-xl font-semibold text-black mb-4">Manage Your Cookie Preferences</h3>
+              <p class="text-black/80 mb-6">Click the button below to access your cookie preferences and manage how we use cookies on your spiritual journey.</p>
+            </div>
+            <button 
+              onclick="if(window.Enzuzo && window.Enzuzo.showBanner) { window.Enzuzo.showBanner(); } else { alert('Cookie preferences are loading. Please try again in a moment.'); }"
+              class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 shadow-lg"
+            >
+              Open Cookie Preferences
+            </button>
+            <div class="mt-6 text-sm text-black/60">
+              <p>This will open the cookie banner where you can:</p>
+              <ul class="mt-2 space-y-1">
+                <li>• Accept or decline optional cookies</li>
+                <li>• View detailed information about each cookie type</li>
+                <li>• Manage your privacy preferences</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      }
     }, 100);
 
     // Cleanup function

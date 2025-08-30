@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 export interface ConsentPreferences {
   analytics: boolean;
   marketing: boolean;
-  functional: boolean;
+  preferences: boolean; // Enzuzo uses 'preferences' instead of 'functional'
   necessary: boolean;
 }
 
@@ -79,10 +79,10 @@ export class ConsentManager {
     return state?.preferences.marketing ?? false;
   }
 
-  // Check if functional consent is given
-  hasFunctionalConsent(): boolean {
+  // Check if preferences consent is given
+  hasPreferencesConsent(): boolean {
     const state = this.getConsentState();
-    return state?.preferences.functional ?? false;
+    return state?.preferences.preferences ?? false;
   }
 
   // Check if user has provided any consent
@@ -100,7 +100,7 @@ export class ConsentManager {
         preferences: {
           analytics: false,
           marketing: false,
-          functional: false,
+          preferences: false,
           necessary: true, // Always true for essential functionality
         },
         timestamp: new Date().toISOString(),
@@ -117,7 +117,7 @@ export class ConsentManager {
     this.setConsentPreferences({
       analytics: true,
       marketing: true,
-      functional: true,
+      preferences: true,
       necessary: true,
     });
   }
@@ -127,7 +127,7 @@ export class ConsentManager {
     this.setConsentPreferences({
       analytics: false,
       marketing: false,
-      functional: false,
+      preferences: false,
       necessary: true,
     });
   }
@@ -160,7 +160,7 @@ export class ConsentManager {
   getEnzuzoCompatibleState(): {
     analytics: boolean;
     marketing: boolean;
-    functional: boolean;
+    preferences: boolean;
     necessary: boolean;
     timestamp?: string;
   } {
@@ -169,7 +169,7 @@ export class ConsentManager {
       return {
         analytics: false,
         marketing: false,
-        functional: false,
+        preferences: false,
         necessary: true,
       };
     }
@@ -184,12 +184,12 @@ export class ConsentManager {
   updateFromEnzuzo(enzuzoConsent: {
     analytics?: boolean;
     marketing?: boolean;
-    functional?: boolean;
+    preferences?: boolean;
   }): void {
     this.setConsentPreferences({
       analytics: enzuzoConsent.analytics ?? false,
       marketing: enzuzoConsent.marketing ?? false,
-      functional: enzuzoConsent.functional ?? false,
+      preferences: enzuzoConsent.preferences ?? false,
       necessary: true,
     });
   }
@@ -250,7 +250,7 @@ export class ConsentManager {
       this.updateFromEnzuzo({
         analytics: consent.analytics || consent.statisticalCookies || consent.statistical || false,
         marketing: consent.marketing || consent.marketingCookies || consent.advertising || false,
-        functional: consent.functional || consent.functionalCookies || consent.preferences || false,
+        preferences: consent.preferences || consent.functionalCookies || consent.functional || false,
       });
     };
 
@@ -261,7 +261,7 @@ export class ConsentManager {
         enzuzoSettings.updateConsent({
           analytics: state.preferences.analytics,
           marketing: state.preferences.marketing,
-          functional: state.preferences.functional,
+          preferences: state.preferences.preferences,
           necessary: true,
         });
       }

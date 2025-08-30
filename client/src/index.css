@@ -72,20 +72,23 @@ html, body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 
-/* Fix Enzuzo dropdown buttons - keep them dark */
+/* Fix Enzuzo dropdown buttons - make them transparent/inherit from parent */
 #__enzuzo-root .MuiButtonBase-root,
 #__enzuzo-root .MuiButton-root,
-#__enzuzo-root button:not([type="submit"]) {
-  background-color: #4b5563 !important;
+#__enzuzo-root .MuiInputBase-root,
+#__enzuzo-root .MuiInput-root {
+  background-color: transparent !important;
   color: #f9fafb !important;
-  border: 2px solid #9ca3af !important;
+  border: 1px solid #6b7280 !important;
   border-radius: 6px !important;
 }
 
 #__enzuzo-root .MuiButtonBase-root:hover,
 #__enzuzo-root .MuiButton-root:hover,
-#__enzuzo-root button:not([type="submit"]):hover {
-  background-color: #6b7280 !important;
+#__enzuzo-root .MuiInputBase-root:hover,
+#__enzuzo-root .MuiInput-root:hover {
+  background-color: rgba(75, 85, 99, 0.3) !important;
+  border-color: #9ca3af !important;
 }
 
 /* Force text visibility in all Enzuzo dropdown elements */

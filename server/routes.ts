@@ -2124,10 +2124,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
-          { service: 'Stripe', purpose: 'Payment processing', dataTypes: ['billing'] },
+          { service: 'Stripe', purpose: 'Payment processing and subscription management', dataTypes: ['billing', 'payment_methods', 'customer_profile'] },
+          { service: 'Resend', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
           { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
-          { service: 'OneSignal (Notifications)', purpose: 'Push notifications for mobile app', dataTypes: ['notification'] },
-          { service: 'Replit', purpose: 'Application infrastructure', dataTypes: ['infrastructure'] },
+          { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },
+          { service: 'Replit Database', purpose: 'Primary data storage for platform', dataTypes: ['profile', 'posts', 'spiritual_data', 'user_preferences'] },
+          { service: 'Replit', purpose: 'Application infrastructure and hosting', dataTypes: ['infrastructure', 'session_data'] },
         ],
         lastUpdated: new Date().toISOString(),
       };

@@ -65,10 +65,10 @@ export class PrivacyManager {
   static initialize() {
     // Set up consent banner integration points
     this.setupEnzuzoIntegration();
-    
+
     // Set up data subject rights handlers
     this.setupDataRightsHandlers();
-    
+
     // Initialize privacy-aware features
     this.setupPrivacyFeatures();
   }
@@ -85,7 +85,7 @@ export class PrivacyManager {
           functional: consent.functional || consent.preferences,
         });
       };
-      
+
       // Provide current consent state to Enzuzo
       (window as any).getAscendedConsentState = () => {
         return consentManager.getEnzuzoCompatibleState();
@@ -107,10 +107,10 @@ export class PrivacyManager {
   private static setupPrivacyFeatures() {
     // Anonymize IP addresses for analytics
     this.setupIPAnonymization();
-    
+
     // Set up automatic data retention policies
     this.setupDataRetention();
-    
+
     // Initialize privacy-first session recording
     this.setupPrivacySessionRecording();
   }
@@ -153,7 +153,7 @@ export class PrivacyManager {
       if (response.ok) {
         console.log('🗑️ Data deletion request submitted successfully');
         this.showPrivacyNotification('Your data deletion request has been submitted. Your data will be removed within 30 days.');
-        
+
         // Clear local analytics data immediately
         ClientAnalytics.clearUserData();
         consentManager.clearConsent();
@@ -178,7 +178,7 @@ export class PrivacyManager {
       functional: preferences.functional ?? false,
       necessary: true,
     });
-    
+
     this.showPrivacyNotification('Your privacy preferences have been updated.');
   }
 
@@ -195,11 +195,11 @@ export class PrivacyManager {
   private static setupDataRetention() {
     // Set up automatic cleanup of old analytics data
     const retentionPeriod = 24 * 30; // 30 days in hours
-    
+
     if (typeof window !== 'undefined') {
       const lastCleanup = localStorage.getItem('last_privacy_cleanup');
       const now = Date.now();
-      
+
       if (!lastCleanup || (now - parseInt(lastCleanup)) > (retentionPeriod * 60 * 60 * 1000)) {
         this.cleanupOldData();
         localStorage.setItem('last_privacy_cleanup', now.toString());
@@ -237,18 +237,18 @@ export class PrivacyManager {
       if (consentState) {
         const consentAge = Date.now() - new Date(consentState.timestamp).getTime();
         const maxConsentAge = 365 * 24 * 60 * 60 * 1000; // 1 year
-        
+
         if (consentAge > maxConsentAge) {
           console.log('🧹 Cleaning up old consent data');
           consentManager.clearConsent();
         }
       }
-      
+
       // Clean up other privacy-related local storage
       const privacyKeys = Object.keys(localStorage).filter(key => 
         key.startsWith('ph_') || key.startsWith('privacy_') || key.startsWith('gdpr_')
       );
-      
+
       privacyKeys.forEach(key => {
         try {
           const item = localStorage.getItem(key);
@@ -274,7 +274,7 @@ export class PrivacyManager {
   private static showPrivacyNotification(message: string, type: 'info' | 'error' = 'info') {
     // This would integrate with your notification system
     console.log(`🔔 Privacy Notice [${type.toUpperCase()}]: ${message}`);
-    
+
     // If you have a toast system, use it here
     if (typeof window !== 'undefined' && (window as any).showToast) {
       (window as any).showToast(message, type);
@@ -285,7 +285,7 @@ export class PrivacyManager {
   static getPrivacyComplianceStatus() {
     const consentState = consentManager.getConsentState();
     const analyticsStatus = ClientAnalytics.getConsentStatus();
-    
+
     return {
       consentGiven: consentManager.hasUserConsented(),
       consentTimestamp: consentState?.timestamp,
@@ -303,7 +303,7 @@ export class PrivacyManager {
   static generatePrivacyReport() {
     const status = this.getPrivacyComplianceStatus();
     const cookies = this.getCookieCategories();
-    
+
     return {
       timestamp: new Date().toISOString(),
       user_rights: {
@@ -318,7 +318,15 @@ export class PrivacyManager {
         purpose: 'Spiritual platform analytics and user experience',
         legal_basis: 'Consent (GDPR Article 6(1)(a))',
         retention_period: '12 months or until consent withdrawn',
-        third_parties: ['PostHog Analytics', 'Stripe Payments'],
+        thirdPartySharing: [
+          { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
+          { service: 'Stripe', purpose: 'Payment processing and subscription management', dataTypes: ['billing', 'payment_methods', 'customer_profile'] },
+          { service: 'Resend', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
+          { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
+          { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },
+          { service: 'Replit Database', purpose: 'Primary data storage for platform', dataTypes: ['profile', 'posts', 'spiritual_data', 'user_preferences'] },
+          { service: 'Replit', purpose: 'Application infrastructure and hosting', dataTypes: ['infrastructure', 'session_data'] },
+        ],
       },
     };
   }

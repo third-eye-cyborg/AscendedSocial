@@ -2006,9 +2006,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
         await emailService.sendTransactionalEmail({
-          to: email,
+          email: email,
           subject: 'Data Export Request Received',
-          text: `Your data export request has been received and will be processed within 30 days as required by GDPR. You will receive an email with your data when ready.`,
           html: `
             <h2>Data Export Request Received</h2>
             <p>Your data export request has been received and will be processed within 30 days as required by GDPR.</p>
@@ -2071,9 +2070,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
         await emailService.sendTransactionalEmail({
-          to: email,
+          email: email,
           subject: 'Data Deletion Request Received',
-          text: `Your data deletion request has been received and will be processed within 30 days as required by GDPR.`,
           html: `
             <h2>Data Deletion Request Received</h2>
             <p>Your data deletion request has been received and will be processed within 30 days as required by GDPR.</p>

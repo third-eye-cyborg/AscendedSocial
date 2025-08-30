@@ -235,9 +235,9 @@ export class PrivacyManager {
       const consentState = consentManager.getConsentState();
       if (consentState) {
         const consentAge = Date.now() - new Date(consentState.timestamp).getTime();
-        const maxAge = 365 * 24 * 60 * 60 * 1000; // 1 year
+        const maxConsentAge = 365 * 24 * 60 * 60 * 1000; // 1 year
         
-        if (consentAge > maxAge) {
+        if (consentAge > maxConsentAge) {
           console.log('🧹 Cleaning up old consent data');
           consentManager.clearConsent();
         }
@@ -255,7 +255,8 @@ export class PrivacyManager {
             const data = JSON.parse(item);
             if (data.timestamp) {
               const age = Date.now() - new Date(data.timestamp).getTime();
-              if (age > maxAge) {
+              const maxDataAge = 365 * 24 * 60 * 60 * 1000; // 1 year
+              if (age > maxDataAge) {
                 localStorage.removeItem(key);
               }
             }

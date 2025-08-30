@@ -19,6 +19,7 @@ import SigilGenerator from "@/components/SigilGenerator";
 import ProfilePictureChanger from "@/components/ProfilePictureChanger";
 import PostCard from "@/components/PostCard";
 import { Link } from "wouter";
+import { PrivacySettings } from "@/components/PrivacyConsent";
 import { 
   User, 
   Shield, 
@@ -550,6 +551,9 @@ export default function Settings() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Cookie Consent Management */}
+            <PrivacySettings />
           </TabsContent>
 
           <TabsContent value="notifications" className="space-y-6">

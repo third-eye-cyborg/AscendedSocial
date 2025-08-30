@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ClientAnalytics } from "@/lib/analytics";
 import { NotificationService } from "@/lib/notifications";
+import { PrivacyConsentBanner } from "@/components/PrivacyConsent";
 import { useEffect } from "react";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -105,6 +106,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <PrivacyConsentBanner />
       </TooltipProvider>
     </QueryClientProvider>
   );

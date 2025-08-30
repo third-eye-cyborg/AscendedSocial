@@ -86,43 +86,122 @@ export default function DoNotSell() {
           {/* Enzuzo CCPA Form Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <style>{`
-              /* Enzuzo CCPA form styling fixes */
+              /* Enzuzo CCPA form comprehensive styling fixes */
+              #__enzuzo-root * {
+                color: black !important;
+              }
+              
+              #__enzuzo-root h1,
+              #__enzuzo-root h2,
+              #__enzuzo-root h3,
+              #__enzuzo-root h4,
+              #__enzuzo-root h5,
+              #__enzuzo-root h6 {
+                color: black !important;
+                font-weight: 600 !important;
+                margin-bottom: 16px !important;
+              }
+              
+              #__enzuzo-root p,
+              #__enzuzo-root span,
+              #__enzuzo-root div {
+                color: black !important;
+                line-height: 1.5 !important;
+              }
+              
+              #__enzuzo-root label {
+                color: black !important;
+                font-weight: 500 !important;
+                display: block !important;
+                margin-bottom: 8px !important;
+              }
+              
               #__enzuzo-root input,
               #__enzuzo-root select,
               #__enzuzo-root textarea {
                 background-color: white !important;
                 color: black !important;
-                border: 1px solid #ccc !important;
-                padding: 8px !important;
-                border-radius: 4px !important;
+                border: 2px solid #d1d5db !important;
+                padding: 12px !important;
+                border-radius: 8px !important;
+                font-size: 14px !important;
+                width: 100% !important;
+                margin-bottom: 16px !important;
+              }
+              
+              #__enzuzo-root input:focus,
+              #__enzuzo-root select:focus,
+              #__enzuzo-root textarea:focus {
+                border-color: #8b5cf6 !important;
+                outline: none !important;
+                box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1) !important;
               }
               
               #__enzuzo-root button {
                 background-color: #8b5cf6 !important;
                 color: white !important;
                 border: none !important;
-                padding: 10px 20px !important;
+                padding: 12px 24px !important;
                 border-radius: 8px !important;
                 font-weight: 600 !important;
+                font-size: 14px !important;
+                cursor: pointer !important;
+                margin-top: 16px !important;
+                transition: background-color 0.2s !important;
               }
               
               #__enzuzo-root button:hover {
                 background-color: #7c3aed !important;
               }
               
-              #__enzuzo-root label {
-                color: white !important;
-                font-weight: 500 !important;
-              }
-              
-              #__enzuzo-root .MuiFormControl-root,
-              #__enzuzo-root .MuiInputBase-root {
+              #__enzuzo-root select option {
                 background-color: white !important;
                 color: black !important;
               }
               
+              /* Radio button and checkbox fixes */
+              #__enzuzo-root input[type="radio"],
+              #__enzuzo-root input[type="checkbox"] {
+                width: 16px !important;
+                height: 16px !important;
+                margin-right: 8px !important;
+                margin-bottom: 0 !important;
+              }
+              
+              /* Material-UI component fixes */
+              #__enzuzo-root .MuiFormControl-root,
+              #__enzuzo-root .MuiInputBase-root {
+                background-color: white !important;
+                color: black !important;
+                margin-bottom: 16px !important;
+              }
+              
               #__enzuzo-root .MuiSelect-icon {
                 color: black !important;
+              }
+              
+              #__enzuzo-root .MuiFormLabel-root,
+              #__enzuzo-root .MuiInputLabel-root {
+                color: black !important;
+              }
+              
+              #__enzuzo-root .MuiTypography-root {
+                color: black !important;
+              }
+              
+              /* Form group styling */
+              #__enzuzo-root fieldset {
+                border: 2px solid #d1d5db !important;
+                border-radius: 8px !important;
+                padding: 16px !important;
+                margin-bottom: 16px !important;
+                background-color: #f9fafb !important;
+              }
+              
+              #__enzuzo-root legend {
+                color: black !important;
+                font-weight: 600 !important;
+                padding: 0 8px !important;
               }
             `}</style>
             <div 

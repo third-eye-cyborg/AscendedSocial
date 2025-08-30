@@ -1,4 +1,36 @@
+import { useEffect } from 'react';
+
 export default function CookiePolicy() {
+  useEffect(() => {
+    // Remove any existing DSAR script and div to ensure clean reload
+    const existingScript = document.getElementById('__enzuzo-dsar-script');
+    if (existingScript) {
+      existingScript.remove();
+    }
+    
+    // Clear the div content
+    const rootDiv = document.getElementById('__enzuzo-dsar-root');
+    if (rootDiv) {
+      rootDiv.innerHTML = '';
+    }
+    
+    // Add the DSAR script
+    const script = document.createElement('script');
+    script.id = '__enzuzo-dsar-script';
+    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=data&apiHost=https://app.enzuzo.com&qt=1756597779382&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1OTczNTB9.ZW9Ke3piBCfm3jsHE_9XChLc7KljrsobSwzzW-5VLjE';
+    script.async = true;
+    
+    // Add load event listener
+    script.onload = () => {
+      console.log('Enzuzo DSAR script loaded');
+    };
+    
+    script.onerror = () => {
+      console.error('Failed to load Enzuzo DSAR script');
+    };
+    
+    document.head.appendChild(script);
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -50,28 +82,38 @@ export default function CookiePolicy() {
             </p>
           </div>
 
-          {/* Cookie Policy Information and Management */}
+          {/* Cookie Policy and DSAR Form */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <div className="text-center mb-8">
-              <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Policy & Preferences</h3>
+              <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Policy & Data Rights</h3>
               <p className="text-white/80 text-lg leading-relaxed">
-                View our complete cookie policy and manage your privacy preferences using our secure hosted policy center.
+                Manage your privacy preferences and exercise your data rights. Use the form below to request access to your data or make changes to your privacy settings.
               </p>
             </div>
             
-            <div className="text-center mb-8">
+            {/* Enzuzo DSAR Form Embed */}
+            <div 
+              id="__enzuzo-root"
+              className="min-h-[400px]"
+              data-testid="enzuzo-dsar-form"
+            ></div>
+            
+            <div className="text-center mt-8 pt-6 border-t border-primary/20">
+              <p className="text-white/60 text-sm mb-4">
+                Need to view our full cookie policy?
+              </p>
               <a
                 href="https://app.enzuzo.com/policies/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
+                className="group relative bg-gradient-to-r from-secondary to-primary text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-secondary/30 hover:scale-105 inline-flex items-center space-x-2"
                 data-testid="link-cookie-policy"
               >
                 <span className="relative z-10 flex items-center space-x-2">
                   <i className="fas fa-external-link-alt"></i>
-                  <span>View Cookie Policy & Manage Preferences</span>
+                  <span>View Full Cookie Policy</span>
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-secondary to-primary rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
               </a>
             </div>
 

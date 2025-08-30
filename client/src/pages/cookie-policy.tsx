@@ -185,6 +185,112 @@ export default function CookiePolicy() {
             </div>
           </div>
 
+          {/* Privacy Policy Section */}
+          <div className="mt-12">
+            <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
+              <div className="text-center mb-8">
+                <h3 className="text-3xl font-display font-bold mb-4 text-primary">Privacy Policy</h3>
+                <p className="text-white/80 text-lg">
+                  Your spiritual journey is personal. Here's how we protect and respect your privacy on Ascended Social.
+                </p>
+              </div>
+
+              <div className="space-y-8 text-white/90">
+                {/* Data Collection */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-primary/20">
+                  <h4 className="text-xl font-semibold text-primary mb-4 flex items-center">
+                    <i className="fas fa-database mr-3"></i>
+                    Information We Collect
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Account Information:</strong> Username, email address, spiritual preferences, and profile details you provide.</p>
+                    <p><strong>Content:</strong> Posts, comments, visions, and other spiritual content you share on our platform.</p>
+                    <p><strong>Usage Data:</strong> How you interact with our platform, including pages visited, features used, and engagement patterns.</p>
+                    <p><strong>Analytics:</strong> Anonymous usage statistics to improve our platform and spiritual guidance algorithms.</p>
+                    <p><strong>Payment Information:</strong> Billing details processed securely through Stripe for premium subscriptions.</p>
+                  </div>
+                </div>
+
+                {/* Data Usage */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-blue-400/20">
+                  <h4 className="text-xl font-semibold text-blue-400 mb-4 flex items-center">
+                    <i className="fas fa-magic mr-3"></i>
+                    How We Use Your Information
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Spiritual Guidance:</strong> Personalize your spiritual journey with tailored content and recommendations.</p>
+                    <p><strong>Community Building:</strong> Connect you with like-minded spiritual practitioners and communities.</p>
+                    <p><strong>Platform Improvement:</strong> Analyze usage patterns to enhance features and user experience.</p>
+                    <p><strong>Communication:</strong> Send important updates, newsletters, and spiritual insights you've subscribed to.</p>
+                    <p><strong>Safety & Security:</strong> Protect against fraud, abuse, and maintain platform integrity.</p>
+                  </div>
+                </div>
+
+                {/* Data Sharing */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-purple-400/20">
+                  <h4 className="text-xl font-semibold text-purple-400 mb-4 flex items-center">
+                    <i className="fas fa-share-alt mr-3"></i>
+                    Information Sharing
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Third-Party Services:</strong> We work with trusted partners including Stripe (payments), PostHog (analytics), Resend (emails), and Cloudflare (content delivery).</p>
+                    <p><strong>Legal Requirements:</strong> We may disclose information when required by law or to protect our users' safety.</p>
+                    <p><strong>Community Content:</strong> Posts and comments you make public are visible to other users as intended.</p>
+                    <p><strong>No Selling:</strong> We never sell your personal information to third parties.</p>
+                  </div>
+                </div>
+
+                {/* User Rights */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-green-400/20">
+                  <h4 className="text-xl font-semibold text-green-400 mb-4 flex items-center">
+                    <i className="fas fa-user-shield mr-3"></i>
+                    Your Privacy Rights
+                  </h4>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm leading-relaxed">
+                    <div>
+                      <p><strong>Access:</strong> Request a copy of your personal data</p>
+                      <p><strong>Rectification:</strong> Correct inaccurate information</p>
+                      <p><strong>Erasure:</strong> Request deletion of your data</p>
+                    </div>
+                    <div>
+                      <p><strong>Portability:</strong> Export your data in a readable format</p>
+                      <p><strong>Withdraw Consent:</strong> Opt-out of data processing anytime</p>
+                      <p><strong>Object:</strong> Restrict certain data processing activities</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Data Security */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-yellow-400/20">
+                  <h4 className="text-xl font-semibold text-yellow-400 mb-4 flex items-center">
+                    <i className="fas fa-lock mr-3"></i>
+                    Data Security & Retention
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Encryption:</strong> All data is encrypted in transit and at rest using industry-standard protocols.</p>
+                    <p><strong>Access Controls:</strong> Strict employee access controls and regular security audits.</p>
+                    <p><strong>Retention:</strong> We keep your data only as long as necessary or until you request deletion.</p>
+                    <p><strong>Compliance:</strong> GDPR, CCPA, and other privacy regulation compliant.</p>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="bg-cosmic/50 rounded-2xl p-6 border border-secondary/20">
+                  <h4 className="text-xl font-semibold text-secondary mb-4 flex items-center">
+                    <i className="fas fa-envelope mr-3"></i>
+                    Contact & Updates
+                  </h4>
+                  <div className="space-y-3 text-sm leading-relaxed">
+                    <p><strong>Privacy Questions:</strong> Contact us at privacy@ascendedsocial.com for any privacy-related inquiries.</p>
+                    <p><strong>Data Requests:</strong> Use our privacy dashboard in your profile settings or email us directly.</p>
+                    <p><strong>Policy Updates:</strong> We'll notify you of any material changes to this privacy policy.</p>
+                    <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Additional Information */}
           <div className="mt-12 grid md:grid-cols-2 gap-8">
             <div className="bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-primary/40 glass-effect shadow-xl rounded-3xl p-8">

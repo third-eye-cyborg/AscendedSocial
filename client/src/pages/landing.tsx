@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import MarketingFooter from "@/components/MarketingFooter";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 
@@ -508,6 +509,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
+      
+      {/* Footer */}
+      <MarketingFooter />
     </div>
   );
 }

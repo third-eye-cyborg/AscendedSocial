@@ -275,7 +275,7 @@ export class ConsentManager {
         enzuzoSettings.updateConsent({
           analytics: currentState.preferences.analytics,
           marketing: currentState.preferences.marketing,
-          functional: currentState.preferences.functional,
+          functional: currentState.preferences.preferences,
           necessary: true,
         });
       }
@@ -325,7 +325,7 @@ export function useConsent() {
     hasConsented: consentManager.hasUserConsented(),
     hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
     hasMarketingConsent: consentManager.hasMarketingConsent(),
-    hasFunctionalConsent: consentManager.hasFunctionalConsent(),
+    hasFunctionalConsent: consentManager.hasPreferencesConsent(),
     acceptAll: () => consentManager.acceptAll(),
     rejectAll: () => consentManager.rejectAll(),
     setPreferences: (prefs: ConsentPreferences) => consentManager.setConsentPreferences(prefs),

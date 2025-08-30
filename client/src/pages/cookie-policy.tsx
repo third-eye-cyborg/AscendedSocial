@@ -1,5 +1,67 @@
+import { useEffect, useRef } from 'react';
+import { ConsentManager } from '@/lib/consent';
+
 export default function CookiePolicy() {
-  // Enzuzo script is loaded globally in HTML head as per their exact instructions
+  const containerRef = useRef<HTMLDivElement>(null);
+  const enzuzoLoaded = useRef(false);
+
+  useEffect(() => {
+    const consentManager = ConsentManager.getInstance();
+    
+    // Ensure Enzuzo script is loaded
+    consentManager.initializeEnzuzo();
+    
+    // Wait for Enzuzo to be available and render the cookie policy
+    const checkAndRenderPolicy = () => {
+      if (typeof window !== 'undefined' && containerRef.current) {
+        const enzuzo = (window as any).Enzuzo || (window as any).ezCookieSettings;
+        
+        if (enzuzo && !enzuzoLoaded.current) {
+          enzuzoLoaded.current = true;
+          
+          // Try to render the cookie policy in the container
+          if (enzuzo.renderPolicy) {
+            enzuzo.renderPolicy(containerRef.current);
+          } else if (enzuzo.showPolicy) {
+            enzuzo.showPolicy();
+          } else {
+            // Fallback: render the cookie preferences center
+            if (enzuzo.showPreferences) {
+              enzuzo.showPreferences();
+            } else {
+              // Final fallback: show a message that the policy is loading
+              if (containerRef.current) {
+                containerRef.current.innerHTML = `
+                  <div class="text-center py-12">
+                    <div class="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+                    <p class="text-white/80">Loading cookie policy...</p>
+                    <p class="text-white/60 text-sm mt-2">If this takes too long, please refresh the page.</p>
+                  </div>
+                `;
+              }
+            }
+          }
+        } else if (!enzuzo) {
+          // Enzuzo not loaded yet, keep checking
+          setTimeout(checkAndRenderPolicy, 100);
+        }
+      }
+    };
+
+    // Start checking for Enzuzo availability
+    checkAndRenderPolicy();
+    
+    // Listen for Enzuzo to load
+    const handleEnzuzoLoad = () => {
+      checkAndRenderPolicy();
+    };
+    
+    window.addEventListener('enzuzoLoaded', handleEnzuzoLoad);
+    
+    return () => {
+      window.removeEventListener('enzuzoLoaded', handleEnzuzoLoad);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -54,7 +116,12 @@ export default function CookiePolicy() {
           {/* Enzuzo Cookie Policy Embed */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             {/* Enzuzo root div - exactly as their instructions specify */}
-            <div id="__enzuzo-root" className="min-h-[500px]" data-testid="enzuzo-cookie-policy"></div>
+            <div 
+              ref={containerRef}
+              id="__enzuzo-root" 
+              className="min-h-[500px]" 
+              data-testid="enzuzo-cookie-policy"
+            ></div>
           </div>
 
           {/* Additional Information */}

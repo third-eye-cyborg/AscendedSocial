@@ -2139,11 +2139,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Register Scrapybara routes for authenticated screenshot testing
-  registerScrapybaraRoutes(app);
-  registerVisionsRoutes(app);
-  registerCommunitiesRoutes(app);
-  registerZeroTrustRoutes(app);
+  // Register routes with appropriate Zero Trust protection levels
+  registerScrapybaraRoutes(app);  // Internal tools - should be Zero Trust protected
+  registerVisionsRoutes(app);     // Regular user features - Replit Auth only
+  registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
+  registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected
 
 
   const httpServer = createServer(app);

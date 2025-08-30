@@ -17,16 +17,9 @@ export default function CookiePolicy() {
 
   useEffect(() => {
     // Check if script already exists to prevent duplicates
-    const existingScript = document.getElementById('__enzuzo-root-script');
-    if (existingScript) {
+    if (document.getElementById('__enzuzo-root-script')) {
       setEnzuzoLoaded(true);
       return;
-    }
-    
-    // Clear the root div content
-    const rootDiv = document.getElementById('__enzuzo-root');
-    if (rootDiv) {
-      rootDiv.innerHTML = '';
     }
     
     // Add the proper Enzuzo cookie policy script

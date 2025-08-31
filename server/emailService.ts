@@ -1,11 +1,12 @@
-import { Resend } from 'resend';
 import { randomUUID } from 'crypto';
 
-if (!process.env.RESEND_API_KEY) {
-  console.warn('RESEND_API_KEY not found, email features will be disabled');
+// OneSignal email service integration
+if (!process.env.ONESIGNAL_API_KEY) {
+  console.warn('ONESIGNAL_API_KEY not found, email features will be disabled');
 }
 
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+const oneSignalApiKey = process.env.ONESIGNAL_API_KEY;
+const oneSignalAppId = process.env.ONESIGNAL_APP_ID;
 
 export interface WelcomeEmailData {
   email: string;
@@ -33,17 +34,16 @@ export class EmailService {
   private static FROM_EMAIL = 'Ascended Social <noreply@ascendedsocial.com>';
   
   async sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean> {
-    if (!resend) {
-      console.warn('Resend not configured, skipping welcome email');
+    if (!oneSignalApiKey || !oneSignalAppId) {
+      console.warn('OneSignal not configured, skipping welcome email');
       return false;
     }
 
     try {
       const welcomeContent = this.generateWelcomeEmailContent(data);
       
-      await resend.emails.send({
-        from: EmailService.FROM_EMAIL,
-        to: data.email,
+      await this.sendOneSignalEmail({
+        email: data.email,
         subject: '✨ Welcome to Ascended Social - Your Spiritual Journey Begins',
         html: welcomeContent,
       });
@@ -57,17 +57,16 @@ export class EmailService {
   }
 
   async sendNewsletterEmail(data: NewsletterEmailData): Promise<boolean> {
-    if (!resend) {
-      console.warn('Resend not configured, skipping newsletter email');
+    if (!oneSignalApiKey || !oneSignalAppId) {
+      console.warn('OneSignal not configured, skipping newsletter email');
       return false;
     }
 
     try {
       const newsletterContent = this.generateNewsletterContent(data);
       
-      await resend.emails.send({
-        from: EmailService.FROM_EMAIL,
-        to: data.email,
+      await this.sendOneSignalEmail({
+        email: data.email,
         subject: data.subject,
         html: newsletterContent,
       });
@@ -81,17 +80,16 @@ export class EmailService {
   }
 
   async sendTransactionalEmail(data: TransactionalEmailData): Promise<boolean> {
-    if (!resend) {
-      console.warn('Resend not configured, skipping transactional email');
+    if (!oneSignalApiKey || !oneSignalAppId) {
+      console.warn('OneSignal not configured, skipping transactional email');
       return false;
     }
 
     try {
       const transactionalContent = this.generateTransactionalEmailContent(data);
       
-      await resend.emails.send({
-        from: EmailService.FROM_EMAIL,
-        to: data.email,
+      await this.sendOneSignalEmail({
+        email: data.email,
         subject: data.subject,
         html: transactionalContent,
       });
@@ -257,6 +255,33 @@ export class EmailService {
     </body>
     </html>
     `;
+  }
+
+  private async sendOneSignalEmail(data: { email: string; subject: string; html: string }): Promise<void> {
+    if (!oneSignalApiKey || !oneSignalAppId) {
+      throw new Error('OneSignal not configured');
+    }
+
+    const response = await fetch('https://onesignal.com/api/v1/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${oneSignalApiKey}`,
+      },
+      body: JSON.stringify({
+        app_id: oneSignalAppId,
+        email_subject: data.subject,
+        email_body: data.html,
+        include_email_tokens: [data.email],
+        email_from_name: 'Ascended Social',
+        email_from_address: 'noreply@ascendedsocial.com',
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`OneSignal email failed: ${response.status} ${errorText}`);
+    }
   }
 
   generateUnsubscribeToken(): string {

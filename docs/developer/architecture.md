@@ -54,7 +54,7 @@ Ascended Social is built as a modern full-stack web application with a focus on 
 - **OpenAI API**: AI-powered features (spirits, oracle, tarot)
 - **Stripe**: Payment processing for subscriptions
 - **Replit Auth**: OpenID Connect authentication
-- **Resend**: Email service for notifications
+- **OneSignal**: Email service for notifications
 
 ## 🎯 Core Design Principles
 

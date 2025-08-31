@@ -69,7 +69,7 @@ A four-layer security model utilizing Cloudflare Zero Trust:
 - **Uppy**: File upload interface.
 
 ### Email and Notifications
-- **Resend**: Transactional email service.
+- **OneSignal**: Transactional and marketing email service.
 
 ### Video Services
 - **Bunny.net VOD**: Video on demand.

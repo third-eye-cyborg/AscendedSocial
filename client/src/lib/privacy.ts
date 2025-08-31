@@ -82,7 +82,7 @@ export class PrivacyManager {
         consentManager.updateFromEnzuzo({
           analytics: consent.analytics || consent.performance,
           marketing: consent.marketing || consent.advertising,
-          functional: consent.functional || consent.preferences,
+          preferences: consent.functional || consent.preferences,
         });
       };
 
@@ -175,7 +175,7 @@ export class PrivacyManager {
     consentManager.setConsentPreferences({
       analytics: preferences.analytics ?? false,
       marketing: preferences.marketing ?? false,
-      functional: preferences.functional ?? false,
+      preferences: preferences.functional ?? false,
       necessary: true,
     });
 
@@ -292,7 +292,7 @@ export class PrivacyManager {
       consentVersion: consentState?.version,
       analyticsEnabled: analyticsStatus.hasAnalyticsConsent,
       marketingEnabled: consentManager.hasMarketingConsent(),
-      functionalEnabled: consentManager.hasFunctionalConsent(),
+      functionalEnabled: consentManager.hasPreferencesConsent(),
       dataRetentionActive: true,
       ipAnonymization: true,
       gdprCompliant: true,
@@ -321,7 +321,7 @@ export class PrivacyManager {
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
           { service: 'Stripe', purpose: 'Payment processing and subscription management', dataTypes: ['billing', 'payment_methods', 'customer_profile'] },
-          { service: 'Resend', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
+          { service: 'OneSignal', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
           { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
           { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },
           { service: 'Replit Database', purpose: 'Primary data storage for platform', dataTypes: ['profile', 'posts', 'spiritual_data', 'user_preferences'] },

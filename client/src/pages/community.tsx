@@ -50,26 +50,24 @@ export default function Community() {
 
   if (!user) {
     return (
-      <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center p-4">
-          <Card className="bg-cosmic-light/50 border-primary/20 max-w-md w-full">
-            <CardContent className="p-8 text-center">
-              <Crown className="w-16 h-16 text-primary mx-auto mb-4" />
-              <h1 className="text-2xl font-bold text-white mb-4">Join Our Spiritual Communities</h1>
-              <p className="text-gray-300 mb-6">
-                Connect with like-minded souls, share wisdom, and grow together in sacred spiritual circles.
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/api/login'}
-                className="w-full bg-primary hover:bg-primary/80 text-white !text-white"
-                data-testid="button-sign-in"
-              >
-                Sign In to Continue
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Layout>
+      <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center p-4">
+        <Card className="bg-cosmic-light/50 border-primary/20 max-w-md w-full">
+          <CardContent className="p-8 text-center">
+            <Crown className="w-16 h-16 text-primary mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-white mb-4">Join Our Spiritual Communities</h1>
+            <p className="text-gray-300 mb-6">
+              Connect with like-minded souls, share wisdom, and grow together in sacred spiritual circles.
+            </p>
+            <Button 
+              onClick={() => window.location.href = '/api/login'}
+              className="w-full bg-primary hover:bg-primary/80 text-white !text-white"
+              data-testid="button-sign-in"
+            >
+              Sign In to Continue
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 

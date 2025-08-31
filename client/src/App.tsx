@@ -44,6 +44,7 @@ import CommunityProtection from './pages/community-protection';
 import CopyrightPolicy from './pages/copyright-policy';
 import ServiceAgreement from './pages/service-agreement';
 import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
+import BrowserlessPage from './pages/browserless';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -118,6 +119,7 @@ function Router() {
           <Route path="/starmap" component={StarmapPage} />
           <Route path="/explore" component={ExplorePage} />
           <Route path="/zero-trust" component={ZeroTrustPage} />
+          <Route path="/browserless" component={BrowserlessPage} />
           <Route path="/onboarding" component={Onboarding} />
           <Route path="/about" component={About} />
           <Route path="/features" component={Features} />

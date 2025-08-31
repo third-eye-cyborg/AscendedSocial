@@ -1,0 +1,140 @@
+Ascended Social Premium Subscription Payment, Billing, Refund, and Cancellation Policy
+
+
+Executive Summary
+This document outlines the payment, billing, refund, and cancellation policies for Ascended Social, a spiritual community and wellness platform operated by Third Eye Cyborg, LLC. It covers subscription terms, refund eligibility, billing procedures, cancellation rights, dispute resolution, and compliance with U.S. and international regulations. All payments are processed via Stripe, and these policies are designed to protect both users and the company while ensuring transparency and fairness.
+
+
+Definitions
+- "Ascended Social": The spiritual community and wellness platform operated by Third Eye Cyborg, LLC.
+- "User": Any individual subscribing to premium services on Ascended Social.
+- "Subscription": Monthly ($20/month) or annual ($200/year) premium membership.
+- "Digital Services": Intangible services including AI Oracle readings, tarot features, unlimited energy, premium community access, and custom sigil generation.
+- "Stripe": The exclusive payment processor for all transactions.
+- "Free Trial": 7-day period with full refund eligibility if canceled during trial.
+- "Pro-rated Refund": Refund calculated based on unused subscription time.
+- "Force Majeure": Events outside reasonable control causing service interruption.
+
+
+Scope and Application
+This policy applies to all users of Ascended Social premium subscriptions, regardless of location, and governs all payments, refunds, billing, and cancellations processed through Stripe.
+
+
+Detailed Terms
+1. Subscription Billing
+   - Subscriptions are billed automatically on a recurring monthly or annual basis via Stripe.
+   - The signup date establishes the billing anniversary.
+   - Users must provide and maintain a valid credit/debit card. Accepted cards: Visa, MasterCard, American Express, Discover.
+   - All charges are in USD. International users may incur currency conversion fees; Ascended Social is not responsible for exchange rate fluctuations.
+   - Applicable taxes (sales tax, VAT, GST) are added as required by law.
+   - Price changes require 30 days' advance notice and apply to the next billing cycle.
+
+
+2. Payment Processing
+   - Stripe is the exclusive payment processor; all transactions are PCI DSS compliant.
+   - Payment authorization and capture are managed by Stripe. Stored payment methods are secured per Stripe's standards.
+   - Failed payments trigger automatic retries (immediate, 3 days, 7 days, final attempt at 10 days). Users have a 7-day grace period to resolve issues.
+   - Accounts are suspended after 7 days of non-payment and terminated after 30 days. Outstanding balances may be pursued for collection.
+
+
+3. Refund Policy
+   - Users may cancel subscriptions at any time. Pro-rated refunds are provided for unused subscription periods, except for consumed digital services (e.g., completed readings, generated sigils).
+   - No refunds for digital services already delivered or for energy points consumed.
+   - 7-day free trial: Full refund if canceled within trial period.
+   - Refunds are processed within 5-10 business days to the original payment method.
+   - Refunds may be denied for violations of terms, chargebacks, or if premium benefits have been fully consumed.
+   - Examples:
+     - Mid-cycle monthly cancellation (15 days in): Refund for unused 15 days.
+     - Annual cancellation after 3 months: Refund for remaining 9 months.
+   - No refunds for promotional pricing if benefits have been used.
+
+
+4. Subscription Cancellation Policy
+   - Users can cancel via account settings, Stripe customer portal, or by contacting support.
+   - Cancellations take effect immediately, but users retain access until the end of the paid period unless otherwise specified.
+   - Free trial cancellations incur no charges.
+   - Accounts terminated for non-payment or violations lose premium access immediately; data is retained for 90 days for potential reactivation.
+   - Premium content access is removed upon cancellation; user-generated content remains public.
+   - Users may export personal data before account deletion. Permanent deletion is available upon request (GDPR compliance).
+
+
+5. Procedures
+   - To cancel, users may:
+     1. Log in and use the self-service cancellation option.
+     2. Contact support via email or chat.
+     3. Use the Stripe customer portal.
+   - Upon cancellation, a confirmation email and final invoice are sent.
+   - Refunds (if applicable) are calculated and processed within 5-10 business days.
+   - Service restoration is possible within 90 days of cancellation, subject to payment method verification.
+
+
+6. Customer Rights
+   - Right to clear billing, refund, and cancellation information.
+   - Right to dispute unauthorized charges via Stripe's dispute process.
+   - Right to data export and deletion (GDPR/CCPA compliance).
+   - Right to receive timely notifications of policy changes.
+
+
+7. Company Obligations
+   - Provide transparent billing and refund procedures.
+   - Process refunds and cancellations promptly.
+   - Maintain PCI DSS and data privacy compliance.
+   - Notify users of major service or policy changes with 30 days' notice.
+   - Retain user data securely for 90 days post-cancellation.
+
+
+8. Dispute Resolution
+   - Users may dispute charges through Stripe or by contacting Ascended Social support.
+   - Disputes are addressed within 10 business days.
+   - Stripe's chargeback and dispute procedures apply.
+   - Unresolved disputes may be escalated to binding arbitration under U.S. law.
+
+
+9. Updates and Changes
+   - Policy updates are communicated with 30 days' advance notice.
+   - Continued use after notice constitutes acceptance of changes.
+
+
+10. Contact Information
+   - Customer Support: [SUPPORT_EMAIL]
+   - Legal Inquiries: [LEGAL_CONTACT_EMAIL]
+   - Mailing Address: Third Eye Cyborg, LLC, [PARTY_1_ADDRESS_SINGLE_LINE]
+
+
+FAQ
+Q: How do I cancel my subscription?
+A: Use your account settings, the Stripe portal, or contact support.
+Q: When will I receive my refund?
+A: Within 5-10 business days if eligible.
+Q: What happens if my payment fails?
+A: You have a 7-day grace period to update your payment method before suspension.
+Q: Can I get a refund for a completed tarot reading or sigil?
+A: No, refunds are not available for consumed digital services.
+Q: How is my data handled after cancellation?
+A: Data is retained for 90 days for reactivation or export, then deleted upon request.
+
+
+Compliance and Legal Framework
+This policy complies with U.S. federal and state laws, the EU General Data Protection Regulation (GDPR), UK Consumer Rights Act, Canadian PIPEDA, Australian Consumer Law, and Stripe's terms of service. PCI DSS, anti-money laundering, and KYC requirements are met through Stripe. Dispute and chargeback procedures follow Stripe's protocols. International payment acceptance is subject to Stripe's limitations.
+
+
+By subscribing to Ascended Social, you acknowledge and accept these payment, billing, refund, and cancellation policies.
+
+
+(a) The payment terms for digital subscription services provided by Party B to Party A are as follows: For monthly premium subscriptions, payment of $20 USD is due automatically on the monthly anniversary of the subscription start date. For annual premium subscriptions, payment of $200 USD is due automatically on the annual anniversary of the subscription start date. All payments are processed via Stripe, and Party A must maintain a valid payment method on file. Any applicable taxes (including sales tax, VAT, or GST) will be added to the subscription fee as required by law.
+(b) Unless for causes attributable to Party B, including but not limited to service interruptions, technical failures, or breach of contract, Party A cannot delay payment to Party B for any reason. In the event of a payment failure (including card decline, insufficient funds, or expired card), Party A will be notified and given a 7-day grace period to resolve the payment issue. If payment is not received within the grace period, Party B reserves the right to suspend or terminate access to premium services.
+(c) Party A cannot request Party B to provide price protection nor refuse to pay any price discrepancy as a result of price fluctuations, currency exchange rate changes, or promotional pricing adjustments. Subscription fees are subject to change with 30 days' advance notice to Party A. Any changes will apply to the next billing cycle following the notice period.
+(d) Party A has the obligation to ensure payment by the due date. In case of any delay beyond the grace period, Party A agrees to bear a late penalty at 4% per day on any outstanding balance. Party B may pursue collection procedures for unpaid balances and may terminate the subscription after 30 days of non-payment.
+(e) Any amendment to the terms of this agreement will only take effect upon mutual agreement in writing, executed by authorized representatives of both parties with company chop and signature.
+(f) This agreement is made in one set and two copies, each party holding one copy.
+Party A:
+Company Name:     Third Eye Cyborg, LLC
+Authorized Signature with Company Chop:
+Name of authorized representative and position: [NAME_DESIGNATION]
+Date:      
+Party B:
+Company Name: [PARTY_2_NAME]
+Authorized Signature with Company Chop:
+Name of authorized representative and position: [NAME_TITLE]
+Date:     
+

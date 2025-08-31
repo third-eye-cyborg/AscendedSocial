@@ -38,6 +38,7 @@ import TermsOfService from "@/pages/terms-of-service";
 import EULA from "./pages/eula";
 import Disclaimer from './pages/disclaimer';
 import SubscriptionServicesAgreement from './pages/subscription-services-agreement';
+import PaymentTerms from './pages/payment-terms';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -90,6 +91,7 @@ function Router() {
           <Route path="/eula" component={EULA} />
           <Route path="/disclaimer" component={Disclaimer} />
           <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
+          <Route path="/payment-terms" component={PaymentTerms} />
         </>
       ) : (
         <>
@@ -120,6 +122,7 @@ function Router() {
           <Route path="/eula" component={EULA} />
           <Route path="/disclaimer" component={Disclaimer} />
           <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
+          <Route path="/payment-terms" component={PaymentTerms} />
         </>
       )}
       <Route component={NotFound} />

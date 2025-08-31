@@ -1,5 +1,7 @@
 import { Link } from "wouter";
 
+import ascended_social_high_resolution_logo_transparent__2_ from "@assets/ascended-social-high-resolution-logo-transparent (2).png";
+
 export default function MarketingFooter() {
   return (
     <footer className="relative z-10 bg-cosmic/80 backdrop-blur-lg border-t border-primary/20 py-12">
@@ -11,7 +13,7 @@ export default function MarketingFooter() {
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
                 <img 
-                  src="/src/assets/ascended-social-high-resolution-logo-transparent (2)_1756602633287.png" 
+                  src={ascended_social_high_resolution_logo_transparent__2_} 
                   alt="Ascended Social Logo" 
                   className="w-full h-full object-cover"
                 />

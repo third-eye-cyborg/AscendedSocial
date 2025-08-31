@@ -41,6 +41,7 @@ import SubscriptionServicesAgreement from './pages/subscription-services-agreeme
 import PaymentTerms from './pages/payment-terms';
 import CopyrightAssignment from './pages/copyright-assignment';
 import CommunityProtection from './pages/community-protection';
+import CopyrightPolicy from './pages/copyright-policy';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -96,6 +97,7 @@ function Router() {
           <Route path="/payment-terms" component={PaymentTerms} />
           <Route path="/copyright-assignment" component={CopyrightAssignment} />
           <Route path="/community-protection" component={CommunityProtection} />
+          <Route path="/copyright-policy" component={CopyrightPolicy} />
         </>
       ) : (
         <>
@@ -129,6 +131,7 @@ function Router() {
           <Route path="/payment-terms" component={PaymentTerms} />
           <Route path="/copyright-assignment" component={CopyrightAssignment} />
           <Route path="/community-protection" component={CommunityProtection} />
+          <Route path="/copyright-policy" component={CopyrightPolicy} />
         </>
       )}
       <Route component={NotFound} />

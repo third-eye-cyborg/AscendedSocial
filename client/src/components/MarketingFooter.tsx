@@ -174,6 +174,16 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/copyright-assignment">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-copyright-assignment"
+                  >
+                    Copyright & IP
+                  </span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/eula">
                   <span 
                     className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"

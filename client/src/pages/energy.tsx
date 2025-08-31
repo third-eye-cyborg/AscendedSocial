@@ -36,7 +36,7 @@ export default function EnergyPage() {
             <p className="text-gray-300 mb-4">Sign in to manage your spiritual energy</p>
             <Button 
               onClick={() => window.location.href = '/api/login'}
-              className="bg-primary hover:bg-primary/90 font-semibold text-[#ffffff]"
+              className="bg-primary hover:bg-primary/90 font-semibold text-white !text-white"
               data-testid="button-sign-in"
             >
               Sign In

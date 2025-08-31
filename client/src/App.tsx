@@ -33,6 +33,7 @@ import Unsubscribe from "@/pages/unsubscribe";
 import CookiePolicy from "@/pages/cookie-policy";
 import DoNotSell from "@/pages/do-not-sell";
 import DataRequest from "@/pages/data-request";
+import PrivacyPolicy from "@/pages/privacy-policy";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -80,6 +81,7 @@ function Router() {
           <Route path="/cookie-policy" component={CookiePolicy} />
           <Route path="/do-not-sell" component={DoNotSell} />
           <Route path="/data-request" component={DataRequest} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
         </>
       ) : (
         <>
@@ -105,6 +107,7 @@ function Router() {
           <Route path="/cookie-policy" component={CookiePolicy} />
           <Route path="/do-not-sell" component={DoNotSell} />
           <Route path="/data-request" component={DataRequest} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
         </>
       )}
       <Route component={NotFound} />

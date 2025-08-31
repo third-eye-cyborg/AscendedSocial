@@ -138,13 +138,14 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="#"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                  data-testid="link-privacy-policy"
-                >
-                  Privacy Policy
-                </a>
+                <Link href="/privacy-policy">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-privacy-policy"
+                  >
+                    Privacy Policy
+                  </span>
+                </Link>
               </li>
               <li>
                 <a 

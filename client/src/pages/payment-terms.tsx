@@ -277,8 +277,8 @@ export default function PaymentTerms() {
                   <h4 className="text-xl font-semibold text-secondary">Legal Inquiries</h4>
                 </div>
                 <p className="text-white/90 mb-3">For legal matters and policy questions:</p>
-                <a href="mailto:legal@ascendedsocial.com" className="text-secondary hover:text-secondary/80 font-medium">
-                  legal@ascendedsocial.com
+                <a href="mailto:legal@ascended.social" className="text-secondary hover:text-secondary/80 font-medium">
+                  legal@ascended.social
                 </a>
               </div>
             </div>
@@ -288,8 +288,8 @@ export default function PaymentTerms() {
                 <h4 className="text-lg font-semibold text-chakra-heart mb-2">Mailing Address</h4>
                 <p className="text-white/90">
                   Third Eye Cyborg, LLC<br />
-                  1234 Spiritual Avenue, Suite 567<br />
-                  Mystic City, MC 89012<br />
+                  814 North Granite Drive<br />
+                  Payson, AZ 85541<br />
                   United States
                 </p>
               </div>

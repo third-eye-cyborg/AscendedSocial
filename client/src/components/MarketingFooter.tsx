@@ -9,8 +9,12 @@ export default function MarketingFooter() {
           {/* Brand Section */}
           <div className="md:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg">
-                <i className="fas fa-star text-white text-lg"></i>
+              <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
+                <img 
+                  src="/src/assets/ascended-social-high-resolution-logo-transparent (2)_1756602633287.png" 
+                  alt="Ascended Social Logo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Ascended Social

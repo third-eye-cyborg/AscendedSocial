@@ -147,7 +147,7 @@ export function NewsletterSignup() {
               placeholder="Your spiritual name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="bg-cosmic-dark/50 border border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white placeholder:text-muted rounded-lg h-12 backdrop-blur-sm"
+              className="border border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white placeholder:text-muted rounded-lg h-12 backdrop-blur-sm bg-[#2b2d31]"
               data-testid="input-newsletter-firstName"
             />
           </div>

@@ -36,6 +36,7 @@ import DataRequest from "@/pages/data-request";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import EULA from "@/pages/eula";
+import SubscriptionServicesAgreement from "@/pages/subscription-services-agreement";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -86,6 +87,7 @@ function Router() {
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/eula" component={EULA} />
+          <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
         </>
       ) : (
         <>
@@ -114,6 +116,7 @@ function Router() {
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/eula" component={EULA} />
+          <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
         </>
       )}
       <Route component={NotFound} />

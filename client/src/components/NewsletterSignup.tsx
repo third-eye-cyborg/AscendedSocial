@@ -133,7 +133,7 @@ export function NewsletterSignup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-cosmic-dark/50 border border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white placeholder:text-muted rounded-lg h-12 backdrop-blur-sm"
+              className="border border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 text-white placeholder:text-muted rounded-lg h-12 backdrop-blur-sm bg-[#2b2d31]"
               data-testid="input-newsletter-email"
             />
           </div>

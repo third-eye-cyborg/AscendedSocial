@@ -168,6 +168,16 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/subscription-services-agreement">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-ssa"
+                  >
+                    Subscription Agreement
+                  </span>
+                </Link>
+              </li>
+              <li>
                 <a 
                   href="#"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"

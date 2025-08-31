@@ -43,6 +43,7 @@ import CopyrightAssignment from './pages/copyright-assignment';
 import CommunityProtection from './pages/community-protection';
 import CopyrightPolicy from './pages/copyright-policy';
 import ServiceAgreement from './pages/service-agreement';
+import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -100,6 +101,7 @@ function Router() {
           <Route path="/community-protection" component={CommunityProtection} />
           <Route path="/copyright-policy" component={CopyrightPolicy} />
           <Route path="/service-agreement" component={ServiceAgreement} />
+          <Route path="/third-party-disclaimer" component={ThirdPartyDisclaimer} />
         </>
       ) : (
         <>
@@ -135,6 +137,7 @@ function Router() {
           <Route path="/community-protection" component={CommunityProtection} />
           <Route path="/copyright-policy" component={CopyrightPolicy} />
           <Route path="/service-agreement" component={ServiceAgreement} />
+          <Route path="/third-party-disclaimer" component={ThirdPartyDisclaimer} />
         </>
       )}
       <Route component={NotFound} />

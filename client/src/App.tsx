@@ -35,8 +35,9 @@ import DoNotSell from "@/pages/do-not-sell";
 import DataRequest from "@/pages/data-request";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
-import EULA from "@/pages/eula";
-import SubscriptionServicesAgreement from "@/pages/subscription-services-agreement";
+import EULA from "./pages/eula";
+import Disclaimer from './pages/disclaimer';
+import SubscriptionServicesAgreement from './pages/subscription-services-agreement';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -45,21 +46,21 @@ function Router() {
   useEffect(() => {
     // Initialize Enzuzo cookie banner integration
     consentManager.initializeEnzuzo();
-    
+
     // Initialize push notifications
     NotificationService.initialize().catch(console.error);
-    
+
     if (user && typeof user === 'object' && 'id' in user) {
       const userId = String(user.id);
       const userData = user as any;
-      
+
       ClientAnalytics.identify(userId, {
         email: userData.email || '',
         username: userData.username || userData.displayName || '',
         signup_date: userData.createdAt || new Date().toISOString(),
         is_premium: userData.isPremium || false,
       });
-      
+
       // Set up spiritual profile for notifications
       NotificationService.setSpiritualProfile(userId, {
         username: userData.username || userData.displayName,
@@ -87,6 +88,7 @@ function Router() {
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/eula" component={EULA} />
+          <Route path="/disclaimer" component={Disclaimer} />
           <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
         </>
       ) : (
@@ -116,6 +118,7 @@ function Router() {
           <Route path="/privacy-policy" component={PrivacyPolicy} />
           <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/eula" component={EULA} />
+          <Route path="/disclaimer" component={Disclaimer} />
           <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
         </>
       )}

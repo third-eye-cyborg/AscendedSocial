@@ -53,6 +53,19 @@ BUSINESS PROTECTION REQUIREMENTS:
 LIMITATION OF LIABILITY FRAMEWORK:
 
 Spiritual Content Disclaimers:
+
+
+## Primary Document Recommendation
+
+**"Service Agreement - Information Technology (IT) Work - IT Company"**
+
+This document type is ideal because it:
+- Provides comprehensive limitation of liability protection for platform operations
+- Includes strong indemnification clauses protecting against user misuse
+- Contains robust force majeure provisions for service interruptions
+- Designed specifically for technology service providers
+- Balances business protection with user rights and expectations
+
 - AI-generated oracle readings and spiritual guidance are for entertainment and self-reflection purposes only
 - Platform does not guarantee accuracy, completeness, or reliability of spiritual content or interpretations
 - Users acknowledge that spiritual advice and AI-generated content should not replace professional counseling, medical advice, or critical life decisions

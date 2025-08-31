@@ -37,6 +37,7 @@ const upload = multer({
   }
 });
 import { registerScrapybaraRoutes } from "./scrapybara-routes";
+import { registerBrowserlessRoutes } from "./browserless-routes";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
@@ -2143,6 +2144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register routes with appropriate Zero Trust protection levels
   registerScrapybaraRoutes(app);  // Internal tools - should be Zero Trust protected
+  registerBrowserlessRoutes(app); // Browser automation - should be Zero Trust protected
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
   registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected

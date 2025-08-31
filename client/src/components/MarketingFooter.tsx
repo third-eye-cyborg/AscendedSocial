@@ -231,15 +231,14 @@ export default function MarketingFooter() {
               <p className="text-gray-400 text-sm mb-2">
                 Join the spiritual revolution
               </p>
-              <Link href="/api/login">
-                <span 
-                  className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 cursor-pointer"
-                  data-testid="button-join-community"
-                >
-                  <i className="fas fa-star"></i>
-                  <span>Enter the Realm</span>
-                </span>
-              </Link>
+              <a 
+                href="/api/login"
+                className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 cursor-pointer"
+                data-testid="button-join-community"
+              >
+                <i className="fas fa-star"></i>
+                <span>Enter the Realm</span>
+              </a>
             </div>
           </div>
         </div>

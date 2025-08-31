@@ -14,7 +14,7 @@ export default function About() {
         {/* Back Button */}
         <div className="mb-8">
           <Button asChild variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
-            <a href="/" className="inline-flex items-center space-x-2" data-testid="button-back-home">
+            <a href="/" className="justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border bg-background hover:text-accent-foreground h-10 px-4 py-2 border-primary/30 hover:bg-primary/10 inline-flex items-center space-x-2 text-[#b16ccc]" data-testid="button-back-home"></a>
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Home</span>
             </a>

@@ -10,7 +10,6 @@ export default function About() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.1),transparent_50%)]"></div>
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16">
         {/* Header */}
         <div className="text-center mb-16">
@@ -132,7 +131,7 @@ export default function About() {
                     className="inline-flex items-center space-x-2"
                     data-testid="button-visit-tec"
                   >
-                    <span>Visit Third Eye Cyborg</span>
+                    <span className="text-[#ffffff]">Visit Third Eye Cyborg</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </Button>

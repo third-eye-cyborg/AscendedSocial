@@ -13,7 +13,7 @@ export default function About() {
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16">
         {/* Back Button */}
         <div className="mb-8">
-          <Button asChild variant="outline" className="bg-[#5771ff] text-white hover:bg-[#5771ff]/90">
+          <Button asChild variant="outline" className="border-primary/30 bg-background/80 text-foreground hover:bg-primary/10 hover:text-primary dark:bg-background/50 dark:text-foreground dark:hover:bg-primary/20 dark:hover:text-primary backdrop-blur-sm">
             <a href="/" className="inline-flex items-center gap-2" data-testid="button-back-home">
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Home</span>

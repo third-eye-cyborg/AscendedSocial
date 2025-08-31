@@ -60,8 +60,9 @@ export default function Community() {
                 Connect with like-minded souls, share wisdom, and grow together in sacred spiritual circles.
               </p>
               <Button 
-                onClick={() => window.location.href = '/'}
-                className="w-full bg-primary hover:bg-primary/80"
+                onClick={() => window.location.href = '/api/login'}
+                className="w-full bg-primary hover:bg-primary/80 text-white !text-white"
+                data-testid="button-sign-in"
               >
                 Sign In to Continue
               </Button>

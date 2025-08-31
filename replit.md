@@ -3,6 +3,14 @@
 ## Overview
 Ascended Social is a mystical social media platform that integrates spirituality with modern technology. It enables users to share posts, engage with content spiritually, and receive personalized oracle readings and recommendations. The platform features a chakra-based content categorization system, user sigils, aura levels, energy systems, premium subscriptions, and an immersive 3D Starmap Visualizer for community exploration. Its business vision includes fostering a spiritually-aware online community and providing unique, personalized spiritual guidance.
 
+## Recent Changes
+**August 31, 2025**: Comprehensive legal documentation framework integration
+- Implemented complete legal protection suite for Third Eye Cyborg, LLC
+- Added six dedicated legal pages with professional styling and company branding
+- Integrated footer navigation for all legal documents
+- Established comprehensive liability protections and service agreements
+- Completed DMCA compliance and intellectual property management systems
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
@@ -41,12 +49,30 @@ Stripe handles premium subscriptions and recurring payments, enabling features l
 ### Privacy and Compliance
 The platform includes comprehensive GDPR compliance with bidirectional consent management via Enzuzo, opt-out by default analytics (PostHog), granular cookie categorization, and data subject rights APIs.
 
+### Legal Documentation Framework
+Comprehensive legal documentation provides complete protection and compliance for Third Eye Cyborg, LLC operations:
+- **Payment Terms**: Billing procedures, refund policies, Stripe integration terms, subscription management
+- **Copyright Assignment & IP Protection**: DMCA compliance, user content licensing, intellectual property transfer agreements
+- **Community Protection Framework**: 17-section safety guidelines, graduated enforcement, user behavior standards
+- **Copyright Policy**: Internal IP management, staff obligations, copyright establishment procedures for Third Eye Cyborg, LLC
+- **Service Agreement**: Contractual framework, liability limitations, professional service delivery standards, 99.9% uptime commitment
+- **Third-Party Service Disclaimers**: Comprehensive disclaimers for OpenAI, Stripe, PostHog, OneSignal, Cloudflare, and Notion integrations
+
 ### Zero Trust Security Architecture
 A four-layer security model utilizing Cloudflare Zero Trust:
 - **Layer 1: User Authentication (Replit Auth)**: For standard user features.
 - **Layer 2: Admin Access Protection (Zero Trust)**: Secures sensitive operations via Cloudflare Access JWT validation.
 - **Layer 3: Network Protection (Cloudflare Gateway)**: Provides DNS-level filtering and threat protection.
 - **Layer 4: API Protection (Web Application Firewall)**: Offers DDoS protection, rate limiting, and WAF rules for all API endpoints.
+
+## Business Information
+- **Legal Entity**: Third Eye Cyborg, LLC
+- **Business Address**: 814 North Granite Drive, Payson, AZ 85541
+- **Operating Name**: Ascended Social
+- **Legal Contact**: legal@ascended.social
+- **Support Contact**: support@ascendedsocial.com
+- **DMCA Agent**: dmca@ascendedsocial.com
+- **Jurisdiction**: United States
 
 ## External Dependencies
 
@@ -92,3 +118,17 @@ A four-layer security model utilizing Cloudflare Zero Trust:
 - **shadcn/ui**: Component library.
 - **React Three Fiber**: 3D rendering.
 - **Three.js**: 3D graphics engine.
+
+## Legal Documentation Pages
+All legal pages feature consistent branding with the Ascended Social logo and mystical design aesthetic:
+
+### Core Legal Framework
+- **`/payment-terms`**: Comprehensive billing, refunds, and Stripe integration policies
+- **`/copyright-assignment`**: DMCA compliance and IP protection for user-generated content
+- **`/community-protection`**: 17-section safety guidelines with graduated enforcement
+- **`/copyright-policy`**: Internal IP management and staff copyright obligations
+- **`/service-agreement`**: Professional service delivery terms with 99.9% uptime commitment
+- **`/third-party-disclaimer`**: Comprehensive disclaimers for all integrated external services
+
+### Navigation Integration
+All legal pages are accessible via footer links in the marketing footer component, ensuring consistent user access to legal documentation throughout the platform. Each page includes cross-references to related legal documents and maintains professional legal language while preserving the platform's spiritual aesthetic.

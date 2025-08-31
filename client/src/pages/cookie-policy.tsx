@@ -1,4 +1,7 @@
+import React, { useState } from 'react';
+
 export default function CookiePolicy() {
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -21,9 +24,9 @@ export default function CookiePolicy() {
                 <p className="text-xs text-muted font-medium tracking-wide hidden sm:block">PRIVACY • TRANSPARENCY • TRUST</p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-4">
-              <button 
+              <button
                 onClick={() => window.location.href = '/'}
                 className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-6 py-2 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105"
                 data-testid="button-home"
@@ -54,11 +57,11 @@ export default function CookiePolicy() {
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
             <div className="text-center mb-8">
               <h3 className="text-3xl font-display font-bold mb-4 text-primary">Cookie Policy & Preferences</h3>
-              <p className="text-white/80 text-lg leading-relaxed">
+              <p className="text-white/80 text-lg">
                 View our complete cookie policy and manage your privacy preferences using our secure hosted policy center.
               </p>
             </div>
-            
+
             <div className="text-center">
               <a
                 href="https://app.enzuzo.com/policies/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"

@@ -142,7 +142,7 @@ export default function About() {
                     data-testid="button-visit-tec"
                   >
                     <span className="text-[#ffffff]">Visit Third Eye Cyborg</span>
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4 text-white" />
                   </a>
                 </Button>
               </div>

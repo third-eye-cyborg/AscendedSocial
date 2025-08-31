@@ -13,7 +13,7 @@ export default function MarketingFooter() {
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
                 <img 
-                  src={ascended_social_high_resolution_logo_transparent__2_} 
+                  src="@assets/ASLogo.png" 
                   alt="Ascended Social Logo" 
                   className="w-full h-full object-cover"
                 />

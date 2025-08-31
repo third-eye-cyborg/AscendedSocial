@@ -184,13 +184,14 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="#"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                  data-testid="link-disclaimer"
-                >
-                  Disclaimer
-                </a>
+                <Link href="/disclaimer">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-disclaimer"
+                  >
+                    Disclaimer
+                  </span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -203,40 +204,32 @@ export default function MarketingFooter() {
               <h4 className="text-white font-semibold mb-2">Connect With Us</h4>
               <div className="flex space-x-4">
                 <a 
-                  href="https://x.com/thirdeyecyborg"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   data-testid="link-twitter"
                 >
-                  <i className="fab fa-x-twitter"></i>
+                  <i className="fab fa-twitter"></i>
                 </a>
                 <a 
-                  href="https://www.youtube.com/@thirdeyecyborg"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
+                  className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                  data-testid="link-instagram"
+                >
+                  <i className="fab fa-instagram"></i>
+                </a>
+                <a 
+                  href="#"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   data-testid="link-youtube"
                 >
                   <i className="fab fa-youtube"></i>
                 </a>
                 <a 
-                  href="https://www.linkedin.com/company/69946724/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                  data-testid="link-linkedin"
+                  data-testid="link-discord"
                 >
-                  <i className="fab fa-linkedin"></i>
-                </a>
-                <a 
-                  href="https://github.com/third-eye-cyborg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                  data-testid="link-github"
-                >
-                  <i className="fab fa-github"></i>
+                  <i className="fab fa-discord"></i>
                 </a>
               </div>
             </div>
@@ -261,7 +254,7 @@ export default function MarketingFooter() {
         <div className="border-t border-primary/20 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
             <div className="mb-4 md:mb-0">
-              <span>© 2025 Ascended Social, a product of Third Eye Cyborg, LLC. All rights reserved.</span>
+              <span>© 2024 Third Eye Cyborg, LLC. All rights reserved.</span>
             </div>
             <div className="flex items-center space-x-1">
               <span>Made with</span>

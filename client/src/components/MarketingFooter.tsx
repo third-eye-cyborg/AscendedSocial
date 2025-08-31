@@ -90,7 +90,7 @@ export default function MarketingFooter() {
               </li>
               <li>
                 <a 
-                  href="mailto:support@ascendedsocial.com"
+                  href="mailto:support@ascended.social"
                   className="text-gray-400 hover:text-primary transition-colors text-sm"
                   data-testid="link-contact"
                 >

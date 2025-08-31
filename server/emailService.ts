@@ -31,7 +31,7 @@ export interface TransactionalEmailData {
 }
 
 export class EmailService {
-  private static FROM_EMAIL = 'Ascended Social <noreply@ascendedsocial.com>';
+  private static FROM_EMAIL = 'Ascended Social <noreply@ascended.social>';
   
   async sendWelcomeEmail(data: WelcomeEmailData): Promise<boolean> {
     if (!oneSignalApiKey || !oneSignalAppId) {
@@ -274,7 +274,7 @@ export class EmailService {
         email_body: data.html,
         include_email_tokens: [data.email],
         email_from_name: 'Ascended Social',
-        email_from_address: 'noreply@ascendedsocial.com',
+        email_from_address: 'noreply@ascended.social',
       }),
     });
 

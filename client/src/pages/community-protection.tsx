@@ -52,7 +52,7 @@ export default function CommunityProtection() {
             </p>
             <p className="text-purple-200">
               We are a Limited Liability Company (LLC). If you have any enquiries regarding this community protection policy, 
-              please contact our customer service at <strong>support@ascendedsocial.com</strong>.
+              please contact our customer service at <strong>support@ascended.social</strong>.
             </p>
           </div>
         </div>
@@ -423,7 +423,7 @@ export default function CommunityProtection() {
                 If you have any questions regarding this Policy:
               </p>
               <ul className="text-purple-200 space-y-1">
-                <li>• Email: <strong>support@ascendedsocial.com</strong></li>
+                <li>• Email: <strong>support@ascended.social</strong></li>
                 <li>• Use the reporting mechanisms provided on Ascended Social</li>
               </ul>
             </div>

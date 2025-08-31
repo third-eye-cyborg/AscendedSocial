@@ -129,7 +129,7 @@ export default function Disclaimer() {
                 <section>
                   <h3 className="text-2xl font-bold mb-4 text-primary">8. ACCESSIBILITY AND MULTI-LANGUAGE CONSIDERATIONS</h3>
                   <p className="text-white/90 leading-relaxed">
-                    Ascended Social is committed to accessibility and strives to ensure the platform is usable by all individuals, including those with disabilities. For accessibility support, please contact <a href="mailto:support@ascendedsocial.com" className="text-primary underline">support@ascendedsocial.com</a>. The platform may provide content in multiple languages; however, the English version prevails in case of discrepancies.
+                    Ascended Social is committed to accessibility and strives to ensure the platform is usable by all individuals, including those with disabilities. For accessibility support, please contact <a href="mailto:support@ascended.social" className="text-primary underline">support@ascended.social</a>. The platform may provide content in multiple languages; however, the English version prevails in case of discrepancies.
                   </p>
                 </section>
 
@@ -137,7 +137,7 @@ export default function Disclaimer() {
                 <section>
                   <h3 className="text-2xl font-bold mb-4 text-primary">9. CONTACT INFORMATION</h3>
                   <p className="text-white/90 leading-relaxed">
-                    For legal inquiries or to report content violations, please contact: <a href="mailto:legal@ascendedsocial.com" className="text-primary underline">legal@ascendedsocial.com</a> or Third Eye Cyborg, LLC Legal Department.
+                    For legal inquiries or to report content violations, please contact: <a href="mailto:legal@ascended.social" className="text-primary underline">legal@ascended.social</a> or Third Eye Cyborg, LLC Legal Department.
                   </p>
                 </section>
 
@@ -160,7 +160,7 @@ export default function Disclaimer() {
 
               <div className="mt-12 pt-8 border-t border-primary/20 text-center">
                 <p className="text-white/70">
-                  If you have questions about this disclaimer or require further information, please contact us at <a href="mailto:legal@ascendedsocial.com" className="text-primary underline">legal@ascendedsocial.com</a>.
+                  If you have questions about this disclaimer or require further information, please contact us at <a href="mailto:legal@ascended.social" className="text-primary underline">legal@ascended.social</a>.
                 </p>
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function Disclaimer() {
                 Have questions about our legal policies? Contact our legal team.
               </p>
               <a
-                href="mailto:legal@ascendedsocial.com"
+                href="mailto:legal@ascended.social"
                 className="group relative bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-purple-500/30 hover:scale-105 inline-flex items-center space-x-2"
               >
                 <span className="relative z-10 flex items-center space-x-2">

@@ -458,7 +458,7 @@ export default function ServiceAgreement() {
               </p>
               <ul className="text-purple-200 space-y-1">
                 <li>• Weekdays 9:00 AM - 5:00 PM (excluding Federal Holidays)</li>
-                <li>• Email support available 24/7 at support@ascendedsocial.com</li>
+                <li>• Email support available 24/7 at support@ascended.social</li>
                 <li>• Response within one business day</li>
                 <li>• Helpdesk tickets for issue tracking</li>
               </ul>
@@ -506,7 +506,7 @@ export default function ServiceAgreement() {
                 <p><strong>Third Eye Cyborg, LLC</strong></p>
                 <p>Address: 814 North Granite Drive, Payson, AZ 85541</p>
                 <p>Email: legal@ascended.social</p>
-                <p>Support: support@ascendedsocial.com</p>
+                <p>Support: support@ascended.social</p>
               </div>
             </div>
 

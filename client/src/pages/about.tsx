@@ -171,7 +171,7 @@ export default function About() {
           <CardContent className="text-center">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
-                <a href="mailto:support@ascendedsocial.com" data-testid="button-contact-support">
+                <a href="mailto:support@ascended.social" data-testid="button-contact-support">
                   Contact Support
                 </a>
               </Button>

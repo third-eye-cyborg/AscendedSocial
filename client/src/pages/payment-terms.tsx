@@ -264,8 +264,8 @@ export default function PaymentTerms() {
                   <h4 className="text-xl font-semibold text-primary">Customer Support</h4>
                 </div>
                 <p className="text-white/90 mb-3">For billing questions, refund requests, and subscription support:</p>
-                <a href="mailto:support@ascendedsocial.com" className="text-primary hover:text-primary/80 font-medium">
-                  support@ascendedsocial.com
+                <a href="mailto:support@ascended.social" className="text-primary hover:text-primary/80 font-medium">
+                  support@ascended.social
                 </a>
               </div>
               

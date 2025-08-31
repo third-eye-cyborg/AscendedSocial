@@ -339,9 +339,9 @@ export default function CopyrightPolicy() {
                 To report copyright infringement:
               </p>
               <ul className="text-purple-200 space-y-1">
-                <li>• DMCA Agent: <strong>dmca@ascendedsocial.com</strong></li>
+                <li>• DMCA Agent: <strong>dmca@ascended.social</strong></li>
                 <li>• Legal Team: <strong>legal@ascended.social</strong></li>
-                <li>• General Support: <strong>support@ascendedsocial.com</strong></li>
+                <li>• General Support: <strong>support@ascended.social</strong></li>
               </ul>
             </div>
           </div>

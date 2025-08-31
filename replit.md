@@ -70,8 +70,8 @@ A four-layer security model utilizing Cloudflare Zero Trust:
 - **Business Address**: 814 North Granite Drive, Payson, AZ 85541
 - **Operating Name**: Ascended Social
 - **Legal Contact**: legal@ascended.social
-- **Support Contact**: support@ascendedsocial.com
-- **DMCA Agent**: dmca@ascendedsocial.com
+- **Support Contact**: support@ascended.social
+- **DMCA Agent**: dmca@ascended.social
 - **Jurisdiction**: United States
 
 ## External Dependencies

@@ -158,7 +158,7 @@ export default function TermsOfService() {
                 Have questions about our terms or need assistance? Contact our support team for guidance.
               </p>
               <a
-                href="mailto:support@ascendedsocial.com"
+                href="mailto:support@ascended.social"
                 className="group relative bg-gradient-to-r from-secondary to-primary text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-secondary/30 hover:scale-105 inline-flex items-center space-x-2"
                 data-testid="link-support"
               >

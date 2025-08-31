@@ -83,7 +83,7 @@ export default function CopyrightAssignment() {
                   <p className="text-white/90">
                     <strong>Company:</strong> Third Eye Cyborg, LLC<br />
                     <strong>Platform:</strong> Ascended Social<br />
-                    <strong>Email:</strong> <a href="mailto:dmca@ascendedsocial.com" className="text-secondary hover:text-secondary/80">dmca@ascendedsocial.com</a><br />
+                    <strong>Email:</strong> <a href="mailto:dmca@ascended.social" className="text-secondary hover:text-secondary/80">dmca@ascended.social</a><br />
                     <strong>Address:</strong> 814 North Granite Drive, Payson, AZ 85541
                   </p>
                 </div>
@@ -304,8 +304,8 @@ export default function CopyrightAssignment() {
                   <h4 className="text-xl font-semibold text-primary">DMCA Agent</h4>
                 </div>
                 <p className="text-white/90 mb-3">For copyright takedown notices and IP violations:</p>
-                <a href="mailto:dmca@ascendedsocial.com" className="text-primary hover:text-primary/80 font-medium">
-                  dmca@ascendedsocial.com
+                <a href="mailto:dmca@ascended.social" className="text-primary hover:text-primary/80 font-medium">
+                  dmca@ascended.social
                 </a>
               </div>
               

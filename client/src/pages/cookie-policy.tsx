@@ -240,7 +240,7 @@ export default function CookiePolicy() {
                     Contact & Updates
                   </h4>
                   <div className="space-y-3 text-sm leading-relaxed">
-                    <p><strong>Privacy Questions:</strong> Contact us at privacy@ascendedsocial.com for any privacy-related inquiries.</p>
+                    <p><strong>Privacy Questions:</strong> Contact us at privacy@ascended.social for any privacy-related inquiries.</p>
                     <p><strong>Data Requests:</strong> Use our privacy dashboard in your profile settings or email us directly.</p>
                     <p><strong>Policy Updates:</strong> We'll notify you of any material changes to this privacy policy.</p>
                     <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>

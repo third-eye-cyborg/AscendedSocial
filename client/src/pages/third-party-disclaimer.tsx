@@ -516,7 +516,7 @@ export default function ThirdPartyDisclaimer() {
                 <p>Business Name: Ascended Social</p>
                 <p>Address: 814 North Granite Drive, Payson, AZ 85541</p>
                 <p>Email: legal@ascended.social</p>
-                <p>Support: support@ascendedsocial.com</p>
+                <p>Support: support@ascended.social</p>
               </div>
             </div>
 

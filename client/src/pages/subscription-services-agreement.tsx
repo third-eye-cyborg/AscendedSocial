@@ -117,7 +117,7 @@ export default function SubscriptionServicesAgreement() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <a 
-                  href="mailto:support@ascendedsocial.com"
+                  href="mailto:support@ascended.social"
                   className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3 rounded-lg hover:from-blue-400 hover:to-purple-400 transition-all duration-300"
                   data-testid="link-support-email"
                 >

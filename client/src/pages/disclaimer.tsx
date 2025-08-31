@@ -57,7 +57,7 @@ export default function Disclaimer() {
                 <h1 className="text-3xl font-display font-bold mb-2 text-primary">Ascended Social – Comprehensive Legal Disclaimer</h1>
                 <p className="text-white/80 text-lg">Operated by Third Eye Cyborg, LLC</p>
                 <div className="mt-4 text-sm text-white/60">
-                  <p><strong>Effective Date:</strong> January 30, 2025</p>
+                  <p><strong>Effective Date:</strong> August 30, 2025</p>
                   <p><strong>Version:</strong> 1.0</p>
                 </div>
               </div>

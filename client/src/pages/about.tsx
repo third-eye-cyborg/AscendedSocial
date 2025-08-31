@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Code, Smartphone, Database, Brain, Users, Star } from "lucide-react";
+import { ExternalLink, Code, Smartphone, Database, Brain, Users, Star, ArrowLeft } from "lucide-react";
 import ASLogo from "@assets/ASLogo.png";
 
 export default function About() {
@@ -11,6 +11,16 @@ export default function About() {
       <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
       <div className="relative z-10 max-w-6xl mx-auto px-4 py-16">
+        {/* Back Button */}
+        <div className="mb-8">
+          <Button asChild variant="outline" className="border-primary/30 text-primary hover:bg-primary/10">
+            <a href="/" className="inline-flex items-center space-x-2" data-testid="button-back-home">
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Home</span>
+            </a>
+          </Button>
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-display font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">

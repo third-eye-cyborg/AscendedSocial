@@ -141,7 +141,7 @@ export default function About() {
                     className="inline-flex items-center gap-2"
                     data-testid="button-visit-tec"
                   >
-                    <span>Visit Third Eye Cyborg</span>
+                    <span className="text-[#ffffff]">Visit Third Eye Cyborg</span>
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </Button>

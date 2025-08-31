@@ -46,7 +46,7 @@ export default function Landing() {
             
             {/* Premium Navigation */}
             <div className="hidden lg:flex items-center space-x-1">
-              <nav className="flex items-center space-x-1 bg-white/5 rounded-2xl p-1 border border-white/10 backdrop-blur-xl ml-[20px] mr-[20px]"></nav>
+              <nav className="flex items-center space-x-1 bg-white/5 rounded-2xl p-1 border border-white/10 backdrop-blur-xl ml-[20px] mr-[20px]">
                 <Button 
                   variant="ghost"
                   onClick={() => window.location.href = '/about'}

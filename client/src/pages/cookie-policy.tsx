@@ -38,7 +38,6 @@ export default function CookiePolicy() {
           </div>
         </div>
       </header>
-
       {/* Main Content */}
       <main className="pt-20 pb-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -72,7 +71,7 @@ export default function CookiePolicy() {
               >
                 <span className="relative z-10 flex items-center space-x-2">
                   <i className="fas fa-external-link-alt"></i>
-                  <span>View Cookie Policy & Manage Preferences</span>
+                  <span>View Cookie Policy</span>
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
               </a>

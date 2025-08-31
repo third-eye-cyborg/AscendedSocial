@@ -239,6 +239,16 @@ export default function Subscribe() {
         <div className="text-center bg-cosmic-light rounded-xl p-6 border border-primary/30">
           <div className="text-3xl font-bold text-accent-light mb-2">$9.99/month</div>
           <p className="text-muted">Cancel anytime • Start your 7-day free trial</p>
+          <div className="mt-4 text-sm">
+            <span className="text-muted">By subscribing, you agree to our </span>
+            <a href="/payment-terms" className="text-primary hover:text-primary/80 underline" data-testid="link-payment-terms">
+              Payment Terms
+            </a>
+            <span className="text-muted"> and </span>
+            <a href="/terms-of-service" className="text-primary hover:text-primary/80 underline" data-testid="link-terms">
+              Terms of Service
+            </a>
+          </div>
         </div>
       </div>
     </div>

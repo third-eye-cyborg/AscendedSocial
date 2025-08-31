@@ -164,6 +164,16 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/payment-terms">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-payment-terms"
+                  >
+                    Payment Terms
+                  </span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/eula">
                   <span 
                     className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"

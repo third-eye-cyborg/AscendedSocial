@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { Shield, Heart, Users, Scale, Eye, Star } from "lucide-react";
+import { Shield, Heart, Users, Scale, Eye } from "lucide-react";
+import ASLogo from "@assets/ASLogo.png";
 
 export default function CommunityProtection() {
   return (
@@ -8,7 +9,13 @@ export default function CommunityProtection() {
       <div className="container mx-auto px-4 py-8">
         <Link href="/">
           <div className="flex items-center space-x-2 text-white mb-8 hover:text-purple-300 transition-colors cursor-pointer" data-testid="link-home">
-            <Star className="h-6 w-6" />
+            <div className="w-6 h-6 rounded overflow-hidden">
+              <img 
+                src={ASLogo} 
+                alt="Ascended Social Logo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             <span className="text-xl font-semibold">Ascended Social</span>
           </div>
         </Link>

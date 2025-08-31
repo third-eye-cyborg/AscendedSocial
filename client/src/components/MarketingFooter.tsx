@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 
-import ascended_social_high_resolution_logo_transparent__2_ from "@assets/ascended-social-high-resolution-logo-transparent (2).png";
+import ASLogo from "@assets/ASLogo.png";
 
 export default function MarketingFooter() {
   return (
@@ -13,7 +13,7 @@ export default function MarketingFooter() {
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg">
                 <img 
-                  src="@assets/ASLogo.png" 
+                  src={ASLogo} 
                   alt="Ascended Social Logo" 
                   className="w-full h-full object-cover"
                 />

@@ -183,8 +183,8 @@ export function NewsletterSignup() {
                     });
                   }}
                 />
-                <p className="text-xs text-muted/70 mt-2 flex items-center gap-1">
-                  <Shield className="w-3 h-3" />
+                <p className="text-xs text-white mt-2 flex items-center gap-1">
+                  <Shield className="w-3 h-3 text-white" />
                   Protected by Cloudflare security to prevent spam
                 </p>
               </div>

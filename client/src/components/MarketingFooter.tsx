@@ -204,32 +204,49 @@ export default function MarketingFooter() {
               <h4 className="text-white font-semibold mb-2">Connect With Us</h4>
               <div className="flex space-x-4">
                 <a 
-                  href="#"
+                  href="https://thirdeyecyborg.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                  data-testid="link-website"
+                >
+                  <i className="fas fa-globe"></i>
+                </a>
+                <a 
+                  href="https://x.com/thirdeyecyborg"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   data-testid="link-twitter"
                 >
                   <i className="fab fa-twitter"></i>
                 </a>
                 <a 
-                  href="#"
+                  href="https://github.com/third-eye-cyborg"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                  data-testid="link-instagram"
+                  data-testid="link-github"
                 >
-                  <i className="fab fa-instagram"></i>
+                  <i className="fab fa-github"></i>
                 </a>
                 <a 
-                  href="#"
+                  href="https://www.linkedin.com/company/69946724/admin/dashboard/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                  data-testid="link-linkedin"
+                >
+                  <i className="fab fa-linkedin"></i>
+                </a>
+                <a 
+                  href="https://www.youtube.com/@thirdeyecyborg"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
                   data-testid="link-youtube"
                 >
                   <i className="fab fa-youtube"></i>
-                </a>
-                <a 
-                  href="#"
-                  className="w-10 h-10 bg-cosmic-light rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
-                  data-testid="link-discord"
-                >
-                  <i className="fab fa-discord"></i>
                 </a>
               </div>
             </div>

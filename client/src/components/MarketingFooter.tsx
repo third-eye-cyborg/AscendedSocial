@@ -148,13 +148,14 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="#"
-                  className="text-gray-400 hover:text-primary transition-colors text-sm"
-                  data-testid="link-terms-of-service"
-                >
-                  Terms of Service
-                </a>
+                <Link href="/terms-of-service">
+                  <span 
+                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
+                    data-testid="link-terms-of-service"
+                  >
+                    Terms of Service
+                  </span>
+                </Link>
               </li>
               <li>
                 <a 

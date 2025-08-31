@@ -34,6 +34,7 @@ import CookiePolicy from "@/pages/cookie-policy";
 import DoNotSell from "@/pages/do-not-sell";
 import DataRequest from "@/pages/data-request";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -82,6 +83,7 @@ function Router() {
           <Route path="/do-not-sell" component={DoNotSell} />
           <Route path="/data-request" component={DataRequest} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms-of-service" component={TermsOfService} />
         </>
       ) : (
         <>
@@ -108,6 +110,7 @@ function Router() {
           <Route path="/do-not-sell" component={DoNotSell} />
           <Route path="/data-request" component={DataRequest} />
           <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms-of-service" component={TermsOfService} />
         </>
       )}
       <Route component={NotFound} />

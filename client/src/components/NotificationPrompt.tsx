@@ -98,7 +98,7 @@ export function NotificationPrompt({
       <Button 
         onClick={handleShowPrompt}
         variant="outline" 
-        className={`${className} bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100`}
+        className={`${className} bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border-purple-200 dark:border-purple-700 hover:from-purple-100 hover:to-blue-100 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30`}
         data-testid="button-show-notification-prompt"
       >
         <Bell className="w-4 h-4 mr-2" />
@@ -112,58 +112,58 @@ export function NotificationPrompt({
   }
 
   return (
-    <Card className={`${className} border-2 border-purple-200 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 shadow-lg`} data-testid="card-notification-prompt">
+    <Card className={`${className} border-2 border-purple-200 dark:border-purple-700 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 shadow-lg`} data-testid="card-notification-prompt">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full">
+          <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-400 dark:to-blue-400 rounded-full">
             <Bell className="w-8 h-8 text-white" />
           </div>
         </div>
         <CardTitle className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           Stay Connected to Your Spiritual Journey
         </CardTitle>
-        <CardDescription className="text-lg text-gray-600">
+        <CardDescription className="text-lg text-gray-600 dark:text-gray-300">
           Receive personalized guidance, community insights, and energy updates on your path to enlightenment.
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg">
+          <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-white/10 rounded-lg">
             <Sparkles className="w-6 h-6 text-purple-500" />
             <div>
-              <h4 className="font-semibold text-gray-800">Oracle Readings</h4>
-              <p className="text-sm text-gray-600">Daily wisdom and spiritual guidance</p>
+              <h4 className="font-semibold text-gray-800 dark:text-gray-200">Oracle Readings</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Daily wisdom and spiritual guidance</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg">
+          <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-white/10 rounded-lg">
             <Users className="w-6 h-6 text-blue-500" />
             <div>
-              <h4 className="font-semibold text-gray-800">Community Updates</h4>
-              <p className="text-sm text-gray-600">New posts and spiritual discussions</p>
+              <h4 className="font-semibold text-gray-800 dark:text-gray-200">Community Updates</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">New posts and spiritual discussions</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg">
+          <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-white/10 rounded-lg">
             <Zap className="w-6 h-6 text-yellow-500" />
             <div>
-              <h4 className="font-semibold text-gray-800">Energy Milestones</h4>
-              <p className="text-sm text-gray-600">Celebrate your spiritual progress</p>
+              <h4 className="font-semibold text-gray-800 dark:text-gray-200">Energy Milestones</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Celebrate your spiritual progress</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-3 bg-white/60 rounded-lg">
+          <div className="flex items-center space-x-3 p-3 bg-white/60 dark:bg-white/10 rounded-lg">
             <Moon className="w-6 h-6 text-indigo-500" />
             <div>
-              <h4 className="font-semibold text-gray-800">Vision Insights</h4>
-              <p className="text-sm text-gray-600">Manifestations and dream guidance</p>
+              <h4 className="font-semibold text-gray-800 dark:text-gray-200">Vision Insights</h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Manifestations and dream guidance</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white/80 p-4 rounded-lg border border-purple-100">
-          <p className="text-sm text-gray-700 text-center">
+        <div className="bg-white/80 dark:bg-white/10 p-4 rounded-lg border border-purple-100 dark:border-purple-800">
+          <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
             ✨ Notifications are personalized based on your spiritual interests and can be disabled anytime.
           </p>
         </div>
@@ -192,7 +192,7 @@ export function NotificationPrompt({
         <Button 
           onClick={handleDismiss}
           variant="outline"
-          className="flex-1 sm:flex-none border-gray-300 hover:bg-gray-50"
+          className="flex-1 sm:flex-none border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
           data-testid="button-dismiss-prompt"
         >
           <BellOff className="w-4 h-4 mr-2" />

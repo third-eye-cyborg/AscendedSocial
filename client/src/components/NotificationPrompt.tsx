@@ -192,7 +192,7 @@ export function NotificationPrompt({
         <Button 
           onClick={handleDismiss}
           variant="outline"
-          className="flex-1 sm:flex-none bg-gray-800/70 border-gray-600 hover:bg-gray-700/90 text-gray-200 backdrop-blur-sm"
+          className="flex-1 sm:flex-none bg-gray-800/70 border-gray-600 hover:bg-gray-700/90 text-white backdrop-blur-sm"
           data-testid="button-dismiss-prompt"
         >
           <BellOff className="w-4 h-4 mr-2" />

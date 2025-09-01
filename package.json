@@ -17,6 +17,7 @@
     "@aws-sdk/client-s3": "^3.873.0",
     "@aws-sdk/lib-storage": "^3.873.0",
     "@aws-sdk/s3-request-presigner": "^3.873.0",
+    "@chromatic-com/cypress": "^0.11.7",
     "@chromatic-com/playwright": "^0.12.7",
     "@cypress/react": "^9.0.1",
     "@google-cloud/storage": "^7.17.0",

@@ -17,6 +17,16 @@ export default defineConfig({
   },
 
   projects: [
+    // Chromatic Storybook tests
+    {
+      name: 'chromatic',
+      use: {
+        ...devices['Desktop Chrome'],
+        storybookBaseUrl: 'http://localhost:6006',
+      },
+      testMatch: /.*\.chromatic\.spec\.ts/,
+    },
+    // Standard browser tests
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },

@@ -90,8 +90,16 @@ async function buildAndDeploy() {
   // Deploy to Chromatic (if configured)
   if (process.env.CHROMATIC_PROJECT_TOKEN) {
     await runCommand(
-      'npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes',
+      'npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes --auto-accept-changes',
       'Deploying to Chromatic'
+    );
+  }
+  
+  // Run Chromatic Playwright tests (if token available)
+  if (process.env.PLAYWRIGHT_PROJECT_TOKEN) {
+    await runCommand(
+      'npx playwright test --project=chromatic --reporter=html',
+      'Chromatic Playwright visual tests'
     );
   }
 }

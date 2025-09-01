@@ -10,6 +10,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import type { VisionWithAuthor, VisionPrivacy } from "@shared/schema";
 
 interface VisionCardProps {
@@ -31,6 +32,7 @@ export function VisionCard({ vision, onUpdate }: VisionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
 
   const engageMutation = useMutation({
     mutationFn: async ({ type, energyAmount }: { type: string; energyAmount?: number }) => {
@@ -202,7 +204,11 @@ export function VisionCard({ vision, onUpdate }: VisionCardProps) {
             
             {vision.videoUrl && (
               <div className="relative rounded-lg overflow-hidden bg-cosmic-light/30 h-48 flex items-center justify-center">
-                <Button className="bg-black/50 hover:bg-black/70" data-testid="button-play-video">
+                <Button 
+                  className="bg-black/50 hover:bg-black/70" 
+                  onClick={() => setLocation(`/video/vision/${vision.id}`)}
+                  data-testid="button-play-video"
+                >
                   <Play className="w-6 h-6" />
                 </Button>
                 <div className="absolute top-2 right-2">

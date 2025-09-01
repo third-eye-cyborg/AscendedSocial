@@ -45,6 +45,7 @@ import CommunityProtection from './pages/community-protection';
 import CopyrightPolicy from './pages/copyright-policy';
 import ServiceAgreement from './pages/service-agreement';
 import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
+import VideoPage from './pages/video';
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 function Router() {
@@ -101,6 +102,7 @@ function Router() {
       <Route path="/profile/:id?" component={Profile} />
       <Route path="/profile-settings" component={ProfileSettings} />
       <Route path="/post/:id" component={Post} />
+      <Route path="/video/:type/:id" component={VideoPage} />
       <Route path="/settings" component={Settings} />
       <Route path="/visions" component={Visions} />
       <Route path="/sparks" component={Sparks} />

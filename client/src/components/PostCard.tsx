@@ -689,6 +689,7 @@ export default function PostCard({ post }: PostCardProps) {
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
               <Button 
                 className="w-16 h-16 bg-primary/80 rounded-full hover:bg-primary"
+                onClick={() => setLocation(`/video/post/${post.id}`)}
                 data-testid={`play-video-${post.id}`}
               >
                 <i className="fas fa-play text-white text-xl ml-1"></i>

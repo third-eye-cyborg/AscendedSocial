@@ -17,6 +17,34 @@ html, body {
   box-sizing: border-box;
 }
 
+/* Prevent card overflow issues */
+.container, [class*="container"] {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure cards don't interfere with bottom navigation */
+@media (max-width: 1279px) {
+  main, .main-content, [data-main="true"] {
+    padding-bottom: 100px; /* Add space above bottom navigation */
+  }
+  
+  /* Fix card containers that might overflow */
+  .card, [class*="card"], [data-testid*="card"] {
+    max-width: calc(100vw - 2rem);
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: hidden;
+  }
+  
+  /* Specific fixes for post and vision cards */
+  [data-testid*="post-"], [data-testid*="vision-"], [data-testid*="card-"] {
+    max-width: calc(100vw - 2rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 /* Ensure app always has minimum height on mobile */
 #root {
   min-height: 100vh;

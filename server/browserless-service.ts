@@ -67,7 +67,7 @@ class BrowserlessService {
   constructor() {
     // Initialize with environment variables if available
     const token = process.env.BROWSERLESS_TOKEN;
-    const endpoint = process.env.BROWSERLESS_ENDPOINT || 'wss://chrome.browserless.io';
+    const endpoint = process.env.BROWSERLESS_ENDPOINT || 'wss://production-sfo.browserless.io';
     
     if (token) {
       this.initialize({ token, endpoint });
@@ -86,12 +86,26 @@ class BrowserlessService {
     return `${this.config.endpoint}?token=${this.config.token}`;
   }
 
+  private getRestApiUrl(): string {
+    if (!this.config) {
+      throw new Error('Browserless not configured. Please provide token and endpoint.');
+    }
+    // Convert WebSocket URL to REST API URL
+    const restEndpoint = this.config.endpoint.replace('wss://', 'https://');
+    return restEndpoint;
+  }
+
   // Playwright Browser Management
   public async getPlaywrightBrowser(): Promise<PlaywrightBrowser> {
     if (!this.playwrightBrowser) {
       console.log('🎭 Connecting to Browserless with Playwright...');
-      this.playwrightBrowser = await chromium.connectOverCDP(this.getWebSocketUrl());
-      console.log('✅ Playwright browser connected');
+      try {
+        this.playwrightBrowser = await chromium.connectOverCDP(this.getWebSocketUrl());
+        console.log('✅ Playwright browser connected');
+      } catch (error: any) {
+        console.error('❌ Playwright connection failed:', error);
+        throw new Error(`Failed to connect Playwright browser: ${error.message}`);
+      }
     }
     return this.playwrightBrowser;
   }
@@ -108,10 +122,19 @@ class BrowserlessService {
   public async getPuppeteerBrowser(): Promise<PuppeteerBrowser> {
     if (!this.puppeteerBrowser) {
       console.log('🎪 Connecting to Browserless with Puppeteer...');
-      this.puppeteerBrowser = await puppeteer.connect({
-        browserWSEndpoint: this.getWebSocketUrl(),
-      });
-      console.log('✅ Puppeteer browser connected');
+      try {
+        this.puppeteerBrowser = await puppeteer.connect({
+          browserWSEndpoint: this.getWebSocketUrl(),
+        });
+        console.log('✅ Puppeteer browser connected');
+      } catch (error: any) {
+        console.error('❌ Puppeteer connection failed:', error);
+        // Handle rate limiting gracefully
+        if (error.message && (error.message.includes('429') || error.message.includes('rate'))) {
+          throw new Error('Rate limit exceeded. Please try again in a moment.');
+        }
+        throw new Error(`Failed to connect Puppeteer browser: ${error.message || 'Unknown error'}`);
+      }
     }
     return this.puppeteerBrowser;
   }

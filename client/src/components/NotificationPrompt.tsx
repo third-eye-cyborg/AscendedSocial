@@ -112,7 +112,7 @@ export function NotificationPrompt({
   }
 
   return (
-    <Card className={`${className} border-2 border-purple-200 dark:border-purple-700 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-purple-900/20 dark:via-blue-900/20 dark:to-indigo-900/20 shadow-lg`} data-testid="card-notification-prompt">
+    <Card className={`${className} border-2 border-purple-200 dark:border-purple-700 bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50 dark:from-gray-900/95 dark:via-gray-800/95 dark:to-gray-900/95 shadow-lg dark:shadow-purple-500/10`} data-testid="card-notification-prompt">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 dark:from-purple-400 dark:to-blue-400 rounded-full">

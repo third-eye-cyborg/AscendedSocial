@@ -24,20 +24,6 @@ html, body {
   width: 100%;
 }
 
-/* Mobile app specific loading fallback */
-@media (max-width: 768px) {
-  body:not(.loaded) #root::before {
-    content: "Loading Ascended Social...";
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 18px;
-    font-weight: 500;
-    z-index: 9999;
-  }
-}
 
 /* Ensure no elements exceed viewport width */
 @media (max-width: 640px) {

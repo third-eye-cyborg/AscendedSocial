@@ -2018,7 +2018,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <p>You will receive an email with your data when ready.</p>
             <hr>
             <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
-          `
+          `,
+          type: 'account_notification'
         });
       }
 
@@ -2083,7 +2084,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             <p>You will receive a confirmation email once the deletion is complete.</p>
             <hr>
             <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
-          `
+          `,
+          type: 'account_notification'
         });
       }
 
@@ -2228,7 +2230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sparksWithEngagements = await Promise.all(
         sparks.map(async (spark: any) => {
           const engagements = await storage.getPostEngagements(spark.id);
-          const spiritualCount = spiritualCounts.find((sc: any) => sc.postId === spark.id)?.count || 0;
+          const spiritualCount = spiritualCounts[spark.id] || 0;
 
           return {
             ...spark,

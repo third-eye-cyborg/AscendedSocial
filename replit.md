@@ -94,6 +94,12 @@ The platform employs a sophisticated design-to-code workflow integrating visual 
 - **Figma MCP Server**: Advanced bidirectional design synchronization for design token extraction and component synchronization.
 - **Storybook**: Component library showcasing spiritual-themed components with interactive documentation and accessibility testing.
 
+### Compliance and Automation Systems
+- **Privacy Compliance Scanner**: Custom implementation for GDPR, CCPA, and privacy compliance analysis including data flow tracking and violation detection.
+- **Security Vulnerability Scanner**: Automated security analysis for SQL injection, XSS, authentication issues, and insecure configurations.
+- **Browser Automation Service**: Natural language browser automation for testing spiritual platform features including sparks, oracle readings, and energy sharing.
+- **MCP Integration**: Model Context Protocol integration for advanced browser automation and compliance scanning workflows.
+
 ### UI Components
 - **shadcn/ui**: Component library.
 - **React Three Fiber**: 3D rendering.

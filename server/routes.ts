@@ -44,6 +44,7 @@ import { serviceMonitor } from "./service-monitor";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
+import { registerComplianceRoutes, registerAutomationRoutes } from "./compliance-routes";
 import { turnstileService } from "./turnstileService";
 import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import { ServerNotificationService } from "./notificationService";
@@ -2258,6 +2259,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
   registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected
+
+  // Compliance and automation routes
+  registerComplianceRoutes(app);  // Privacy and security compliance scanning
+  registerAutomationRoutes(app);  // Browser automation and testing
 
   // System health monitoring endpoint with comprehensive service status
   app.get('/api/system/health', async (req, res) => {

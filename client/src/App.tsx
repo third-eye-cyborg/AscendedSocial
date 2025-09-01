@@ -29,6 +29,7 @@ import EnergyPage from "@/pages/energy";
 import StarmapPage from "@/pages/starmap";
 import ExplorePage from "@/pages/explore";
 import ZeroTrustPage from "@/pages/zero-trust";
+import Compliance from "@/pages/compliance";
 import Unsubscribe from "@/pages/unsubscribe";
 import CookiePolicy from "@/pages/cookie-policy";
 import DoNotSell from "@/pages/do-not-sell";
@@ -111,6 +112,7 @@ function Router() {
       <Route path="/starmap" component={StarmapPage} />
       <Route path="/explore" component={ExplorePage} />
       <Route path="/zero-trust" component={ZeroTrustPage} />
+      <Route path="/compliance" component={Compliance} />
       <Route path="/unsubscribe" component={Unsubscribe} />
       <Route path="/cookie-policy" component={CookiePolicy} />
       <Route path="/do-not-sell" component={DoNotSell} />

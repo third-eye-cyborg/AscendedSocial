@@ -40,6 +40,7 @@ import { registerBrowserlessRoutes } from "./browserless-routes";
 import { registerBrowserlessAuthRoutes } from "./browserless-auth-routes";
 import { registerMCPRoutes } from "./mcp-routes";
 import { registerFigmaMCPRoutes } from "./figma-mcp-routes";
+import { serviceMonitor } from "./service-monitor";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
 import { registerZeroTrustRoutes } from "./zeroTrustApi";
@@ -2152,6 +2153,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
   registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected
+
+  // System health monitoring endpoint with comprehensive service status
+  app.get('/api/system/health', async (req, res) => {
+    try {
+      const useCache = req.query.cache !== 'false';
+      const health = useCache 
+        ? await serviceMonitor.getCachedOrFreshHealth()
+        : await serviceMonitor.getSystemHealth();
+      
+      const statusCode = health.overall === 'healthy' ? 200 : 
+                        health.overall === 'degraded' ? 206 : 503;
+      
+      res.status(statusCode).json({
+        success: health.overall !== 'unhealthy',
+        health,
+        metrics: serviceMonitor.getServiceMetrics(),
+        polished: true,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error: any) {
+      console.error('❌ [SYSTEM-HEALTH] Health check endpoint failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'System health check failed',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+  console.log('📊 System health monitoring endpoint enabled');
 
 
   const httpServer = createServer(app);

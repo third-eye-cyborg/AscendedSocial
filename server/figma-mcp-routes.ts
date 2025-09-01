@@ -5,58 +5,164 @@ import path from 'path';
 
 const router = Router();
 
-// Extract design tokens from Figma
+// Extract design tokens from Figma with enhanced error handling
 router.post('/api/figma/extract-tokens', async (req, res) => {
+  const startTime = Date.now();
+  
+  console.log(`🎨 [FIGMA-TOKENS] Starting design token extraction at ${new Date().toISOString()}`);
+  
   if (!figmaMCPServer) {
+    console.error('❌ [FIGMA-TOKENS] Server not available - missing credentials');
     return res.status(503).json({
       success: false,
-      error: 'Figma MCP server not available - missing API credentials'
+      error: 'Figma MCP server not available - missing API credentials',
+      timestamp: new Date().toISOString(),
+      duration: Date.now() - startTime
     });
   }
   
   try {
+    // Check server health before proceeding
+    const healthCheck = await figmaMCPServer.healthCheck();
+    if (!healthCheck.success) {
+      throw new Error(`Figma server health check failed: ${healthCheck.error}`);
+    }
+    
+    console.log('✅ [FIGMA-TOKENS] Server health check passed, extracting tokens...');
+    
     const tokens = await figmaMCPServer.extractDesignTokens();
     
-    // Save tokens to CSS variables file
+    if (!tokens || Object.keys(tokens).length === 0) {
+      console.warn('⚠️ [FIGMA-TOKENS] No tokens extracted from Figma');
+      return res.json({
+        success: false,
+        error: 'No design tokens found in Figma file',
+        timestamp: new Date().toISOString(),
+        duration: Date.now() - startTime
+      });
+    }
+    
+    // Save tokens to CSS variables file with backup
     const cssVariables = generateCSSVariables(tokens);
-    await fs.writeFile(
-      path.join(process.cwd(), 'client/src/styles/figma-tokens.css'),
-      cssVariables
-    );
+    const tokensPath = path.join(process.cwd(), 'client/src/styles/figma-tokens.css');
+    
+    // Create backup of existing tokens
+    try {
+      const existingTokens = await fs.readFile(tokensPath, 'utf8');
+      await fs.writeFile(`${tokensPath}.backup`, existingTokens);
+      console.log('📋 [FIGMA-TOKENS] Created backup of existing tokens');
+    } catch (e) {
+      // File doesn't exist yet, which is fine
+    }
+    
+    await fs.writeFile(tokensPath, cssVariables);
+    
+    const tokenCount = Object.keys(tokens).length;
+    const duration = Date.now() - startTime;
+    
+    console.log(`✅ [FIGMA-TOKENS] Successfully extracted ${tokenCount} tokens in ${duration}ms`);
     
     res.json({
       success: true,
       tokens,
-      message: 'Design tokens extracted and saved to CSS variables'
+      tokenCount,
+      duration,
+      message: `Design tokens extracted and saved to CSS variables (${tokenCount} tokens)`,
+      timestamp: new Date().toISOString()
     });
-  } catch (error) {
-    console.error('Error extracting Figma tokens:', error);
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+    console.error(`❌ [FIGMA-TOKENS] Extraction failed after ${duration}ms:`, error.message);
+    
     res.status(500).json({ 
       success: false, 
-      error: 'Failed to extract design tokens from Figma' 
+      error: error.message || 'Failed to extract design tokens from Figma',
+      errorType: error.constructor.name,
+      duration,
+      timestamp: new Date().toISOString()
     });
   }
 });
 
-// Sync components from Figma to Storybook
+// Sync components from Figma to Storybook with comprehensive monitoring
 router.post('/api/figma/sync-components', async (req, res) => {
+  const startTime = Date.now();
+  const syncId = `sync-${Date.now()}`;
+  
+  console.log(`🔄 [FIGMA-SYNC] Starting component sync ${syncId} at ${new Date().toISOString()}`);
+  
+  if (!figmaMCPServer) {
+    console.error(`❌ [FIGMA-SYNC] ${syncId} - Server not available`);
+    return res.status(503).json({
+      success: false,
+      error: 'Figma MCP server not available',
+      syncId,
+      timestamp: new Date().toISOString()
+    });
+  }
+  
   try {
+    // Health check first
+    const healthCheck = await figmaMCPServer.healthCheck();
+    if (!healthCheck.success) {
+      throw new Error(`Server health check failed: ${healthCheck.error}`);
+    }
+    
+    console.log(`✅ [FIGMA-SYNC] ${syncId} - Health check passed, syncing components...`);
+    
     const components = await figmaMCPServer.syncComponentsFromFigma();
     
-    // Generate updated story files based on Figma components
-    await generateStoriesFromFigmaComponents(components);
+    if (!components || components.length === 0) {
+      console.warn(`⚠️ [FIGMA-SYNC] ${syncId} - No components found in Figma`);
+      return res.json({
+        success: false,
+        error: 'No components found in Figma file',
+        syncId,
+        timestamp: new Date().toISOString(),
+        duration: Date.now() - startTime
+      });
+    }
+    
+    console.log(`📦 [FIGMA-SYNC] ${syncId} - Found ${components.length} components, generating stories...`);
+    
+    // Generate updated story files with error handling
+    let storiesGenerated = 0;
+    try {
+      storiesGenerated = await generateStoriesFromFigmaComponents(components);
+    } catch (storyError: any) {
+      console.error(`⚠️ [FIGMA-SYNC] ${syncId} - Story generation failed:`, storyError.message);
+      // Continue with partial success
+    }
+    
+    const duration = Date.now() - startTime;
+    console.log(`✅ [FIGMA-SYNC] ${syncId} - Completed in ${duration}ms: ${components.length} components, ${storiesGenerated} stories`);
     
     res.json({
       success: true,
+      syncId,
       componentsCount: components.length,
-      components: components.map(c => ({ id: c.id, name: c.name })),
-      message: 'Components synced from Figma and Storybook updated'
+      storiesGenerated,
+      components: components.map(c => ({
+        id: c.id,
+        name: c.name,
+        type: c.type || 'component',
+        figmaUrl: c.figmaUrl
+      })),
+      duration,
+      message: `Components synced from Figma: ${components.length} components, ${storiesGenerated} stories generated`,
+      timestamp: new Date().toISOString()
     });
-  } catch (error) {
-    console.error('Error syncing components from Figma:', error);
+  } catch (error: any) {
+    const duration = Date.now() - startTime;
+    console.error(`❌ [FIGMA-SYNC] ${syncId} - Sync failed after ${duration}ms:`, error.message);
+    
     res.status(500).json({ 
       success: false, 
-      error: 'Failed to sync components from Figma' 
+      error: error.message || 'Failed to sync components from Figma',
+      errorType: error.constructor.name,
+      syncId,
+      duration,
+      timestamp: new Date().toISOString()
     });
   }
 });

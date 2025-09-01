@@ -671,38 +671,116 @@ class BrowserlessService {
     }
   }
 
-  // Health Check
-  public async healthCheck(): Promise<{ status: string; browserless: boolean; playwright: boolean; puppeteer: boolean }> {
+  // Enhanced Health Check with detailed monitoring
+  public async healthCheck(): Promise<{ 
+    status: string; 
+    browserless: boolean; 
+    playwright: boolean; 
+    puppeteer: boolean;
+    details: any;
+    timestamp: string;
+  }> {
+    const startTime = Date.now();
     let playwrightOk = false;
     let puppeteerOk = false;
     let browserlessOk = false;
+    const details: any = {
+      config: !!this.config,
+      endpoint: this.config?.endpoint,
+      hasToken: !!this.config?.token,
+      tests: {}
+    };
+
+    console.log('🔍 [BROWSERLESS-HEALTH] Starting comprehensive health check');
 
     try {
-      // Test Browserless connection
+      // Test Browserless configuration
       if (this.config) {
         browserlessOk = true;
+        details.tests.config = { success: true, duration: 0 };
+        console.log('✅ [BROWSERLESS-HEALTH] Configuration check passed');
+      } else {
+        details.tests.config = { success: false, error: 'No configuration found' };
+        console.warn('⚠️ [BROWSERLESS-HEALTH] No configuration found');
       }
 
-      // Test Playwright connection
-      const pwBrowser = await this.getPlaywrightBrowser();
-      if (pwBrowser) {
-        playwrightOk = true;
+      // Test Playwright connection with timeout
+      const playwrightStart = Date.now();
+      try {
+        const pwBrowser = await Promise.race([
+          this.getPlaywrightBrowser(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+        ]);
+        
+        if (pwBrowser) {
+          playwrightOk = true;
+          details.tests.playwright = { 
+            success: true, 
+            duration: Date.now() - playwrightStart 
+          };
+          console.log(`✅ [BROWSERLESS-HEALTH] Playwright connection established in ${Date.now() - playwrightStart}ms`);
+        }
+      } catch (playwrightError: any) {
+        const isRateLimit = playwrightError.message?.includes('429') || playwrightError.message?.includes('Too Many Requests');
+        details.tests.playwright = { 
+          success: false, 
+          error: playwrightError.message,
+          duration: Date.now() - playwrightStart,
+          isRateLimit
+        };
+        console.warn(`⚠️ [BROWSERLESS-HEALTH] Playwright test failed:`, playwrightError.message);
       }
 
-      // Test Puppeteer connection  
-      const ppBrowser = await this.getPuppeteerBrowser();
-      if (ppBrowser) {
-        puppeteerOk = true;
+      // Test Puppeteer connection with timeout
+      const puppeteerStart = Date.now();
+      try {
+        const ppBrowser = await Promise.race([
+          this.getPuppeteerBrowser(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+        ]);
+        
+        if (ppBrowser) {
+          puppeteerOk = true;
+          details.tests.puppeteer = { 
+            success: true, 
+            duration: Date.now() - puppeteerStart 
+          };
+          console.log(`✅ [BROWSERLESS-HEALTH] Puppeteer connection established in ${Date.now() - puppeteerStart}ms`);
+        }
+      } catch (puppeteerError: any) {
+        const isRateLimit = puppeteerError.message?.includes('429') || puppeteerError.message?.includes('Too Many Requests');
+        details.tests.puppeteer = { 
+          success: false, 
+          error: puppeteerError.message,
+          duration: Date.now() - puppeteerStart,
+          isRateLimit
+        };
+        console.warn(`⚠️ [BROWSERLESS-HEALTH] Puppeteer test failed:`, puppeteerError.message);
       }
-    } catch (error) {
-      console.error('Health check failed:', error);
+
+    } catch (error: any) {
+      console.error('❌ [BROWSERLESS-HEALTH] Health check failed:', error.message);
+      details.globalError = error.message;
     }
 
+    const totalDuration = Date.now() - startTime;
+    const healthyCount = [browserlessOk, playwrightOk, puppeteerOk].filter(Boolean).length;
+    const status = healthyCount === 3 ? 'healthy' : healthyCount > 0 ? 'degraded' : 'unhealthy';
+    
+    console.log(`📊 [BROWSERLESS-HEALTH] Health check completed in ${totalDuration}ms - Status: ${status} (${healthyCount}/3 services)`);
+
     return {
-      status: (browserlessOk && playwrightOk && puppeteerOk) ? 'healthy' : 'degraded',
+      status,
       browserless: browserlessOk,
       playwright: playwrightOk,
-      puppeteer: puppeteerOk
+      puppeteer: puppeteerOk,
+      details: {
+        ...details,
+        totalDuration,
+        healthyServices: healthyCount,
+        totalServices: 3
+      },
+      timestamp: new Date().toISOString()
     };
   }
 

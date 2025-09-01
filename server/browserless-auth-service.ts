@@ -23,37 +23,48 @@ export class BrowserlessAuthService extends BrowserlessService {
   public async takeAuthenticatedScreenshot(
     path: string = '/',
     options: AuthenticatedBrowserOptions = {}
-  ): Promise<{ screenshot: string; timestamp: string; metadata: any }> {
-    const browser = await this.getPlaywrightBrowser();
-    const context = await browser.newContext({
-      viewport: options.viewport || { width: 1920, height: 1080 },
-      userAgent: options.userAgent || 'Mozilla/5.0 (compatible; Playwright Testing Bot)'
-    });
+  ): Promise<{ screenshot: string; timestamp: string; metadata: any; success: boolean; error?: string }> {
+    const startTime = Date.now();
+    let browser: any = null;
+    let context: any = null;
     
-    const page = await context.newPage();
-
     try {
-      console.log(`📸 Taking authenticated screenshot of ${path}`);
+      console.log(`📸 [${new Date().toISOString()}] Starting authenticated screenshot for path: ${path}`);
       
-      // Set authentication bypass header
+      // Get browser with retry logic
+      browser = await this.getPlaywrightBrowserWithRetry();
+      
+      context = await browser.newContext({
+        viewport: options.viewport || { width: 1920, height: 1080 },
+        userAgent: options.userAgent || 'Mozilla/5.0 (compatible; AscendedSocial-TestBot/1.0)',
+        ignoreHTTPSErrors: true,
+        bypassCSP: true
+      });
+      
+      const page = await context.newPage();
+
+      // Set authentication bypass headers
       await page.setExtraHTTPHeaders({
         'x-test-auth-bypass': 'true',
-        'x-testing-mode': 'true'
+        'x-testing-mode': 'true',
+        'x-spiritual-tester': 'active'
       });
 
       const fullUrl = `${this.appBaseUrl}${path}`;
-      await page.goto(fullUrl, { waitUntil: 'networkidle' });
+      console.log(`🌐 Navigating to: ${fullUrl}`);
+      
+      await page.goto(fullUrl, { 
+        waitUntil: 'networkidle', 
+        timeout: options.timeout || 30000 
+      });
 
-      // Wait for authenticated content to load
-      try {
-        await page.waitForSelector('[data-testid="authenticated-content"]', { timeout: 5000 });
-      } catch {
-        console.log('⚠️ No authenticated content marker found, proceeding anyway');
-      }
-
+      // Enhanced content loading verification
+      const contentLoaded = await this.waitForContentLoad(page);
+      
       const screenshot = await page.screenshot({ 
         fullPage: options.bypassAuth !== false,
-        type: 'png'
+        type: 'png',
+        timeout: 15000
       });
 
       const base64Image = Buffer.from(screenshot).toString('base64');
@@ -61,17 +72,89 @@ export class BrowserlessAuthService extends BrowserlessService {
         url: page.url(),
         title: await page.title(),
         viewportSize: await page.viewportSize(),
-        user: TEST_USER
+        user: TEST_USER,
+        contentLoaded,
+        loadTime: Date.now() - startTime,
+        timestamp: new Date().toISOString()
       };
 
+      console.log(`✅ Screenshot completed in ${Date.now() - startTime}ms`);
+      
       return {
         screenshot: `data:image/png;base64,${base64Image}`,
         timestamp: new Date().toISOString(),
-        metadata
+        metadata,
+        success: true
+      };
+    } catch (error: any) {
+      console.error(`❌ Screenshot failed after ${Date.now() - startTime}ms:`, error.message);
+      return {
+        screenshot: '',
+        timestamp: new Date().toISOString(),
+        metadata: { error: error.message, path, user: TEST_USER },
+        success: false,
+        error: error.message
       };
     } finally {
-      await context.close();
+      if (context) {
+        try {
+          await context.close();
+        } catch (e) {
+          console.warn('⚠️ Error closing browser context:', e);
+        }
+      }
     }
+  }
+
+  // Enhanced content loading verification
+  private async waitForContentLoad(page: any): Promise<boolean> {
+    try {
+      // Wait for authenticated content marker
+      await page.waitForSelector('[data-testid="authenticated-content"]', { timeout: 3000 });
+      console.log('✅ Authenticated content marker found');
+      return true;
+    } catch {
+      try {
+        // Fallback: wait for any spiritual content
+        await page.waitForSelector('[class*="chakra"], [class*="spiritual"], [data-testid*="spirit"]', { timeout: 3000 });
+        console.log('✅ Spiritual content detected');
+        return true;
+      } catch {
+        try {
+          // Final fallback: wait for basic page structure
+          await page.waitForSelector('main, [role="main"], .main-content', { timeout: 2000 });
+          console.log('⚠️ Basic page structure loaded, no specific spiritual content detected');
+          return false;
+        } catch {
+          console.log('⚠️ Page structure verification failed, proceeding with screenshot');
+          return false;
+        }
+      }
+    }
+  }
+
+  // Browser connection with retry logic
+  private async getPlaywrightBrowserWithRetry(maxRetries: number = 3): Promise<any> {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 Browser connection attempt ${attempt}/${maxRetries}`);
+        const browser = await this.getPlaywrightBrowser();
+        console.log('✅ Browser connected successfully');
+        return browser;
+      } catch (error: any) {
+        console.warn(`⚠️ Browser connection attempt ${attempt} failed:`, error.message);
+        
+        if (attempt === maxRetries) {
+          throw new Error(`Failed to connect after ${maxRetries} attempts: ${error.message}`);
+        }
+        
+        // Wait before retry with exponential backoff
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`⏳ Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    throw new Error('Unexpected error in browser connection retry logic');
   }
 
   // Take authenticated PDF using session injection

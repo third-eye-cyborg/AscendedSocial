@@ -56,42 +56,135 @@ const AuthScrapeSchema = z.object({
 });
 
 export function registerBrowserlessAuthRoutes(app: Express) {
-  // Health check for authenticated browserless service
+  // Enhanced health check with comprehensive monitoring
   app.get('/api/browserless/auth/health', async (req, res) => {
+    const startTime = Date.now();
+    const healthId = `auth-health-${Date.now()}`;
+    
+    console.log(`🔍 [AUTH-HEALTH] ${healthId} - Starting authenticated health check`);
+    
     try {
       const health = await authBrowserlessService.healthCheck();
+      const duration = Date.now() - startTime;
+      
+      console.log(`✅ [AUTH-HEALTH] ${healthId} - Health check passed in ${duration}ms`);
+      
       res.json({
         success: true,
         authenticated: true,
+        healthId,
+        duration,
+        service: 'browserless-auth',
         ...health,
         timestamp: new Date().toISOString()
       });
     } catch (error: any) {
-      console.error('Auth browserless health check failed:', error);
-      res.status(500).json({
+      const duration = Date.now() - startTime;
+      const isRateLimit = error.message?.includes('429') || error.message?.includes('Too Many Requests');
+      
+      console.error(`❌ [AUTH-HEALTH] ${healthId} - Failed after ${duration}ms:`, {
+        error: error.message,
+        isRateLimit,
+        stack: error.stack?.split('\n').slice(0, 3)
+      });
+      
+      const statusCode = isRateLimit ? 429 : 500;
+      const errorMessage = isRateLimit 
+        ? 'Service temporarily rate-limited, functionality may be degraded'
+        : 'Health check failed';
+      
+      res.status(statusCode).json({
         success: false,
-        error: error.message
+        error: errorMessage,
+        healthId,
+        duration,
+        isRateLimit,
+        degradedMode: isRateLimit,
+        timestamp: new Date().toISOString(),
+        service: 'browserless-auth'
       });
     }
   });
 
-  // Take authenticated screenshot
+  // Enhanced authenticated screenshot with validation and monitoring
   app.post('/api/browserless/auth/screenshot', async (req, res) => {
+    const startTime = Date.now();
+    const screenshotId = `auth-screenshot-${Date.now()}`;
+    
     try {
       const { path, options } = AuthScreenshotSchema.parse(req.body);
       
-      const result = await authBrowserlessService.takeAuthenticatedScreenshot(path, options);
+      console.log(`📸 [AUTH-SCREENSHOT] ${screenshotId} - Starting authenticated screenshot for: ${path}`);
       
-      res.json({
-        success: true,
-        authenticated: true,
-        data: result
+      const result = await authBrowserlessService.takeAuthenticatedScreenshot(path, {
+        ...options,
+        timeout: Math.min(options?.timeout || 30000, 60000) // Cap at 60s
       });
+      
+      const duration = Date.now() - startTime;
+      
+      if (result.success) {
+        console.log(`✅ [AUTH-SCREENSHOT] ${screenshotId} - Completed successfully in ${duration}ms`);
+        
+        res.json({
+          success: true,
+          authenticated: true,
+          screenshotId,
+          duration,
+          service: 'browserless-auth',
+          data: {
+            ...result,
+            metadata: {
+              ...result.metadata,
+              screenshotId,
+              duration
+            }
+          }
+        });
+      } else {
+        console.warn(`⚠️ [AUTH-SCREENSHOT] ${screenshotId} - Completed with errors in ${duration}ms`);
+        
+        res.status(500).json({
+          success: false,
+          error: result.error || 'Screenshot capture failed',
+          screenshotId,
+          duration,
+          service: 'browserless-auth'
+        });
+      }
     } catch (error: any) {
-      console.error('Authenticated screenshot failed:', error);
-      res.status(500).json({
+      const duration = Date.now() - startTime;
+      const isRateLimit = error.message?.includes('429') || error.message?.includes('Too Many Requests');
+      const isValidationError = error.name === 'ZodError';
+      
+      console.error(`❌ [AUTH-SCREENSHOT] ${screenshotId} - Failed after ${duration}ms:`, {
+        error: error.message,
+        isRateLimit,
+        isValidationError,
+        path: req.body.path
+      });
+      
+      let statusCode = 500;
+      let errorMessage = error.message;
+      
+      if (isValidationError) {
+        statusCode = 400;
+        errorMessage = 'Invalid request parameters';
+      } else if (isRateLimit) {
+        statusCode = 429;
+        errorMessage = 'Screenshot service temporarily unavailable due to rate limiting';
+      }
+      
+      res.status(statusCode).json({
         success: false,
-        error: error.message
+        error: errorMessage,
+        screenshotId,
+        duration,
+        isRateLimit,
+        isValidationError,
+        degradedMode: isRateLimit,
+        timestamp: new Date().toISOString(),
+        service: 'browserless-auth'
       });
     }
   });

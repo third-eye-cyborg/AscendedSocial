@@ -22,6 +22,36 @@ export default function Sparks() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Check camera permissions
+  const checkCameraPermissions = async () => {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        return { hasPermission: false, error: "Camera not supported in this browser" };
+      }
+
+      // Check if we're on HTTPS
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        return { hasPermission: false, error: "Camera requires secure HTTPS connection" };
+      }
+
+      // Try to get permission status if available
+      if (navigator.permissions) {
+        try {
+          const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
+          if (cameraPermission.state === 'denied') {
+            return { hasPermission: false, error: "Camera access denied. Please enable in browser settings." };
+          }
+        } catch (e) {
+          // Permission API might not be fully supported, continue with getUserMedia test
+        }
+      }
+
+      return { hasPermission: true, error: null };
+    } catch (error) {
+      return { hasPermission: false, error: "Camera permission check failed" };
+    }
+  };
+
   // Fetch sparks
   const { data: sparks = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/sparks'],
@@ -70,25 +100,71 @@ export default function Sparks() {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user',
-          width: { ideal: 720 },
-          height: { ideal: 1280 }, // Portrait orientation
-          aspectRatio: { ideal: 9/16 }
-        },
-        audio: true,
-      });
+      // Check if getUserMedia is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Media recording not supported in this browser");
+      }
+
+      // Check if we're on HTTPS (required for camera access)
+      if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost') {
+        throw new Error("Camera access requires HTTPS");
+      }
+
+      // Request camera and microphone access with fallback options
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'user',
+            width: { ideal: 720, max: 1280 },
+            height: { ideal: 1280, max: 1920 },
+            aspectRatio: { ideal: 9/16 }
+          },
+          audio: true,
+        });
+      } catch (highQualityError) {
+        // Fallback to lower quality if high quality fails
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: {
+              facingMode: 'user',
+              width: { ideal: 480 },
+              height: { ideal: 640 }
+            },
+            audio: true,
+          });
+        } catch (fallbackError) {
+          // Final fallback - basic video only
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false,
+          });
+        }
+      }
 
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
 
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'video/mp4; codecs=avc1.42E01E,mp4a.40.2',
-      });
+      // Determine best supported MIME type
+      let mimeType = 'video/webm; codecs=vp8,opus';
+      const supportedTypes = [
+        'video/webm; codecs=vp9,opus',
+        'video/webm; codecs=vp8,opus', 
+        'video/webm',
+        'video/mp4; codecs=avc1.42E01E,mp4a.40.2',
+        'video/mp4'
+      ];
 
+      for (const type of supportedTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -99,7 +175,7 @@ export default function Sparks() {
       };
 
       mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'video/mp4' });
+        const blob = new Blob(chunksRef.current, { type: mimeType });
         const file = new File([blob], `spark-${Date.now()}.mp4`, { type: 'video/mp4' });
         setRecordedVideo(file);
         setPreviewUrl(URL.createObjectURL(blob));
@@ -111,12 +187,46 @@ export default function Sparks() {
         }
       };
 
+      mediaRecorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        toast({
+          title: "Recording Error",
+          description: "Failed to record video. Please try again.",
+          variant: "destructive",
+        });
+        setIsRecording(false);
+      };
+
       mediaRecorder.start();
       setIsRecording(true);
-    } catch (error) {
+      
+      toast({
+        title: "Recording Started",
+        description: "Tap the stop button when you're done recording.",
+      });
+
+    } catch (error: any) {
+      console.error('Camera access error:', error);
+      
+      let errorMessage = "Could not access camera. ";
+      
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage += "Please allow camera permissions and try again.";
+      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+        errorMessage += "No camera found on this device.";
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage += "Camera not supported in this browser.";
+      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+        errorMessage += "Camera is being used by another application.";
+      } else if (error.message.includes('HTTPS')) {
+        errorMessage += "Secure connection required for camera access.";
+      } else {
+        errorMessage += error.message || "Please check your camera settings.";
+      }
+
       toast({
         title: "Camera Error",
-        description: "Could not access camera. Please check permissions.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -208,7 +318,18 @@ export default function Sparks() {
                 <div className="flex gap-2 justify-center">
                   {!isRecording ? (
                     <Button
-                      onClick={startRecording}
+                      onClick={async () => {
+                        const { hasPermission, error } = await checkCameraPermissions();
+                        if (!hasPermission) {
+                          toast({
+                            title: "Camera Access Issue",
+                            description: error,
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+                        startRecording();
+                      }}
                       variant="outline"
                       size="sm"
                       className="border-primary/30 text-primary hover:bg-primary/10"

@@ -10,10 +10,33 @@ html, body {
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1b3a 0%, #2d1b69 50%, #1a1b3a 100%);
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Ensure app always has minimum height on mobile */
+#root {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Mobile app specific loading fallback */
+@media (max-width: 768px) {
+  body:not(.loaded) #root::before {
+    content: "Loading Ascended Social...";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 18px;
+    font-weight: 500;
+    z-index: 9999;
+  }
 }
 
 /* Ensure no elements exceed viewport width */

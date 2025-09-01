@@ -77,6 +77,19 @@ function Router() {
     }
   }, [user]);
 
+  // Mobile-specific loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium">Connecting to the spiritual realm...</p>
+          <p className="text-sm text-white/60 mt-2">Initializing your mystical experience</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
       {isLoading || !isAuthenticated ? (

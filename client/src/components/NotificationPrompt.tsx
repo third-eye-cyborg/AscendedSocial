@@ -96,7 +96,7 @@ export function NotificationPrompt({
   if (!isVisible && permission === 'default') {
     return (
       <Button 
-        onClick={handleShowPrompt}
+        onClick={handleRequestPermission}
         variant="outline" 
         className={`${className} bg-gray-800/70 border-gray-600 hover:bg-gray-700/90 text-white backdrop-blur-sm`}
         data-testid="button-show-notification-prompt"

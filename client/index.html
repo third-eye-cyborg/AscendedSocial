@@ -17,8 +17,43 @@
     <script id="__enzuzo-root-script" src="https://app.enzuzo.com/scripts/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"></script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Mobile fallback loading screen -->
+      <div id="mobile-fallback" style="min-height: 100vh; background: linear-gradient(135deg, #1a1b3a 0%, #2d1b69 50%, #1a1b3a 100%); color: white; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 20px; text-align: center;">
+        <h1 style="margin: 0 0 20px 0; font-size: 28px; font-weight: 700; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">Ascended Social</h1>
+        <div style="width: 60px; height: 60px; border: 4px solid rgba(139, 92, 246, 0.3); border-top: 4px solid #8b5cf6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+        <p style="margin: 0 0 10px 0; font-size: 18px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">Loading spiritual platform...</p>
+        <p style="margin: 0; font-size: 14px; opacity: 0.8; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;">Connecting to the cosmic realm</p>
+        <style>
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        </style>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Remove fallback loading screen once page is fully loaded
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const fallback = document.getElementById('mobile-fallback');
+          if (fallback && fallback.parentNode) {
+            fallback.style.display = 'none';
+          }
+        }, 1000);
+      });
+      
+      // Also remove on DOMContentLoaded as backup
+      document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+          const fallback = document.getElementById('mobile-fallback');
+          if (fallback && fallback.parentNode) {
+            fallback.style.opacity = '0.5';
+          }
+        }, 2000);
+      });
+    </script>
     <!-- Replit dev banner script - conditionally loaded to avoid undefined property errors -->
     <script type="text/javascript">
       // Only load the replit banner if we're in a proper replit environment

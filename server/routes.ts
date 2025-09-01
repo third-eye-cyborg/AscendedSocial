@@ -37,6 +37,7 @@ const upload = multer({
   }
 });
 import { registerBrowserlessRoutes } from "./browserless-routes";
+import { registerBrowserlessAuthRoutes } from "./browserless-auth-routes";
 import { registerMCPRoutes } from "./mcp-routes";
 import { registerFigmaMCPRoutes } from "./figma-mcp-routes";
 import { registerVisionsRoutes } from "./visionsApi";
@@ -2145,6 +2146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Register routes with appropriate Zero Trust protection levels
   registerBrowserlessRoutes(app); // Browser automation - should be Zero Trust protected
+  registerBrowserlessAuthRoutes(app); // Authenticated browser automation for testing
   registerMCPRoutes(app);         // MCP server - should be Zero Trust protected
   registerFigmaMCPRoutes(app);    // Figma design sync - should be Zero Trust protected
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only

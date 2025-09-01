@@ -44,6 +44,7 @@ import CommunityProtection from './pages/community-protection';
 import CopyrightPolicy from './pages/copyright-policy';
 import ServiceAgreement from './pages/service-agreement';
 import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
+import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -105,6 +106,7 @@ function Router() {
         </>
       ) : (
         <>
+          <AuthenticatedMarker />
           <Route path="/" component={Home} />
           <Route path="/profile/:userId" component={Profile} />
           <Route path="/post/:postId" component={Post} />

@@ -1,0 +1,45 @@
+{
+  "mcpServers": {
+    "storybook": {
+      "command": "npx",
+      "args": ["-y", "@storybook/cli"],
+      "env": {
+        "STORYBOOK_URL": "http://localhost:6006/index.json"
+      }
+    }
+  },
+  "automation": {
+    "componentSync": {
+      "enabled": true,
+      "scanPaths": [
+        "client/src/components/ui/**/*.tsx",
+        "client/src/components/*.tsx"
+      ],
+      "outputPath": "client/src/stories/",
+      "templateConfig": {
+        "spiritual": true,
+        "chakraTheming": true,
+        "auralevel": true
+      }
+    },
+    "documentation": {
+      "autodocs": true,
+      "accessibilityTesting": true,
+      "visualRegression": true,
+      "designTokens": true
+    }
+  },
+  "spiritualDesignSystem": {
+    "chakras": {
+      "root": { "color": "#E53E3E", "emoji": "🔴", "element": "Earth" },
+      "sacral": { "color": "#F56500", "emoji": "🟠", "element": "Water" },
+      "solar": { "color": "#F6E05E", "emoji": "🟡", "element": "Fire" },
+      "heart": { "color": "#38A169", "emoji": "💚", "element": "Air" },
+      "throat": { "color": "#3182CE", "emoji": "🔵", "element": "Space" },
+      "third_eye": { "color": "#805AD5", "emoji": "🟣", "element": "Light" },
+      "crown": { "color": "#E2E8F0", "emoji": "🤍", "element": "Thought" }
+    },
+    "auraLevels": ["dim", "glowing", "radiant", "luminous", "transcendent"],
+    "spiritTypes": ["Guardian Angel", "Water Elemental", "Wolf Spirit", "Crystal Being", "Cosmic Entity"]
+  }
+}

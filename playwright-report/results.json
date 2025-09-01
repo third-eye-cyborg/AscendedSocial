@@ -122,131 +122,18 @@
     "workers": 4,
     "webServer": null
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "chromatic-storybook.chromatic.spec.ts",
-      "file": "chromatic-storybook.chromatic.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Chromatic Visual Regression Tests",
-          "file": "chromatic-storybook.chromatic.spec.ts",
-          "line": 4,
-          "column": 15,
-          "specs": [
-            {
-              "title": "Button Component - All Variants",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromatic",
-                  "projectName": "chromatic",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e2c4f48f680ee60e49c2-3edfa7e866ad565e95e5",
-              "file": "chromatic-storybook.chromatic.spec.ts",
-              "line": 6,
-              "column": 3
-            },
-            {
-              "title": "Header Component",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromatic",
-                  "projectName": "chromatic",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e2c4f48f680ee60e49c2-0ae521e722c4cf1ec506",
-              "file": "chromatic-storybook.chromatic.spec.ts",
-              "line": 20,
-              "column": 3
-            },
-            {
-              "title": "Page Component - Complete Stories",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromatic",
-                  "projectName": "chromatic",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e2c4f48f680ee60e49c2-b477eca35295210dbcf1",
-              "file": "chromatic-storybook.chromatic.spec.ts",
-              "line": 28,
-              "column": 3
-            },
-            {
-              "title": "Interactive Components",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromatic",
-                  "projectName": "chromatic",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e2c4f48f680ee60e49c2-f4518e553af21a4703fc",
-              "file": "chromatic-storybook.chromatic.spec.ts",
-              "line": 38,
-              "column": 3
-            },
-            {
-              "title": "Responsive Design Tests",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromatic",
-                  "projectName": "chromatic",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "e2c4f48f680ee60e49c2-b32d0cf5eca89b0e4c34",
-              "file": "chromatic-storybook.chromatic.spec.ts",
-              "line": 54,
-              "column": 3
-            }
-          ]
-        }
-      ]
+      "message": "Error: Process from config.webServer was not able to start. Exit code: 7",
+      "stack": "Error: Process from config.webServer was not able to start. Exit code: 7"
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2025-09-01T00:38:57.282Z",
-    "duration": 177.9670000000001,
+    "startTime": "2025-09-01T00:42:36.108Z",
+    "duration": 7881.6230000000005,
     "expected": 0,
-    "skipped": 5,
+    "skipped": 0,
     "unexpected": 0,
     "flaky": 0
   }

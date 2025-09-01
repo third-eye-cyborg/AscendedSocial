@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@chromatic-com/playwright';
 
 test.describe('Ascended Social Component Visual Regression', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,70 +1,70 @@
-import { test as chromaticTest, takeSnapshot } from '@chromatic-com/playwright';
+import { test, expect } from '@chromatic-com/playwright';
 
 // Chromatic Playwright integration tests for Ascended Social components
-chromaticTest.describe('Chromatic Visual Regression Tests', () => {
+test.describe('Chromatic Visual Regression Tests', () => {
 
-  chromaticTest('Button Component - All Variants', async ({ page }) => {
+  test('Button Component - All Variants', async ({ page }) => {
     await page.goto('http://localhost:6006/iframe.html?id=example-button--primary');
-    await takeSnapshot(page, 'Button Primary');
+    await expect(page).toHaveScreenshot('button-primary.png');
 
     await page.goto('http://localhost:6006/iframe.html?id=example-button--secondary');
-    await takeSnapshot(page, 'Button Secondary');
+    await expect(page).toHaveScreenshot('button-secondary.png');
 
     await page.goto('http://localhost:6006/iframe.html?id=example-button--large');
-    await takeSnapshot(page, 'Button Large');
+    await expect(page).toHaveScreenshot('button-large.png');
 
     await page.goto('http://localhost:6006/iframe.html?id=example-button--small');
-    await takeSnapshot(page, 'Button Small');
+    await expect(page).toHaveScreenshot('button-small.png');
   });
 
-  chromaticTest('Header Component', async ({ page }) => {
+  test('Header Component', async ({ page }) => {
     await page.goto('http://localhost:6006/iframe.html?id=example-header--logged-in');
-    await takeSnapshot(page, 'Header Logged In');
+    await expect(page).toHaveScreenshot('header-logged-in.png');
 
     await page.goto('http://localhost:6006/iframe.html?id=example-header--logged-out');
-    await takeSnapshot(page, 'Header Logged Out');
+    await expect(page).toHaveScreenshot('header-logged-out.png');
   });
 
-  chromaticTest('Page Component - Complete Stories', async ({ page }) => {
+  test('Page Component - Complete Stories', async ({ page }) => {
     await page.goto('http://localhost:6006/iframe.html?id=example-page--logged-in');
     await page.waitForLoadState('networkidle');
-    await takeSnapshot(page, 'Page Logged In');
+    await expect(page).toHaveScreenshot('page-logged-in.png');
 
     await page.goto('http://localhost:6006/iframe.html?id=example-page--logged-out');
     await page.waitForLoadState('networkidle');
-    await takeSnapshot(page, 'Page Logged Out');
+    await expect(page).toHaveScreenshot('page-logged-out.png');
   });
 
-  chromaticTest('Interactive Components', async ({ page }) => {
+  test('Interactive Components', async ({ page }) => {
     // Test button interactions
     await page.goto('http://localhost:6006/iframe.html?id=example-button--primary');
     
     // Normal state
-    await takeSnapshot(page, 'Button Normal State');
+    await expect(page).toHaveScreenshot('button-normal-state.png');
     
     // Hover state
     await page.locator('button').hover();
-    await takeSnapshot(page, 'Button Hover State');
+    await expect(page).toHaveScreenshot('button-hover-state.png');
     
     // Focus state
     await page.locator('button').focus();
-    await takeSnapshot(page, 'Button Focus State');
+    await expect(page).toHaveScreenshot('button-focus-state.png');
   });
 
-  chromaticTest('Responsive Design Tests', async ({ page }) => {
+  test('Responsive Design Tests', async ({ page }) => {
     await page.goto('http://localhost:6006/iframe.html?id=example-page--logged-in');
     
     // Mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
-    await takeSnapshot(page, 'Mobile Viewport');
+    await expect(page).toHaveScreenshot('mobile-viewport.png');
     
     // Tablet viewport
     await page.setViewportSize({ width: 768, height: 1024 });
-    await takeSnapshot(page, 'Tablet Viewport');
+    await expect(page).toHaveScreenshot('tablet-viewport.png');
     
     // Desktop viewport
     await page.setViewportSize({ width: 1280, height: 720 });
-    await takeSnapshot(page, 'Desktop Viewport');
+    await expect(page).toHaveScreenshot('desktop-viewport.png');
   });
 
 });

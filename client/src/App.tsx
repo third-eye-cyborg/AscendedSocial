@@ -91,7 +91,7 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={Landing} />
+      <Route path="/">{isAuthenticated ? <Home /> : <Landing />}</Route>
       <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/about" component={About} />

@@ -112,7 +112,7 @@ export function NotificationPrompt({
   }
 
   return (
-    <Card className={`${className} border-2 border-purple-700/50 bg-gradient-to-br from-gray-900/95 via-gray-800/95 to-gray-900/95 backdrop-blur-xl shadow-2xl shadow-purple-500/20`} data-testid="card-notification-prompt">
+    <Card className={`${className} bg-cosmic-light border border-primary/30 backdrop-blur-xl shadow-2xl shadow-purple-500/20 glass-effect hover-lift rounded-xl`} data-testid="card-notification-prompt">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <div className="p-3 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full shadow-lg">
@@ -192,7 +192,7 @@ export function NotificationPrompt({
         <Button 
           onClick={handleDismiss}
           variant="outline"
-          className="flex-1 sm:flex-none border-gray-600 hover:bg-gray-800 text-gray-300"
+          className="flex-1 sm:flex-none bg-gray-800/70 border-gray-600 hover:bg-gray-700/90 text-gray-200 backdrop-blur-sm"
           data-testid="button-dismiss-prompt"
         >
           <BellOff className="w-4 h-4 mr-2" />

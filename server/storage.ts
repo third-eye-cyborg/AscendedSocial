@@ -59,6 +59,7 @@ export interface IStorage {
   createPost(post: InsertPost, authorId: string): Promise<Post>;
   getPost(id: string): Promise<PostWithAuthor | undefined>;
   getPosts(limit?: number, offset?: number): Promise<PostWithAuthor[]>;
+  getPostsByType(type: string, limit?: number, offset?: number): Promise<PostWithAuthor[]>;
   getUserPosts(userId: string, limit?: number): Promise<PostWithAuthor[]>;
   updatePostChakra(postId: string, chakra: ChakraType): Promise<Post>;
   updatePostSpiritual(postId: string, authorId: string, isSpiritual: boolean): Promise<void>;
@@ -283,6 +284,34 @@ export class DatabaseStorage implements IStorage {
       })
       .from(posts)
       .innerJoin(users, eq(posts.authorId, users.id))
+      .orderBy(desc(posts.createdAt))
+      .limit(limit)
+      .offset(offset);
+    return result;
+  }
+
+  async getPostsByType(type: string, limit = 20, offset = 0): Promise<PostWithAuthor[]> {
+    const result = await db
+      .select({
+        id: posts.id,
+        authorId: posts.authorId,
+        content: posts.content,
+        imageUrl: posts.imageUrl,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        chakra: posts.chakra,
+        frequency: posts.frequency,
+        type: posts.type,
+        isPremium: posts.isPremium,
+        isSpiritual: posts.isSpiritual,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+        author: users,
+        cloudflareVideoId: posts.cloudflareVideoId,
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .where(eq(posts.type, type))
       .orderBy(desc(posts.createdAt))
       .limit(limit)
       .offset(offset);

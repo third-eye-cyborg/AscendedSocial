@@ -27,12 +27,12 @@ import multer from 'multer';
 // Multer setup for file uploads
 const upload = multer({ 
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only image and video files are allowed'));
     }
   }
 });
@@ -49,6 +49,7 @@ import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import { ServerNotificationService } from "./notificationService";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
+import { cloudflareImages } from "./cloudflareImages";
 
 // Stripe setup
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -2142,6 +2143,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error getting privacy status:', error);
       res.status(500).json({ error: 'Failed to get privacy status' });
+    }
+  });
+
+  // Sparks routes - short-form posts with optional portrait videos
+  app.post('/api/sparks', isAuthenticated, upload.single('video'), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { content } = req.body;
+      
+      if (!content || content.trim().length === 0) {
+        return res.status(400).json({ message: "Content is required" });
+      }
+      
+      if (content.length > 140) {
+        return res.status(400).json({ message: "Content cannot exceed 140 characters" });
+      }
+
+      let videoUrl = null;
+      let cloudflareVideoId = null;
+
+      // Handle video upload if present
+      if (req.file) {
+        try {
+          // Validate video file
+          const allowedMimeTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/mov'];
+          if (!allowedMimeTypes.includes(req.file.mimetype)) {
+            return res.status(400).json({ message: "Only MP4, WebM, and MOV video formats are supported" });
+          }
+
+          // Upload to Cloudflare Stream with metadata
+          const uploadResult = await cloudflareImages.uploadVideo(req.file.buffer, {
+            name: `spark-${userId}-${Date.now()}`,
+            type: 'spark',
+            userId: userId
+          });
+
+          cloudflareVideoId = uploadResult.result.uid;
+          const streamUrls = cloudflareImages.getVideoStreamUrls(cloudflareVideoId);
+          videoUrl = streamUrls.hls; // Use HLS for best compatibility
+        } catch (error) {
+          console.error("Error uploading video:", error);
+          return res.status(500).json({ message: "Failed to upload video" });
+        }
+      }
+
+      // Create spark post
+      const sparkData = {
+        content: content.trim(),
+        type: 'spark',
+        videoUrl,
+        cloudflareVideoId
+      };
+
+      const spark = await storage.createPost(sparkData, userId);
+
+      // Analyze content for chakra categorization
+      const chakraAnalysis = await analyzePostChakra(sparkData.content);
+      await storage.updatePostChakra(spark.id, chakraAnalysis.chakra);
+
+      // Fetch complete spark with author
+      const sparkWithAuthor = await storage.getPost(spark.id);
+
+      res.json(sparkWithAuthor);
+    } catch (error) {
+      console.error("Error creating spark:", error);
+      res.status(500).json({ message: "Failed to create spark" });
+    }
+  });
+
+  app.get('/api/sparks', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      // Get sparks specifically (type = 'spark')
+      const sparks = await storage.getPostsByType('spark', limit, offset);
+
+      // Get engagement counts for each spark
+      const sparkIds = sparks.map((s: any) => s.id);
+      const spiritualCounts = await storage.getSpiritualCountForPosts(sparkIds);
+
+      const sparksWithEngagements = await Promise.all(
+        sparks.map(async (spark: any) => {
+          const engagements = await storage.getPostEngagements(spark.id);
+          const spiritualCount = spiritualCounts.find((sc: any) => sc.postId === spark.id)?.count || 0;
+
+          return {
+            ...spark,
+            upvotes: engagements.upvote || 0,
+            downvotes: engagements.downvote || 0,
+            likes: engagements.like || 0,
+            energy: engagements.energy || 0,
+            spiritualCount,
+            // Add video streaming URLs if video exists
+            videoStreamUrls: spark.videoUrl && spark.cloudflareVideoId ? 
+              cloudflareImages.getVideoStreamUrls(spark.cloudflareVideoId) : null
+          };
+        })
+      );
+
+      res.json(sparksWithEngagements);
+    } catch (error) {
+      console.error("Error fetching sparks:", error);
+      res.status(500).json({ message: "Failed to fetch sparks" });
     }
   });
 

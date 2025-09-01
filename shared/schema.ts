@@ -86,6 +86,7 @@ export const posts = pgTable("posts", {
   imageUrl: varchar("image_url"),
   imageUrls: text("image_urls").array(), // Support up to 5 images as JSON array  
   videoUrl: varchar("video_url"),
+  cloudflareVideoId: varchar("cloudflare_video_id"), // Cloudflare Stream video ID
   chakra: chakraEnum("chakra").notNull(), // AI-assigned chakra category
   frequency: integer("frequency").default(0), // Post frequency from votes
   type: varchar("type").notNull().default("post"), // "post", "spark", "vision"

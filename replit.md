@@ -111,8 +111,8 @@ A four-layer security model utilizing Cloudflare Zero Trust:
   - **Cloudflare WAF**: API protection with DDoS mitigation, rate limiting, and threat detection
   - **Integration**: Sophisticated middleware system for graduated security levels and audit logging
 
-### Testing and Quality Assurance
-- **Scrapybara**: Automated screenshot testing.
+### Browser Automation and Testing
+- **Browserless**: Cloud-based browser automation service providing scalable Playwright and Puppeteer capabilities for screenshots, PDF generation, web scraping, and performance testing.
 
 ### UI Components
 - **shadcn/ui**: Component library.

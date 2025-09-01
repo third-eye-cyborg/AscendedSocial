@@ -548,13 +548,13 @@ Authorization: Zero Trust Admin Group
 Content-Type: application/json
 \`\`\`
 
-## 🤖 Testing & Automation (Scrapybara)
+## 🤖 Browser Automation & Testing
 
-### Browser Automation
-Endpoints for automated testing and browser automation.
+### Browser Automation & Screenshots
+Cloud-based browser automation with Playwright and Puppeteer for screenshots, PDFs, and web scraping.
 
 \`\`\`http
-POST /api/scrapybara/start-browser
+POST /api/browserless/screenshot
 Content-Type: application/json
 \`\`\`
 
@@ -562,7 +562,7 @@ Content-Type: application/json
 Setup and manage authentication states for testing.
 
 \`\`\`http
-POST /api/scrapybara/setup-auth
+POST /api/browserless/pdf
 Content-Type: application/json
 \`\`\`
 

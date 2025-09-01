@@ -74,6 +74,32 @@ html, body {
   }
 }
 
+/* Fix mobile bottom navigation positioning issues during scroll */
+@media (max-width: 1279px) {
+  /* Target the mobile navigation specifically - use more specific selector */
+  .xl\\:hidden nav.fixed.bottom-0 {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    transform: translateZ(0) !important; /* Hardware acceleration for smoother performance */
+    -webkit-transform: translateZ(0) !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    will-change: transform !important;
+  }
+  
+  /* Fix for mobile Safari viewport height changes during scroll */
+  @supports (-webkit-touch-callout: none) {
+    /* Mobile Safari specific fixes */
+    .xl\\:hidden nav.fixed.bottom-0 {
+      bottom: env(safe-area-inset-bottom, 0) !important;
+      padding-bottom: env(safe-area-inset-bottom, 0) !important;
+    }
+  }
+}
+
 /* GLOBAL ENZUZO DROPDOWN FIX - Target dropdowns anywhere on page */
 /* This targets Enzuzo dropdowns that might be rendered outside the main container */
 

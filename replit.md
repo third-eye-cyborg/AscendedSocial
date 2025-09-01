@@ -114,6 +114,20 @@ A four-layer security model utilizing Cloudflare Zero Trust:
 ### Browser Automation and Testing
 - **Browserless**: Cloud-based browser automation service providing scalable Playwright and Puppeteer capabilities for screenshots, PDF generation, web scraping, and performance testing.
 
+### Design System Integration
+- **Figma MCP Server**: Bidirectional design synchronization with Figma for extracting design tokens, component specifications, and enabling design-to-code workflows.
+- **Storybook Integration**: 14 component stories with spiritual theming, chakra-based design system, and Chromatic deployment for visual regression testing.
+- **Cypress & Playwright Testing**: Comprehensive testing suite including component testing, visual regression, accessibility testing, and cross-browser compatibility.
+
+### Complete Design-to-Code Workflow
+The platform implements a full design workflow circle:
+1. **Figma Design**: Manual design creation and iteration in Figma
+2. **MCP Sync**: Automated extraction of design tokens and component specifications
+3. **Storybook Generation**: Dynamic story creation based on Figma components
+4. **Testing Validation**: Cypress component tests and Playwright visual regression
+5. **Chromatic Deployment**: Automated deployment with GitHub sync for version control
+6. **Bidirectional Updates**: Push design changes back to Figma through MCP
+
 ### UI Components
 - **shadcn/ui**: Component library.
 - **React Three Fiber**: 3D rendering.

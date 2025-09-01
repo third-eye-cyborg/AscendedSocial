@@ -45,6 +45,35 @@ html, body {
   max-width: none !important;
 }
 
+/* Enzuzo cookie banner positioning - add bottom margin on mobile to appear above bottom navigation */
+@media (max-width: 768px) {
+  /* Target the Enzuzo cookie banner container */
+  .ez-cookie-consent,
+  .ez-banner,
+  [class*="ez-cookie"],
+  [class*="ez-banner"],
+  [id*="enzuzo-banner"],
+  [class*="enzuzo-banner"] {
+    bottom: 80px !important; /* Position above mobile navigation */
+    margin-bottom: 80px !important;
+  }
+  
+  /* Fallback for any fixed positioned Enzuzo elements */
+  div[style*="position: fixed"][style*="bottom"],
+  div[style*="position:fixed"][style*="bottom"] {
+    margin-bottom: 80px !important;
+  }
+  
+  /* Target common cookie banner class patterns */
+  .cookie-banner,
+  .cookieBanner,
+  [class*="cookie-consent"],
+  [class*="cookieConsent"] {
+    bottom: 80px !important;
+    margin-bottom: 80px !important;
+  }
+}
+
 /* GLOBAL ENZUZO DROPDOWN FIX - Target dropdowns anywhere on page */
 /* This targets Enzuzo dropdowns that might be rendered outside the main container */
 

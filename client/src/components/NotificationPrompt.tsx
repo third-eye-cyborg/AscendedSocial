@@ -98,7 +98,7 @@ export function NotificationPrompt({
       <Button 
         onClick={handleShowPrompt}
         variant="outline" 
-        className={`${className} bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-700 hover:from-purple-900/30 hover:to-blue-900/30 text-white`}
+        className={`${className} bg-gray-800/70 border-gray-600 hover:bg-gray-700/90 text-white backdrop-blur-sm`}
         data-testid="button-show-notification-prompt"
       >
         <Bell className="w-4 h-4 mr-2" />

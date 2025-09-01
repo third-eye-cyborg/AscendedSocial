@@ -23,23 +23,40 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Ensure cards don't interfere with bottom navigation */
+/* Ensure cards don't interfere with bottom navigation and have proper spacing from sidebar */
 @media (max-width: 1279px) {
+  /* Mobile/tablet layout - no sidebar, just bottom nav spacing */
   main, .main-content, [data-main="true"] {
     padding-bottom: 100px; /* Add space above bottom navigation */
   }
   
-  /* Fix card containers that might overflow */
+  /* Fix card containers that might overflow on mobile */
   .card, [class*="card"], [data-testid*="card"] {
-    max-width: calc(100vw - 2rem);
+    max-width: calc(100vw - 2rem); /* Account for mobile margins */
     margin-left: auto;
     margin-right: auto;
     overflow-x: hidden;
   }
   
-  /* Specific fixes for post and vision cards */
+  /* Specific fixes for post and vision cards on mobile */
   [data-testid*="post-"], [data-testid*="vision-"], [data-testid*="card-"] {
-    max-width: calc(100vw - 2rem);
+    max-width: calc(100vw - 2rem); /* Account for mobile margins */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Desktop sidebar spacing */
+@media (min-width: 1280px) {
+  main, .main-content, [data-main="true"] {
+    margin-left: 16rem; /* Space for sidebar */
+    padding-left: 2rem; /* Additional padding from sidebar */
+    padding-right: 2rem;
+  }
+  
+  /* Desktop card width constraints */
+  .card, [class*="card"], [data-testid*="card"] {
+    max-width: calc(100vw - 20rem); /* Account for sidebar + oracle sidebar */
     margin-left: auto;
     margin-right: auto;
   }

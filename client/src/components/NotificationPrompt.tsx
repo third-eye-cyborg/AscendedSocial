@@ -38,7 +38,13 @@ export function NotificationPrompt({
     setIsLoading(true);
     
     try {
-      const granted = await NotificationService.requestPermission('spiritual_journey');
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise<boolean>((_, reject) => {
+        setTimeout(() => reject(new Error('Permission request timeout')), 10000);
+      });
+      
+      const permissionPromise = NotificationService.requestPermission('spiritual_journey');
+      const granted = await Promise.race([permissionPromise, timeoutPromise]);
       
       if (granted) {
         setPermission('granted');
@@ -72,6 +78,28 @@ export function NotificationPrompt({
       }
     } catch (error) {
       console.error('Permission request failed:', error);
+      
+      // If it's a timeout or initialization error, just use browser native permission
+      if (error instanceof Error && (error.message.includes('timeout') || error.message.includes('initialization'))) {
+        try {
+          const nativePermission = await Notification.requestPermission();
+          if (nativePermission === 'granted') {
+            setPermission('granted');
+            setIsVisible(false);
+            onPermissionGranted?.();
+            
+            toast({
+              title: "🌟 Notifications Enabled!",
+              description: "You'll receive spiritual insights, oracle guidance, and community updates.",
+              duration: 5000,
+            });
+            return;
+          }
+        } catch (nativeError) {
+          console.error('Native permission request failed:', nativeError);
+        }
+      }
+      
       toast({
         title: "Permission Error",
         description: "Unable to request notification permission. Please try again.",

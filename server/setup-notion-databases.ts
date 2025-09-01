@@ -65,8 +65,8 @@ async function setupDevelopmentDatabases() {
             }
         });
 
-        // 2. Mobile Development Database
-        console.log('📱 Creating Mobile Development database...');
+        // 2. Mobile Development Database - Updated with MCP Integration
+        console.log('📱 Creating Mobile Development database with MCP integration...');
         const mobileDevDb = await createDatabaseIfNotExists("Mobile Development", {
             Title: {
                 title: {}
@@ -77,7 +77,9 @@ async function setupDevelopmentDatabases() {
                         { name: "iOS", color: "blue" },
                         { name: "Android", color: "green" },
                         { name: "Cross-Platform", color: "purple" },
-                        { name: "Backend Integration", color: "orange" }
+                        { name: "Backend Integration", color: "orange" },
+                        { name: "MCP Integration", color: "pink" },
+                        { name: "Figma Sync", color: "red" }
                     ]
                 }
             },
@@ -88,7 +90,8 @@ async function setupDevelopmentDatabases() {
                         { name: "In Development", color: "blue" },
                         { name: "Testing", color: "yellow" },
                         { name: "Completed", color: "green" },
-                        { name: "On Hold", color: "red" }
+                        { name: "On Hold", color: "red" },
+                        { name: "MCP Sync Ready", color: "purple" }
                     ]
                 }
             },
@@ -98,17 +101,45 @@ async function setupDevelopmentDatabases() {
                         { name: "Not Started", color: "gray" },
                         { name: "In Progress", color: "blue" },
                         { name: "Integrated", color: "green" },
-                        { name: "Testing", color: "yellow" }
+                        { name: "Testing", color: "yellow" },
+                        { name: "Browserless Ready", color: "purple" }
                     ]
                 }
             },
             "Backend Sync": {
                 checkbox: {}
             },
+            "MCP Sync Status": {
+                select: {
+                    options: [
+                        { name: "Not Configured", color: "gray" },
+                        { name: "Figma Connected", color: "blue" },
+                        { name: "Bidirectional Sync", color: "green" },
+                        { name: "Notion Integration", color: "purple" }
+                    ]
+                }
+            },
+            "Testing Framework": {
+                multi_select: {
+                    options: [
+                        { name: "Cypress", color: "green" },
+                        { name: "Playwright", color: "blue" },
+                        { name: "Browserless", color: "purple" },
+                        { name: "Chromatic", color: "orange" },
+                        { name: "Storybook", color: "pink" }
+                    ]
+                }
+            },
             Description: {
                 rich_text: {}
             },
             "Implementation Notes": {
+                rich_text: {}
+            },
+            "API Endpoints": {
+                rich_text: {}
+            },
+            "MCP Integration Notes": {
                 rich_text: {}
             }
         });

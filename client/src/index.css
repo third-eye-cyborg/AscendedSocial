@@ -46,21 +46,6 @@ html, body {
   }
 }
 
-/* Desktop sidebar spacing */
-@media (min-width: 1280px) {
-  main, .main-content, [data-main="true"] {
-    margin-left: 16rem; /* Space for sidebar */
-    padding-left: 2rem; /* Additional padding from sidebar */
-    padding-right: 2rem;
-  }
-  
-  /* Desktop card width constraints */
-  .card, [class*="card"], [data-testid*="card"] {
-    max-width: calc(100vw - 20rem); /* Account for sidebar + oracle sidebar */
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
 
 /* Ensure app always has minimum height on mobile */
 #root {

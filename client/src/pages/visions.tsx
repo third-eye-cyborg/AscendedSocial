@@ -81,7 +81,7 @@ export default function Visions() {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto px-4 xl:px-8 xl:ml-8 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-8 xl:ml-16 xl:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="relative">

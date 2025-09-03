@@ -162,7 +162,7 @@ export function VisionCard({ vision, onUpdate }: VisionCardProps) {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pb-5">
         {/* Vision Content */}
         <div className="space-y-3">
           <p className="text-gray-300 leading-relaxed text-sm">

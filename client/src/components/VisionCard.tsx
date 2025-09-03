@@ -265,7 +265,7 @@ export function VisionCard({ vision, onUpdate }: VisionCardProps) {
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-primary/20">
+        <div className="flex items-center justify-between pt-3 mt-2 border-t border-primary/20">
           <div className="flex items-center gap-1">
             <Button
               variant="ghost"

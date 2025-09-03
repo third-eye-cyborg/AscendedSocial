@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express from "express";
 import { zeroTrust } from "./cloudflareZeroTrust";
 import { 
   validateZeroTrustToken, 
@@ -9,15 +9,15 @@ import {
 } from "./zeroTrustMiddleware";
 import { isAuthenticated } from "./replitAuth";
 
-export function registerZeroTrustRoutes(app: Express): void {
+const router = express.Router();
   // Admin-only routes for Zero Trust management
   const adminProtection = zeroTrustProtection({
     requireGroups: ['Admin Access Policy'],
     bypassInDevelopment: true
   });
 
-  // Get Zero Trust status and configuration
-  app.get("/api/zero-trust/status", isAuthenticated, async (req, res) => {
+// Get Zero Trust status and configuration
+router.get("/status", isAuthenticated, async (req, res) => {
     try {
       const isConfigured = !!zeroTrust;
       const config = isConfigured ? {
@@ -45,7 +45,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Get current user's Zero Trust info
-  app.get("/api/zero-trust/user", validateZeroTrustToken, (req: ZeroTrustRequest, res) => {
+router.get("/user", validateZeroTrustToken, (req: ZeroTrustRequest, res) => {
     const zeroTrustUser = getZeroTrustUser(req);
     
     if (!zeroTrustUser) {
@@ -68,7 +68,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get all applications
-  app.get("/api/zero-trust/applications", adminProtection, async (req, res) => {
+router.get("/applications", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -83,7 +83,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Create new application
-  app.post("/api/zero-trust/applications", adminProtection, async (req, res) => {
+router.post("/applications", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -99,7 +99,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Update application
-  app.put("/api/zero-trust/applications/:appId", adminProtection, async (req, res) => {
+router.put("/applications/:appId", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -116,7 +116,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Delete application
-  app.delete("/api/zero-trust/applications/:appId", adminProtection, async (req, res) => {
+router.delete("/applications/:appId", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -137,7 +137,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get all policies
-  app.get("/api/zero-trust/policies", adminProtection, async (req, res) => {
+router.get("/policies", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -152,7 +152,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Create new policy
-  app.post("/api/zero-trust/policies", adminProtection, async (req, res) => {
+router.post("/policies", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -168,7 +168,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get all groups
-  app.get("/api/zero-trust/groups", adminProtection, async (req, res) => {
+router.get("/groups", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -183,7 +183,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Create new group
-  app.post("/api/zero-trust/groups", adminProtection, async (req, res) => {
+router.post("/groups", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -199,7 +199,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get service tokens
-  app.get("/api/zero-trust/service-tokens", adminProtection, async (req, res) => {
+router.get("/service-tokens", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -222,7 +222,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Create service token
-  app.post("/api/zero-trust/service-tokens", adminProtection, async (req, res) => {
+router.post("/service-tokens", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -240,7 +240,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get access users
-  app.get("/api/zero-trust/users", adminProtection, async (req, res) => {
+router.get("/users", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -255,7 +255,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Get access logs
-  app.get("/api/zero-trust/logs", adminProtection, async (req, res) => {
+router.get("/logs", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -278,7 +278,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Admin: Setup spiritual platform defaults
-  app.post("/api/zero-trust/setup-defaults", adminProtection, async (req, res) => {
+router.post("/setup-defaults", adminProtection, async (req, res) => {
     try {
       if (!zeroTrust) {
         return res.status(503).json({ error: "Zero Trust not configured" });
@@ -293,7 +293,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   });
 
   // Protected route example - Premium features
-  app.get("/api/premium/zero-trust-protected", 
+router.get("/premium/zero-trust-protected", 
     zeroTrustProtection({
       requireGroups: ['Premium Spiritual Members'],
       bypassInDevelopment: true
@@ -315,7 +315,7 @@ export function registerZeroTrustRoutes(app: Express): void {
   );
 
   // Health check endpoint for Zero Trust
-  app.get("/api/zero-trust/health", async (req, res) => {
+router.get("/health", async (req, res) => {
     const isConfigured = !!zeroTrust;
     const isHealthy = isConfigured && process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_API_TOKEN;
     
@@ -332,4 +332,5 @@ export function registerZeroTrustRoutes(app: Express): void {
       }
     });
   });
-}
+
+export default router;

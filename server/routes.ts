@@ -38,13 +38,10 @@ const upload = multer({
 });
 import { registerBrowserlessRoutes } from "./browserless-routes";
 import { registerBrowserlessAuthRoutes } from "./browserless-auth-routes";
-import { registerMCPRoutes } from "./mcp-routes";
 import { registerFigmaMCPRoutes } from "./figma-mcp-routes";
 import { serviceMonitor } from "./service-monitor";
 import { registerVisionsRoutes } from "./visionsApi";
 import { registerCommunitiesRoutes } from "./communitiesApi";
-import { registerZeroTrustRoutes } from "./zeroTrustApi";
-import { registerComplianceRoutes, registerAutomationRoutes } from "./compliance-routes";
 import { turnstileService } from "./turnstileService";
 import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import { ServerNotificationService } from "./notificationService";
@@ -2256,15 +2253,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Register routes with appropriate Zero Trust protection levels
   registerBrowserlessRoutes(app); // Browser automation - should be Zero Trust protected
   registerBrowserlessAuthRoutes(app); // Authenticated browser automation for testing
-  registerMCPRoutes(app);         // MCP server - should be Zero Trust protected
   registerFigmaMCPRoutes(app);    // Figma design sync - should be Zero Trust protected
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
-  registerCommunitiesRoutes(app); // Regular user features - Replit Auth only  
-  registerZeroTrustRoutes(app);   // Admin management - already Zero Trust protected
-
-  // Compliance and automation routes
-  registerComplianceRoutes(app);  // Privacy and security compliance scanning
-  registerAutomationRoutes(app);  // Browser automation and testing
+  registerCommunitiesRoutes(app); // Regular user features - Replit Auth only
 
   // System health monitoring endpoint with comprehensive service status
   app.get('/api/system/health', async (req, res) => {

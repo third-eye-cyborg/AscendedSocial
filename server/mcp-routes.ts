@@ -1,13 +1,13 @@
-import { Express, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 // Note: MCP routes should be protected with Zero Trust auth for enterprise security
 // For now using basic Express middleware, upgrade to Zero Trust when available
 import { MCPBrowserlessServer } from './mcp-browserless';
 
-export function registerMCPRoutes(app: Express): void {
-  console.log('🤖 MCP routes registered');
+const router = express.Router();
+console.log('🤖 MCP routes registered');
 
-  // Initialize MCP server endpoint
-  app.post('/api/mcp/init', async (req: Request, res: Response) => {
+// Initialize MCP server endpoint
+router.post('/init', async (req: Request, res: Response) => {
     try {
       const mcpServer = new MCPBrowserlessServer();
       
@@ -35,7 +35,7 @@ export function registerMCPRoutes(app: Express): void {
   });
 
   // Get MCP tools list
-  app.get('/api/mcp/tools', async (req: Request, res: Response) => {
+router.get('/tools', async (req: Request, res: Response) => {
     try {
       const tools = [
         {
@@ -98,7 +98,7 @@ export function registerMCPRoutes(app: Express): void {
   });
 
   // MCP tool execution proxy
-  app.post('/api/mcp/execute/:toolName', async (req: Request, res: Response) => {
+router.post('/execute/:toolName', async (req: Request, res: Response) => {
     try {
       const { toolName } = req.params;
       const { arguments: args } = req.body;
@@ -134,7 +134,7 @@ export function registerMCPRoutes(app: Express): void {
   });
 
   // MCP server status
-  app.get('/api/mcp/status', async (req: Request, res: Response) => {
+router.get('/status', async (req: Request, res: Response) => {
     try {
       res.json({
         success: true,
@@ -160,4 +160,5 @@ export function registerMCPRoutes(app: Express): void {
       });
     }
   });
-}
+
+export default router;

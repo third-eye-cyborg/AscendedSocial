@@ -1,16 +1,17 @@
-import type { Express } from "express";
+import express from "express";
 import { isAuthenticated } from "./replitAuth";
 import { ComplianceScanner } from "./compliance-scanner";
 import { BrowserAutomationService } from "./browser-automation-service";
 import { browserlessService } from "./browserless-service";
 
+const router = express.Router();
+
 // Initialize services
 const complianceScanner = new ComplianceScanner();
 const browserAutomation = new BrowserAutomationService(browserlessService);
 
-export function registerComplianceRoutes(app: Express) {
-  // Privacy compliance scanning
-  app.get('/api/compliance/privacy', isAuthenticated, async (req, res) => {
+// Privacy compliance scanning
+router.get('/privacy', isAuthenticated, async (req, res) => {
     try {
       console.log('🔍 Running privacy compliance scan...');
       const results = await complianceScanner.runPrivacyCompliance();
@@ -30,8 +31,8 @@ export function registerComplianceRoutes(app: Express) {
     }
   });
 
-  // Security vulnerability scanning
-  app.get('/api/compliance/security', isAuthenticated, async (req, res) => {
+// Security vulnerability scanning
+router.get('/security', isAuthenticated, async (req, res) => {
     try {
       console.log('🛡️ Running security vulnerability scan...');
       const results = await complianceScanner.runSecurityScan();
@@ -51,8 +52,8 @@ export function registerComplianceRoutes(app: Express) {
     }
   });
 
-  // Generate comprehensive compliance report
-  app.get('/api/compliance/report', isAuthenticated, async (req, res) => {
+// Generate comprehensive compliance report
+router.get('/report', isAuthenticated, async (req, res) => {
     try {
       const format = req.query.format as 'json' | 'html' || 'json';
       console.log(`📋 Generating compliance report in ${format} format...`);
@@ -78,12 +79,9 @@ export function registerComplianceRoutes(app: Express) {
     }
   });
 
-  console.log('✅ Compliance scanning routes registered');
-}
 
-export function registerAutomationRoutes(app: Express) {
-  // Execute browser automation task
-  app.post('/api/automation/execute', isAuthenticated, async (req, res) => {
+// Execute browser automation task
+router.post('/automation/execute', isAuthenticated, async (req, res) => {
     try {
       const { instructions, url } = req.body;
       
@@ -112,8 +110,8 @@ export function registerAutomationRoutes(app: Express) {
     }
   });
 
-  // Generate spiritual platform test suites
-  app.get('/api/automation/tests/spiritual', isAuthenticated, async (req, res) => {
+// Generate spiritual platform test suites
+router.get('/automation/tests/spiritual', isAuthenticated, async (req, res) => {
     try {
       console.log('🕉️ Generating spiritual platform test suites...');
       const testSuites = await browserAutomation.generateSpiritualTests();
@@ -133,8 +131,8 @@ export function registerAutomationRoutes(app: Express) {
     }
   });
 
-  // Monitor platform health with spiritual metrics
-  app.get('/api/automation/monitor', isAuthenticated, async (req, res) => {
+// Monitor platform health with spiritual metrics
+router.get('/automation/monitor', isAuthenticated, async (req, res) => {
     try {
       console.log('📊 Monitoring spiritual platform health...');
       const healthStatus = await browserAutomation.monitorPlatformHealth();
@@ -154,8 +152,8 @@ export function registerAutomationRoutes(app: Express) {
     }
   });
 
-  // Run automated tests for specific features
-  app.post('/api/automation/test/:feature', isAuthenticated, async (req, res) => {
+// Run automated tests for specific features
+router.post('/automation/test/:feature', isAuthenticated, async (req, res) => {
     try {
       const { feature } = req.params;
       const baseUrl = req.body.baseUrl || 'http://localhost:5000';
@@ -203,5 +201,7 @@ export function registerAutomationRoutes(app: Express) {
     }
   });
 
-  console.log('🤖 Browser automation routes registered');
-}
+
+console.log('✅ Compliance and automation routes registered');
+
+export default router;

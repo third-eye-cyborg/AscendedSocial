@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import zeroTrustRoutes from './zeroTrustApi';
+import complianceRoutes from './compliance-routes';
+import mcpRoutes from './mcp-routes';
+import mobileAuthRoutes from './mobile-auth-routes';
 
 const app = express();
 app.use(express.json());
@@ -55,6 +59,11 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
   }
+
+  app.use('/api/zero-trust', zeroTrustRoutes);
+  app.use('/api/compliance', complianceRoutes);
+  app.use('/api/mcp', mcpRoutes);
+  app.use('/api/auth', mobileAuthRoutes);
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

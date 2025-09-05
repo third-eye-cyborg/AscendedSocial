@@ -16,8 +16,26 @@ All authenticated endpoints require a valid session. Authentication is handled t
 
 ```
 Development: http://localhost:5000/api
-Production: https://your-domain.com/api
+Staging: https://[REPL_SLUG].[REPL_OWNER].repl.co/api
+Production: https://ascended.social/api
 ```
+
+### Environment Configuration
+
+#### Development
+- **URL**: `http://localhost:5000/api`
+- **Port**: 5000 (default, configurable via `PORT` environment variable)
+- **Authentication**: Replit Auth (local development)
+
+#### Staging (Replit Deployment)
+- **URL**: `https://[REPL_SLUG].[REPL_OWNER].repl.co/api`
+- **Dynamic Configuration**: URLs generated from `REPL_SLUG` and `REPL_OWNER` environment variables
+- **Authentication**: Replit Auth (staging environment)
+
+#### Production
+- **URL**: `https://ascended.social/api`
+- **CDN**: Cloudflare Zero Trust protection enabled
+- **Authentication**: Replit Auth (production environment)
 
 ## 📡 Response Format
 
@@ -715,6 +733,531 @@ GET /api/health
   "database": "connected",
   "ai": "operational",
   "timestamp": "2024-01-15T21:00:00Z"
+}
+```
+
+---
+
+## 🌟 Visions Endpoints
+
+### List Visions 🔒
+Retrieve dreams, goals, and spiritual aspirations from the community.
+
+```http
+GET /api/visions?limit=20&offset=0&manifestStatus=all
+```
+
+**Query Parameters:**
+- `limit` (optional): Number of visions to return (default: 20, max: 100)
+- `offset` (optional): Number of visions to skip (default: 0)
+- `manifestStatus` (optional): Filter by manifestation status (`pending`, `manifested`, `all`)
+
+**Response:**
+```json
+[
+  {
+    "id": "vision-uuid",
+    "title": "Manifesting Inner Peace",
+    "description": "My journey toward lasting spiritual tranquility...",
+    "manifestationDate": "2024-06-01",
+    "isManifested": false,
+    "mediaUrl": "https://storage.googleapis.com/vision-image.jpg",
+    "author": {
+      "id": "user-id",
+      "username": "dream_weaver",
+      "profileImage": "sigil-data"
+    },
+    "engagements": {
+      "likes": 12,
+      "energy": 45
+    },
+    "createdAt": "2024-01-15T16:30:00Z"
+  }
+]
+```
+
+### Create Vision 🔒
+Share a new spiritual vision or manifestation goal.
+
+```http
+POST /api/visions
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "title": "Manifesting Abundance",
+  "description": "Visualizing prosperity in all areas of life",
+  "manifestationDate": "2024-12-31",
+  "mediaUrls": ["https://storage.googleapis.com/vision1.jpg"]
+}
+```
+
+### Get Single Vision
+Retrieve details for a specific vision.
+
+```http
+GET /api/visions/:visionId
+```
+
+### Engage with Vision 🔒
+Like or share energy with a vision.
+
+```http
+POST /api/visions/:visionId/engage
+```
+
+**Request Body:**
+```json
+{
+  "type": "like",
+  "energyAmount": 25
+}
+```
+
+### Mark Vision as Manifested 🔒
+Celebrate the manifestation of a vision.
+
+```http
+POST /api/visions/:visionId/manifest
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "manifestedAt": "2024-01-15T18:00:00Z"
+}
+```
+
+### Get Vision Upload URL 🔒
+Get a secure upload URL for vision media.
+
+```http
+POST /api/visions/upload-url
+```
+
+---
+
+## 🏘️ Communities Endpoints
+
+### List Communities
+Browse spiritual communities and groups.
+
+```http
+GET /api/communities?limit=20&offset=0&category=all
+```
+
+**Query Parameters:**
+- `limit` (optional): Number of communities to return (default: 20)
+- `offset` (optional): Number of communities to skip (default: 0)
+- `category` (optional): Filter by community category
+
+**Response:**
+```json
+[
+  {
+    "id": "community-uuid",
+    "name": "Meditation Masters",
+    "description": "A community for advanced meditation practitioners",
+    "memberCount": 247,
+    "category": "meditation",
+    "isPublic": true,
+    "creator": {
+      "id": "user-id",
+      "username": "zen_master"
+    },
+    "createdAt": "2024-01-01T00:00:00Z"
+  }
+]
+```
+
+### Get Single Community
+Retrieve details for a specific community.
+
+```http
+GET /api/communities/:communityId
+```
+
+### Join/Leave Community 🔒
+Join or leave a spiritual community.
+
+```http
+POST /api/communities/:communityId/join
+```
+
+**Request Body:**
+```json
+{
+  "action": "join"
+}
+```
+
+### Get Community Members 🔒
+List members of a community.
+
+```http
+GET /api/communities/:communityId/members
+```
+
+### Create Community 🔒
+Start a new spiritual community.
+
+```http
+POST /api/communities
+```
+
+**Request Body:**
+```json
+{
+  "name": "Crystal Healers United",
+  "description": "Sharing crystal healing wisdom and experiences",
+  "category": "healing",
+  "isPublic": true
+}
+```
+
+### Update Community 🔒
+Update community information (creator only).
+
+```http
+PUT /api/communities/:communityId
+```
+
+---
+
+## 🎭 User Activity Endpoints
+
+### Get User's Liked Posts 🔒
+Retrieve posts the user has liked.
+
+```http
+GET /api/users/:userId/activity/liked?limit=20
+```
+
+### Get User's Energy Sharing Activity 🔒
+Retrieve posts the user shared energy with.
+
+```http
+GET /api/users/:userId/activity/energy-given?limit=20
+```
+
+### Get User's Voting Activity 🔒
+Retrieve posts the user has voted on.
+
+```http
+GET /api/users/:userId/activity/voted?limit=20
+```
+
+### Get User's Comments 🔒
+Retrieve posts the user has commented on.
+
+```http
+GET /api/users/:userId/activity/commented?limit=20
+```
+
+### Get User's Spiritual Marks 🔒
+Retrieve posts the user marked as spiritual.
+
+```http
+GET /api/users/:userId/activity/spiritual?limit=20
+```
+
+---
+
+## 📖 Bookmarks Endpoints
+
+### Get User Bookmarks 🔒
+Retrieve user's saved posts.
+
+```http
+GET /api/bookmarks?limit=20&offset=0
+```
+
+### Toggle Bookmark 🔒
+Add or remove a post bookmark.
+
+```http
+POST /api/posts/:postId/bookmark
+```
+
+**Request Body:**
+```json
+{
+  "bookmarked": true
+}
+```
+
+---
+
+## ⚙️ User Settings Endpoints
+
+### Get User Settings 🔒
+Retrieve user's privacy and notification preferences.
+
+```http
+GET /api/users/settings
+```
+
+**Response:**
+```json
+{
+  "privacy": {
+    "profileVisibility": true,
+    "postsVisibility": "public",
+    "showOnlineStatus": true,
+    "allowDirectMessages": true,
+    "showActivityStatus": true,
+    "allowTagging": true
+  },
+  "notifications": {
+    "likeNotifications": true,
+    "commentNotifications": true,
+    "energyNotifications": true,
+    "followNotifications": true,
+    "oracleNotifications": true,
+    "emailNotifications": false
+  }
+}
+```
+
+### Update Privacy Settings 🔒
+Update user's privacy preferences.
+
+```http
+PUT /api/users/settings/privacy
+```
+
+**Request Body:**
+```json
+{
+  "profileVisibility": true,
+  "postsVisibility": "public",
+  "showOnlineStatus": false
+}
+```
+
+### Update Notification Settings 🔒
+Update user's notification preferences.
+
+```http
+PUT /api/users/settings/notifications
+```
+
+**Request Body:**
+```json
+{
+  "likeNotifications": true,
+  "commentNotifications": false,
+  "emailNotifications": true
+}
+```
+
+---
+
+## 📧 Newsletter Endpoints
+
+### Subscribe to Newsletter 🔒
+Subscribe to spiritual insights newsletter.
+
+```http
+POST /api/newsletter/subscribe
+```
+
+**Request Body:**
+```json
+{
+  "categories": ["daily-wisdom", "community-highlights"]
+}
+```
+
+### Unsubscribe from Newsletter 🔒
+Unsubscribe from newsletter.
+
+```http
+POST /api/newsletter/unsubscribe
+```
+
+### Update Newsletter Preferences 🔒
+Manage newsletter subscription preferences.
+
+```http
+PUT /api/newsletter/preferences
+```
+
+---
+
+## 🔒 Zero Trust Admin Endpoints
+
+### Get Zero Trust Status 🔒
+Check Zero Trust configuration status.
+
+```http
+GET /api/zero-trust/status
+```
+
+**Response:**
+```json
+{
+  "enabled": true,
+  "applications": 3,
+  "policies": 12,
+  "lastSync": "2024-01-15T20:00:00Z"
+}
+```
+
+### List Zero Trust Applications 🔒
+Get Cloudflare Zero Trust applications.
+
+```http
+GET /api/zero-trust/applications
+```
+
+### Create Zero Trust Policy 🔒
+Create new access policy.
+
+```http
+POST /api/zero-trust/policies
+```
+
+### List Zero Trust Groups 🔒
+Get user groups for access control.
+
+```http
+GET /api/zero-trust/groups
+```
+
+---
+
+## 🛡️ Compliance Endpoints
+
+### Run Privacy Compliance Scan 🔒
+Scan platform for GDPR compliance issues.
+
+```http
+GET /api/compliance/privacy
+```
+
+**Response:**
+```json
+{
+  "status": "compliant",
+  "issues": [],
+  "lastScan": "2024-01-15T19:00:00Z",
+  "score": 98
+}
+```
+
+### Run Security Vulnerability Scan 🔒
+Scan for security vulnerabilities.
+
+```http
+GET /api/compliance/security
+```
+
+### Generate Compliance Report 🔒
+Create comprehensive compliance report.
+
+```http
+GET /api/compliance/report?format=json
+```
+
+**Query Parameters:**
+- `format` (optional): Report format (`json`, `html`)
+
+---
+
+## 🤖 Browser Automation Endpoints
+
+### Browser Health Check
+Check browser automation service status.
+
+```http
+GET /api/browserless/health
+```
+
+### Take Screenshot 🔒
+Capture screenshots for testing and monitoring.
+
+```http
+POST /api/browserless/screenshot
+```
+
+**Request Body:**
+```json
+{
+  "url": "https://ascended.social/dashboard",
+  "options": {
+    "viewport": {
+      "width": 1920,
+      "height": 1080
+    },
+    "fullPage": true
+  }
+}
+```
+
+### Generate PDF 🔒
+Create PDF documents from web pages.
+
+```http
+POST /api/browserless/pdf
+```
+
+### Execute Automation Task 🔒
+Run natural language browser automation.
+
+```http
+POST /api/automation/execute
+```
+
+**Request Body:**
+```json
+{
+  "task": "Navigate to dashboard and click on spirit guide",
+  "options": {
+    "timeout": 30000
+  }
+}
+```
+
+---
+
+## 📊 File Storage Endpoints
+
+### Get Upload URL 🔒
+Get secure URL for direct file uploads.
+
+```http
+POST /api/objects/upload
+```
+
+**Response:**
+```json
+{
+  "uploadURL": "https://storage.googleapis.com/upload-url"
+}
+```
+
+### Download File 🔒
+Access uploaded files with permission checking.
+
+```http
+GET /objects/:objectPath
+```
+
+### Set Media ACL 🔒
+Configure file access permissions.
+
+```http
+PUT /api/media
+```
+
+**Request Body:**
+```json
+{
+  "mediaURL": "https://storage.googleapis.com/file.jpg"
 }
 ```
 

@@ -12,13 +12,13 @@ Preferred communication style: Simple, everyday language.
 The client is built with React and TypeScript, using Vite. It utilizes a component-based architecture with shadcn/ui for UI, wouter for routing, TanStack Query for server state, and React hooks for local state.
 
 ### Backend
-The backend uses Node.js/Express with TypeScript in a monorepo structure. It features session-based authentication via Replit Auth with OpenID Connect and adheres to RESTful API conventions.
+The backend uses Node.js/Express with TypeScript in a monorepo structure. It features session-based authentication via Replit Auth with OpenID Connect and adheres to RESTful API conventions. Recent updates include mobile authentication routing fixes to ensure proper API endpoint ordering and mobile app connectivity.
 
 ### Data Storage
 PostgreSQL serves as the primary database with Drizzle ORM. Google Cloud Storage is used for media files.
 
 ### Authentication and Authorization
-Authentication is managed by Replit Auth (OpenID Connect via Passport.js), with user sessions stored in PostgreSQL. Authorization uses middleware for permission checks.
+Authentication is managed by Replit Auth (OpenID Connect via Passport.js), with user sessions stored in PostgreSQL. Authorization uses middleware for permission checks. The system includes dedicated mobile authentication endpoints (`/api/auth/mobile-config`) for seamless mobile app integration with proper route ordering to prevent Vite middleware conflicts.
 
 ### Content Management
 Posts are automatically categorized into seven chakra types using OpenAI's GPT-4, receiving a spiritual frequency score and chakra classification. It supports text, image, and video content.

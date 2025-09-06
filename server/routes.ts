@@ -23,6 +23,7 @@ import { ObjectStorageService, ObjectNotFoundError, parseObjectPath, objectStora
 import { ObjectPermission } from "./objectAcl";
 import { randomUUID } from "crypto";
 import multer from 'multer';
+import jwt from 'jsonwebtoken';
 
 // Multer setup for file uploads
 const upload = multer({ 
@@ -64,6 +65,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth middleware
   await setupAuth(app);
+
+  // Note: Mobile authentication routes are handled by mobile-auth-routes.ts via /api/auth/* prefix
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

@@ -200,9 +200,9 @@ export async function setupAuth(app: Express) {
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
         } else if (authReferer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
-          // Fallback: Based on referer, redirect to React Native web app
+          // Fallback: Based on referer, redirect to React Native web app - redirect back to /auth
           const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth/callback?token=${token}&success=true`;
+          finalRedirectUrl = `https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth?token=${token}&success=true`;
           console.log(`🔄 Referer-based redirect to React Native web app: ${finalRedirectUrl}`);
         } else if (authReferer.includes('ascended.social')) {
           // Fallback: Based on referer, redirect to production web app

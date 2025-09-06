@@ -64,8 +64,8 @@ router.get('/mobile-login', (req, res) => {
     // Mobile app - use deep link
     callbackUrl = 'ascended://auth/callback';
   } else if (referer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa') || redirect_uri?.toString().includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
-    // React Native/Expo web app on Replit dev domain
-    callbackUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth/callback';
+    // React Native/Expo web app on Replit dev domain - redirect back to /auth
+    callbackUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth';
   } else if (referer.includes('ascended.social') || redirect_uri?.toString().includes('ascended.social')) {
     // Production web app
     callbackUrl = 'https://ascended.social/auth/callback';

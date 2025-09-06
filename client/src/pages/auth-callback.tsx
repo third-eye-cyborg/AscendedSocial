@@ -53,7 +53,8 @@ export default function AuthCallback() {
           if (isReactNativeWebApp) {
             console.log('🌐 Redirecting to React Native web app dashboard');
             // For React Native web app, redirect to its dashboard
-            setLocation('/home');
+            // Use a short delay to ensure token is stored before redirect
+            setTimeout(() => setLocation('/home'), 100);
           } else {
             console.log('🏠 Redirecting to main app dashboard');
             // For main web app, redirect to main dashboard

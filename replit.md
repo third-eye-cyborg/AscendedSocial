@@ -18,7 +18,22 @@ The backend uses Node.js/Express with TypeScript in a monorepo structure. It fea
 PostgreSQL serves as the primary database with Drizzle ORM. Google Cloud Storage is used for media files.
 
 ### Authentication and Authorization
-Authentication is managed by Replit Auth (OpenID Connect via Passport.js), with user sessions stored in PostgreSQL. Authorization uses middleware for permission checks. The system includes dedicated mobile authentication endpoints (`/api/auth/mobile-config`) for seamless mobile app integration with proper route ordering to prevent Vite middleware conflicts.
+Authentication is managed by Replit Auth (OpenID Connect via Passport.js), with user sessions stored in PostgreSQL. Authorization uses middleware for permission checks. 
+
+**Enhanced Mobile Authentication System:**
+- **Cross-Platform Support**: Native mobile apps, mobile web apps, and desktop web
+- **Platform Detection**: Automatic detection via referer headers, user agents, and query parameters
+- **Smart Redirects**: Deep links for native apps, URL callbacks for web apps
+- **JWT Token Management**: Secure token generation, verification, and storage
+- **Domain Flexibility**: Support for development, staging, and production domains
+
+**Mobile Authentication Endpoints:**
+- `/api/auth/mobile-config` - Platform-specific configuration
+- `/api/auth/mobile-login` - Cross-platform login initiation  
+- `/api/auth/mobile-verify` - JWT token verification
+- `/api/auth/mobile-config/health` - Service health monitoring
+
+The system ensures seamless authentication across React Native apps with deep linking, Expo web apps with URL callbacks, and traditional web applications with session-based auth.
 
 ### Content Management
 Posts are automatically categorized into seven chakra types using OpenAI's GPT-4, receiving a spiritual frequency score and chakra classification. It supports text, image, and video content.

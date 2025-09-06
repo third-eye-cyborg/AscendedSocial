@@ -95,27 +95,57 @@ router.get('/mobile-login', (req, res) => {
   res.redirect(loginUrl);
 });
 
-// Mobile token validation endpoint
+// Enhanced mobile token validation endpoint
 router.post('/mobile-verify', async (req, res) => {
   try {
     const { token } = req.body;
     
     if (!token) {
-      return res.status(400).json({ error: 'Token required' });
+      return res.status(400).json({ 
+        success: false, 
+        error: 'No token provided' 
+      });
     }
 
     // Verify JWT token
     const decoded = jwt.verify(token, process.env.SESSION_SECRET!) as any;
+    
+    // Get user data from database
     const user = await storage.getUser(decoded.userId);
     
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(401).json({ 
+        success: false, 
+        error: 'User not found' 
+      });
     }
 
-    res.json({ user, valid: true });
+    console.log('✅ Token verified for user:', user.email);
+    
+    res.json({
+      success: true,
+      valid: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profileImageUrl: user.profileImageUrl,
+        sigil: user.sigil,
+        sigilImageUrl: user.sigilImageUrl,
+        auraLevel: user.auraLevel,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt
+      }
+    });
+    
   } catch (error) {
-    console.error('Mobile token verification failed:', error);
-    res.status(401).json({ error: 'Invalid token' });
+    console.error('❌ Token verification error:', error);
+    res.status(401).json({ 
+      success: false,
+      valid: false, 
+      error: 'Invalid token' 
+    });
   }
 });
 

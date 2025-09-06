@@ -168,30 +168,58 @@ export async function setupAuth(app: Express) {
         }
         console.log("Authentication successful");
         
-        // Check if this is a mobile redirect
+        // Enhanced platform-specific redirect handling
         const redirectUrl = (req.session as any).redirectUrl;
-        if (redirectUrl && (redirectUrl.startsWith('ascended://') || redirectUrl.startsWith('ascendedsocial://'))) {
-          // For mobile app deep links, create a JWT token and redirect to mobile app
-          const token = generateMobileAuthToken(user);
-          const mobileRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
-          console.log(`Redirecting to mobile app: ${mobileRedirectUrl}`);
-          return res.redirect(mobileRedirectUrl);
-        }
-        
-        // Check if this is a mobile web authentication (detect mobile user agents)
+        const authPlatform = (req.session as any).authPlatform;
+        const authReferer = (req.session as any).authReferer || '';
         const userAgent = req.get('User-Agent') || '';
-        const isMobileWeb = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(userAgent);
         
-        if (isMobileWeb && !redirectUrl?.startsWith('ascended://')) {
-          // For mobile web users, redirect to React Native/Expo web app
-          const mobileWebUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/';
-          console.log(`Redirecting mobile web user to React Native app: ${mobileWebUrl}`);
-          return res.redirect(mobileWebUrl);
+        console.log('🔄 OAuth callback processing:', {
+          redirectUrl,
+          authPlatform,
+          authReferer: authReferer.substring(0, 50) + '...',
+          userAgent: userAgent.substring(0, 50) + '...'
+        });
+        
+        // Generate JWT token for mobile platforms
+        let finalRedirectUrl;
+        
+        if (redirectUrl && redirectUrl.startsWith('ascended://')) {
+          // Mobile app deep link - create JWT token and redirect
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
+          console.log(`🔗 Redirecting to mobile app: ${finalRedirectUrl}`);
+        } else if (redirectUrl && redirectUrl.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+          // React Native/Expo web app - create JWT token and redirect
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
+          console.log(`🌐 Redirecting to React Native web app: ${finalRedirectUrl}`);
+        } else if (redirectUrl && redirectUrl.includes('ascended.social')) {
+          // Production web app - create JWT token and redirect
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
+          console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
+        } else if (authReferer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+          // Fallback: Based on referer, redirect to React Native web app
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth/callback?token=${token}&success=true`;
+          console.log(`🔄 Referer-based redirect to React Native web app: ${finalRedirectUrl}`);
+        } else if (authReferer.includes('ascended.social')) {
+          // Fallback: Based on referer, redirect to production web app
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `https://ascended.social/auth/callback?token=${token}&success=true`;
+          console.log(`🔄 Referer-based redirect to production web app: ${finalRedirectUrl}`);
+        } else {
+          // Default web app redirect (this backend's frontend)
+          finalRedirectUrl = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
+          console.log(`🏠 Default redirect to main web app: ${finalRedirectUrl}`);
         }
         
-        // For desktop web, redirect to home or stored redirect URL
-        const finalRedirect = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
-        return res.redirect(finalRedirect);
+        // Clear session auth data
+        delete (req.session as any).authPlatform;
+        delete (req.session as any).authReferer;
+        
+        return res.redirect(finalRedirectUrl);
       });
     })(req, res, next);
   });

@@ -8,6 +8,7 @@ import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { bypassAuthForTesting, isAuthenticatedWithBypass } from './auth-bypass';
+import jwt from 'jsonwebtoken';
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -70,6 +71,24 @@ async function upsertUser(
   return await storage.getUser(claims["sub"]);
 }
 
+// Generate mobile authentication token
+function generateMobileAuthToken(user: any): string {
+  if (!process.env.SESSION_SECRET) {
+    throw new Error('SESSION_SECRET required for JWT generation');
+  }
+  
+  const payload = {
+    userId: user.id,
+    email: user.email,
+    claims: user.claims,
+    expires_at: user.expires_at,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60) // 7 days
+  };
+  
+  return jwt.sign(payload, process.env.SESSION_SECRET);
+}
+
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
@@ -119,6 +138,13 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    const redirectUrl = req.query.redirectUrl as string;
+    
+    // Store redirect URL in session for later use
+    if (redirectUrl) {
+      (req.session as any).redirectUrl = redirectUrl;
+    }
+    
     passport.authenticate(`replitauth:${req.hostname}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
@@ -140,8 +166,21 @@ export async function setupAuth(app: Express) {
           console.error("Login error:", loginErr);
           return res.redirect("/api/login");
         }
-        console.log("Authentication successful, redirecting to /");
-        return res.redirect("/");
+        console.log("Authentication successful");
+        
+        // Check if this is a mobile redirect
+        const redirectUrl = (req.session as any).redirectUrl;
+        if (redirectUrl && (redirectUrl.startsWith('ascended://') || redirectUrl.startsWith('ascendedsocial://'))) {
+          // For mobile, create a JWT token and redirect to mobile app
+          const token = generateMobileAuthToken(user);
+          const mobileRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
+          console.log(`Redirecting to mobile app: ${mobileRedirectUrl}`);
+          return res.redirect(mobileRedirectUrl);
+        }
+        
+        // For web, redirect to home or stored redirect URL
+        const finalRedirect = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
+        return res.redirect(finalRedirect);
       });
     })(req, res, next);
   });

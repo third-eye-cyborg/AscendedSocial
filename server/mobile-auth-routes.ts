@@ -8,19 +8,36 @@ const router = express.Router();
 
 // Mobile app configuration endpoint
 router.get('/mobile-config', (req, res) => {
-  const config = getMobileConfig();
-  
-  // Only return safe configuration data (no secrets)
-  res.json({
-    clientId: config.REPLIT_AUTH_CLIENT_ID,
-    apiBaseUrl: config.API_BASE_URL,
-    redirectUri: config.MOBILE_AUTH_REDIRECT_URI,
-    deepLinkScheme: config.MOBILE_DEEP_LINK_SCHEME,
-    issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
-    scopes: ["openid", "email", "profile", "offline_access"],
-    // React Native/Expo web app URL for mobile web redirects
-    mobileWebUrl: 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/'
-  });
+  try {
+    const config = {
+      replitClientId: process.env.REPL_ID,
+      backendDomain: `${req.protocol}://${req.get('host')}`,
+      webAppDomain: process.env.WEB_APP_DOMAIN || 'ascended.social',
+      mobileAppDomain: 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev',
+      deepLinkScheme: 'ascended://',
+      apiBaseUrl: `${req.protocol}://${req.get('host')}/api`,
+      issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
+      scopes: ["openid", "email", "profile", "offline_access"],
+      version: '1.0.0',
+      features: {
+        deepLinking: true,
+        webFallback: true,
+        tokenRefresh: true,
+        platformDetection: true
+      }
+    };
+    
+    console.log('📱 Mobile config requested:', {
+      host: req.get('host'),
+      userAgent: req.get('User-Agent'),
+      config: { ...config, replitClientId: '***' }
+    });
+    
+    res.json(config);
+  } catch (error) {
+    console.error('❌ Mobile config error:', error);
+    res.status(500).json({ error: 'Failed to get mobile config' });
+  }
 });
 
 // Health check for mobile configuration
@@ -34,10 +51,47 @@ router.get('/mobile-config/health', (req, res) => {
   });
 });
 
-// Mobile authentication initiation with deep link support
+// Mobile authentication initiation with platform detection
 router.get('/mobile-login', (req, res) => {
-  const redirectUrl = req.query.redirectUrl as string || 'ascended://auth/callback';
-  const loginUrl = `/api/login?redirectUrl=${encodeURIComponent(redirectUrl)}`;
+  const { redirect_uri, platform } = req.query;
+  const referer = req.get('Referer') || '';
+  const userAgent = req.get('User-Agent') || '';
+  
+  // Determine the correct callback URL based on platform and referer
+  let callbackUrl;
+  
+  if (platform === 'native' || redirect_uri?.toString().includes('ascended://')) {
+    // Mobile app - use deep link
+    callbackUrl = 'ascended://auth/callback';
+  } else if (referer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa') || redirect_uri?.toString().includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+    // React Native/Expo web app on Replit dev domain
+    callbackUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth/callback';
+  } else if (referer.includes('ascended.social') || redirect_uri?.toString().includes('ascended.social')) {
+    // Production web app
+    callbackUrl = 'https://ascended.social/auth/callback';
+  } else if (redirect_uri) {
+    // Use provided redirect URI with auth/callback path
+    const redirectBase = redirect_uri.toString().replace(/\/$/, '');
+    callbackUrl = `${redirectBase}/auth/callback`;
+  } else {
+    // Default fallback - use deep link
+    callbackUrl = 'ascended://auth/callback';
+  }
+  
+  console.log('🔗 Mobile login redirect:', {
+    platform,
+    originalRedirect: redirect_uri,
+    referer,
+    userAgent: userAgent.substring(0, 50) + '...',
+    finalCallback: callbackUrl
+  });
+  
+  // Store platform info in session for callback processing
+  (req.session as any).authPlatform = platform;
+  (req.session as any).authReferer = referer;
+  
+  // Redirect to main login with the determined callback URL
+  const loginUrl = `/api/login?redirectUrl=${encodeURIComponent(callbackUrl)}`;
   res.redirect(loginUrl);
 });
 

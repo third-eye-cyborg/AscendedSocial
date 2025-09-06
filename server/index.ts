@@ -43,6 +43,14 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Register mobile auth routes AFTER auth setup to ensure session middleware is available
+  app.use('/api/auth', mobileAuthRoutes);
+
+  // Register other API routes BEFORE Vite setup to prevent catch-all route conflicts
+  app.use('/api/zero-trust', zeroTrustRoutes);
+  app.use('/api/compliance', complianceRoutes);
+  app.use('/api/mcp', mcpRoutes);
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -59,11 +67,6 @@ app.use((req, res, next) => {
   } else {
     serveStatic(app);
   }
-
-  app.use('/api/zero-trust', zeroTrustRoutes);
-  app.use('/api/compliance', complianceRoutes);
-  app.use('/api/mcp', mcpRoutes);
-  app.use('/api/auth', mobileAuthRoutes);
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
   // Other ports are firewalled. Default to 5000 if not specified.

@@ -1,43 +1,76 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { queryClient } from '@/lib/queryClient';
 
 export default function AuthCallback() {
   const [, setLocation] = useLocation();
 
   useEffect(() => {
-    // Extract token and success parameters from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    const success = urlParams.get('success');
-    
-    console.log('🔄 Auth callback processing:', {
-      token: token ? '***' : null,
-      success,
-      userAgent: navigator.userAgent,
-      origin: window.location.origin
-    });
+    const handleAuthCallback = async () => {
+      try {
+        // Extract token and success parameters from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const success = urlParams.get('success');
+        
+        console.log('🔄 Auth callback processing:', {
+          token: token ? '***' : null,
+          success,
+          userAgent: navigator.userAgent,
+          origin: window.location.origin
+        });
 
-    if (success === 'true' && token) {
-      // Store the token for mobile authentication
-      localStorage.setItem('auth_token', token);
-      
-      // Check if this is the React Native web app based on the current domain
-      const isReactNativeWebApp = window.location.href.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa');
-      
-      if (isReactNativeWebApp) {
-        console.log('🌐 Redirecting to React Native web app dashboard');
-        // For React Native web app, redirect to its dashboard
-        setLocation('/home');
-      } else {
-        console.log('🏠 Redirecting to main app dashboard');
-        // For main web app, redirect to main dashboard
-        setLocation('/');
+        if (success === 'true' && token) {
+          // Store the token for mobile authentication
+          localStorage.setItem('auth_token', token);
+          
+          // Verify the token with the backend
+          try {
+            const response = await fetch('/api/auth/mobile-verify', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ token })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success && result.valid) {
+              console.log('✅ Token verified successfully');
+              // Invalidate auth cache to trigger refresh
+              queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+            } else {
+              console.error('❌ Token verification failed:', result);
+            }
+          } catch (verifyError) {
+            console.error('❌ Token verification error:', verifyError);
+          }
+          
+          // Check if this is the React Native web app based on the current domain
+          const isReactNativeWebApp = window.location.href.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa');
+          
+          if (isReactNativeWebApp) {
+            console.log('🌐 Redirecting to React Native web app dashboard');
+            // For React Native web app, redirect to its dashboard
+            setLocation('/home');
+          } else {
+            console.log('🏠 Redirecting to main app dashboard');
+            // For main web app, redirect to main dashboard
+            setLocation('/');
+          }
+        } else {
+          console.error('❌ Authentication callback failed:', { success, hasToken: !!token });
+          // Redirect to login page on failure
+          window.location.href = '/api/login';
+        }
+      } catch (error) {
+        console.error('❌ Auth callback error:', error);
+        window.location.href = '/api/login';
       }
-    } else {
-      console.error('❌ Authentication callback failed:', { success, hasToken: !!token });
-      // Redirect to login page on failure
-      window.location.href = '/api/login';
-    }
+    };
+
+    handleAuthCallback();
   }, [setLocation]);
 
   return (

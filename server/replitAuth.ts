@@ -190,7 +190,7 @@ export async function setupAuth(app: Express) {
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🔗 Redirecting to mobile app: ${finalRedirectUrl}`);
         } else if (redirectUrl && redirectUrl.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
-          // React Native/Expo web app - create JWT token and redirect
+          // React Native/Expo web app - create JWT token and redirect to auth callback
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🌐 Redirecting to React Native web app: ${finalRedirectUrl}`);
@@ -249,6 +249,35 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return next();
   }
 
+  // Check for JWT Bearer token authentication (mobile apps)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    try {
+      const token = authHeader.substring(7);
+      const decoded = jwt.verify(token, process.env.SESSION_SECRET!) as any;
+      
+      // Get user data from database
+      const user = await storage.getUser(decoded.userId);
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Set user in request for downstream middleware
+      req.user = {
+        id: decoded.userId,
+        claims: { sub: decoded.userId },
+        ...decoded
+      };
+      
+      console.log('✅ JWT Bearer token authentication successful for user:', user.email);
+      return next();
+    } catch (error) {
+      console.error('❌ JWT token verification failed:', error);
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+  }
+
+  // Fall back to session-based authentication (main web app)
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user.expires_at) {

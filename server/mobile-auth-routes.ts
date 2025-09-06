@@ -133,7 +133,6 @@ router.post('/mobile-verify', async (req, res) => {
         profileImageUrl: user.profileImageUrl,
         sigil: user.sigil,
         sigilImageUrl: user.sigilImageUrl,
-        auraLevel: user.auraLevel,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt
       }

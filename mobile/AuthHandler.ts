@@ -27,12 +27,14 @@ export class MobileAuthHandler {
     if (this.isInitialized) return;
 
     try {
-      // Fetch mobile authentication configuration from backend
-      // Note: In production, this should use your actual API base URL
-      const API_BASE_URL = 'https://your-repl-domain.replit.dev';
+      // Determine API base URL based on environment
+      const API_BASE_URL = this.getApiBaseUrl();
+      
+      console.log('🔧 Initializing mobile auth with API:', API_BASE_URL);
+      
       const response = await fetch(`${API_BASE_URL}/api/auth/mobile-config`);
       if (!response.ok) {
-        throw new Error('Failed to fetch mobile auth config');
+        throw new Error(`Failed to fetch mobile auth config: ${response.status}`);
       }
 
       this.config = await response.json();
@@ -41,15 +43,28 @@ export class MobileAuthHandler {
       // Set up deep link listener
       this.setupDeepLinkListener();
       
-      console.log('🔧 Mobile auth handler initialized with config:', {
-        clientId: this.config?.clientId,
-        redirectUri: this.config?.redirectUri,
-        deepLinkScheme: this.config?.deepLinkScheme
+      console.log('✅ Mobile auth handler initialized:', {
+        replitClientId: this.config?.replitClientId ? '***' : 'missing',
+        backendDomain: this.config?.backendDomain,
+        mobileAppDomain: this.config?.mobileAppDomain,
+        features: this.config?.features
       });
     } catch (error) {
       console.error('❌ Failed to initialize mobile auth:', error);
       throw error;
     }
+  }
+
+  // Determine the correct API base URL
+  private getApiBaseUrl(): string {
+    // Check if running in web environment
+    if (typeof window !== 'undefined') {
+      // If in browser, use current origin
+      return window.location.origin;
+    }
+    
+    // For React Native, use the backend domain
+    return process.env.EXPO_PUBLIC_API_URL || 'https://your-backend-domain.replit.dev';
   }
 
   // Set up deep link listener for authentication callbacks
@@ -113,7 +128,7 @@ export class MobileAuthHandler {
     if (!this.config) return false;
 
     try {
-      const response = await fetch(`${this.config.apiBaseUrl}/auth/mobile-verify`, {
+      const response = await fetch(`${this.config.backendDomain}/api/auth/mobile-verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -122,9 +137,16 @@ export class MobileAuthHandler {
       });
 
       const result = await response.json();
-      return response.ok && result.valid;
+      
+      console.log('🔍 Token verification result:', {
+        status: response.status,
+        success: result.success,
+        valid: result.valid
+      });
+      
+      return response.ok && result.success && result.valid;
     } catch (error) {
-      console.error('Token verification failed:', error);
+      console.error('❌ Token verification failed:', error);
       return false;
     }
   }
@@ -147,19 +169,28 @@ export class MobileAuthHandler {
     }
 
     try {
-      // Check if running in web environment (Expo web)
+      // Check if running in web environment (Expo web or browser)
       const isWeb = typeof window !== 'undefined' && !window.ReactNativeWebView;
       
       if (isWeb) {
-        // For web, redirect directly to login page which will redirect back to mobile web app
-        const authUrl = `${this.config.apiBaseUrl.replace('/api', '')}/api/login`;
-        console.log('🌐 Starting web authentication flow:', authUrl);
+        // For web, call mobile-login with platform detection
+        const currentDomain = window.location.origin;
+        const authUrl = `${this.config.backendDomain}/api/auth/mobile-login?platform=web&redirect_uri=${encodeURIComponent(currentDomain)}`;
+        
+        console.log('🌐 Starting web authentication flow:', {
+          currentDomain,
+          authUrl
+        });
+        
         window.location.href = authUrl;
       } else {
         // For mobile app, use deep link callback
-        const authUrl = `${this.config.apiBaseUrl}/auth/mobile-login?redirectUrl=${encodeURIComponent(this.config.redirectUri)}`;
+        const authUrl = `${this.config.backendDomain}/api/auth/mobile-login?platform=native&redirect_uri=${encodeURIComponent(this.config.deepLinkScheme + 'auth/callback')}`;
         
-        console.log('📱 Starting mobile app authentication flow:', authUrl);
+        console.log('📱 Starting mobile app authentication flow:', {
+          deepLinkScheme: this.config.deepLinkScheme,
+          authUrl
+        });
         
         const supported = await Linking.canOpenURL(authUrl);
         if (supported) {
@@ -169,7 +200,7 @@ export class MobileAuthHandler {
         }
       }
     } catch (error) {
-      console.error('Failed to start authentication:', error);
+      console.error('❌ Failed to start authentication:', error);
       throw error;
     }
   }

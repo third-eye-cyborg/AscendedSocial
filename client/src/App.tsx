@@ -47,6 +47,7 @@ import ServiceAgreement from './pages/service-agreement';
 import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
 import VideoPage from './pages/video';
 import AuthCallback from './pages/auth-callback';
+import MobileLogin from './pages/mobile-login';
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 function Router() {
@@ -98,6 +99,7 @@ function Router() {
       <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
       <Route path="/auth/callback" component={AuthCallback} />
       <Route path="/auth" component={AuthCallback} />
+      <Route path="/mobile-login" component={MobileLogin} />
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/about" component={About} />
       <Route path="/features" component={Features} />

@@ -1,6 +1,6 @@
 import { Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_CONFIG } from './config/api';
+import React from 'react';
 
 interface MobileAuthConfig {
   clientId: string;
@@ -28,7 +28,9 @@ export class MobileAuthHandler {
 
     try {
       // Fetch mobile authentication configuration from backend
-      const response = await fetch(`${API_CONFIG.baseURL}/api/auth/mobile-config`);
+      // Note: In production, this should use your actual API base URL
+      const API_BASE_URL = 'https://your-repl-domain.replit.dev';
+      const response = await fetch(`${API_BASE_URL}/api/auth/mobile-config`);
       if (!response.ok) {
         throw new Error('Failed to fetch mobile auth config');
       }

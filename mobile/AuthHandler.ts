@@ -147,15 +147,26 @@ export class MobileAuthHandler {
     }
 
     try {
-      const authUrl = `${this.config.apiBaseUrl}/auth/mobile-login?redirectUrl=${encodeURIComponent(this.config.redirectUri)}`;
+      // Check if running in web environment (Expo web)
+      const isWeb = typeof window !== 'undefined' && !window.ReactNativeWebView;
       
-      console.log('🚀 Starting authentication flow:', authUrl);
-      
-      const supported = await Linking.canOpenURL(authUrl);
-      if (supported) {
-        await Linking.openURL(authUrl);
+      if (isWeb) {
+        // For web, redirect directly to login page which will redirect back to mobile web app
+        const authUrl = `${this.config.apiBaseUrl.replace('/api', '')}/api/login`;
+        console.log('🌐 Starting web authentication flow:', authUrl);
+        window.location.href = authUrl;
       } else {
-        throw new Error('Cannot open authentication URL');
+        // For mobile app, use deep link callback
+        const authUrl = `${this.config.apiBaseUrl}/auth/mobile-login?redirectUrl=${encodeURIComponent(this.config.redirectUri)}`;
+        
+        console.log('📱 Starting mobile app authentication flow:', authUrl);
+        
+        const supported = await Linking.canOpenURL(authUrl);
+        if (supported) {
+          await Linking.openURL(authUrl);
+        } else {
+          throw new Error('Cannot open authentication URL');
+        }
       }
     } catch (error) {
       console.error('Failed to start authentication:', error);

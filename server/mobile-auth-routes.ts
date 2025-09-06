@@ -17,7 +17,9 @@ router.get('/mobile-config', (req, res) => {
     redirectUri: config.MOBILE_AUTH_REDIRECT_URI,
     deepLinkScheme: config.MOBILE_DEEP_LINK_SCHEME,
     issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
-    scopes: ["openid", "email", "profile", "offline_access"]
+    scopes: ["openid", "email", "profile", "offline_access"],
+    // React Native/Expo web app URL for mobile web redirects
+    mobileWebUrl: 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/'
   });
 });
 

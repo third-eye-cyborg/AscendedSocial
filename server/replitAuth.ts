@@ -171,14 +171,25 @@ export async function setupAuth(app: Express) {
         // Check if this is a mobile redirect
         const redirectUrl = (req.session as any).redirectUrl;
         if (redirectUrl && (redirectUrl.startsWith('ascended://') || redirectUrl.startsWith('ascendedsocial://'))) {
-          // For mobile, create a JWT token and redirect to mobile app
+          // For mobile app deep links, create a JWT token and redirect to mobile app
           const token = generateMobileAuthToken(user);
           const mobileRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`Redirecting to mobile app: ${mobileRedirectUrl}`);
           return res.redirect(mobileRedirectUrl);
         }
         
-        // For web, redirect to home or stored redirect URL
+        // Check if this is a mobile web authentication (detect mobile user agents)
+        const userAgent = req.get('User-Agent') || '';
+        const isMobileWeb = /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(userAgent);
+        
+        if (isMobileWeb && !redirectUrl?.startsWith('ascended://')) {
+          // For mobile web users, redirect to React Native/Expo web app
+          const mobileWebUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/';
+          console.log(`Redirecting mobile web user to React Native app: ${mobileWebUrl}`);
+          return res.redirect(mobileWebUrl);
+        }
+        
+        // For desktop web, redirect to home or stored redirect URL
         const finalRedirect = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
         return res.redirect(finalRedirect);
       });

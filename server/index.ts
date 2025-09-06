@@ -5,6 +5,8 @@ import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
 import mobileAuthRoutes from './mobile-auth-routes';
+import notionMcpRoutes from './notion-mcp-routes';
+import autoSyncRoutes from './auto-sync-routes';
 
 const app = express();
 app.use(express.json());
@@ -50,6 +52,8 @@ app.use((req, res, next) => {
   app.use('/api/zero-trust', zeroTrustRoutes);
   app.use('/api/compliance', complianceRoutes);
   app.use('/api/mcp', mcpRoutes);
+  app.use('/api/notion-mcp', notionMcpRoutes);
+  app.use('/api/auto-sync', autoSyncRoutes);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

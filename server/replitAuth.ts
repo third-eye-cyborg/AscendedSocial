@@ -199,6 +199,11 @@ export async function setupAuth(app: Express) {
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
+        } else if (redirectUrl === '/auth/mobile-callback') {
+          // Mobile app callback - redirect to mobile app with JWT token
+          const token = generateMobileAuthToken(user);
+          finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
+          console.log(`📱 Mobile callback redirect: ${finalRedirectUrl}`);
         } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
           // Fallback: Based on referer, redirect to React Native web app - redirect back to /auth
           const token = generateMobileAuthToken(user);

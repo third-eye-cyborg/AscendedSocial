@@ -72,13 +72,14 @@ router.get('/mobile-login', (req, res) => {
     // Mobile app - use deep link
     callbackUrl = 'ascended://auth/callback';
   } else if (redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // React Native/Expo web app - redirect to mobile app /auth (NOT /auth/callback)
-    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
-    console.log('🎯 Using mobile domain redirect to /auth');
+    // React Native/Expo web app - MUST use backend callback then client redirect
+    // Replit Auth only allows callbacks to REPLIT_DOMAINS, not external replit domains
+    callbackUrl = '/auth/mobile-callback';
+    console.log('🎯 Using backend mobile callback (will redirect to mobile app)');
   } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // Referer-based detection for mobile app
-    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
-    console.log('🎯 Using referer-based mobile redirect to /auth');
+    // Referer-based detection for mobile app - use backend callback
+    callbackUrl = '/auth/mobile-callback';
+    console.log('🎯 Using referer-based backend mobile callback');
   } else if (referer.includes('ascended.social') || redirectUriStr.includes('ascended.social')) {
     // Production web app
     callbackUrl = 'https://ascended.social/auth/callback';

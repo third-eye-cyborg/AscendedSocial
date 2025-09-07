@@ -109,9 +109,22 @@ export async function setupWorkOSAuth(app: Express) {
   // WorkOS AuthKit callback endpoint
   app.get("/api/callback", async (req, res) => {
     try {
-      const { code, state } = req.query;
+      const { code, state, error, error_description } = req.query;
       
-      console.log('🔄 WorkOS callback received:', { code: !!code, state });
+      console.log('🔄 WorkOS callback received:', { 
+        code: !!code, 
+        state, 
+        error, 
+        error_description,
+        fullQuery: req.query,
+        headers: req.headers
+      });
+      
+      // Check for WorkOS error first
+      if (error) {
+        console.error('❌ WorkOS returned error:', { error, error_description });
+        return res.redirect(`/login?error=${error}&description=${encodeURIComponent(error_description as string || 'Authentication failed')}`);
+      }
       
       if (!code) {
         console.error('No authorization code received');
@@ -230,6 +243,23 @@ export async function setupWorkOSAuth(app: Express) {
       firstName: user.firstName,
       lastName: user.lastName,
       profileImageUrl: user.profileImageUrl
+    });
+  });
+
+  // Debug endpoint to test WorkOS configuration
+  app.get("/api/debug/workos", (req, res) => {
+    const host = req.get('host');
+    const protocol = req.protocol;
+    const redirectUri = `${protocol}://${host}/api/callback`;
+    
+    res.json({
+      clientId: process.env.WORKOS_CLIENT_ID,
+      hasApiKey: !!process.env.WORKOS_API_KEY,
+      redirectUri: redirectUri,
+      host: host,
+      protocol: protocol,
+      userAgent: req.get('user-agent'),
+      timestamp: new Date().toISOString()
     });
   });
 }

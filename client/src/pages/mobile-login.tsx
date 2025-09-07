@@ -12,13 +12,20 @@ export default function MobileLogin() {
     const isReactNativeWeb = currentUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51');
     const platform = isReactNativeWeb ? 'expo-web' : 'web';
     
-    // Build the mobile login URL with proper parameters
-    const mobileLoginUrl = `/api/auth/mobile-login?redirect_uri=${encodeURIComponent(currentOrigin)}&platform=${platform}`;
+    // Build the redirect URL for mobile app callback
+    const redirectUrl = `${currentOrigin}/auth`;
     
-    console.log('🚀 Redirecting to mobile login:', mobileLoginUrl);
+    // Use standard login endpoint with redirectUrl (proper for web-based mobile apps)
+    const loginUrl = `/api/login?redirectUrl=${encodeURIComponent(redirectUrl)}`;
     
-    // Redirect to the server endpoint for mobile authentication
-    window.location.href = mobileLoginUrl;
+    console.log('🚀 Redirecting to standard login with mobile redirect:', {
+      redirectUrl,
+      loginUrl,
+      platform
+    });
+    
+    // Redirect to the standard login endpoint (supports webFallback: true)
+    window.location.href = loginUrl;
   }, []);
 
   return (

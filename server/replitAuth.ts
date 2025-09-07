@@ -139,17 +139,24 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", (req, res, next) => {
     const redirectUrl = req.query.redirectUrl as string;
+    const mobileBounce = req.query.mobile_bounce;
     
     console.log('🔍 Main login endpoint called:', {
       redirectUrl,
-      existingSessionRedirectUrl: (req.session as any).redirectUrl,
-      mobileTargetDomain: (req.session as any).mobileTargetDomain,
-      authPlatform: (req.session as any).authPlatform
+      mobileBounce,
+      mobileReferrer: (req.session as any).mobileReferrer,
+      mobileCallbackUrl: (req.session as any).mobileCallbackUrl
     });
     
     // Store redirect URL in session for later use
     if (redirectUrl) {
       (req.session as any).redirectUrl = redirectUrl;
+    }
+
+    // Mark mobile bounce in session so OAuth callback can handle it
+    if (mobileBounce && (req.session as any).mobileReferrer) {
+      (req.session as any).isMobileBounce = true;
+      console.log('📱 Mobile bounce detected - will redirect back to mobile after auth');
     }
     
     passport.authenticate(`replitauth:${req.hostname}`, {
@@ -194,24 +201,27 @@ export async function setupAuth(app: Express) {
         // Generate JWT token for mobile platforms
         let finalRedirectUrl;
         
-        if (redirectUrl && redirectUrl.startsWith('ascended://')) {
-          // Native mobile app deep link
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
-          console.log(`🔗 Native app deep link: ${finalRedirectUrl}`);
-        } else if (redirectUrl && (redirectUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev') || redirectUrl.includes('app.ascended.social'))) {
-          // Cross-domain mobile auth - redirect directly (Replit Auth handles session)
-          finalRedirectUrl = redirectUrl;
-          console.log(`📱 Cross-domain Replit Auth redirect: ${finalRedirectUrl}`);
+        // Check if this is a mobile bounce request
+        const isMobileBounce = (req.session as any).isMobileBounce;
+        const mobileCallbackUrl = (req.session as any).mobileCallbackUrl;
+        const mobileReferrer = (req.session as any).mobileReferrer;
+
+        if (isMobileBounce && mobileCallbackUrl) {
+          // MOBILE BOUNCE: Set client-side data and redirect to auth-callback which will bounce back
+          finalRedirectUrl = `/auth-callback?mobile_bounce=true&mobile_referrer=${encodeURIComponent(mobileReferrer || '')}&mobile_callback=${encodeURIComponent(mobileCallbackUrl)}`;
+          console.log(`📱 Mobile bounce redirect: ${finalRedirectUrl}`);
         } else {
-          // Default web app redirect (this backend's frontend)
-          finalRedirectUrl = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
-          console.log(`🏠 Default redirect: ${finalRedirectUrl}`);
+          // Regular web app redirect
+          finalRedirectUrl = '/auth-callback';
+          console.log(`🏠 Regular web app redirect: ${finalRedirectUrl}`);
         }
         
         // Clear session auth data
         delete (req.session as any).authPlatform;
         delete (req.session as any).authReferer;
+        delete (req.session as any).isMobileBounce;
+        delete (req.session as any).mobileReferrer;
+        delete (req.session as any).mobileCallbackUrl;
         delete (req.session as any).mobileTargetDomain;
         
         return res.redirect(finalRedirectUrl);

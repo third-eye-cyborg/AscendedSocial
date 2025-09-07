@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { queryClient } from '@/lib/queryClient';
-import { initiateAuth } from '@/utils/auth';
 
 export default function AuthCallback() {
   const [, setLocation] = useLocation();
@@ -9,66 +8,36 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Extract token and success parameters from URL
+        // Check URL parameters for mobile bounce
         const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
-        const success = urlParams.get('success');
+        const mobileBounce = urlParams.get('mobile_bounce');
+        const mobileReferrer = urlParams.get('mobile_referrer');
+        const mobileCallback = urlParams.get('mobile_callback');
         
-        console.log('🔄 Auth callback processing:', {
-          token: token ? '***' : null,
-          success,
-          userAgent: navigator.userAgent,
-          origin: window.location.origin
+        console.log('🔄 Auth callback - checking mobile bounce:', {
+          mobileBounce,
+          mobileReferrer,
+          mobileCallback,
+          currentUrl: window.location.href
         });
 
-        if (success === 'true' && token) {
-          // Store the token for mobile authentication
-          localStorage.setItem('auth_token', token);
-          
-          // Verify the token with the backend
-          try {
-            const response = await fetch('/api/auth/mobile-verify', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ token })
-            });
-            
-            const result = await response.json();
-            
-            if (result.success && result.valid) {
-              console.log('✅ Token verified successfully');
-              // Invalidate auth cache to trigger refresh
-              queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-            } else {
-              console.error('❌ Token verification failed:', result);
-            }
-          } catch (verifyError) {
-            console.error('❌ Token verification error:', verifyError);
-          }
-          
-          // Check if this is the React Native web app based on the current domain
-          const isReactNativeWebApp = window.location.href.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51');
-          
-          if (isReactNativeWebApp) {
-            console.log('🌐 Redirecting to React Native web app dashboard');
-            // For React Native web app, redirect to its dashboard
-            // Use a short delay to ensure token is stored before redirect
-            setTimeout(() => setLocation('/home'), 100);
-          } else {
-            console.log('🏠 Redirecting to main app dashboard');
-            // For main web app, redirect to main dashboard
-            setLocation('/');
-          }
-        } else {
-          console.error('❌ Authentication callback failed:', { success, hasToken: !!token });
-          // Redirect to login page on failure
-          initiateAuth();
+        // Invalidate auth cache since we're now authenticated
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+
+        if (mobileBounce === 'true' && mobileCallback) {
+          // MOBILE BOUNCE: User came from mobile, redirect them back with authenticated session
+          console.log(`📱 Bouncing back to mobile: ${mobileCallback}`);
+          window.location.href = decodeURIComponent(mobileCallback);
+          return;
         }
+
+        // Regular web app authentication - go to dashboard
+        console.log('🏠 Regular web auth - redirecting to dashboard');
+        setLocation('/');
+        
       } catch (error) {
         console.error('❌ Auth callback error:', error);
-        initiateAuth();
+        setLocation('/');
       }
     };
 

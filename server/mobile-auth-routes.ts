@@ -111,12 +111,12 @@ router.get('/mobile-login', (req, res) => {
     finalCallback: callbackUrl
   });
   
-  // Store platform info in session for callback processing
-  (req.session as any).authPlatform = platform;
-  (req.session as any).authReferer = referer;
+  // Store mobile referrer data in session for the web app to detect after auth
+  (req.session as any).mobileReferrer = referer || 'mobile';
+  (req.session as any).mobileCallbackUrl = callbackUrl;
   
-  // Redirect to main login with the determined callback URL
-  const loginUrl = `/api/login?redirectUrl=${encodeURIComponent(callbackUrl)}`;
+  // Redirect to main login with mobile bounce flag
+  const loginUrl = `/api/login?mobile_bounce=true`;
   res.redirect(loginUrl);
 });
 

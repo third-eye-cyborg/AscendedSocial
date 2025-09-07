@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupWorkOSAuth, isAuthenticated } from "./workosAuth";
+import { setupAdminAuth, isAdminAuthenticated } from "./adminAuth";
 import { 
   analyzePostChakra, 
   generateDailyReading, 
@@ -65,6 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth middleware
   await setupWorkOSAuth(app);
+  await setupAdminAuth(app);
 
   // Note: Mobile authentication routes are handled by mobile-auth-routes.ts via /api/auth/* prefix
 

@@ -200,15 +200,28 @@ export async function setupAuth(app: Express) {
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
         } else if (redirectUrl === '/auth/mobile-callback') {
-          // Mobile app callback - redirect to mobile app with JWT token
+          // Mobile app callback - redirect to appropriate mobile app with JWT token
+          const token = generateMobileAuthToken(user);
+          const mobileTargetDomain = (req.session as any).mobileTargetDomain;
+          
+          if (mobileTargetDomain) {
+            finalRedirectUrl = `${mobileTargetDomain}/auth?token=${token}&success=true`;
+            console.log(`📱 Mobile callback redirect to ${mobileTargetDomain}: ${finalRedirectUrl}`);
+          } else {
+            // Fallback to mobile dev domain
+            finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
+            console.log(`📱 Mobile callback fallback redirect: ${finalRedirectUrl}`);
+          }
+        } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
+          // Fallback: Based on referer, redirect to mobile dev app - redirect back to /auth
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
-          console.log(`📱 Mobile callback redirect: ${finalRedirectUrl}`);
-        } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-          // Fallback: Based on referer, redirect to React Native web app - redirect back to /auth
+          console.log(`🔄 Referer-based redirect to mobile dev app: ${finalRedirectUrl}`);
+        } else if (authReferer.includes('app.ascended.social')) {
+          // Fallback: Based on referer, redirect to mobile production app
           const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
-          console.log(`🔄 Referer-based redirect to React Native web app: ${finalRedirectUrl}`);
+          finalRedirectUrl = `https://app.ascended.social/auth?token=${token}&success=true`;
+          console.log(`🔄 Referer-based redirect to mobile prod app: ${finalRedirectUrl}`);
         } else if (authReferer.includes('ascended.social')) {
           // Fallback: Based on referer, redirect to production web app
           const token = generateMobileAuthToken(user);
@@ -223,6 +236,7 @@ export async function setupAuth(app: Express) {
         // Clear session auth data
         delete (req.session as any).authPlatform;
         delete (req.session as any).authReferer;
+        delete (req.session as any).mobileTargetDomain;
         
         return res.redirect(finalRedirectUrl);
       });

@@ -13,7 +13,8 @@ router.get('/mobile-config', (req, res) => {
       replitClientId: process.env.REPL_ID,
       backendDomain: `${req.protocol}://${req.get('host')}`,
       webAppDomain: process.env.WEB_APP_DOMAIN || 'ascended.social',
-      mobileAppDomain: 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev',
+      mobileDevDomain: 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev',
+      mobileProdDomain: 'https://app.ascended.social',
       deepLinkScheme: 'ascended://',
       apiBaseUrl: `${req.protocol}://${req.get('host')}/api`,
       issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
@@ -65,21 +66,35 @@ router.get('/mobile-login', (req, res) => {
     platform,
     redirectUriStr,
     referer,
-    containsMobileDomain: redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')
+    containsMobileDevDomain: redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev'),
+    containsMobileProdDomain: redirectUriStr.includes('app.ascended.social')
   });
   
   if (platform === 'native' || redirectUriStr.includes('ascended://')) {
-    // Mobile app - use deep link
+    // Native iOS/Android app - use deep link
     callbackUrl = 'ascended://auth/callback';
-  } else if (redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // React Native/Expo web app - MUST use backend callback then client redirect
+    console.log('📱 Using native app deep link');
+  } else if (redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
+    // Mobile dev environment - MUST use backend callback then client redirect
     // Replit Auth only allows callbacks to REPLIT_DOMAINS, not external replit domains
     callbackUrl = '/auth/mobile-callback';
-    console.log('🎯 Using backend mobile callback (will redirect to mobile app)');
-  } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // Referer-based detection for mobile app - use backend callback
+    (req.session as any).mobileTargetDomain = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev';
+    console.log('🎯 Mobile dev: Using backend callback (will redirect to mobile dev app)');
+  } else if (redirectUriStr.includes('app.ascended.social')) {
+    // Mobile production environment - use backend callback then client redirect
     callbackUrl = '/auth/mobile-callback';
-    console.log('🎯 Using referer-based backend mobile callback');
+    (req.session as any).mobileTargetDomain = 'https://app.ascended.social';
+    console.log('🎯 Mobile prod: Using backend callback (will redirect to mobile prod app)');
+  } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
+    // Referer-based detection for mobile dev app
+    callbackUrl = '/auth/mobile-callback';
+    (req.session as any).mobileTargetDomain = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev';
+    console.log('🎯 Referer-based mobile dev callback');
+  } else if (referer.includes('app.ascended.social')) {
+    // Referer-based detection for mobile prod app
+    callbackUrl = '/auth/mobile-callback';
+    (req.session as any).mobileTargetDomain = 'https://app.ascended.social';
+    console.log('🎯 Referer-based mobile prod callback');
   } else if (referer.includes('ascended.social') || redirectUriStr.includes('ascended.social')) {
     // Production web app
     callbackUrl = 'https://ascended.social/auth/callback';

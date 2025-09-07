@@ -8,47 +8,58 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Check URL parameters for mobile bounce
+        // Check URL parameters for WorkOS mobile authentication
         const urlParams = new URLSearchParams(window.location.search);
-        const mobileBounce = urlParams.get('mobile_bounce');
-        const mobileReferrer = urlParams.get('mobile_referrer');
-        const mobileCallback = urlParams.get('mobile_callback');
+        const token = urlParams.get('token');
+        const state = urlParams.get('state');
         
-        console.log('🔄 Auth callback - checking mobile bounce:', {
-          mobileBounce,
-          mobileReferrer,
-          mobileCallback,
+        console.log('🔄 WorkOS Auth callback processing:', {
+          hasToken: !!token,
+          state,
           currentUrl: window.location.href
         });
 
         // Invalidate auth cache since we're now authenticated
         queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
 
-        if (mobileBounce === 'true' && mobileCallback) {
-          // MOBILE BOUNCE: User came from mobile, redirect them back with secure auth token
-          const authToken = urlParams.get('auth_token');
-          let redirectUrl = decodeURIComponent(mobileCallback);
-          
-          if (authToken) {
-            // Append secure token to mobile callback URL
-            const separator = redirectUrl.includes('?') ? '&' : '?';
-            redirectUrl += `${separator}auth_token=${authToken}`;
-            console.log(`📱 Bouncing back to mobile with secure token: ${redirectUrl.substring(0, 100)}...`);
-          } else {
-            console.log(`📱 Bouncing back to mobile (no token): ${redirectUrl}`);
+        if (token && state && state !== 'default') {
+          // Mobile authentication - handle token and redirect
+          try {
+            const stateData = JSON.parse(state);
+            const mobileCallback = stateData.callback || stateData.redirectUri;
+            
+            if (mobileCallback) {
+              const separator = mobileCallback.includes('?') ? '&' : '?';
+              const redirectUrl = `${mobileCallback}${separator}token=${token}`;
+              console.log(`📱 Mobile auth redirect: ${redirectUrl.substring(0, 100)}...`);
+              window.location.href = redirectUrl;
+              return;
+            }
+          } catch {
+            // State is not JSON, handle as simple string
+            console.log('📱 Simple state parameter, storing token for mobile app');
+            
+            // Store token in localStorage for mobile apps to pick up
+            localStorage.setItem('workos_auth_token', token);
+            
+            // Try to communicate with mobile app via postMessage
+            if (window.parent !== window) {
+              window.parent.postMessage({ 
+                type: 'workos_auth_success', 
+                token,
+                state 
+              }, '*');
+            }
           }
-          
-          window.location.href = redirectUrl;
-          return;
         }
 
         // Regular web app authentication - go to dashboard
-        console.log('🏠 Regular web auth - redirecting to dashboard');
+        console.log('🏠 WorkOS web auth - redirecting to dashboard');
         setLocation('/');
         
       } catch (error) {
-        console.error('❌ Auth callback error:', error);
-        setLocation('/');
+        console.error('❌ WorkOS auth callback error:', error);
+        setLocation('/?error=auth_failed');
       }
     };
 

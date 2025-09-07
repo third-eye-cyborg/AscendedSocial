@@ -7,7 +7,7 @@ import {
   getZeroTrustUser,
   ZeroTrustRequest
 } from "./zeroTrustMiddleware";
-import { isAuthenticated } from "./replitAuth";
+import { isAdminAuthenticated } from "./adminAuth";
 
 const router = express.Router();
   // Admin-only routes for Zero Trust management
@@ -17,7 +17,7 @@ const router = express.Router();
   });
 
 // Get Zero Trust status and configuration
-router.get("/status", isAuthenticated, async (req, res) => {
+router.get("/status", isAdminAuthenticated, async (req, res) => {
     try {
       const isConfigured = !!zeroTrust;
       const config = isConfigured ? {

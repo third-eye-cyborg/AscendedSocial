@@ -207,9 +207,22 @@ export async function setupAuth(app: Express) {
         const mobileReferrer = (req.session as any).mobileReferrer;
 
         if (isMobileBounce && mobileCallbackUrl) {
-          // MOBILE BOUNCE: Set client-side data and redirect to auth-callback which will bounce back
-          finalRedirectUrl = `/auth-callback?mobile_bounce=true&mobile_referrer=${encodeURIComponent(mobileReferrer || '')}&mobile_callback=${encodeURIComponent(mobileCallbackUrl)}`;
-          console.log(`📱 Mobile bounce redirect: ${finalRedirectUrl}`);
+          // MOBILE BOUNCE: Generate secure JWT token for mobile app
+          const mobileAuthToken = jwt.sign(
+            {
+              userId: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              profileImageUrl: user.profileImageUrl,
+              iat: Math.floor(Date.now() / 1000),
+              exp: Math.floor(Date.now() / 1000) + (10 * 60) // 10 minutes expiry
+            },
+            process.env.SESSION_SECRET!
+          );
+          
+          finalRedirectUrl = `/auth-callback?mobile_bounce=true&mobile_referrer=${encodeURIComponent(mobileReferrer || '')}&mobile_callback=${encodeURIComponent(mobileCallbackUrl)}&auth_token=${mobileAuthToken}`;
+          console.log(`📱 Mobile bounce redirect with secure token: ${finalRedirectUrl.substring(0, 100)}...`);
         } else {
           // Regular web app redirect
           finalRedirectUrl = '/auth-callback';

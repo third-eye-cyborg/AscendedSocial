@@ -25,9 +25,20 @@ export default function AuthCallback() {
         queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
 
         if (mobileBounce === 'true' && mobileCallback) {
-          // MOBILE BOUNCE: User came from mobile, redirect them back with authenticated session
-          console.log(`📱 Bouncing back to mobile: ${mobileCallback}`);
-          window.location.href = decodeURIComponent(mobileCallback);
+          // MOBILE BOUNCE: User came from mobile, redirect them back with secure auth token
+          const authToken = urlParams.get('auth_token');
+          let redirectUrl = decodeURIComponent(mobileCallback);
+          
+          if (authToken) {
+            // Append secure token to mobile callback URL
+            const separator = redirectUrl.includes('?') ? '&' : '?';
+            redirectUrl += `${separator}auth_token=${authToken}`;
+            console.log(`📱 Bouncing back to mobile with secure token: ${redirectUrl.substring(0, 100)}...`);
+          } else {
+            console.log(`📱 Bouncing back to mobile (no token): ${redirectUrl}`);
+          }
+          
+          window.location.href = redirectUrl;
           return;
         }
 

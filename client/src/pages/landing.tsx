@@ -1,13 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MarketingFooter from "@/components/MarketingFooter";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { initiateAuth } from "@/utils/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toast } = useToast();
+  
+  // Handle authentication errors from URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    const description = urlParams.get('description');
+    
+    if (error) {
+      let errorMessage = 'Authentication failed. Please try again.';
+      
+      switch (error) {
+        case 'auth_failed':
+          errorMessage = 'Authentication was not completed. Please try signing in again.';
+          break;
+        case 'user_creation_failed':
+          errorMessage = 'Unable to create your account. Please contact support.';
+          break;
+        case 'access_denied':
+          errorMessage = 'Access was denied. You may have declined the authorization.';
+          break;
+        case 'invalid_request':
+          errorMessage = 'Invalid authentication request. Please try again.';
+          break;
+        case 'unauthorized_client':
+          errorMessage = 'Authentication service error. Please contact support.';
+          break;
+        default:
+          if (description) {
+            errorMessage = decodeURIComponent(description);
+          }
+      }
+      
+      toast({
+        title: "Authentication Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
+      // Clean up URL parameters
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [toast]);
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic text-white relative overflow-hidden">
       {/* Animated Background Elements */}

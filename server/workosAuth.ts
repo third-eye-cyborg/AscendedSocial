@@ -123,12 +123,12 @@ export async function setupWorkOSAuth(app: Express) {
       // Check for WorkOS error first
       if (error) {
         console.error('❌ WorkOS returned error:', { error, error_description });
-        return res.redirect(`/login?error=${error}&description=${encodeURIComponent(error_description as string || 'Authentication failed')}`);
+        return res.redirect(`/?error=${error}&description=${encodeURIComponent(error_description as string || 'Authentication failed')}`);
       }
       
       if (!code) {
         console.error('No authorization code received');
-        return res.redirect('/login?error=auth_failed');
+        return res.redirect('/?error=auth_failed');
       }
 
       // Exchange code for user info
@@ -147,7 +147,7 @@ export async function setupWorkOSAuth(app: Express) {
       
       if (!dbUser) {
         console.error('Failed to create/update user in database');
-        return res.redirect('/login?error=user_creation_failed');
+        return res.redirect('/?error=user_creation_failed');
       }
 
       // Store user in session
@@ -199,7 +199,7 @@ export async function setupWorkOSAuth(app: Express) {
       
     } catch (error) {
       console.error('❌ WorkOS callback error:', error);
-      res.redirect('/login?error=auth_failed');
+      res.redirect('/?error=auth_failed');
     }
   });
 

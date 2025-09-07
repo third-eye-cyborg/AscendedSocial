@@ -140,6 +140,13 @@ export async function setupAuth(app: Express) {
   app.get("/api/login", (req, res, next) => {
     const redirectUrl = req.query.redirectUrl as string;
     
+    console.log('🔍 Main login endpoint called:', {
+      redirectUrl,
+      existingSessionRedirectUrl: (req.session as any).redirectUrl,
+      mobileTargetDomain: (req.session as any).mobileTargetDomain,
+      authPlatform: (req.session as any).authPlatform
+    });
+    
     // Store redirect URL in session for later use
     if (redirectUrl) {
       (req.session as any).redirectUrl = redirectUrl;
@@ -202,13 +209,14 @@ export async function setupAuth(app: Express) {
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
-        } else if (redirectUrl === '/auth/mobile-callback') {
-          // Mobile app callback - redirect to appropriate mobile app with JWT token
+        } else if (redirectUrl && redirectUrl.includes('/auth/mobile-callback')) {
+          // Mobile app callback - extract target domain from URL and redirect with JWT token
           const token = generateMobileAuthToken(user);
-          const mobileTargetDomain = (req.session as any).mobileTargetDomain;
+          const urlObj = new URL(redirectUrl, `${req.protocol}://${req.get('host')}`);
+          const mobileTargetDomain = urlObj.searchParams.get('target');
           
           if (mobileTargetDomain) {
-            finalRedirectUrl = `${mobileTargetDomain}/auth?token=${token}&success=true`;
+            finalRedirectUrl = `${decodeURIComponent(mobileTargetDomain)}/auth?token=${token}&success=true`;
             console.log(`📱 Mobile callback redirect to ${mobileTargetDomain}: ${finalRedirectUrl}`);
           } else {
             // Fallback to mobile dev domain

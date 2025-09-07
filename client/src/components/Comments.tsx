@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import { useLocation } from "wouter";
+import { initiateAuth } from "@/utils/auth";
 
 interface Comment {
   id: string;
@@ -234,7 +235,7 @@ export default function Comments({ postId, isVisible }: CommentsProps) {
         <div className="border-t border-primary/10 pt-4 text-center">
           <p className="text-sm text-muted mb-3">Join the spiritual conversation</p>
           <Button
-            onClick={() => window.location.href = "/api/login"}
+            onClick={() => initiateAuth()}
             className="bg-primary hover:bg-primary/80 text-white"
             data-testid="button-login-to-comment"
           >

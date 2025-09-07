@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Link } from "wouter";
 import { Sparkles, Users, Eye, ArrowRight, Moon, Stars, Wand2, Zap, Lightbulb, Heart } from "lucide-react";
+import { initiateAuth } from "@/utils/auth";
 
 export default function Home() {
   const { toast } = useToast();
@@ -26,7 +27,7 @@ export default function Home() {
         variant: "destructive",
       });
       setTimeout(() => {
-        window.location.href = "/api/login";
+        initiateAuth();
       }, 500);
       return;
     }
@@ -48,7 +49,7 @@ export default function Home() {
       variant: "destructive",
     });
     setTimeout(() => {
-      window.location.href = "/api/login";
+      initiateAuth();
     }, 500);
     return null;
   }

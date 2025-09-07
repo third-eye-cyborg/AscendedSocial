@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { queryClient } from '@/lib/queryClient';
+import { initiateAuth } from '@/utils/auth';
 
 export default function AuthCallback() {
   const [, setLocation] = useLocation();
@@ -63,11 +64,11 @@ export default function AuthCallback() {
         } else {
           console.error('❌ Authentication callback failed:', { success, hasToken: !!token });
           // Redirect to login page on failure
-          window.location.href = '/api/login';
+          initiateAuth();
         }
       } catch (error) {
         console.error('❌ Auth callback error:', error);
-        window.location.href = '/api/login';
+        initiateAuth();
       }
     };
 

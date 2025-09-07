@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import MarketingFooter from "@/components/MarketingFooter";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
+import { initiateAuth } from "@/utils/auth";
 
 export default function Landing() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -73,7 +74,7 @@ export default function Landing() {
                 </Button>
               </nav>
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="relative group bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-medium px-8 py-3 rounded-2xl transition-all duration-500 hover:scale-105 border border-white/20 ml-4"
                 data-testid="button-login"
               >
@@ -88,7 +89,7 @@ export default function Landing() {
             {/* Mobile Actions */}
             <div className="lg:hidden flex items-center space-x-3">
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="relative group bg-gradient-to-r from-primary to-secondary text-white font-medium px-6 py-2.5 rounded-xl transition-all duration-300 shadow-xl border border-white/20"
                 data-testid="button-login-mobile"
               >
@@ -201,7 +202,7 @@ export default function Landing() {
             {/* Premium CTA */}
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16 lg:mb-20">
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="group relative bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-semibold px-10 py-4 rounded-2xl text-lg transition-all duration-500 hover:scale-105 border border-white/20 min-w-[280px]"
                 data-testid="button-join"
               >
@@ -438,7 +439,7 @@ export default function Landing() {
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center animate-slide-up px-4">
             <Button 
               size="lg"
-              onClick={() => window.location.href = '/api/login'}
+              onClick={() => initiateAuth()}
               className="group relative bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold px-8 sm:px-12 lg:px-16 py-4 sm:py-6 rounded-2xl text-lg sm:text-xl transition-all duration-500 shadow-2xl hover:shadow-primary/40 hover:scale-105 w-full sm:w-auto sm:min-w-[280px] lg:min-w-[320px]"
               data-testid="button-cta"
             >

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MarketingFooter from "@/components/MarketingFooter";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
+import { initiateAuth } from "@/utils/auth";
 
 export default function Pricing() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -62,7 +63,7 @@ export default function Pricing() {
                 Features
               </Button>
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/25 hover:shadow-xl"
                 data-testid="button-login"
               >
@@ -75,7 +76,7 @@ export default function Pricing() {
             <div className="md:hidden flex items-center space-x-2">
               <Button 
                 size="sm"
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="relative group bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold px-3 py-2 rounded-xl transition-all duration-300 shadow-lg"
                 data-testid="button-login-mobile"
               >
@@ -205,7 +206,7 @@ export default function Pricing() {
                 
                 <Button 
                   className="w-full bg-gradient-to-r from-chakra-heart to-chakra-heart/80 hover:from-chakra-heart/90 hover:to-chakra-heart/70 text-white font-semibold py-3 rounded-xl transition-all duration-300"
-                  onClick={() => window.location.href = '/api/login'}
+                  onClick={() => initiateAuth()}
                   data-testid="button-seeker"
                 >
                   Start Free
@@ -388,7 +389,7 @@ export default function Pricing() {
                 <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">
                   <Button 
                     size="lg"
-                    onClick={() => window.location.href = '/api/login'}
+                    onClick={() => initiateAuth()}
                     className="group relative bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-bold px-12 py-4 rounded-2xl text-lg transition-all duration-500 shadow-2xl hover:shadow-primary/30 hover:scale-105"
                     data-testid="button-start-free"
                   >

@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLocation } from "wouter";
+import { initiateAuth } from "@/utils/auth";
 
 export default function Post() {
   const { postId } = useParams();
@@ -27,7 +28,7 @@ export default function Post() {
               <h2 className="text-2xl font-bold text-white mb-4">Sign In Required</h2>
               <p className="text-white/70 mb-6">Please sign in to view this post</p>
               <Button 
-                onClick={() => window.location.href = '/api/login'}
+                onClick={() => initiateAuth()}
                 className="bg-primary hover:bg-primary/80"
               >
                 Sign In

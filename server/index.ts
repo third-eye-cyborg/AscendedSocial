@@ -5,6 +5,7 @@ import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
 import mobileAuthRoutes from './mobile-auth-routes';
+import mobilePopupAuthRoutes from './mobile-popup-auth';
 import notionMcpRoutes from './notion-mcp-routes';
 import autoSyncRoutes from './auto-sync-routes';
 
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 
   // Register mobile auth routes AFTER auth setup to ensure session middleware is available
   app.use('/api/auth', mobileAuthRoutes);
+app.use('/api/auth', mobilePopupAuthRoutes);
 
   // Register other API routes BEFORE Vite setup to prevent catch-all route conflicts
   app.use('/api/zero-trust', zeroTrustRoutes);

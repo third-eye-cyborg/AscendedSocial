@@ -48,7 +48,7 @@ export default function AuthCallback() {
           }
           
           // Check if this is the React Native web app based on the current domain
-          const isReactNativeWebApp = window.location.href.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa');
+          const isReactNativeWebApp = window.location.href.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51');
           
           if (isReactNativeWebApp) {
             console.log('🌐 Redirecting to React Native web app dashboard');

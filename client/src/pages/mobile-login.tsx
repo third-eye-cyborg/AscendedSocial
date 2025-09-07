@@ -9,7 +9,7 @@ export default function MobileLogin() {
     console.log('🔄 Initiating mobile login from:', currentUrl);
     
     // Determine platform type
-    const isReactNativeWeb = currentUrl.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa');
+    const isReactNativeWeb = currentUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51');
     const platform = isReactNativeWeb ? 'expo-web' : 'web';
     
     // Build the mobile login URL with proper parameters

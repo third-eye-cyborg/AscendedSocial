@@ -189,7 +189,7 @@ export async function setupAuth(app: Express) {
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🔗 Redirecting to mobile app: ${finalRedirectUrl}`);
-        } else if (redirectUrl && redirectUrl.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+        } else if (redirectUrl && redirectUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
           // React Native/Expo web app - create JWT token and redirect to auth callback
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
@@ -199,10 +199,10 @@ export async function setupAuth(app: Express) {
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
-        } else if (authReferer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+        } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
           // Fallback: Based on referer, redirect to React Native web app - redirect back to /auth
           const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth?token=${token}&success=true`;
+          finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
           console.log(`🔄 Referer-based redirect to React Native web app: ${finalRedirectUrl}`);
         } else if (authReferer.includes('ascended.social')) {
           // Fallback: Based on referer, redirect to production web app

@@ -13,7 +13,7 @@ router.get('/mobile-config', (req, res) => {
       replitClientId: process.env.REPL_ID,
       backendDomain: `${req.protocol}://${req.get('host')}`,
       webAppDomain: process.env.WEB_APP_DOMAIN || 'ascended.social',
-      mobileAppDomain: 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev',
+      mobileAppDomain: 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev',
       deepLinkScheme: 'ascended://',
       apiBaseUrl: `${req.protocol}://${req.get('host')}/api`,
       issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
@@ -63,9 +63,9 @@ router.get('/mobile-login', (req, res) => {
   if (platform === 'native' || redirect_uri?.toString().includes('ascended://')) {
     // Mobile app - use deep link
     callbackUrl = 'ascended://auth/callback';
-  } else if (referer.includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa') || redirect_uri?.toString().includes('095b9124-ae0d-4cdf-a44b-bdc917e288fa')) {
+  } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51') || redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
     // React Native/Expo web app on Replit dev domain - redirect back to /auth
-    callbackUrl = 'https://095b9124-ae0d-4cdf-a44b-bdc917e288fa-00-1yfsp5ge10rpv.picard.replit.dev/auth';
+    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
   } else if (referer.includes('ascended.social') || redirect_uri?.toString().includes('ascended.social')) {
     // Production web app
     callbackUrl = 'https://ascended.social/auth/callback';

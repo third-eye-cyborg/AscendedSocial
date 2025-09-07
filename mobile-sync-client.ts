@@ -260,7 +260,7 @@ export const createMobileSyncClient = (backendUrl: string, apiKey?: string) => {
 // Example usage:
 /*
 const mobileSync = createMobileSyncClient(
-  'https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev',
+  'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev',
   'your-api-key-here'
 );
 

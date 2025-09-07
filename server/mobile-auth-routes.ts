@@ -59,26 +59,34 @@ router.get('/mobile-login', (req, res) => {
   
   // Determine the correct callback URL based on platform and redirect_uri
   let callbackUrl;
+  const redirectUriStr = redirect_uri?.toString() || '';
   
-  if (platform === 'native' || redirect_uri?.toString().includes('ascended://')) {
+  console.log('🔍 Debugging mobile auth redirect logic:', {
+    platform,
+    redirectUriStr,
+    referer,
+    containsMobileDomain: redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')
+  });
+  
+  if (platform === 'native' || redirectUriStr.includes('ascended://')) {
     // Mobile app - use deep link
     callbackUrl = 'ascended://auth/callback';
-  } else if (redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // React Native/Expo web app - always redirect to mobile app when redirect_uri is mobile domain
+  } else if (redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
+    // React Native/Expo web app - redirect to mobile app /auth (NOT /auth/callback)
     callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
-  } else if (platform === 'web' && redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // Explicit mobile web platform with mobile domain redirect
-    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
+    console.log('🎯 Using mobile domain redirect to /auth');
   } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
     // Referer-based detection for mobile app
     callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
-  } else if (referer.includes('ascended.social') || redirect_uri?.toString().includes('ascended.social')) {
+    console.log('🎯 Using referer-based mobile redirect to /auth');
+  } else if (referer.includes('ascended.social') || redirectUriStr.includes('ascended.social')) {
     // Production web app
     callbackUrl = 'https://ascended.social/auth/callback';
-  } else if (redirect_uri) {
-    // Use provided redirect URI with auth/callback path
-    const redirectBase = redirect_uri.toString().replace(/\/$/, '');
+  } else if (redirectUriStr) {
+    // Use provided redirect URI with auth/callback path (for non-mobile apps)
+    const redirectBase = redirectUriStr.replace(/\/$/, '');
     callbackUrl = `${redirectBase}/auth/callback`;
+    console.log('⚠️ Using fallback redirect with /auth/callback');
   } else {
     // Default fallback - use deep link
     callbackUrl = 'ascended://auth/callback';

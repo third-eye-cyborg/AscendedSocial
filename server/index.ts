@@ -45,6 +45,17 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Add auth callback route to serve frontend page
+  app.get('/auth-callback', (req, res, next) => {
+    // Let Vite handle serving the frontend page for auth callback
+    if (app.get("env") === "development") {
+      next(); // Let Vite handle it
+    } else {
+      // In production, serve the static frontend
+      res.sendFile('index.html', { root: 'dist/client' });
+    }
+  });
+
   // Register mobile auth routes AFTER auth setup to ensure session middleware is available
   app.use('/api/auth', mobileAuthRoutes);
 

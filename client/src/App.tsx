@@ -48,6 +48,7 @@ import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
 import VideoPage from './pages/video';
 import AuthCallback from './pages/auth-callback';
 import MobileLogin from './pages/mobile-login';
+import AdminDashboard from './pages/admin';
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 function Router() {
@@ -119,6 +120,7 @@ function Router() {
       <Route path="/energy" component={EnergyPage} />
       <Route path="/starmap" component={StarmapPage} />
       <Route path="/explore" component={ExplorePage} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route path="/zero-trust" component={ZeroTrustPage} />
       <Route path="/compliance" component={Compliance} />
       <Route path="/unsubscribe" component={Unsubscribe} />

@@ -149,6 +149,21 @@ export interface IStorage {
   getReport(id: string): Promise<Report | undefined>;
   getUserReports(reporterId: string): Promise<Report[]>;
   getPendingReports(): Promise<Report[]>;
+  getReports(): Promise<any[]>;
+  updateReport(reportId: string, updates: { status?: string; moderatorNotes?: string; reviewedAt?: Date; reviewedBy?: string }): Promise<void>;
+
+  // Admin analytics operations
+  getUserCount(): Promise<number>;
+  getNewUsersCount(days: number): Promise<number>;
+  getPremiumUsersCount(): Promise<number>;
+  getActiveUsersCount(days: number): Promise<number>;
+  getPostsCount(): Promise<number>;
+  getEngagementsCount(): Promise<number>;
+  getOracleReadingsCount(): Promise<number>;
+  getChakraDistribution(): Promise<{ chakra: string; count: number; percentage: number }[]>;
+  getEngagementTypesDistribution(): Promise<{ type: string; count: number; percentage: number }[]>;
+  getDailySignups(days: number): Promise<{ date: string; count: number }[]>;
+  getRecentActivity(limit: number): Promise<{ type: string; description: string; timestamp: string; userId: string; userEmail: string }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1432,6 +1447,236 @@ export class DatabaseStorage implements IStorage {
       .from(reports)
       .where(eq(reports.status, 'pending'))
       .orderBy(desc(reports.createdAt));
+  }
+
+  async getReports(): Promise<any[]> {
+    const result = await db
+      .select({
+        id: reports.id,
+        type: reports.type,
+        reason: reports.reason,
+        status: reports.status,
+        postId: reports.postId,
+        reportedUserId: reports.reportedUserId,
+        moderatorNotes: reports.moderatorNotes,
+        reviewedAt: reports.reviewedAt,
+        reviewedBy: reports.reviewedBy,
+        createdAt: reports.createdAt,
+        updatedAt: reports.updatedAt,
+        reporter: users,
+      })
+      .from(reports)
+      .innerJoin(users, eq(reports.reporterId, users.id))
+      .orderBy(desc(reports.createdAt));
+
+    // Fetch additional data for reports
+    const enrichedReports = await Promise.all(
+      result.map(async (report) => {
+        let reportedUser = null;
+        let post = null;
+
+        if (report.reportedUserId) {
+          const [user] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, report.reportedUserId));
+          reportedUser = user;
+        }
+
+        if (report.postId) {
+          const [postData] = await db
+            .select({
+              id: posts.id,
+              content: posts.content,
+              author: users,
+            })
+            .from(posts)
+            .innerJoin(users, eq(posts.authorId, users.id))
+            .where(eq(posts.id, report.postId));
+          post = postData;
+        }
+
+        return {
+          ...report,
+          reportedUser,
+          post,
+        };
+      })
+    );
+
+    return enrichedReports;
+  }
+
+  async updateReport(reportId: string, updates: { status?: string; moderatorNotes?: string; reviewedAt?: Date; reviewedBy?: string }): Promise<void> {
+    await db
+      .update(reports)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(reports.id, reportId));
+  }
+
+  // Admin analytics operations
+  async getUserCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(users);
+    return result.count;
+  }
+
+  async getNewUsersCount(days: number): Promise<number> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    const [result] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(sql`${users.createdAt} >= ${startDate}`);
+    return result.count;
+  }
+
+  async getPremiumUsersCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(users)
+      .where(eq(users.isPremium, true));
+    return result.count;
+  }
+
+  async getActiveUsersCount(days: number): Promise<number> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    // Count users who have created posts or engagements in the last X days
+    const [postAuthors] = await db
+      .select({ count: count(sql`DISTINCT ${posts.authorId}`) })
+      .from(posts)
+      .where(sql`${posts.createdAt} >= ${startDate}`);
+    
+    const [engagementUsers] = await db
+      .select({ count: count(sql`DISTINCT ${postEngagements.userId}`) })
+      .from(postEngagements)
+      .where(sql`${postEngagements.createdAt} >= ${startDate}`);
+    
+    // Simple approximation - in a real system, you'd use a more sophisticated query
+    return Math.max(postAuthors.count, engagementUsers.count);
+  }
+
+  async getPostsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(posts);
+    return result.count;
+  }
+
+  async getEngagementsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(postEngagements);
+    return result.count;
+  }
+
+  async getOracleReadingsCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: count() })
+      .from(spiritualReadings);
+    return result.count;
+  }
+
+  async getChakraDistribution(): Promise<{ chakra: string; count: number; percentage: number }[]> {
+    const result = await db
+      .select({
+        chakra: posts.chakra,
+        count: count(),
+      })
+      .from(posts)
+      .groupBy(posts.chakra);
+
+    const total = result.reduce((sum, item) => sum + item.count, 0);
+    
+    return result.map(item => ({
+      chakra: item.chakra,
+      count: item.count,
+      percentage: total > 0 ? (item.count / total) * 100 : 0,
+    }));
+  }
+
+  async getEngagementTypesDistribution(): Promise<{ type: string; count: number; percentage: number }[]> {
+    const result = await db
+      .select({
+        type: postEngagements.type,
+        count: count(),
+      })
+      .from(postEngagements)
+      .groupBy(postEngagements.type);
+
+    const total = result.reduce((sum, item) => sum + item.count, 0);
+    
+    return result.map(item => ({
+      type: item.type,
+      count: item.count,
+      percentage: total > 0 ? (item.count / total) * 100 : 0,
+    }));
+  }
+
+  async getDailySignups(days: number): Promise<{ date: string; count: number }[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
+    const result = await db
+      .select({
+        date: sql`DATE(${users.createdAt})`.as('date'),
+        count: count(),
+      })
+      .from(users)
+      .where(sql`${users.createdAt} >= ${startDate}`)
+      .groupBy(sql`DATE(${users.createdAt})`)
+      .orderBy(sql`DATE(${users.createdAt})`);
+
+    return result.map(item => ({
+      date: item.date as string,
+      count: item.count,
+    }));
+  }
+
+  async getRecentActivity(limit: number): Promise<{ type: string; description: string; timestamp: string; userId: string; userEmail: string }[]> {
+    // Get recent posts
+    const recentPosts = await db
+      .select({
+        type: sql`'post'`.as('type'),
+        description: sql`'Created a new post'`.as('description'),
+        timestamp: posts.createdAt,
+        userId: posts.authorId,
+        userEmail: users.email,
+      })
+      .from(posts)
+      .innerJoin(users, eq(posts.authorId, users.id))
+      .orderBy(desc(posts.createdAt))
+      .limit(limit / 2);
+
+    // Get recent engagements
+    const recentEngagements = await db
+      .select({
+        type: postEngagements.type,
+        description: sql`CONCAT('User ', ${postEngagements.type}, 'd a post')`.as('description'),
+        timestamp: postEngagements.createdAt,
+        userId: postEngagements.userId,
+        userEmail: users.email,
+      })
+      .from(postEngagements)
+      .innerJoin(users, eq(postEngagements.userId, users.id))
+      .orderBy(desc(postEngagements.createdAt))
+      .limit(limit / 2);
+
+    // Combine and sort by timestamp
+    const allActivity = [...recentPosts, ...recentEngagements];
+    allActivity.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    
+    return allActivity.slice(0, limit).map(activity => ({
+      type: activity.type,
+      description: activity.description,
+      timestamp: activity.timestamp.toISOString(),
+      userId: activity.userId,
+      userEmail: activity.userEmail || '',
+    }));
   }
 }
 

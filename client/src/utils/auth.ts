@@ -1,6 +1,6 @@
 /**
- * Mobile Authentication Utility
- * Detects mobile environment and routes to appropriate auth endpoint
+ * WorkOS Authentication Utility
+ * Handles authentication flow for both web and mobile environments
  */
 
 /**
@@ -32,36 +32,60 @@ export function isMobileEnvironment(): boolean {
 /**
  * Gets the correct authentication URL based on environment
  */
-export function getAuthUrl(): string {
+export function getAuthUrl(redirectUrl?: string): string {
+  const baseUrl = '/api/login';
+  
   if (isMobileEnvironment()) {
-    console.log('🔍 Debugging mobile auth redirect logic:', {
+    console.log('🔍 WorkOS mobile auth flow:', {
       platform: 'mobile',
       environment: window.location.hostname.includes('app.ascended.social') ? 'Production' : 'Development',
-      redirectUrl: window.location.origin,
-      authEndpoint: '/api/auth/mobile-login'
+      redirectUrl: redirectUrl || window.location.origin,
+      authEndpoint: baseUrl
     });
-    console.log('🎯 Using mobile OAuth flow');
     
-    // Mobile authentication with redirect_uri parameter
-    const redirectUri = encodeURIComponent(`${window.location.origin}/auth`);
-    return `/api/auth/mobile-login?redirect_uri=${redirectUri}&platform=web`;
+    // Mobile authentication with state parameter for callback
+    const state = JSON.stringify({
+      platform: 'mobile',
+      callback: redirectUrl || `${window.location.origin}/auth-callback`,
+      redirectUri: redirectUrl || window.location.origin
+    });
+    
+    return `${baseUrl}?state=${encodeURIComponent(state)}`;
   } else {
-    console.log('🔍 Debugging web auth redirect logic:', {
+    console.log('🔍 WorkOS web auth flow:', {
       platform: 'web', 
       environment: window.location.hostname.includes('ascended.social') ? 'Production' : 'Development',
-      redirectUrl: window.location.origin,
-      authEndpoint: '/api/login'
+      redirectUrl: redirectUrl || window.location.origin,
+      authEndpoint: baseUrl
     });
-    console.log('🎯 Using web OAuth flow');
     
     // Web authentication
-    return '/api/login';
+    return redirectUrl ? `${baseUrl}?redirectUrl=${encodeURIComponent(redirectUrl)}` : baseUrl;
   }
 }
 
 /**
- * Initiates authentication flow - Uses Replit Auth for all environments
+ * Initiates authentication flow - Uses WorkOS AuthKit for all environments
  */
-export function initiateAuth(): void {
-  window.location.href = getAuthUrl();
+export function initiateAuth(redirectUrl?: string): void {
+  window.location.href = getAuthUrl(redirectUrl);
+}
+
+/**
+ * Checks if there's a stored WorkOS auth token (for mobile apps)
+ */
+export function getStoredAuthToken(): string | null {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('workos_auth_token');
+  }
+  return null;
+}
+
+/**
+ * Clears stored WorkOS auth token
+ */
+export function clearStoredAuthToken(): void {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('workos_auth_token');
+  }
 }

@@ -195,43 +195,18 @@ export async function setupAuth(app: Express) {
         let finalRedirectUrl;
         
         if (redirectUrl && redirectUrl.startsWith('ascended://')) {
-          // Mobile app deep link - create JWT token and redirect
+          // Native mobile app deep link
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
-          console.log(`🔗 Redirecting to mobile app: ${finalRedirectUrl}`);
-        } else if (redirectUrl && redirectUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-          // React Native/Expo web app - create JWT token and redirect to auth callback
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
-          console.log(`🌐 Redirecting to React Native web app: ${finalRedirectUrl}`);
-        } else if (redirectUrl && redirectUrl.includes('ascended.social')) {
-          // Production web app - create JWT token and redirect
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
-          console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
+          console.log(`🔗 Native app deep link: ${finalRedirectUrl}`);
         } else if (redirectUrl && (redirectUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev') || redirectUrl.includes('app.ascended.social'))) {
-          // Mobile domain callback - redirect directly to mobile app
+          // Cross-domain mobile auth - redirect directly (Replit Auth handles session)
           finalRedirectUrl = redirectUrl;
-          console.log(`📱 Mobile Replit Auth callback: ${finalRedirectUrl}`);
-        } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
-          // Fallback: Based on referer, redirect to mobile dev app - redirect back to /auth
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
-          console.log(`🔄 Referer-based redirect to mobile dev app: ${finalRedirectUrl}`);
-        } else if (authReferer.includes('app.ascended.social')) {
-          // Fallback: Based on referer, redirect to mobile production app
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://app.ascended.social/auth?token=${token}&success=true`;
-          console.log(`🔄 Referer-based redirect to mobile prod app: ${finalRedirectUrl}`);
-        } else if (authReferer.includes('ascended.social')) {
-          // Fallback: Based on referer, redirect to production web app
-          const token = generateMobileAuthToken(user);
-          finalRedirectUrl = `https://ascended.social/auth/callback?token=${token}&success=true`;
-          console.log(`🔄 Referer-based redirect to production web app: ${finalRedirectUrl}`);
+          console.log(`📱 Cross-domain Replit Auth redirect: ${finalRedirectUrl}`);
         } else {
           // Default web app redirect (this backend's frontend)
           finalRedirectUrl = redirectUrl && !redirectUrl.includes('://') ? redirectUrl : '/';
-          console.log(`🏠 Default redirect to main web app: ${finalRedirectUrl}`);
+          console.log(`🏠 Default redirect: ${finalRedirectUrl}`);
         }
         
         // Clear session auth data

@@ -57,14 +57,20 @@ router.get('/mobile-login', (req, res) => {
   const referer = req.get('Referer') || '';
   const userAgent = req.get('User-Agent') || '';
   
-  // Determine the correct callback URL based on platform and referer
+  // Determine the correct callback URL based on platform and redirect_uri
   let callbackUrl;
   
   if (platform === 'native' || redirect_uri?.toString().includes('ascended://')) {
     // Mobile app - use deep link
     callbackUrl = 'ascended://auth/callback';
-  } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51') || redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
-    // React Native/Expo web app on Replit dev domain - redirect back to /auth
+  } else if (redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
+    // React Native/Expo web app - always redirect to mobile app when redirect_uri is mobile domain
+    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
+  } else if (platform === 'web' && redirect_uri?.toString().includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
+    // Explicit mobile web platform with mobile domain redirect
+    callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
+  } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51')) {
+    // Referer-based detection for mobile app
     callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth';
   } else if (referer.includes('ascended.social') || redirect_uri?.toString().includes('ascended.social')) {
     // Production web app

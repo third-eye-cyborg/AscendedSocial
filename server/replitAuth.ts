@@ -209,20 +209,10 @@ export async function setupAuth(app: Express) {
           const token = generateMobileAuthToken(user);
           finalRedirectUrl = `${redirectUrl}?token=${token}&success=true`;
           console.log(`🚀 Redirecting to production web app: ${finalRedirectUrl}`);
-        } else if (redirectUrl && redirectUrl.includes('/auth/mobile-callback')) {
-          // Mobile app callback - extract target domain from URL and redirect with JWT token
-          const token = generateMobileAuthToken(user);
-          const urlObj = new URL(redirectUrl, `${req.protocol}://${req.get('host')}`);
-          const mobileTargetDomain = urlObj.searchParams.get('target');
-          
-          if (mobileTargetDomain) {
-            finalRedirectUrl = `${decodeURIComponent(mobileTargetDomain)}/auth?token=${token}&success=true`;
-            console.log(`📱 Mobile callback redirect to ${mobileTargetDomain}: ${finalRedirectUrl}`);
-          } else {
-            // Fallback to mobile dev domain
-            finalRedirectUrl = `https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth?token=${token}&success=true`;
-            console.log(`📱 Mobile callback fallback redirect: ${finalRedirectUrl}`);
-          }
+        } else if (redirectUrl && (redirectUrl.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev') || redirectUrl.includes('app.ascended.social'))) {
+          // Mobile domain callback - redirect directly to mobile app
+          finalRedirectUrl = redirectUrl;
+          console.log(`📱 Mobile Replit Auth callback: ${finalRedirectUrl}`);
         } else if (authReferer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
           // Fallback: Based on referer, redirect to mobile dev app - redirect back to /auth
           const token = generateMobileAuthToken(user);

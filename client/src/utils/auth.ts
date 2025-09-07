@@ -60,42 +60,8 @@ export function getAuthUrl(): string {
 }
 
 /**
- * Initiates authentication flow
+ * Initiates authentication flow - Uses Replit Auth for all environments
  */
 export function initiateAuth(): void {
-  // For mobile environments, use new popup-based authentication
-  if (isMobileEnvironment()) {
-    window.location.href = '/mobile-auth';
-  } else {
-    window.location.href = getAuthUrl();
-  }
+  window.location.href = getAuthUrl();
 }
-
-/**
- * Enhanced API request function with JWT token support for mobile
- */
-export const apiRequest = async (url: string, options: RequestInit = {}) => {
-  // For mobile apps, add JWT token from localStorage if available
-  const token = localStorage.getItem('auth_token');
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
-  
-  // Add JWT token for cross-domain authentication
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(url, {
-    ...options,
-    credentials: 'include',
-    headers,
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return response.json();
-};

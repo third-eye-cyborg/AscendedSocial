@@ -176,9 +176,12 @@ export async function setupAuth(app: Express) {
         
         console.log('🔄 OAuth callback processing:', {
           redirectUrl,
+          redirectUrlType: typeof redirectUrl,
           authPlatform,
           authReferer: authReferer.substring(0, 50) + '...',
-          userAgent: userAgent.substring(0, 50) + '...'
+          userAgent: userAgent.substring(0, 50) + '...',
+          mobileTargetDomain: (req.session as any).mobileTargetDomain,
+          sessionRedirectUrl: (req.session as any).redirectUrl
         });
         
         // Generate JWT token for mobile platforms

@@ -96,7 +96,7 @@ router.get('/mobile-login', (req, res) => {
     (req.session as any).mobileTargetDomain = 'https://app.ascended.social';
     console.log('🎯 Referer-based mobile prod callback');
   } else if (referer.includes('ascended.social') || redirectUriStr.includes('ascended.social')) {
-    // Production web app
+    // Production web app (catch general ascended.social AFTER checking app.ascended.social)
     callbackUrl = 'https://ascended.social/auth/callback';
   } else if (redirectUriStr) {
     // Use provided redirect URI with auth/callback path (for non-mobile apps)

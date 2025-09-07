@@ -168,6 +168,127 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin dashboard routes
+  app.get("/api/admin/analytics", isAdminAuthenticated, async (req, res) => {
+    try {
+      const period = req.query.period as string || '7d';
+      
+      // Calculate date range based on period
+      const now = new Date();
+      const periodDays = {
+        '1d': 1,
+        '7d': 7,
+        '30d': 30,
+        '90d': 90
+      }[period] || 7;
+      
+      const startDate = new Date(now.getTime() - (periodDays * 24 * 60 * 60 * 1000));
+      
+      // Get user analytics
+      const totalUsers = await storage.getUserCount();
+      const newUsersToday = await storage.getNewUsersCount(1);
+      const newUsersWeek = await storage.getNewUsersCount(7);
+      const premiumUsers = await storage.getPremiumUsersCount();
+      const activeUsers = await storage.getActiveUsersCount(periodDays);
+      const totalPosts = await storage.getPostsCount();
+      const totalEngagements = await storage.getEngagementsCount();
+      const totalOracleReadings = await storage.getOracleReadingsCount();
+      
+      // Get chakra distribution
+      const chakraDistribution = await storage.getChakraDistribution();
+      
+      // Get engagement types
+      const engagementTypes = await storage.getEngagementTypesDistribution();
+      
+      // Get daily signups
+      const dailySignups = await storage.getDailySignups(periodDays);
+      
+      // Get recent activity
+      const recentActivity = await storage.getRecentActivity(20);
+      
+      const analytics = {
+        totalUsers,
+        newUsersToday,
+        newUsersWeek,
+        premiumUsers,
+        activeUsers,
+        totalPosts,
+        totalEngagements,
+        totalOracleReadings,
+        chakraDistribution,
+        engagementTypes,
+        dailySignups,
+        recentActivity
+      };
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error("Admin analytics error:", error);
+      res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
+  app.get("/api/admin/reports", isAdminAuthenticated, async (req, res) => {
+    try {
+      const reports = await storage.getReports();
+      res.json(reports);
+    } catch (error) {
+      console.error("Admin reports error:", error);
+      res.status(500).json({ error: "Failed to fetch reports" });
+    }
+  });
+
+  app.patch("/api/admin/reports/:reportId", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const { status, moderatorNotes } = req.body;
+      const adminUser = (req as any).user;
+      
+      await storage.updateReport(reportId, {
+        status,
+        moderatorNotes,
+        reviewedAt: new Date(),
+        reviewedBy: adminUser.id
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin update report error:", error);
+      res.status(500).json({ error: "Failed to update report" });
+    }
+  });
+
+  app.get("/api/admin/health", isAdminAuthenticated, async (req, res) => {
+    try {
+      // Basic system health metrics
+      const health = {
+        totalRequests: 1000, // TODO: Implement actual metrics
+        averageResponseTime: 250,
+        errorRate: 0.5,
+        activeServices: 8,
+        totalServices: 10,
+        lastHealthCheck: new Date().toISOString(),
+        serviceStatus: [
+          { name: "Database", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 50 },
+          { name: "Authentication", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 120 },
+          { name: "File Storage", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 80 },
+          { name: "Analytics", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 200 },
+          { name: "Email Service", status: "degraded" as const, lastCheck: new Date().toISOString(), responseTime: 500 },
+          { name: "Payment Processing", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 300 },
+          { name: "AI Oracle", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 1200 },
+          { name: "Browser Automation", status: "degraded" as const, lastCheck: new Date().toISOString(), responseTime: 2000 },
+          { name: "Zero Trust", status: "healthy" as const, lastCheck: new Date().toISOString(), responseTime: 150 },
+          { name: "CDN", status: "down" as const, lastCheck: new Date().toISOString(), responseTime: 0 },
+        ]
+      };
+      
+      res.json(health);
+    } catch (error) {
+      console.error("Admin health error:", error);
+      res.status(500).json({ error: "Failed to fetch system health" });
+    }
+  });
+
   // Post routes
   app.post('/api/posts', isAuthenticated, async (req: any, res) => {
     try {

@@ -85,31 +85,25 @@ export default function AdminDashboard() {
   const [selectedPeriod, setSelectedPeriod] = useState("7d");
 
   // Fetch analytics data
-  const { data: analytics, isLoading: analyticsLoading } = useQuery<UserAnalytics>({
+  const { data: analytics, isLoading: analyticsLoading } = useQuery({
     queryKey: ['/api/admin/analytics', selectedPeriod],
-    queryFn: () => apiRequest(`/api/admin/analytics?period=${selectedPeriod}`),
   });
 
   // Fetch user reports
-  const { data: reports, isLoading: reportsLoading } = useQuery<UserReport[]>({
+  const { data: reports, isLoading: reportsLoading } = useQuery({
     queryKey: ['/api/admin/reports'],
-    queryFn: () => apiRequest('/api/admin/reports'),
   });
 
   // Fetch system health
-  const { data: systemHealth, isLoading: healthLoading } = useQuery<SystemHealth>({
+  const { data: systemHealth, isLoading: healthLoading } = useQuery({
     queryKey: ['/api/admin/health'],
-    queryFn: () => apiRequest('/api/admin/health'),
     refetchInterval: 30000, // Refresh every 30 seconds
   });
 
   // Mutation to update report status
   const updateReportMutation = useMutation({
     mutationFn: ({ reportId, status, notes }: { reportId: string; status: string; notes?: string }) =>
-      apiRequest(`/api/admin/reports/${reportId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status, moderatorNotes: notes }),
-      }),
+      apiRequest(`/api/admin/reports/${reportId}`, 'PATCH', { status, moderatorNotes: notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/reports'] });
       toast({ title: "Report updated successfully" });

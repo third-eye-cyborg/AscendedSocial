@@ -7,52 +7,95 @@ import { useAuth } from "@/hooks/useAuth";
 import { ClientAnalytics } from "@/lib/analytics";
 import { NotificationService } from "@/lib/notifications";
 import { consentManager } from "@/lib/consent";
-import { useEffect } from "react";
-import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
-import Home from "@/pages/home";
-import Subscribe from "@/pages/subscribe";
-import About from "@/pages/about";
-import Features from "@/pages/features";
-import Pricing from "@/pages/pricing";
-import Profile from "@/pages/profile";
-import ProfileSettings from "@/pages/profileSettings";
-import Post from "@/pages/post";
-import Settings from "@/pages/settings";
-import Visions from "@/pages/visions";
-import Sparks from "@/pages/sparks";
-import Community from "@/pages/community";
-import Oracle from "@/pages/oracle";
-import Onboarding from "@/pages/onboarding";
-import SpiritPage from "@/pages/spirit";
-import EnergyPage from "@/pages/energy";
-import StarmapPage from "@/pages/starmap";
-import ExplorePage from "@/pages/explore";
-import ZeroTrustPage from "@/pages/zero-trust";
-import Compliance from "@/pages/compliance";
-import Unsubscribe from "@/pages/unsubscribe";
-import CookiePolicy from "@/pages/cookie-policy";
-import DoNotSell from "@/pages/do-not-sell";
-import DataRequest from "@/pages/data-request";
-import PrivacyPolicy from "@/pages/privacy-policy";
-import TermsOfService from "@/pages/terms-of-service";
-import EULA from "./pages/eula";
-import Disclaimer from './pages/disclaimer';
-import SubscriptionServicesAgreement from './pages/subscription-services-agreement';
-import PaymentTerms from './pages/payment-terms';
-import CopyrightAssignment from './pages/copyright-assignment';
-import CommunityProtection from './pages/community-protection';
-import CopyrightPolicy from './pages/copyright-policy';
-import ServiceAgreement from './pages/service-agreement';
-import ThirdPartyDisclaimer from './pages/third-party-disclaimer';
-import VideoPage from './pages/video';
-import AuthCallback from './pages/auth-callback';
-import MobileLogin from './pages/mobile-login';
-import AdminDashboard from './pages/admin';
+import { useEffect, useMemo, Suspense, lazy } from "react";
+import React from 'react';
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
-function Router() {
+// Critical pages - loaded immediately
+import Landing from "@/pages/landing";
+import Home from "@/pages/home";
+import AuthCallback from "@/pages/auth-callback";
+import NotFound from "@/pages/not-found";
+
+// Non-critical pages - lazy loaded
+const Subscribe = lazy(() => import("@/pages/subscribe"));
+const About = lazy(() => import("@/pages/about"));
+const Features = lazy(() => import("@/pages/features"));
+const Pricing = lazy(() => import("@/pages/pricing"));
+const Profile = lazy(() => import("@/pages/profile"));
+const ProfileSettings = lazy(() => import("@/pages/profileSettings"));
+const Post = lazy(() => import("@/pages/post"));
+const Settings = lazy(() => import("@/pages/settings"));
+const Visions = lazy(() => import("@/pages/visions"));
+const Sparks = lazy(() => import("@/pages/sparks"));
+const Community = lazy(() => import("@/pages/community"));
+const Oracle = lazy(() => import("@/pages/oracle"));
+const Onboarding = lazy(() => import("@/pages/onboarding"));
+const SpiritPage = lazy(() => import("@/pages/spirit"));
+const EnergyPage = lazy(() => import("@/pages/energy"));
+
+// Heavy 3D components - lazy loaded with preload
+const StarmapPage = lazy(() => import("@/pages/starmap"));
+const ExplorePage = lazy(() => import("@/pages/explore"));
+
+// Admin and compliance pages
+const AdminDashboard = lazy(() => import("@/pages/admin"));
+const ZeroTrustPage = lazy(() => import("@/pages/zero-trust"));
+const Compliance = lazy(() => import("@/pages/compliance"));
+
+// Legal pages
+const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
+const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
+const DoNotSell = lazy(() => import("@/pages/do-not-sell"));
+const DataRequest = lazy(() => import("@/pages/data-request"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
+const EULA = lazy(() => import("./pages/eula"));
+const Disclaimer = lazy(() => import('./pages/disclaimer'));
+const SubscriptionServicesAgreement = lazy(() => import('./pages/subscription-services-agreement'));
+const PaymentTerms = lazy(() => import('./pages/payment-terms'));
+const CopyrightAssignment = lazy(() => import('./pages/copyright-assignment'));
+const CommunityProtection = lazy(() => import('./pages/community-protection'));
+const CopyrightPolicy = lazy(() => import('./pages/copyright-policy'));
+const ServiceAgreement = lazy(() => import('./pages/service-agreement'));
+const ThirdPartyDisclaimer = lazy(() => import('./pages/third-party-disclaimer'));
+const VideoPage = lazy(() => import('./pages/video'));
+const MobileLogin = lazy(() => import('./pages/mobile-login'));
+
+// Loading fallback component
+const LoadingSpinner = React.memo(({ text = "Connecting to the cosmic realm..." }: { text?: string }) => (
+  <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
+    <div className="text-center space-y-4">
+      <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p className="text-purple-200 font-medium">{text}</p>
+    </div>
+  </div>
+));
+LoadingSpinner.displayName = 'LoadingSpinner';
+
+const Router = React.memo(() => {
   const { isAuthenticated, isLoading, user } = useAuth();
+
+  // Memoize user analytics data to prevent re-computation
+  const analyticsData = useMemo(() => {
+    if (!user || typeof user !== 'object' || !('id' in user)) return null;
+    
+    const userData = user as any;
+    return {
+      userId: String(user.id),
+      data: {
+        email: userData.email || '',
+        username: userData.username || userData.displayName || '',
+        signup_date: userData.createdAt || new Date().toISOString(),
+        is_premium: userData.isPremium || false,
+      },
+      profile: {
+        username: userData.username || userData.displayName,
+        isPremium: userData.isPremium || false,
+        journeyStage: 'active' as const
+      }
+    };
+  }, [user]);
 
   // Initialize analytics, notifications, and privacy banner when user loads
   useEffect(() => {
@@ -61,87 +104,80 @@ function Router() {
 
     // Initialize push notifications
     NotificationService.initialize().catch(console.error);
+  }, []);
 
-    if (user && typeof user === 'object' && 'id' in user) {
-      const userId = String(user.id);
-      const userData = user as any;
-
-      ClientAnalytics.identify(userId, {
-        email: userData.email || '',
-        username: userData.username || userData.displayName || '',
-        signup_date: userData.createdAt || new Date().toISOString(),
-        is_premium: userData.isPremium || false,
-      });
-
-      // Set up spiritual profile for notifications
-      NotificationService.setSpiritualProfile(userId, {
-        username: userData.username || userData.displayName,
-        isPremium: userData.isPremium || false,
-        journeyStage: 'active'
-      });
+  // Handle user analytics separately to avoid re-running on every render
+  useEffect(() => {
+    if (analyticsData) {
+      ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
+      NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
     }
-  }, [user]);
+  }, [analyticsData]);
 
   // Show loading state while checking authentication
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-purple-200 font-medium">Connecting to the cosmic realm...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
-    <Switch>
-      <Route path="/">{isAuthenticated ? <Home /> : <Landing />}</Route>
-      <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
-      <Route path="/auth/callback" component={AuthCallback} />
-      <Route path="/auth/mobile-callback" component={AuthCallback} />
-      <Route path="/auth" component={AuthCallback} />
-      <Route path="/mobile-login" component={MobileLogin} />
-      <Route path="/subscribe" component={Subscribe} />
-      <Route path="/about" component={About} />
-      <Route path="/features" component={Features} />
-      <Route path="/pricing" component={Pricing} />
-      <Route path="/profile/:id?" component={Profile} />
-      <Route path="/profile-settings" component={ProfileSettings} />
-      <Route path="/post/:id" component={Post} />
-      <Route path="/video/:type/:id" component={VideoPage} />
-      <Route path="/settings" component={Settings} />
-      <Route path="/visions" component={Visions} />
-      <Route path="/sparks" component={Sparks} />
-      <Route path="/community" component={Community} />
-      <Route path="/oracle" component={Oracle} />
-      <Route path="/onboarding" component={Onboarding} />
-      <Route path="/spirit" component={SpiritPage} />
-      <Route path="/energy" component={EnergyPage} />
-      <Route path="/starmap" component={StarmapPage} />
-      <Route path="/explore" component={ExplorePage} />
-      <Route path="/admin" component={AdminDashboard} />
-      <Route path="/zero-trust" component={ZeroTrustPage} />
-      <Route path="/compliance" component={Compliance} />
-      <Route path="/unsubscribe" component={Unsubscribe} />
-      <Route path="/cookie-policy" component={CookiePolicy} />
-      <Route path="/do-not-sell" component={DoNotSell} />
-      <Route path="/data-request" component={DataRequest} />
-      <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route path="/terms-of-service" component={TermsOfService} />
-      <Route path="/eula" component={EULA} />
-      <Route path="/disclaimer" component={Disclaimer} />
-      <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
-      <Route path="/payment-terms" component={PaymentTerms} />
-      <Route path="/copyright-assignment" component={CopyrightAssignment} />
-      <Route path="/community-protection" component={CommunityProtection} />
-      <Route path="/copyright-policy" component={CopyrightPolicy} />
-      <Route path="/service-agreement" component={ServiceAgreement} />
-      <Route path="/third-party-disclaimer" component={ThirdPartyDisclaimer} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<LoadingSpinner />}>
+      <Switch>
+        <Route path="/">{isAuthenticated ? <Home /> : <Landing />}</Route>
+        <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
+        <Route path="/auth/callback" component={AuthCallback} />
+        <Route path="/auth/mobile-callback" component={AuthCallback} />
+        <Route path="/auth" component={AuthCallback} />
+        <Route path="/mobile-login" component={MobileLogin} />
+        <Route path="/subscribe" component={Subscribe} />
+        <Route path="/about" component={About} />
+        <Route path="/features" component={Features} />
+        <Route path="/pricing" component={Pricing} />
+        <Route path="/profile/:id?" component={Profile} />
+        <Route path="/profile-settings" component={ProfileSettings} />
+        <Route path="/post/:id" component={Post} />
+        <Route path="/video/:type/:id" component={VideoPage} />
+        <Route path="/settings" component={Settings} />
+        <Route path="/visions" component={Visions} />
+        <Route path="/sparks" component={Sparks} />
+        <Route path="/community" component={Community} />
+        <Route path="/oracle" component={Oracle} />
+        <Route path="/onboarding" component={Onboarding} />
+        <Route path="/spirit" component={SpiritPage} />
+        <Route path="/energy" component={EnergyPage} />
+        <Route path="/starmap">
+          <Suspense fallback={<LoadingSpinner text="Initializing 3D starmap..." />}>
+            <StarmapPage />
+          </Suspense>
+        </Route>
+        <Route path="/explore">
+          <Suspense fallback={<LoadingSpinner text="Loading exploration interface..." />}>
+            <ExplorePage />
+          </Suspense>
+        </Route>
+        <Route path="/admin" component={AdminDashboard} />
+        <Route path="/zero-trust" component={ZeroTrustPage} />
+        <Route path="/compliance" component={Compliance} />
+        <Route path="/unsubscribe" component={Unsubscribe} />
+        <Route path="/cookie-policy" component={CookiePolicy} />
+        <Route path="/do-not-sell" component={DoNotSell} />
+        <Route path="/data-request" component={DataRequest} />
+        <Route path="/privacy-policy" component={PrivacyPolicy} />
+        <Route path="/terms-of-service" component={TermsOfService} />
+        <Route path="/eula" component={EULA} />
+        <Route path="/disclaimer" component={Disclaimer} />
+        <Route path="/subscription-services-agreement" component={SubscriptionServicesAgreement} />
+        <Route path="/payment-terms" component={PaymentTerms} />
+        <Route path="/copyright-assignment" component={CopyrightAssignment} />
+        <Route path="/community-protection" component={CommunityProtection} />
+        <Route path="/copyright-policy" component={CopyrightPolicy} />
+        <Route path="/service-agreement" component={ServiceAgreement} />
+        <Route path="/third-party-disclaimer" component={ThirdPartyDisclaimer} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
-}
+});
+Router.displayName = 'Router';
 
 function App() {
   return (

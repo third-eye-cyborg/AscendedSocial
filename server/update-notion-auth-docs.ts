@@ -478,12 +478,12 @@ async function updateNotionPages() {
           Title: {
             title: [{ text: { content: AUTH_ARCHITECTURE_UPDATE.title } }]
           },
-          Type: { select: { name: "Technical Specification" } },
+          "Document Type": { select: { name: "Technical Specification" } },
           Status: { select: { name: "Published" } },
           Description: {
             rich_text: [{ text: { content: "Updated authentication architecture documentation covering WorkOS AuthKit for main users and Replit Auth for employees and community admins" } }]
           },
-          Summary: {
+          "Content Summary": {
             rich_text: [{ text: { content: "Comprehensive documentation of the dual authentication system, including implementation details, security features, and migration notes" } }]
           }
         }
@@ -502,12 +502,12 @@ async function updateNotionPages() {
           Title: {
             title: [{ text: { content: MOBILE_DEV_UPDATE.title } }]
           },
-          Type: { select: { name: "Development Guide" } },
+          "Document Type": { select: { name: "User Guide" } },
           Status: { select: { name: "Published" } },
           Description: {
             rich_text: [{ text: { content: "Updated mobile development guide with WorkOS AuthKit integration, JWT token management, and cross-platform authentication" } }]
           },
-          Summary: {
+          "Content Summary": {
             rich_text: [{ text: { content: "Complete mobile development guide covering iOS/Android implementation, API integration, and security best practices" } }]
           }
         }
@@ -526,12 +526,12 @@ async function updateNotionPages() {
           Title: {
             title: [{ text: { content: API_REFERENCE_UPDATE.title } }]
           },
-          Type: { select: { name: "API Documentation" } },
+          "Document Type": { select: { name: "API Documentation" } },
           Status: { select: { name: "Published" } },
           Description: {
             rich_text: [{ text: { content: "Updated API reference with new authentication endpoints, JWT token handling, and platform-specific implementation details" } }]
           },
-          Summary: {
+          "Content Summary": {
             rich_text: [{ text: { content: "Comprehensive API documentation covering all authentication endpoints, request/response formats, and error handling" } }]
           }
         }
@@ -550,12 +550,12 @@ async function updateNotionPages() {
           Title: {
             title: [{ text: { content: SECURITY_FRAMEWORK_UPDATE.title } }]
           },
-          Type: { select: { name: "Security Documentation" } },
+          "Document Type": { select: { name: "Technical Specification" } },
           Status: { select: { name: "Published" } },
           Description: {
             rich_text: [{ text: { content: "Updated security framework covering multi-provider authentication, compliance features, and security best practices" } }]
           },
-          Summary: {
+          "Content Summary": {
             rich_text: [{ text: { content: "Comprehensive security documentation including authentication security, compliance features, and incident response procedures" } }]
           }
         }
@@ -579,11 +579,8 @@ async function updateNotionPages() {
             Date: {
               date: { start: new Date().toISOString().split('T')[0] }
             },
-            Type: {
+            Category: {
               select: { name: "Documentation" }
-            },
-            Impact: {
-              select: { name: "High" }
             },
             Description: {
               rich_text: [{ text: { content: "Updated all Notion documentation pages with latest authentication architecture information, including WorkOS AuthKit for main users and Replit Auth for employees and community admins" } }]

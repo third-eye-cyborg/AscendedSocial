@@ -117,7 +117,9 @@ export async function setupWorkOSAuth(app: Express) {
       provider: 'authkit',
       clientId: process.env.WORKOS_CLIENT_ID!,
       redirectUri: `${req.protocol}://${req.get('host')}/api/callback`,
-      state: authState
+      state: authState,
+      // Force AuthKit to use their prebuilt authentication page
+      screenHint: 'sign_up'
     });
     
     console.log('🔗 Redirecting to WorkOS AuthKit:', authorizationUrl);
@@ -161,11 +163,21 @@ export async function setupWorkOSAuth(app: Express) {
       });
 
       // Upsert user in database
-      const dbUser = await upsertUser(user);
+      let dbUser;
+      try {
+        dbUser = await upsertUser(user);
+        console.log('✅ User successfully created/updated in database:', {
+          id: dbUser.id,
+          email: dbUser.email
+        });
+      } catch (dbError: any) {
+        console.error('❌ Database error during user upsert:', dbError);
+        return res.redirect('/?error=user_creation_failed&details=' + encodeURIComponent(dbError.message || 'Database error'));
+      }
       
       if (!dbUser) {
-        console.error('Failed to create/update user in database');
-        return res.redirect('/?error=user_creation_failed');
+        console.error('❌ No user returned from database upsert');
+        return res.redirect('/?error=user_creation_failed&details=no_user_returned');
       }
 
       // Store user in session

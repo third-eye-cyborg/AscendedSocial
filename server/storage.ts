@@ -174,21 +174,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // First try to get existing user by ID
-    const existingUser = await this.getUser(userData.id);
-    
-    if (existingUser) {
-      // User exists, just update non-ID fields
-      const { id, ...updateData } = userData;
-      const [user] = await db
-        .update(users)
-        .set({ ...updateData, updatedAt: new Date() })
-        .where(eq(users.id, userData.id))
-        .returning();
-      return user;
+    // First check if user exists by ID 
+    if (userData.id) {
+      const existingUser = await this.getUser(userData.id);
+      if (existingUser) {
+        // User exists, just update non-ID fields
+        const { id, ...updateData } = userData;
+        const [user] = await db
+          .update(users)
+          .set({ ...updateData, updatedAt: new Date() })
+          .where(eq(users.id, userData.id))
+          .returning();
+        return user;
+      }
     }
     
-    // User doesn't exist, try to insert
+    // Check if user exists by email
+    if (userData.email) {
+      const [existingByEmail] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, userData.email));
+      
+      if (existingByEmail) {
+        // Update existing user, but don't change their ID
+        const { id, ...updateData } = userData;
+        const [user] = await db
+          .update(users)
+          .set({ ...updateData, updatedAt: new Date() })
+          .where(eq(users.id, existingByEmail.id))
+          .returning();
+        return user;
+      }
+    }
+    
+    // User doesn't exist, create new one
     try {
       const [user] = await db
         .insert(users)
@@ -196,24 +216,7 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return user;
     } catch (error: any) {
-      // If there's a conflict on email, get the existing user by email and update it
-      if (error.code === '23505' && error.constraint?.includes('email')) {
-        const [existingByEmail] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, userData.email));
-        
-        if (existingByEmail) {
-          // Update the existing user with new data (except ID)
-          const { id, ...updateData } = userData;
-          const [user] = await db
-            .update(users)
-            .set({ ...updateData, updatedAt: new Date() })
-            .where(eq(users.id, existingByEmail.id))
-            .returning();
-          return user;
-        }
-      }
+      console.error('Database insert error:', error);
       throw error;
     }
   }

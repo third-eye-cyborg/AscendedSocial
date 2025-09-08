@@ -1516,7 +1516,7 @@ export class DatabaseStorage implements IStorage {
     return enrichedReports;
   }
 
-  async updateReport(reportId: string, updates: { status?: string; moderatorNotes?: string; reviewedAt?: Date; reviewedBy?: string }): Promise<void> {
+  async updateReport(reportId: string, updates: { status?: "pending" | "reviewed" | "resolved" | "dismissed"; moderatorNotes?: string; reviewedAt?: Date; reviewedBy?: string }): Promise<void> {
     await db
       .update(reports)
       .set({ ...updates, updatedAt: new Date() })
@@ -1677,12 +1677,16 @@ export class DatabaseStorage implements IStorage {
 
     // Combine and sort by timestamp
     const allActivity = [...recentPosts, ...recentEngagements];
-    allActivity.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    allActivity.sort((a, b) => {
+      const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+      const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+      return timeB - timeA;
+    });
     
     return allActivity.slice(0, limit).map(activity => ({
-      type: activity.type,
-      description: activity.description,
-      timestamp: activity.timestamp.toISOString(),
+      type: String(activity.type),
+      description: String(activity.description),
+      timestamp: activity.timestamp ? new Date(activity.timestamp).toISOString() : new Date().toISOString(),
       userId: activity.userId,
       userEmail: activity.userEmail || '',
     }));

@@ -53,8 +53,8 @@ export async function setupAdminAuth(app: Express) {
       const claims = tokens.claims();
       
       // Check if user is authorized for admin access
-      if (!ADMIN_USER_IDS.includes(claims["sub"])) {
-        console.warn(`❌ Unauthorized admin access attempt by user: ${claims["sub"]} (${claims["email"]})`);
+      if (!claims || !ADMIN_USER_IDS.includes(claims["sub"])) {
+        console.warn(`❌ Unauthorized admin access attempt by user: ${claims?.["sub"]} (${claims?.["email"]})`);
         verified(new Error("User is not authorized for admin access"), null);
         return;
       }

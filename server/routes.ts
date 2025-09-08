@@ -64,9 +64,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
   app.use(analyticsMiddleware());
 
-  // Auth middleware
-  await setupWorkOSAuth(app);
-  await setupAdminAuth(app);
+  // Authentication systems setup
+  await setupWorkOSAuth(app);    // AuthKit for regular users
+  await setupAdminAuth(app);     // Replit Auth for admin staff
 
   // Note: Mobile authentication routes are handled by mobile-auth-routes.ts via /api/auth/* prefix
 

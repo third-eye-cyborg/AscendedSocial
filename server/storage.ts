@@ -174,18 +174,48 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.email,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+    // First try to get existing user by ID
+    const existingUser = await this.getUser(userData.id);
+    
+    if (existingUser) {
+      // User exists, just update non-ID fields
+      const { id, ...updateData } = userData;
+      const [user] = await db
+        .update(users)
+        .set({ ...updateData, updatedAt: new Date() })
+        .where(eq(users.id, userData.id))
+        .returning();
+      return user;
+    }
+    
+    // User doesn't exist, try to insert
+    try {
+      const [user] = await db
+        .insert(users)
+        .values(userData)
+        .returning();
+      return user;
+    } catch (error: any) {
+      // If there's a conflict on email, get the existing user by email and update it
+      if (error.code === '23505' && error.constraint?.includes('email')) {
+        const [existingByEmail] = await db
+          .select()
+          .from(users)
+          .where(eq(users.email, userData.email));
+        
+        if (existingByEmail) {
+          // Update the existing user with new data (except ID)
+          const { id, ...updateData } = userData;
+          const [user] = await db
+            .update(users)
+            .set({ ...updateData, updatedAt: new Date() })
+            .where(eq(users.id, existingByEmail.id))
+            .returning();
+          return user;
+        }
+      }
+      throw error;
+    }
   }
 
   async updateUser(userId: string, updates: Partial<User>): Promise<User> {

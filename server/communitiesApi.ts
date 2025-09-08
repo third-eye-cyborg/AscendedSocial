@@ -415,13 +415,13 @@ export function registerCommunitiesRoutes(app: Express): void {
         return res.status(403).json({ error: "Must be a community member to share posts" });
       }
 
-      // Check if post already shared to this community
+      // Check if post content already exists in this community (simple duplicate check)
       const [existingShare] = await db
         .select()
         .from(communityPosts)
         .where(and(
           eq(communityPosts.communityId, communityId),
-          eq(communityPosts.postId, postId)
+          eq(communityPosts.authorId, userId)
         ));
 
       if (existingShare) {

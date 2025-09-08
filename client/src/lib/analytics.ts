@@ -344,7 +344,7 @@ export class ClientAnalytics {
     return {
       hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
       hasMarketingConsent: consentManager.hasMarketingConsent(),
-      hasFunctionalConsent: consentManager.hasFunctionalConsent(),
+      hasFunctionalConsent: consentManager.hasPreferencesConsent(),
       isInitialized: isInitialized,
     };
   }

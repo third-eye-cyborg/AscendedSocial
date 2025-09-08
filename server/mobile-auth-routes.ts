@@ -115,8 +115,9 @@ router.get('/mobile-login', (req, res) => {
   (req.session as any).mobileReferrer = referer || 'mobile';
   (req.session as any).mobileCallbackUrl = callbackUrl;
   
-  // Redirect to main login with mobile bounce flag
-  const loginUrl = `/api/login?mobile_bounce=true`;
+  // Redirect directly to AuthKit login with mobile parameters
+  const loginUrl = `/api/login?mobile_bounce=true&platform=${platform}&redirectUrl=${encodeURIComponent(callbackUrl)}`;
+  console.log('🚀 Redirecting to AuthKit login:', loginUrl);
   res.redirect(loginUrl);
 });
 

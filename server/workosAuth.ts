@@ -74,32 +74,50 @@ export async function setupWorkOSAuth(app: Express) {
   app.set("trust proxy", 1);
   app.use(getSession());
 
-  // WorkOS AuthKit login endpoint
+  // WorkOS AuthKit login endpoint (unified for web and mobile)
   app.get("/api/login", (req, res) => {
     const redirectUrl = req.query.redirectUrl as string;
     const state = req.query.state as string;
+    const mobileBounce = req.query.mobile_bounce as string;
+    const platform = req.query.platform as string;
     
-    console.log('🔍 WorkOS login endpoint called:', {
+    console.log('🔍 WorkOS AuthKit login endpoint called:', {
       redirectUrl,
       state,
-      hostname: req.hostname
+      mobileBounce,
+      platform,
+      hostname: req.hostname,
+      userAgent: req.get('User-Agent')?.substring(0, 50)
     });
     
-    // Store redirect URL in session for later use
+    // Store redirect URL and mobile info in session for callback handling
     if (redirectUrl) {
       (req.session as any).redirectUrl = redirectUrl;
     }
+    if (mobileBounce) {
+      (req.session as any).isMobileBounce = true;
+      (req.session as any).mobileCallbackUrl = (req.session as any).mobileCallbackUrl || redirectUrl;
+    }
+    if (platform) {
+      (req.session as any).platform = platform;
+    }
     
-    // Store state parameter for mobile apps
-    if (state) {
-      (req.session as any).authState = state;
+    // Create state parameter that includes mobile info if needed
+    let authState = state || 'web';
+    if (mobileBounce && platform) {
+      authState = JSON.stringify({ 
+        type: 'mobile',
+        platform,
+        originalState: state,
+        callback: redirectUrl
+      });
     }
     
     const authorizationUrl = workos.userManagement.getAuthorizationUrl({
       provider: 'authkit',
       clientId: process.env.WORKOS_CLIENT_ID!,
       redirectUri: `${req.protocol}://${req.get('host')}/api/callback`,
-      state: state || 'default'
+      state: authState
     });
     
     console.log('🔗 Redirecting to WorkOS AuthKit:', authorizationUrl);
@@ -160,42 +178,58 @@ export async function setupWorkOSAuth(app: Express) {
         accessToken
       };
 
-      // Handle mobile authentication with state parameter
-      const authState = (req.session as any).authState || state;
+      // Handle mobile authentication flow
+      const isMobileBounce = (req.session as any).isMobileBounce;
+      const mobileCallbackUrl = (req.session as any).mobileCallbackUrl;
+      const platform = (req.session as any).platform;
       const redirectUrl = (req.session as any).redirectUrl;
       
-      if (authState && authState !== 'default') {
+      // Check if this is mobile authentication
+      let isMobileAuth = false;
+      let mobileCallback = null;
+      
+      try {
+        if (state && state !== 'web' && state !== 'default') {
+          const stateData = JSON.parse(state as string);
+          if (stateData.type === 'mobile') {
+            isMobileAuth = true;
+            mobileCallback = stateData.callback;
+          }
+        }
+      } catch {
+        // State is not JSON, check session data
+        if (isMobileBounce || platform) {
+          isMobileAuth = true;
+          mobileCallback = mobileCallbackUrl || redirectUrl;
+        }
+      }
+      
+      if (isMobileAuth) {
         // Mobile app authentication - generate JWT token
         const mobileAuthToken = generateMobileAuthToken(dbUser);
         
-        // Try to parse state as JSON to extract callback URL
-        let mobileCallback = null;
-        try {
-          const stateData = JSON.parse(authState as string);
-          mobileCallback = stateData.callback || stateData.redirectUri;
-        } catch {
-          // State is not JSON, treat as simple string
-        }
-        
         if (mobileCallback) {
+          // Direct mobile app callback
           const separator = mobileCallback.includes('?') ? '&' : '?';
           const finalRedirectUrl = `${mobileCallback}${separator}token=${mobileAuthToken}`;
           console.log('📱 Mobile auth redirect:', finalRedirectUrl);
           return res.redirect(finalRedirectUrl);
         }
         
-        // Fallback to auth callback page with token
-        return res.redirect(`/auth-callback?token=${mobileAuthToken}&state=${encodeURIComponent(authState as string)}`);
+        // Fallback to auth callback page with token for mobile web apps
+        return res.redirect(`/auth-callback?token=${mobileAuthToken}&mobile=true`);
       }
 
       // Regular web authentication
       console.log('🏠 Regular web auth - redirecting to auth callback');
       
       // Clear session auth data
-      delete (req.session as any).authState;
+      delete (req.session as any).isMobileBounce;
+      delete (req.session as any).mobileCallbackUrl;
+      delete (req.session as any).platform;
       delete (req.session as any).redirectUrl;
       
-      res.redirect('/auth-callback');
+      res.redirect(redirectUrl || '/auth-callback');
       
     } catch (error) {
       console.error('❌ WorkOS callback error:', error);

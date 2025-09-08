@@ -28,15 +28,39 @@ export function registerCommunitiesRoutes(app: Express): void {
       
       const userId = (req.user as any)?.claims?.sub;
 
+      // Optimized query using LEFT JOINs instead of subqueries for better performance
       let query = db
         .select({
           community: communities,
-          memberCount: sql<number>`(SELECT COUNT(*) FROM ${communityMemberships} WHERE ${communityMemberships.communityId} = ${communities.id})`,
-          postCount: sql<number>`(SELECT COUNT(*) FROM ${communityPosts} WHERE ${communityPosts.communityId} = ${communities.id})`,
-          isUserMember: userId ? sql<boolean>`(SELECT EXISTS(SELECT 1 FROM ${communityMemberships} WHERE ${communityMemberships.communityId} = ${communities.id} AND ${communityMemberships.userId} = ${userId}))` : sql<boolean>`false`,
-          recentActivity: sql<string>`(SELECT MAX(${communityPosts.createdAt}) FROM ${communityPosts} WHERE ${communityPosts.communityId} = ${communities.id})`
+          memberCount: sql<number>`COALESCE(${sql.identifier('member_stats')}.member_count, 0)`,
+          postCount: sql<number>`COALESCE(${sql.identifier('post_stats')}.post_count, 0)`,
+          isUserMember: userId ? sql<boolean>`CASE WHEN ${sql.identifier('user_membership')}.community_id IS NOT NULL THEN true ELSE false END` : sql<boolean>`false`,
+          recentActivity: sql<string>`${sql.identifier('post_stats')}.recent_activity`
         })
         .from(communities)
+        // Join aggregated member counts
+        .leftJoin(
+          sql`(
+            SELECT 
+              ${communityMemberships.communityId} as community_id,
+              COUNT(*) as member_count
+            FROM ${communityMemberships}
+            GROUP BY ${communityMemberships.communityId}
+          ) as member_stats`,
+          sql`member_stats.community_id = ${communities.id}`
+        )
+        // Join aggregated post counts and recent activity
+        .leftJoin(
+          sql`(
+            SELECT 
+              ${communityPosts.communityId} as community_id,
+              COUNT(*) as post_count,
+              MAX(${communityPosts.createdAt}) as recent_activity
+            FROM ${communityPosts}
+            GROUP BY ${communityPosts.communityId}
+          ) as post_stats`,
+          sql`post_stats.community_id = ${communities.id}`
+        )
         .limit(parseInt(limit as string))
         .offset(parseInt(offset as string));
 
@@ -81,28 +105,39 @@ export function registerCommunitiesRoutes(app: Express): void {
         );
       }
 
+      // Add user membership join for authenticated users
+      if (userId) {
+        query = query.leftJoin(
+          sql`(
+            SELECT ${communityMemberships.communityId} as community_id
+            FROM ${communityMemberships}
+            WHERE ${communityMemberships.userId} = ${userId}
+          ) as user_membership`,
+          sql`user_membership.community_id = ${communities.id}`
+        ) as any;
+      }
+
       if (conditions.length > 0) {
         query = query.where(and(...conditions)) as any;
       }
 
-      const result = await query;
-      
-      // Sort in memory since Drizzle typing is complex
-      let sortedResult = [...result];
+      // Add database-level sorting for better performance
       switch (sort) {
         case "newest":
-          sortedResult.sort((a, b) => new Date(b.community.createdAt || 0).getTime() - new Date(a.community.createdAt || 0).getTime());
+          query = query.orderBy(desc(communities.createdAt)) as any;
           break;
         case "activity":
-          sortedResult.sort((a, b) => new Date(b.recentActivity || 0).getTime() - new Date(a.recentActivity || 0).getTime());
+          query = query.orderBy(sql`post_stats.recent_activity DESC NULLS LAST`) as any;
           break;
         case "members":
         default:
-          sortedResult.sort((a, b) => (b.memberCount || 0) - (a.memberCount || 0));
+          query = query.orderBy(sql`member_stats.member_count DESC NULLS LAST`) as any;
           break;
       }
 
-      res.json(sortedResult);
+      // Execute optimized query with database-level sorting
+      const result = await query;
+      res.json(result);
     } catch (error) {
       console.error("Error fetching communities:", error);
       res.status(500).json({ error: "Failed to fetch communities" });

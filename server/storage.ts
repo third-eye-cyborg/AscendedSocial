@@ -600,51 +600,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPostEngagements(postId: string): Promise<{ [key in EngagementType]: number } & { comments: number }> {
-    // Get regular engagement counts (upvote, downvote, like)
-    const engagements = await db
+    // Optimized: Get all engagement data in a single query using conditional aggregation
+    const [engagementData] = await db
       .select({
-        type: postEngagements.type,
-        count: count(),
+        upvoteCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'upvote' THEN 1 END)`,
+        downvoteCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'downvote' THEN 1 END)`,
+        likeCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'like' THEN 1 END)`,
+        totalEnergy: sql<number>`COALESCE(SUM(CASE WHEN ${postEngagements.type} = 'energy' THEN ${postEngagements.energyAmount} ELSE 0 END), 0)`,
       })
       .from(postEngagements)
-      .where(
-        and(
-          eq(postEngagements.postId, postId),
-          ne(postEngagements.type, 'energy')
-        )
-      )
-      .groupBy(postEngagements.type);
+      .where(eq(postEngagements.postId, postId));
 
-    // Get total energy amount from energy engagements
-    const totalEnergyAmount = await db
-      .select({ totalEnergy: sum(postEngagements.energyAmount) })
-      .from(postEngagements)
-      .where(
-        and(
-          eq(postEngagements.postId, postId),
-          eq(postEngagements.type, 'energy')
-        )
-      );
-
-    // Get comment count separately
+    // Get comment count in parallel (can't be combined with above due to different table)
     const [{ count: commentCount }] = await db
       .select({ count: count() })
       .from(comments)
       .where(eq(comments.postId, postId));
 
-    const result = {
-      upvote: 0,
-      downvote: 0,
-      like: 0,
-      energy: Number(totalEnergyAmount[0]?.totalEnergy || 0),
+    return {
+      upvote: engagementData?.upvoteCount || 0,
+      downvote: engagementData?.downvoteCount || 0,
+      like: engagementData?.likeCount || 0,
+      energy: engagementData?.totalEnergy || 0,
       comments: commentCount || 0,
     };
-
-    engagements.forEach(({ type, count }) => {
-      result[type as EngagementType] = count;
-    });
-
-    return result;
   }
 
   async getUserEngagement(postId: string, userId: string): Promise<Engagement[]> {
@@ -660,22 +639,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   private async updatePostFrequency(postId: string): Promise<void> {
-    const engagements = await this.getPostEngagements(postId);
-    
-    // Get total energy amount from all energy engagements
-    const totalEnergyAmount = await db
-      .select({ totalEnergy: sum(postEngagements.energyAmount) })
+    // Optimized: Calculate frequency directly in database without multiple queries
+    const [engagementData] = await db
+      .select({
+        upvoteCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'upvote' THEN 1 END)`,
+        downvoteCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'downvote' THEN 1 END)`,
+        likeCount: sql<number>`COUNT(CASE WHEN ${postEngagements.type} = 'like' THEN 1 END)`,
+        totalEnergy: sql<number>`COALESCE(SUM(CASE WHEN ${postEngagements.type} = 'energy' THEN ${postEngagements.energyAmount} ELSE 0 END), 0)`,
+      })
       .from(postEngagements)
-      .where(
-        and(
-          eq(postEngagements.postId, postId),
-          eq(postEngagements.type, 'energy')
-        )
-      );
+      .where(eq(postEngagements.postId, postId));
     
-    const energySum = Number(totalEnergyAmount[0]?.totalEnergy || 0);
-    const frequency = engagements.upvote - engagements.downvote + 
-                     engagements.like + Math.floor(energySum * 0.2); // Energy worth 0.2 frequency per point
+    const frequency = (engagementData?.upvoteCount || 0) - (engagementData?.downvoteCount || 0) + 
+                     (engagementData?.likeCount || 0) + Math.floor((engagementData?.totalEnergy || 0) * 0.2);
     
     await db
       .update(posts)

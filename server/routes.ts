@@ -289,6 +289,213 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin User Management Routes
+  app.get("/api/admin/users", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { page = 1, limit = 50, search, status } = req.query;
+      const users = await storage.getUsers({ 
+        page: Number(page), 
+        limit: Number(limit), 
+        search: search as string,
+        status: status as string 
+      });
+      res.json(users);
+    } catch (error) {
+      console.error("Admin users error:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  app.get("/api/admin/users/:userId", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      
+      // Get additional user data for admin view
+      const userPosts = await storage.getUserPosts(userId, { limit: 10 });
+      const userReports = await storage.getUserReports(userId);
+      const userEngagements = await storage.getUserEngagements(userId, { limit: 10 });
+      
+      res.json({
+        ...user,
+        recentPosts: userPosts,
+        reports: userReports,
+        recentEngagements: userEngagements
+      });
+    } catch (error) {
+      console.error("Admin user detail error:", error);
+      res.status(500).json({ error: "Failed to fetch user details" });
+    }
+  });
+
+  app.patch("/api/admin/users/:userId/status", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { status, reason } = req.body;
+      const adminUser = (req as any).user;
+      
+      await storage.updateUserStatus(userId, status, {
+        reason,
+        moderatedBy: adminUser.id,
+        moderatedAt: new Date()
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin user status update error:", error);
+      res.status(500).json({ error: "Failed to update user status" });
+    }
+  });
+
+  // Admin Content Moderation Routes
+  app.get("/api/admin/posts", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { page = 1, limit = 50, status, chakra } = req.query;
+      const posts = await storage.getPosts({ 
+        page: Number(page), 
+        limit: Number(limit),
+        status: status as string,
+        chakra: chakra as string,
+        includeReported: true
+      });
+      res.json(posts);
+    } catch (error) {
+      console.error("Admin posts error:", error);
+      res.status(500).json({ error: "Failed to fetch posts" });
+    }
+  });
+
+  app.patch("/api/admin/posts/:postId/moderate", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const { action, reason } = req.body; // action: 'approve', 'remove', 'flag'
+      const adminUser = (req as any).user;
+      
+      await storage.moderatePost(postId, action, {
+        reason,
+        moderatedBy: adminUser.id,
+        moderatedAt: new Date()
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin post moderation error:", error);
+      res.status(500).json({ error: "Failed to moderate post" });
+    }
+  });
+
+  // Admin Support Ticket System
+  app.get("/api/admin/support-tickets", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { status = 'open', priority } = req.query;
+      const tickets = await storage.getSupportTickets({ 
+        status: status as string,
+        priority: priority as string 
+      });
+      res.json(tickets);
+    } catch (error) {
+      console.error("Admin support tickets error:", error);
+      res.status(500).json({ error: "Failed to fetch support tickets" });
+    }
+  });
+
+  app.patch("/api/admin/support-tickets/:ticketId", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const { status, response, priority } = req.body;
+      const adminUser = (req as any).user;
+      
+      await storage.updateSupportTicket(ticketId, {
+        status,
+        response,
+        priority,
+        assignedTo: adminUser.id,
+        updatedAt: new Date()
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin support ticket update error:", error);
+      res.status(500).json({ error: "Failed to update support ticket" });
+    }
+  });
+
+  // Admin Community Feedback Routes
+  app.get("/api/admin/feedback", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { type, status } = req.query;
+      const feedback = await storage.getCommunityFeedback({ 
+        type: type as string,
+        status: status as string 
+      });
+      res.json(feedback);
+    } catch (error) {
+      console.error("Admin feedback error:", error);
+      res.status(500).json({ error: "Failed to fetch community feedback" });
+    }
+  });
+
+  app.patch("/api/admin/feedback/:feedbackId", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { feedbackId } = req.params;
+      const { status, adminResponse } = req.body;
+      const adminUser = (req as any).user;
+      
+      await storage.updateCommunityFeedback(feedbackId, {
+        status,
+        adminResponse,
+        reviewedBy: adminUser.id,
+        reviewedAt: new Date()
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin feedback update error:", error);
+      res.status(500).json({ error: "Failed to update feedback" });
+    }
+  });
+
+  // Admin Bug Tracking Routes
+  app.get("/api/admin/bugs", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { severity, status, assignee } = req.query;
+      const bugs = await storage.getBugReports({ 
+        severity: severity as string,
+        status: status as string,
+        assignee: assignee as string 
+      });
+      res.json(bugs);
+    } catch (error) {
+      console.error("Admin bugs error:", error);
+      res.status(500).json({ error: "Failed to fetch bug reports" });
+    }
+  });
+
+  app.patch("/api/admin/bugs/:bugId", isAdminAuthenticated, async (req, res) => {
+    try {
+      const { bugId } = req.params;
+      const { status, severity, assignee, resolution } = req.body;
+      const adminUser = (req as any).user;
+      
+      await storage.updateBugReport(bugId, {
+        status,
+        severity,
+        assignee,
+        resolution,
+        updatedBy: adminUser.id,
+        updatedAt: new Date()
+      });
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Admin bug update error:", error);
+      res.status(500).json({ error: "Failed to update bug report" });
+    }
+  });
+
   // Post routes
   app.post('/api/posts', isAuthenticated, async (req: any, res) => {
     try {

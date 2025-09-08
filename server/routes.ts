@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupWorkOSAuth, isAuthenticated } from "./workosAuth";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { setupAdminAuth, isAdminAuthenticated } from "./adminAuth";
 import { 
   analyzePostChakra, 
@@ -65,7 +65,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(analyticsMiddleware());
 
   // Authentication systems setup
-  await setupWorkOSAuth(app);    // AuthKit for regular users
+  await setupAuth(app);          // Replit Auth for regular users (working OIDC)
   await setupAdminAuth(app);     // Replit Auth for admin staff
 
   // Note: Mobile authentication now uses unified AuthKit flow

@@ -113,16 +113,16 @@ export async function setupWorkOSAuth(app: Express) {
       });
     }
     
-    // Use the specific AuthKit URL provided by the user
+    // Generate proper WorkOS AuthKit URL using SDK
     const callbackUri = `${req.protocol}://${req.get('host')}/api/callback`;
-    const authKitUrl = `https://orderly-star-81-staging.authkit.app/auth` +
-      `?client_id=${encodeURIComponent(process.env.WORKOS_CLIENT_ID!)}` +
-      `&redirect_uri=${encodeURIComponent(callbackUri)}` +
-      `&response_type=code` +
-      `&state=${encodeURIComponent(authState)}` +
-      `&scope=openid+profile+email`;
+    const authKitUrl = workos.userManagement.getAuthorizationUrl({
+      provider: 'authkit',
+      clientId: process.env.WORKOS_CLIENT_ID!,
+      redirectUri: callbackUri,
+      state: authState
+    });
     
-    console.log('🔗 Redirecting to AuthKit prebuilt UI:', authKitUrl);
+    console.log('🔗 Redirecting to WorkOS AuthKit:', authKitUrl);
     res.redirect(authKitUrl);
   });
 

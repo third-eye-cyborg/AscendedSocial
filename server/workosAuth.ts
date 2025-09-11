@@ -45,7 +45,7 @@ async function upsertUser(userInfo: any) {
     firstName: userInfo.firstName || userInfo.first_name || '',
     lastName: userInfo.lastName || userInfo.last_name || '',
     profileImageUrl: userInfo.profilePictureUrl || userInfo.profile_picture_url || null,
-  } as any);
+  });
   
   return dbUser; // Return the upserted user directly
 }

@@ -243,7 +243,7 @@ export const spiritualInteractions = pgTable("spiritual_interactions", {
 
 // Insert schemas
 export const upsertUserSchema = createInsertSchema(users).pick({
-  id: true,
+  workosId: true,
   email: true,
   firstName: true,
   lastName: true,

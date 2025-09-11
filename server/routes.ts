@@ -50,6 +50,13 @@ import { ServerNotificationService } from "./notificationService";
 import Stripe from "stripe";
 import { emailService } from "./emailService";
 import { cloudflareImages } from "./cloudflareImages";
+import { setupRouteSegregation, routeInfoEndpoint, AuthType, getRequiredAuthType } from "./routeSegregation";
+import { 
+  enhancedUserAuthentication, 
+  enhancedAdminAuthentication, 
+  enhancedSecurityHeaders,
+  securityErrorHandler 
+} from "./authenticationValidation";
 
 // Stripe setup
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -64,11 +71,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
   app.use(analyticsMiddleware());
 
-  // Authentication systems setup
+  // 🔐 COMPREHENSIVE ROUTE SEGREGATION AND SECURITY SETUP
+  console.log('🔐 Implementing comprehensive route segregation and security...');
+  
+  // Apply enhanced security headers to all routes
+  app.use(enhancedSecurityHeaders);
+  
+  // Apply security error handling middleware
+  app.use(securityErrorHandler);
+  
+  // Apply route segregation middleware FIRST - this validates authentication types
+  setupRouteSegregation(app);
+  
+  // Authentication systems setup with proper isolation
   await setupWorkOSAuth(app);    // WorkOS AuthKit for regular users (proper WorkOS branding)
   await setupAdminAuth(app);     // Replit Auth for admin staff (admin portal only)
 
+  // Apply enhanced authentication middleware for additional security
+  app.use(enhancedUserAuthentication);   // Enhanced user auth with cross-auth prevention
+  app.use(enhancedAdminAuthentication);  // Enhanced admin auth with additional checks
+
   // Note: Regular users use WorkOS AuthKit, admins use Replit Auth
+  // Route segregation middleware ensures no cross-authentication vulnerabilities
+
+  // Debug endpoint to check route authentication requirements
+  app.get('/api/debug/route-info', routeInfoEndpoint);
+  
+  console.log('✅ Comprehensive route segregation and security middleware applied');
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

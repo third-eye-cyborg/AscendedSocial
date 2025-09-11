@@ -11,6 +11,7 @@ import {
   spiritualMarks,
   newsletterSubscriptions,
   reports,
+  auditLogs,
   type User,
   type UpsertUser,
   type Post,
@@ -30,8 +31,12 @@ import {
   type InsertNewsletterSubscription,
   type Report,
   type InsertReport,
+  type AuditLog,
+  type InsertAuditLog,
   type ChakraType,
   type EngagementType,
+  type UserRole,
+  type AuditAction,
   notifications,
   bookmarks,
 } from "@shared/schema";
@@ -151,6 +156,59 @@ export interface IStorage {
   getPendingReports(): Promise<Report[]>;
   getReports(): Promise<any[]>;
   updateReport(reportId: string, updates: { status?: string; moderatorNotes?: string; reviewedAt?: Date; reviewedBy?: string }): Promise<void>;
+
+  // User moderation operations
+  banUser(userId: string, banReason: string, bannedBy: string, banExpiresAt?: Date, ipAddress?: string, userAgent?: string): Promise<User>;
+  unbanUser(userId: string, unbannedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User>;
+  suspendUser(userId: string, suspensionReason: string, suspendedBy: string, suspensionExpiresAt: Date, ipAddress?: string, userAgent?: string): Promise<User>;
+  unsuspendUser(userId: string, unsuspendedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User>;
+  warnUser(userId: string, warnedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User>;
+  updateUserRole(userId: string, newRole: UserRole, changedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User>;
+  
+  // User filtering and search operations
+  searchUsersWithFilters(filters: {
+    query?: string;
+    role?: UserRole;
+    isBanned?: boolean;
+    isSuspended?: boolean;
+    minWarningCount?: number;
+    createdAfter?: Date;
+    createdBefore?: Date;
+    limit?: number;
+    offset?: number;
+  }): Promise<User[]>;
+  getUsersForModeration(filters?: {
+    status?: 'active' | 'banned' | 'suspended';
+    role?: UserRole;
+    limit?: number;
+    offset?: number;
+  }): Promise<User[]>;
+  
+  // Audit log operations
+  createAuditLog(auditLog: InsertAuditLog): Promise<AuditLog>;
+  getAuditLogs(filters?: {
+    action?: AuditAction;
+    performedBy?: string;
+    targetUserId?: string;
+    fromDate?: Date;
+    toDate?: Date;
+    limit?: number;
+    offset?: number;
+  }): Promise<AuditLog[]>;
+  getUserAuditHistory(userId: string, limit?: number): Promise<AuditLog[]>;
+  
+  // User status checks
+  isUserBanned(userId: string): Promise<boolean>;
+  isUserSuspended(userId: string): Promise<boolean>;
+  checkUserModerationStatus(userId: string): Promise<{
+    isBanned: boolean;
+    isSuspended: boolean;
+    banReason?: string;
+    suspensionReason?: string;
+    banExpiresAt?: Date;
+    suspensionExpiresAt?: Date;
+    warningCount: number;
+  }>;
 
   // Admin analytics operations
   getUserCount(): Promise<number>;
@@ -1690,6 +1748,460 @@ export class DatabaseStorage implements IStorage {
       userId: activity.userId,
       userEmail: activity.userEmail || '',
     }));
+  }
+
+  // User moderation operations
+  async banUser(userId: string, banReason: string, bannedBy: string, banExpiresAt?: Date, ipAddress?: string, userAgent?: string): Promise<User> {
+    const bannedAt = new Date();
+    
+    const [user] = await db
+      .update(users)
+      .set({
+        isBanned: true,
+        banReason,
+        bannedAt,
+        bannedBy,
+        banExpiresAt,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_banned",
+      performedBy: bannedBy,
+      targetUserId: userId,
+      reason: banReason,
+      details: { banExpiresAt: banExpiresAt?.toISOString(), permanent: !banExpiresAt },
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  async unbanUser(userId: string, unbannedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        isBanned: false,
+        banReason: null,
+        bannedAt: null,
+        bannedBy: null,
+        banExpiresAt: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_unbanned",
+      performedBy: unbannedBy,
+      targetUserId: userId,
+      reason,
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  async suspendUser(userId: string, suspensionReason: string, suspendedBy: string, suspensionExpiresAt: Date, ipAddress?: string, userAgent?: string): Promise<User> {
+    const suspendedAt = new Date();
+    
+    const [user] = await db
+      .update(users)
+      .set({
+        isSuspended: true,
+        suspensionReason,
+        suspendedAt,
+        suspendedBy,
+        suspensionExpiresAt,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_suspended",
+      performedBy: suspendedBy,
+      targetUserId: userId,
+      reason: suspensionReason,
+      details: { suspensionExpiresAt: suspensionExpiresAt.toISOString() },
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  async unsuspendUser(userId: string, unsuspendedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        isSuspended: false,
+        suspensionReason: null,
+        suspendedAt: null,
+        suspendedBy: null,
+        suspensionExpiresAt: null,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_unsuspended",
+      performedBy: unsuspendedBy,
+      targetUserId: userId,
+      reason,
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  async warnUser(userId: string, warnedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User> {
+    const [currentUser] = await db.select().from(users).where(eq(users.id, userId));
+    const newWarningCount = (currentUser?.warningCount || 0) + 1;
+    
+    const [user] = await db
+      .update(users)
+      .set({
+        warningCount: newWarningCount,
+        lastWarningAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_warned",
+      performedBy: warnedBy,
+      targetUserId: userId,
+      reason,
+      details: { newWarningCount },
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  async updateUserRole(userId: string, newRole: UserRole, changedBy: string, reason: string, ipAddress?: string, userAgent?: string): Promise<User> {
+    const [currentUser] = await db.select().from(users).where(eq(users.id, userId));
+    const oldRole = currentUser?.role || 'user';
+    
+    const [user] = await db
+      .update(users)
+      .set({
+        role: newRole,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    
+    // Create audit log
+    await this.createAuditLog({
+      action: "user_role_changed",
+      performedBy: changedBy,
+      targetUserId: userId,
+      reason,
+      oldValue: oldRole,
+      newValue: newRole,
+      ipAddress,
+      userAgent
+    });
+    
+    return user;
+  }
+
+  // User filtering and search operations
+  async searchUsersWithFilters(filters: {
+    query?: string;
+    role?: UserRole;
+    isBanned?: boolean;
+    isSuspended?: boolean;
+    minWarningCount?: number;
+    createdAfter?: Date;
+    createdBefore?: Date;
+    limit?: number;
+    offset?: number;
+  }): Promise<User[]> {
+    const conditions = [];
+    
+    if (filters.query) {
+      conditions.push(
+        or(
+          ilike(users.username, `%${filters.query}%`),
+          ilike(users.email, `%${filters.query}%`),
+          ilike(users.firstName, `%${filters.query}%`),
+          ilike(users.lastName, `%${filters.query}%`)
+        )
+      );
+    }
+    
+    if (filters.role) {
+      conditions.push(eq(users.role, filters.role));
+    }
+    
+    if (filters.isBanned !== undefined) {
+      conditions.push(eq(users.isBanned, filters.isBanned));
+    }
+    
+    if (filters.isSuspended !== undefined) {
+      conditions.push(eq(users.isSuspended, filters.isSuspended));
+    }
+    
+    if (filters.minWarningCount !== undefined) {
+      conditions.push(sql`${users.warningCount} >= ${filters.minWarningCount}`);
+    }
+    
+    if (filters.createdAfter) {
+      conditions.push(sql`${users.createdAt} >= ${filters.createdAfter}`);
+    }
+    
+    if (filters.createdBefore) {
+      conditions.push(sql`${users.createdAt} <= ${filters.createdBefore}`);
+    }
+    
+    // Build query with all conditions at once
+    let baseQuery = db.select().from(users) as any;
+    
+    if (conditions.length > 0) {
+      baseQuery = baseQuery.where(and(...conditions));
+    }
+    
+    baseQuery = baseQuery.orderBy(desc(users.createdAt));
+    
+    if (filters.limit !== undefined) {
+      baseQuery = baseQuery.limit(filters.limit);
+    }
+    
+    if (filters.offset !== undefined) {
+      baseQuery = baseQuery.offset(filters.offset);
+    }
+    
+    return await baseQuery;
+  }
+
+  async getUsersForModeration(filters?: {
+    status?: 'active' | 'banned' | 'suspended';
+    role?: UserRole;
+    limit?: number;
+    offset?: number;
+  }): Promise<User[]> {
+    const conditions = [];
+    
+    if (filters?.status) {
+      if (filters.status === 'banned') {
+        conditions.push(eq(users.isBanned, true));
+      } else if (filters.status === 'suspended') {
+        conditions.push(eq(users.isSuspended, true));
+      } else if (filters.status === 'active') {
+        conditions.push(and(eq(users.isBanned, false), eq(users.isSuspended, false)));
+      }
+    }
+    
+    if (filters?.role) {
+      conditions.push(eq(users.role, filters.role));
+    }
+    
+    // Build query with all conditions at once
+    let baseQuery = db.select().from(users) as any;
+    
+    if (conditions.length > 0) {
+      baseQuery = baseQuery.where(and(...conditions));
+    }
+    
+    baseQuery = baseQuery.orderBy(desc(users.createdAt));
+    
+    if (filters?.limit !== undefined) {
+      baseQuery = baseQuery.limit(filters.limit);
+    }
+    
+    if (filters?.offset !== undefined) {
+      baseQuery = baseQuery.offset(filters.offset);
+    }
+    
+    return await baseQuery;
+  }
+
+  // Audit log operations
+  async createAuditLog(auditLog: InsertAuditLog): Promise<AuditLog> {
+    const [log] = await db
+      .insert(auditLogs)
+      .values(auditLog)
+      .returning();
+    return log;
+  }
+
+  async getAuditLogs(filters?: {
+    action?: AuditAction;
+    performedBy?: string;
+    targetUserId?: string;
+    fromDate?: Date;
+    toDate?: Date;
+    limit?: number;
+    offset?: number;
+  }): Promise<AuditLog[]> {
+    const conditions = [];
+    
+    if (filters?.action) {
+      conditions.push(eq(auditLogs.action, filters.action));
+    }
+    
+    if (filters?.performedBy) {
+      conditions.push(eq(auditLogs.performedBy, filters.performedBy));
+    }
+    
+    if (filters?.targetUserId) {
+      conditions.push(eq(auditLogs.targetUserId, filters.targetUserId));
+    }
+    
+    if (filters?.fromDate) {
+      conditions.push(sql`${auditLogs.createdAt} >= ${filters.fromDate}`);
+    }
+    
+    if (filters?.toDate) {
+      conditions.push(sql`${auditLogs.createdAt} <= ${filters.toDate}`);
+    }
+    
+    // Build query with all conditions at once
+    let query = db.select().from(auditLogs) as any;
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+    
+    query = query.orderBy(desc(auditLogs.createdAt));
+    
+    if (filters?.limit !== undefined) {
+      query = query.limit(filters.limit);
+    }
+    
+    if (filters?.offset !== undefined) {
+      query = query.offset(filters.offset);
+    }
+    
+    return await query;
+  }
+
+  async getUserAuditHistory(userId: string, limit?: number): Promise<AuditLog[]> {
+    let query = db
+      .select()
+      .from(auditLogs)
+      .where(eq(auditLogs.targetUserId, userId))
+      .orderBy(desc(auditLogs.createdAt)) as any;
+    
+    if (limit !== undefined) {
+      query = query.limit(limit);
+    }
+    
+    return await query;
+  }
+
+  // User status checks
+  async isUserBanned(userId: string): Promise<boolean> {
+    const [user] = await db
+      .select({ isBanned: users.isBanned, banExpiresAt: users.banExpiresAt })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    if (!user || !user.isBanned) return false;
+    
+    // Check if ban has expired
+    if (user.banExpiresAt && user.banExpiresAt < new Date()) {
+      // Automatically unban expired user
+      await db
+        .update(users)
+        .set({
+          isBanned: false,
+          banReason: null,
+          bannedAt: null,
+          bannedBy: null,
+          banExpiresAt: null,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+      return false;
+    }
+    
+    return true;
+  }
+
+  async isUserSuspended(userId: string): Promise<boolean> {
+    const [user] = await db
+      .select({ isSuspended: users.isSuspended, suspensionExpiresAt: users.suspensionExpiresAt })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    if (!user || !user.isSuspended) return false;
+    
+    // Check if suspension has expired
+    if (user.suspensionExpiresAt && user.suspensionExpiresAt < new Date()) {
+      // Automatically unsuspend expired user
+      await db
+        .update(users)
+        .set({
+          isSuspended: false,
+          suspensionReason: null,
+          suspendedAt: null,
+          suspendedBy: null,
+          suspensionExpiresAt: null,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+      return false;
+    }
+    
+    return true;
+  }
+
+  async checkUserModerationStatus(userId: string): Promise<{
+    isBanned: boolean;
+    isSuspended: boolean;
+    banReason?: string;
+    suspensionReason?: string;
+    banExpiresAt?: Date;
+    suspensionExpiresAt?: Date;
+    warningCount: number;
+  }> {
+    const [user] = await db
+      .select({
+        isBanned: users.isBanned,
+        isSuspended: users.isSuspended,
+        banReason: users.banReason,
+        suspensionReason: users.suspensionReason,
+        banExpiresAt: users.banExpiresAt,
+        suspensionExpiresAt: users.suspensionExpiresAt,
+        warningCount: users.warningCount
+      })
+      .from(users)
+      .where(eq(users.id, userId));
+    
+    if (!user) {
+      throw new Error('User not found');
+    }
+    
+    // Check for expired bans/suspensions
+    const isBanned = await this.isUserBanned(userId);
+    const isSuspended = await this.isUserSuspended(userId);
+    
+    return {
+      isBanned,
+      isSuspended,
+      banReason: user.banReason || undefined,
+      suspensionReason: user.suspensionReason || undefined,
+      banExpiresAt: user.banExpiresAt || undefined,
+      suspensionExpiresAt: user.suspensionExpiresAt || undefined,
+      warningCount: user.warningCount || 0
+    };
   }
 }
 

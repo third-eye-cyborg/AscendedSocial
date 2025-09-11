@@ -26,6 +26,13 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// User role enum for authorization and moderation
+export const userRoleEnum = pgEnum("user_role", [
+  "user",      // Regular user
+  "moderator", // Content moderator
+  "admin"      // Full admin access
+]);
+
 // User storage table (required for Replit Auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -62,6 +69,27 @@ export const users = pgTable("users", {
   followNotifications: boolean("follow_notifications").default(true),
   oracleNotifications: boolean("oracle_notifications").default(true),
   emailNotifications: boolean("email_notifications").default(false),
+  
+  // User role and moderation
+  role: userRoleEnum("role").default("user"),
+  
+  // Ban status and tracking
+  isBanned: boolean("is_banned").default(false),
+  banReason: text("ban_reason"),
+  bannedAt: timestamp("banned_at"),
+  bannedBy: varchar("banned_by"), // Self-reference will be added after table definition
+  banExpiresAt: timestamp("ban_expires_at"), // null for permanent bans
+  
+  // Suspension status and tracking  
+  isSuspended: boolean("is_suspended").default(false),
+  suspensionReason: text("suspension_reason"),
+  suspendedAt: timestamp("suspended_at"),
+  suspendedBy: varchar("suspended_by"), // Self-reference will be added after table definition
+  suspensionExpiresAt: timestamp("suspension_expires_at"),
+  
+  // Warning tracking
+  warningCount: integer("warning_count").default(0),
+  lastWarningAt: timestamp("last_warning_at"),
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -380,6 +408,53 @@ export type Report = typeof reports.$inferSelect;
 export type InsertReport = z.infer<typeof insertReportSchema>;
 export type ReportType = "spam" | "harassment" | "inappropriate_content" | "hate_speech" | "violence" | "misinformation" | "copyright_violation" | "fake_profile" | "other";
 export type ReportStatus = "pending" | "reviewed" | "resolved" | "dismissed";
+
+// Audit log action types enum for tracking moderation actions
+export const auditActionEnum = pgEnum("audit_action", [
+  "user_banned",
+  "user_unbanned", 
+  "user_suspended",
+  "user_unsuspended",
+  "user_warned",
+  "user_role_changed",
+  "post_removed",
+  "post_restored",
+  "comment_removed", 
+  "comment_restored",
+  "report_reviewed",
+  "community_banned",
+  "community_created",
+  "community_deleted",
+  "other_action"
+]);
+
+// Audit logs table for tracking all moderation and admin actions
+export const auditLogs = pgTable("audit_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  action: auditActionEnum("action").notNull(),
+  performedBy: varchar("performed_by").notNull().references(() => users.id), // Admin/moderator who performed action
+  targetUserId: varchar("target_user_id").references(() => users.id), // User affected by action
+  targetPostId: varchar("target_post_id").references(() => posts.id), // Post affected by action
+  targetCommentId: varchar("target_comment_id").references(() => comments.id), // Comment affected by action
+  targetReportId: varchar("target_report_id").references(() => reports.id), // Report affected by action
+  reason: text("reason"), // Reason for the action
+  details: jsonb("details"), // Additional details in JSON format
+  oldValue: text("old_value"), // Previous value (for changes)
+  newValue: text("new_value"), // New value (for changes)
+  ipAddress: varchar("ip_address"), // IP address of the admin/moderator
+  userAgent: text("user_agent"), // User agent of the admin/moderator
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type AuditAction = "user_banned" | "user_unbanned" | "user_suspended" | "user_unsuspended" | "user_warned" | "user_role_changed" | "post_removed" | "post_restored" | "comment_removed" | "comment_restored" | "report_reviewed" | "community_banned" | "community_created" | "community_deleted" | "other_action";
+export type UserRole = "user" | "moderator" | "admin";
 
 // Vision privacy enum
 export const visionPrivacyEnum = pgEnum("vision_privacy", [

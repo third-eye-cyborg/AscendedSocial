@@ -166,6 +166,10 @@ export async function setupWorkOSAuth(app: Express) {
       let dbUser;
       try {
         dbUser = await upsertUser(user);
+        if (!dbUser) {
+          console.error('❌ No user returned from database upsert');
+          return res.redirect('/?error=user_creation_failed&details=no_user_returned');
+        }
         console.log('✅ User successfully created/updated in database:', {
           id: dbUser.id,
           email: dbUser.email
@@ -173,11 +177,6 @@ export async function setupWorkOSAuth(app: Express) {
       } catch (dbError: any) {
         console.error('❌ Database error during user upsert:', dbError);
         return res.redirect('/?error=user_creation_failed&details=' + encodeURIComponent(dbError.message || 'Database error'));
-      }
-      
-      if (!dbUser) {
-        console.error('❌ No user returned from database upsert');
-        return res.redirect('/?error=user_creation_failed&details=no_user_returned');
       }
 
       // Store user in session

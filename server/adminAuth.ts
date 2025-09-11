@@ -260,17 +260,28 @@ export async function setupAdminAuth(app: Express) {
   };
 
   // Create separate Passport strategy for admin authentication
-  for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
+  const domains = process.env.REPLIT_DOMAINS!.split(",");
+  
+  // Add localhost for development
+  const allDomains = [...domains, 'localhost'];
+  
+  for (const domain of allDomains) {
+    const isLocalhost = domain === 'localhost';
+    const protocol = isLocalhost ? 'http' : 'https';
+    const port = isLocalhost ? ':5000' : '';
+    
     const strategy = new Strategy(
       {
         name: `replit-admin:${domain}`,
         config,
         scope: "openid email profile offline_access",
-        callbackURL: `https://${domain}/api/admin/callback`,
+        callbackURL: `${protocol}://${domain}${port}/api/admin/callback`,
       },
       verify,
     );
     passport.use(strategy);
+    
+    console.log(`✅ Admin auth strategy registered: replit-admin:${domain}`);
   }
 
   // Admin login endpoint

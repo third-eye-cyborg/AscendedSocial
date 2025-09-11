@@ -40,6 +40,12 @@ const ExplorePage = lazy(() => import("@/pages/explore"));
 
 // Admin and compliance pages
 const AdminDashboard = lazy(() => import("@/pages/admin"));
+const AdminLogin = lazy(() => import("@/pages/admin/login"));
+const AdminDashboardNew = lazy(() => import("@/pages/admin/dashboard"));
+const AdminUsers = lazy(() => import("@/pages/admin/users"));
+const AdminModeration = lazy(() => import("@/pages/admin/moderation"));
+const AdminTickets = lazy(() => import("@/pages/admin/tickets"));
+const AdminSystem = lazy(() => import("@/pages/admin/system"));
 const ZeroTrustPage = lazy(() => import("@/pages/zero-trust"));
 const Compliance = lazy(() => import("@/pages/compliance"));
 
@@ -154,6 +160,13 @@ const Router = React.memo(() => {
             <ExplorePage />
           </Suspense>
         </Route>
+        <Route path="/admin/login" component={AdminLogin} />
+        <Route path="/admin/dashboard" component={AdminDashboardNew} />
+        <Route path="/admin/users" component={AdminUsers} />
+        <Route path="/admin/moderation" component={AdminModeration} />
+        <Route path="/admin/tickets" component={AdminTickets} />
+        <Route path="/admin/system" component={AdminSystem} />
+        <Route path="/admin/analytics" component={AdminDashboardNew} />
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/zero-trust" component={ZeroTrustPage} />
         <Route path="/compliance" component={Compliance} />

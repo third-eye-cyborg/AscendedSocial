@@ -232,16 +232,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // First check if user exists by ID 
-    if (userData.id) {
-      const existingUser = await this.getUser(userData.id);
-      if (existingUser) {
-        // User exists, just update non-ID fields
-        const { id, ...updateData } = userData;
+    // Check if user exists by WorkOS ID
+    if ((userData as any).workosId) {
+      const [existingByWorkos] = await db
+        .select()
+        .from(users)
+        .where(eq(users.workosId, (userData as any).workosId));
+      
+      if (existingByWorkos) {
+        // Update existing user found by WorkOS ID
+        const { id, workosId, ...updateData } = userData as any;
         const [user] = await db
           .update(users)
           .set({ ...updateData, updatedAt: new Date() })
-          .where(eq(users.id, userData.id))
+          .where(eq(users.id, existingByWorkos.id))
           .returning();
         return user;
       }
@@ -255,8 +259,8 @@ export class DatabaseStorage implements IStorage {
         .where(eq(users.email, userData.email));
       
       if (existingByEmail) {
-        // Update existing user, but don't change their ID
-        const { id, ...updateData } = userData;
+        // Update existing user, add WorkOS ID
+        const { id, ...updateData } = userData as any;
         const [user] = await db
           .update(users)
           .set({ ...updateData, updatedAt: new Date() })
@@ -266,11 +270,12 @@ export class DatabaseStorage implements IStorage {
       }
     }
     
-    // User doesn't exist, create new one
+    // User doesn't exist, create new one (exclude id from insert)
     try {
+      const { id, ...insertData } = userData as any;
       const [user] = await db
         .insert(users)
-        .values(userData)
+        .values(insertData)
         .returning();
       return user;
     } catch (error: any) {

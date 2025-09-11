@@ -36,6 +36,7 @@ export const userRoleEnum = pgEnum("user_role", [
 // User storage table (required for Replit Auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workosId: varchar("workos_id").unique(), // WorkOS user ID for authentication
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),

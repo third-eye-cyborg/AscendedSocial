@@ -39,16 +39,15 @@ export function getSession() {
 }
 
 async function upsertUser(userInfo: any) {
-  await storage.upsertUser({
-    id: userInfo.id,
+  const dbUser = await storage.upsertUser({
+    workosId: userInfo.id, // Store WorkOS ID separately
     email: userInfo.email,
     firstName: userInfo.firstName || userInfo.first_name || '',
     lastName: userInfo.lastName || userInfo.last_name || '',
     profileImageUrl: userInfo.profilePictureUrl || userInfo.profile_picture_url || null,
-  });
+  } as any);
   
-  // Return the user from database
-  return await storage.getUser(userInfo.id);
+  return dbUser; // Return the upserted user directly
 }
 
 // Generate JWT token for mobile authentication

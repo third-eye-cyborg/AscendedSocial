@@ -9,6 +9,7 @@ import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { bypassAuthForTesting, isAuthenticatedWithBypass } from './auth-bypass';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -24,16 +25,18 @@ const getOidcConfig = memoize(
   { maxAge: 3600 * 1000 }
 );
 
-export function getSession() {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
+// Separate session stores for user vs admin authentication
+export function getUserSession() {
+  const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week for users
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
     createTableIfMissing: false,
     ttl: sessionTtl,
-    tableName: "sessions",
+    tableName: "sessions", // User sessions table
   });
   return session({
+    name: 'user.sid', // Different session name for users
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
     resave: false,
@@ -42,8 +45,14 @@ export function getSession() {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: sessionTtl,
+      sameSite: 'lax',
     },
   });
+}
+
+// Legacy function for backward compatibility
+export function getSession() {
+  return getUserSession();
 }
 
 function updateUserSession(
@@ -89,9 +98,25 @@ function generateMobileAuthToken(user: any): string {
   return jwt.sign(payload, process.env.SESSION_SECRET);
 }
 
+// User authentication middleware with security headers
+function userSecurityHeaders(req: any, res: any, next: any) {
+  // Security headers for user routes
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+}
+
 export async function setupAuth(app: Express) {
   app.set("trust proxy", 1);
-  app.use(getSession());
+  
+  // Apply security headers to all user auth routes
+  app.use('/api/auth', userSecurityHeaders);
+  app.use('/api/login', userSecurityHeaders);
+  app.use('/api/callback', userSecurityHeaders);
+  
+  app.use(getUserSession());
   app.use(passport.initialize());
   app.use(passport.session());
   
@@ -255,16 +280,18 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  // Check for test bypass first
-  const isTestingMode = process.env.NODE_ENV === 'test' || 
-                       req.headers['x-testing-mode'] === 'true' ||
-                       req.headers['x-test-auth-bypass'] === 'true' ||
-                       req.headers['user-agent']?.includes('Playwright') ||
-                       req.headers['user-agent']?.includes('Puppeteer');
+  // SECURITY GATE: Only check for test bypass in test environment
+  if (process.env.NODE_ENV === 'test') {
+    const isTestingMode = req.headers['x-testing-mode'] === 'true' ||
+                         req.headers['x-test-auth-bypass'] === 'true' ||
+                         req.headers['x-spiritual-tester'] === 'active' ||
+                         req.headers['user-agent']?.includes('Playwright') ||
+                         req.headers['user-agent']?.includes('Puppeteer');
 
-  if (isTestingMode && req.user) {
-    console.log('🧪 Authentication bypassed for testing in isAuthenticated middleware');
-    return next();
+    if (isTestingMode && req.user) {
+      console.log('🧪 Authentication bypassed for testing in isAuthenticated middleware');
+      return next();
+    }
   }
 
   // Check for JWT Bearer token authentication (mobile apps)
@@ -298,28 +325,46 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   // Fall back to session-based authentication (main web app)
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
+  if (!req.isAuthenticated() || !user) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+
+  // Cross-auth prevention: Ensure this is not an admin session
+  if (user.isAdmin) {
+    console.warn(`⚠️ Admin session attempted to access user endpoint: ${req.path}`);
+    return res.status(403).json({ message: "Admin sessions cannot access user endpoints" });
+  }
+
+  if (!user.expires_at) {
+    return res.status(401).json({ message: "Invalid session" });
   }
 
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
+    // Log user activity for security monitoring
+    if (process.env.NODE_ENV === 'production') {
+      console.log(`👤 User ${user.id} accessed ${req.method} ${req.path}`);
+    }
     return next();
   }
 
+  // Token refresh logic
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Session expired" });
     return;
   }
 
   try {
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+    
     updateUserSession(user, tokenResponse);
+    
     return next();
   } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
+    console.error('Token refresh failed:', error);
+    res.status(401).json({ message: "Session expired" });
     return;
   }
 };

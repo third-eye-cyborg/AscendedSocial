@@ -11,8 +11,15 @@ export const TEST_USER = {
   }
 };
 
-// Enhanced middleware to bypass authentication for testing with comprehensive logging
+// SECURITY-CRITICAL: Authentication bypass middleware for testing environments ONLY
 export function bypassAuthForTesting(req: Request, res: Response, next: NextFunction) {
+  // SECURITY GATE: Only enable auth bypass in test environment
+  // Never trust client headers in production - this prevents security bypass attacks
+  if (process.env.NODE_ENV !== 'test') {
+    // In production, this middleware is completely disabled for security
+    return next();
+  }
+
   const userAgent = req.headers['user-agent'] || '';
   const testHeaders = {
     testingMode: req.headers['x-testing-mode'] === 'true',
@@ -20,9 +27,8 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
     spiritualTester: req.headers['x-spiritual-tester'] === 'active'
   };
   
-  // Check if request is from testing environment or has special headers
-  const isTestingMode = process.env.NODE_ENV === 'test' || 
-                       testHeaders.testingMode ||
+  // Only check testing indicators when in actual test environment
+  const isTestingMode = testHeaders.testingMode ||
                        testHeaders.authBypass ||
                        testHeaders.spiritualTester ||
                        userAgent.includes('Playwright') ||
@@ -35,13 +41,14 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
     req.session = req.session || {};
     (req.session as any).passport = { user: TEST_USER };
     
-    // Enhanced logging with context
+    // Enhanced logging with context (only in test env)
     const context = {
       path: req.path,
       method: req.method,
       userAgent: userAgent.substring(0, 50),
       headers: testHeaders,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV
     };
     
     console.log(`🧪 [AUTH-BYPASS] Authentication bypassed for testing:`, context);
@@ -49,66 +56,73 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
     // Add bypass indicator to response headers for debugging
     res.setHeader('X-Auth-Bypass-Active', 'true');
     res.setHeader('X-Test-User-ID', TEST_USER.id);
+    res.setHeader('X-Test-Environment', 'true');
   }
 
   next();
 }
 
-// Enhanced authentication middleware with comprehensive bypass support and monitoring
+// SECURITY-CRITICAL: Authentication middleware with secure bypass for testing
 export function isAuthenticatedWithBypass(req: Request, res: Response, next: NextFunction) {
-  const userAgent = req.headers['user-agent'] || '';
-  const testHeaders = {
-    testingMode: req.headers['x-testing-mode'] === 'true',
-    authBypass: req.headers['x-test-auth-bypass'] === 'true',
-    spiritualTester: req.headers['x-spiritual-tester'] === 'active'
-  };
-  
-  // Enhanced testing mode detection
-  const isTestingMode = process.env.NODE_ENV === 'test' || 
-                       testHeaders.testingMode ||
-                       testHeaders.authBypass ||
-                       testHeaders.spiritualTester ||
-                       userAgent.includes('Playwright') ||
-                       userAgent.includes('Puppeteer') ||
-                       userAgent.includes('AscendedSocial-TestBot');
-
-  if (isTestingMode) {
-    req.user = TEST_USER;
-    req.session = req.session || {};
-    (req.session as any).passport = { user: TEST_USER };
-    
-    const authContext = {
-      route: req.path,
-      method: req.method,
-      bypassReason: Object.entries(testHeaders).filter(([_, value]) => value).map(([key]) => key).join(', ') || 'user-agent',
-      timestamp: new Date().toISOString()
+  // SECURITY GATE: Only check for test bypass in test environment
+  if (process.env.NODE_ENV === 'test') {
+    const userAgent = req.headers['user-agent'] || '';
+    const testHeaders = {
+      testingMode: req.headers['x-testing-mode'] === 'true',
+      authBypass: req.headers['x-test-auth-bypass'] === 'true',
+      spiritualTester: req.headers['x-spiritual-tester'] === 'active'
     };
     
-    console.log(`🔐 [AUTH-PROTECTED] Authentication bypassed for protected route:`, authContext);
-    
-    // Add security headers for testing
-    res.setHeader('X-Auth-Method', 'testing-bypass');
-    res.setHeader('X-Test-Session-Active', 'true');
-    
-    return next();
+    // Only check testing indicators when in test environment
+    const isTestingMode = testHeaders.testingMode ||
+                         testHeaders.authBypass ||
+                         testHeaders.spiritualTester ||
+                         userAgent.includes('Playwright') ||
+                         userAgent.includes('Puppeteer') ||
+                         userAgent.includes('AscendedSocial-TestBot');
+
+    if (isTestingMode) {
+      req.user = TEST_USER;
+      req.session = req.session || {};
+      (req.session as any).passport = { user: TEST_USER };
+      
+      const authContext = {
+        route: req.path,
+        method: req.method,
+        bypassReason: Object.entries(testHeaders).filter(([_, value]) => value).map(([key]) => key).join(', ') || 'user-agent',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV
+      };
+      
+      console.log(`🔐 [AUTH-PROTECTED] Authentication bypassed for protected route:`, authContext);
+      
+      // Add security headers for testing
+      res.setHeader('X-Auth-Method', 'testing-bypass');
+      res.setHeader('X-Test-Session-Active', 'true');
+      res.setHeader('X-Test-Environment', 'true');
+      
+      return next();
+    }
   }
 
-  // Enhanced authentication check with logging
+  // Production authentication check - no bypass possible
   if (req.isAuthenticated && req.isAuthenticated()) {
     console.log(`✅ [AUTH-PROTECTED] User authenticated:`, {
-      userId: req.user?.id,
+      userId: (req.user as any)?.id,
       path: req.path,
       timestamp: new Date().toISOString()
     });
     return next();
   }
 
-  // Authentication failed
+  // Authentication failed - log security event
   console.log(`❌ [AUTH-PROTECTED] Authentication required for:`, {
     path: req.path,
     method: req.method,
-    userAgent: userAgent.substring(0, 50),
-    timestamp: new Date().toISOString()
+    userAgent: (req.headers['user-agent'] || '').substring(0, 50),
+    ip: req.ip,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
   });
 
   // Return 401 for API routes, redirect for web routes

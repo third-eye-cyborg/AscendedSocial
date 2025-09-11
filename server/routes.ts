@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { setupAdminAuth, isAdminAuthenticated } from "./adminAuth";
+import { setupAdminAuth, isAdminAuthenticated, logAdminAction } from "./adminAuth";
 import { 
   analyzePostChakra, 
   generateDailyReading, 
@@ -251,6 +251,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         reviewedBy: adminUser.id
       });
       
+      // Enhanced audit logging for report actions
+      await logAdminAction(req, 'report_reviewed', {
+        reportId,
+        oldStatus: 'pending', // TODO: Get from storage if needed
+        newStatus: status,
+        moderatorNotes: moderatorNotes?.substring(0, 100) // Truncate for logging
+      });
+      
       res.json({ success: true });
     } catch (error) {
       console.error("Admin update report error:", error);
@@ -341,6 +349,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { status, reason } = req.body;
       const adminUser = (req as any).user;
       
+      // Enhanced audit logging for user status changes
+      await logAdminAction(req, 'user_role_changed', {
+        targetUserId: userId,
+        oldStatus: 'active', // TODO: Get from storage if needed
+        newStatus: status,
+        reason: reason?.substring(0, 200) // Truncate for logging
+      });
+      
       // TODO: Implement storage.updateUserStatus method
       // await storage.updateUserStatus(userId, status, {
       //   reason,
@@ -373,6 +389,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { postId } = req.params;
       const { action, reason } = req.body; // action: 'approve', 'remove', 'flag'
       const adminUser = (req as any).user;
+      
+      // Enhanced audit logging for post moderation
+      const auditAction = action === 'remove' ? 'post_removed' : 'post_restored';
+      await logAdminAction(req, auditAction, {
+        targetPostId: postId,
+        moderationAction: action,
+        reason: reason?.substring(0, 200) // Truncate for logging
+      });
       
       await storage.moderatePost(postId, action, {
         reason,

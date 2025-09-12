@@ -69,6 +69,63 @@ A four-layer security model utilizing Cloudflare Zero Trust:
 ### Development Workflow
 The platform employs a sophisticated design-to-code workflow integrating visual design, automated testing, and browser automation. This includes Figma for design, MCP for token extraction, Storybook for component documentation, Cypress and Playwright for testing, Browserless for authenticated browser automation, and Chromatic for visual regression testing, ensuring spiritual aesthetics and consistent user experiences.
 
+## Codebase Standards
+
+### File Organization and Cleanliness
+The project maintains strict standards for codebase cleanliness to ensure maintainability, readability, and professional development practices:
+
+#### **Folder Structure**
+- **Root Directory**: Only contains essential project files (README.md, replit.md, package.json, configuration files)
+- **docs/**: All project documentation with organized subdirectories:
+  - `docs/admin/` - Administrative documentation
+  - `docs/developer/` - Development guides and API references  
+  - `docs/legal/` - Legal and compliance documentation
+  - `docs/styling/` - Design system and styling guides
+  - `docs/user/` - User-facing documentation
+- **client/**: Frontend React application with organized component structure
+- **server/**: Backend Node.js/Express application with clean service separation
+- **shared/**: Shared types, schemas, and utilities
+
+#### **File Cleanup Standards**
+- **Test and Debug Files**: Remove all temporary test files after development completion
+  - No `test-*.js`, `debug-*.html`, or similar files in production branches
+  - Keep only official test suites in `tests/` and `cypress/e2e/` directories
+- **Build Artifacts**: Regularly clean build outputs and logs
+  - Remove `*.log` files, `playwright-report/`, `test-results/` after reviews
+  - Preserve `storybook-static/` for production deployment
+- **Experimental Files**: Remove server-side experimental and temporary files
+  - Delete files with prefixes like `final-*`, `populate-*`, `inject-*`, `inspect-*`
+  - Move completed experiments to proper feature implementations
+
+#### **Documentation Placement**
+- **Project Documentation**: All `.md` files belong in `docs/` directory structure
+- **Component Documentation**: Storybook stories in `stories/` directory
+- **API Documentation**: Generated and maintained in `docs/developer/`
+- **Change Tracking**: All project changes documented in `docs/CHANGELOG.md`
+
+#### **Code Structure Guidelines**
+- **Consistent Imports**: Use established path aliases (`@/components`, `@/lib`, `@shared`)
+- **Type Safety**: All TypeScript files properly typed with shared schemas
+- **Component Organization**: Related components grouped in logical subdirectories
+- **Service Separation**: Clear separation between API routes, storage interfaces, and business logic
+- **Configuration Management**: Environment-specific configurations properly isolated
+
+#### **Maintenance Practices**
+- **Regular Cleanup**: Perform codebase cleanup after major feature completions
+- **Code Reviews**: Include file organization checks in review processes
+- **Documentation Updates**: Keep documentation current with code changes
+- **Dependency Management**: Regular review and cleanup of unused dependencies
+- **Git Hygiene**: Use meaningful commit messages and branch names aligned with spiritual platform features
+
+#### **Quality Assurance**
+- **No Dead Code**: Remove unused imports, functions, and components
+- **Consistent Styling**: Follow established patterns for component styling and theming
+- **Error Handling**: Comprehensive error handling with spiritual-themed user messages
+- **Performance Optimization**: Regular performance audits and optimization
+- **Accessibility Standards**: Maintain WCAG compliance across all components
+
+These standards ensure the Ascended Social platform maintains professional development practices while supporting its spiritual mission of fostering enlightened online communities.
+
 ## External Dependencies
 
 ### Database Services

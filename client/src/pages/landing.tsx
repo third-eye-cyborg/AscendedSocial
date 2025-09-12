@@ -5,6 +5,20 @@ import MarketingFooter from "@/components/MarketingFooter";
 import logoImage from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755890554213.png";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
 import { initiateAuth } from "@/utils/auth";
+
+// Debug: Test if the auth function is imported correctly
+console.log('🔍 [IMPORT-DEBUG] Landing page loaded, initiateAuth function:', typeof initiateAuth);
+
+// Add a global function for testing
+if (typeof window !== 'undefined') {
+  (window as any).testAuthRedirect = () => {
+    console.log('🧪 [GLOBAL-TEST] Manual auth test triggered');
+    console.log('🧪 [GLOBAL-TEST] Current URL:', window.location.href);
+    console.log('🧪 [GLOBAL-TEST] About to redirect to /api/login');
+    window.location.href = '/api/login';
+  };
+  console.log('🔍 [GLOBAL-TEST] testAuthRedirect function added to window');
+}
 import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
@@ -120,7 +134,37 @@ export default function Landing() {
                 </Button>
               </nav>
               <Button 
-                onClick={() => initiateAuth()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('🖱️ [CLICK-DEBUG] Desktop login button clicked', e);
+                  console.log('🖱️ [CLICK-DEBUG] Event details:', { 
+                    type: e.type, 
+                    target: e.target, 
+                    currentTarget: e.currentTarget,
+                    bubbles: e.bubbles,
+                    defaultPrevented: e.defaultPrevented
+                  });
+                  console.log('🖱️ [CLICK-DEBUG] Function type:', typeof initiateAuth);
+                  console.log('🖱️ [CLICK-DEBUG] About to call initiateAuth()...');
+                  
+                  // Try both the imported function and a direct redirect
+                  try {
+                    initiateAuth();
+                  } catch (error) {
+                    console.error('🖱️ [CLICK-DEBUG] Error calling initiateAuth:', error);
+                    console.log('🖱️ [CLICK-DEBUG] Falling back to direct redirect');
+                    window.location.href = '/api/login';
+                  }
+                  console.log('🖱️ [CLICK-DEBUG] initiateAuth() call completed');
+                  
+                  // Also try a delayed redirect as fallback
+                  setTimeout(() => {
+                    console.log('🖱️ [CLICK-DEBUG] Timeout fallback - attempting direct redirect');
+                    if (window.location.pathname === '/') {
+                      window.location.href = '/api/login';
+                    }
+                  }, 1000);
+                }}
                 className="relative group bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-medium px-8 py-3 rounded-2xl transition-all duration-500 hover:scale-105 border border-white/20 ml-4"
                 data-testid="button-login"
               >
@@ -135,7 +179,11 @@ export default function Landing() {
             {/* Mobile Actions */}
             <div className="lg:hidden flex items-center space-x-3">
               <Button 
-                onClick={() => initiateAuth()}
+                onClick={() => {
+                  console.log('🖱️ [CLICK-DEBUG] Mobile login button clicked');
+                  console.log('🖱️ [CLICK-DEBUG] Calling initiateAuth()...');
+                  initiateAuth();
+                }}
                 className="relative group bg-gradient-to-r from-primary to-secondary text-white font-medium px-6 py-2.5 rounded-xl transition-all duration-300 shadow-xl border border-white/20"
                 data-testid="button-login-mobile"
               >
@@ -248,7 +296,11 @@ export default function Landing() {
             {/* Premium CTA */}
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-16 lg:mb-20">
               <Button 
-                onClick={() => initiateAuth()}
+                onClick={() => {
+                  console.log('🖱️ [CLICK-DEBUG] Main CTA "Begin Your Ascension" button clicked');
+                  console.log('🖱️ [CLICK-DEBUG] Calling initiateAuth()...');
+                  initiateAuth();
+                }}
                 className="group relative bg-gradient-to-r from-primary via-purple-500 to-secondary hover:shadow-2xl hover:shadow-primary/25 text-white font-semibold px-10 py-4 rounded-2xl text-lg transition-all duration-500 hover:scale-105 border border-white/20 min-w-[280px]"
                 data-testid="button-join"
               >

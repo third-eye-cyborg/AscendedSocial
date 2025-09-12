@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Auth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #logs { margin: 20px 0; padding: 20px; border: 1px solid #ccc; background: #f9f9f9; white-space: pre-wrap; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Frontend Authentication Direct Test</h1>
+    <p>This test bypasses React to directly test authentication functionality</p>
+    
+    <button id="test-simple-redirect">Test Simple Redirect to /api/login</button>
+    <button id="test-auth-function">Test Auth Function (Copied from React app)</button>
+    <button id="test-mobile-detection">Test Mobile Detection</button>
+    <button id="clear-logs">Clear Logs</button>
+    
+    <div id="logs"></div>
+
+    <script>
+        const logsDiv = document.getElementById('logs');
+        
+        function log(message) {
+            console.log(message);
+            logsDiv.textContent += new Date().toISOString() + ' - ' + message + '\n';
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+        }
+
+        // Clear logs function
+        document.getElementById('clear-logs').onclick = () => {
+            logsDiv.textContent = '';
+            console.clear();
+        };
+
+        // Test 1: Simple redirect
+        document.getElementById('test-simple-redirect').onclick = () => {
+            log('🧪 TEST 1: Simple redirect to /api/login');
+            log('Current URL: ' + window.location.href);
+            log('Executing: window.location.href = "/api/login"');
+            window.location.href = '/api/login';
+        };
+
+        // Test 2: Auth function (copied from React app)
+        document.getElementById('test-auth-function').onclick = () => {
+            log('🧪 TEST 2: Testing auth function');
+            
+            function isMobileEnvironment() {
+                const hostname = window.location.hostname;
+                const userAgent = navigator.userAgent;
+                
+                log('Environment check - hostname: ' + hostname);
+                log('User agent: ' + userAgent.substring(0, 100) + '...');
+                
+                if (hostname.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
+                    log('Detected mobile dev environment');
+                    return true;
+                }
+                if (hostname.includes('app.ascended.social')) {
+                    log('Detected mobile prod environment');
+                    return true;
+                }
+                if (userAgent.includes('Expo') || userAgent.includes('ReactNative')) {
+                    log('Detected React Native/Expo environment');
+                    return true;
+                }
+                
+                log('Detected web environment');
+                return false;
+            }
+            
+            function getAuthUrl(redirectUrl) {
+                const baseUrl = '/api/login';
+                log('Base URL: ' + baseUrl);
+                
+                const isMobile = isMobileEnvironment();
+                log('Is mobile: ' + isMobile);
+                
+                if (isMobile) {
+                    const state = JSON.stringify({
+                        platform: 'mobile',
+                        callback: redirectUrl || window.location.origin + '/auth-callback',
+                        redirectUri: redirectUrl || window.location.origin
+                    });
+                    const finalUrl = baseUrl + '?state=' + encodeURIComponent(state);
+                    log('Generated mobile auth URL: ' + finalUrl);
+                    return finalUrl;
+                } else {
+                    const finalUrl = redirectUrl ? baseUrl + '?redirectUrl=' + encodeURIComponent(redirectUrl) : baseUrl;
+                    log('Generated web auth URL: ' + finalUrl);
+                    return finalUrl;
+                }
+            }
+            
+            function initiateAuth(redirectUrl) {
+                try {
+                    log('🚀 initiateAuth() called with: ' + (redirectUrl || 'undefined'));
+                    
+                    const authUrl = getAuthUrl(redirectUrl);
+                    log('🔗 Generated auth URL: ' + authUrl);
+                    log('🌐 Current window.location: ' + JSON.stringify({
+                        href: window.location.href,
+                        origin: window.location.origin,
+                        hostname: window.location.hostname,
+                        pathname: window.location.pathname
+                    }));
+                    
+                    log('⏳ About to redirect to: ' + authUrl);
+                    window.location.href = authUrl;
+                    log('✅ Redirect command executed');
+                    
+                } catch (error) {
+                    log('❌ Error in initiateAuth(): ' + error.message);
+                    log('❌ Error stack: ' + error.stack);
+                }
+            }
+            
+            // Execute the auth function
+            initiateAuth();
+        };
+
+        // Test 3: Mobile detection only
+        document.getElementById('test-mobile-detection').onclick = () => {
+            log('🧪 TEST 3: Mobile detection test');
+            
+            const hostname = window.location.hostname;
+            const userAgent = navigator.userAgent;
+            
+            log('Hostname: ' + hostname);
+            log('User Agent: ' + userAgent);
+            
+            const checks = {
+                'Contains mobile dev domain': hostname.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev'),
+                'Contains app.ascended.social': hostname.includes('app.ascended.social'),
+                'Contains Expo': userAgent.includes('Expo'),
+                'Contains ReactNative': userAgent.includes('ReactNative')
+            };
+            
+            for (const [check, result] of Object.entries(checks)) {
+                log(check + ': ' + result);
+            }
+            
+            const isMobile = Object.values(checks).some(v => v);
+            log('Final mobile detection result: ' + isMobile);
+        };
+
+        // Initial setup
+        log('🧪 Direct auth test page loaded');
+        log('Current URL: ' + window.location.href);
+        log('User Agent: ' + navigator.userAgent.substring(0, 100) + '...');
+    </script>
+</body>
+</html>

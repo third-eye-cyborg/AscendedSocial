@@ -1,0 +1,6 @@
+{
+  "command": "npm run dev",
+  "serverUrl": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:8080",
+  "authenticateProxy": false,
+  "commitMode": "commits"
+}

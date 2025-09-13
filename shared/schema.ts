@@ -26,17 +26,9 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User role enum for authorization and moderation
-export const userRoleEnum = pgEnum("user_role", [
-  "user",      // Regular user
-  "moderator", // Content moderator
-  "admin"      // Full admin access
-]);
-
 // User storage table (required for Replit Auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  workosId: varchar("workos_id").unique(), // WorkOS user ID for authentication
   email: varchar("email").unique(),
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
@@ -70,27 +62,6 @@ export const users = pgTable("users", {
   followNotifications: boolean("follow_notifications").default(true),
   oracleNotifications: boolean("oracle_notifications").default(true),
   emailNotifications: boolean("email_notifications").default(false),
-  
-  // User role and moderation
-  role: userRoleEnum("role").default("user"),
-  
-  // Ban status and tracking
-  isBanned: boolean("is_banned").default(false),
-  banReason: text("ban_reason"),
-  bannedAt: timestamp("banned_at"),
-  bannedBy: varchar("banned_by"), // Self-reference will be added after table definition
-  banExpiresAt: timestamp("ban_expires_at"), // null for permanent bans
-  
-  // Suspension status and tracking  
-  isSuspended: boolean("is_suspended").default(false),
-  suspensionReason: text("suspension_reason"),
-  suspendedAt: timestamp("suspended_at"),
-  suspendedBy: varchar("suspended_by"), // Self-reference will be added after table definition
-  suspensionExpiresAt: timestamp("suspension_expires_at"),
-  
-  // Warning tracking
-  warningCount: integer("warning_count").default(0),
-  lastWarningAt: timestamp("last_warning_at"),
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -243,7 +214,6 @@ export const spiritualInteractions = pgTable("spiritual_interactions", {
 
 // Insert schemas
 export const upsertUserSchema = createInsertSchema(users).pick({
-  workosId: true,
   email: true,
   firstName: true,
   lastName: true,
@@ -455,7 +425,6 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type AuditAction = "user_banned" | "user_unbanned" | "user_suspended" | "user_unsuspended" | "user_warned" | "user_role_changed" | "post_removed" | "post_restored" | "comment_removed" | "comment_restored" | "report_reviewed" | "community_banned" | "community_created" | "community_deleted" | "other_action";
-export type UserRole = "user" | "moderator" | "admin";
 
 // Vision privacy enum
 export const visionPrivacyEnum = pgEnum("vision_privacy", [

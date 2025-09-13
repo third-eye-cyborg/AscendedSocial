@@ -87,20 +87,7 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
           throw new Error('User no longer exists');
         }
         
-        // Ensure this is not an admin session attempting to access user routes
-        if (user.isAdmin) {
-          console.warn(`🚫 Admin user ${user.email} attempting to access user route with JWT token: ${req.path}`);
-          await logSecurityViolation(req, 'admin_jwt_user_route_access', { 
-            userId: user.id, 
-            email: user.email, 
-            path: req.path 
-          });
-          return res.status(403).json({
-            error: 'Access denied',
-            message: 'Admin users cannot access user endpoints with JWT tokens. Please use proper user authentication.',
-            authType: 'admin-detected'
-          });
-        }
+        // Removed admin check since we're using Replit Auth for all users now
         
         // Set user in request for downstream middleware
         (req as any).user = {
@@ -131,7 +118,44 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
       }
     }
     
-    // Fall back to session-based authentication (web app)
+    // Check for passport authentication (Replit Auth) first
+    if (req.isAuthenticated && req.isAuthenticated() && req.user) {
+      const passportUser = req.user as any;
+      
+      // Validate passport user has required fields
+      if (!passportUser.id || !passportUser.email) {
+        console.error('❌ Invalid passport user structure');
+        await logSecurityViolation(req, 'corrupted_passport_user', { user: passportUser });
+        return res.status(401).json({
+          error: 'Session corrupted',
+          message: 'Please login again',
+          authMethod: 'passport'
+        });
+      }
+      
+      // Verify user still exists in database
+      const dbUser = await storage.getUser(passportUser.id);
+      if (!dbUser) {
+        console.error(`❌ Passport user not found in database: ${passportUser.id}`);
+        await logSecurityViolation(req, 'nonexistent_passport_user', { userId: passportUser.id });
+        return res.status(401).json({
+          error: 'User not found',
+          message: 'Please login again',
+          authMethod: 'passport'
+        });
+      }
+      
+      // Set user in request for downstream middleware
+      (req as any).user = {
+        ...passportUser,
+        authMethod: 'passport'
+      };
+      
+      console.log(`✅ Passport authentication successful for user: ${dbUser.email} on ${req.path}`);
+      return next();
+    }
+    
+    // Fall back to session-based authentication (legacy web app)
     const userSession = (req.session as any)?.user;
     
     if (!userSession) {

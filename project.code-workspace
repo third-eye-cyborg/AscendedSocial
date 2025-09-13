@@ -1,0 +1,86 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.autoSave": "afterDelay",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/.git": true,
+      "**/generated-icon.png": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/migrations": true
+    },
+    "typescript.preferences.includePackageJsonAutoImports": "on",
+    "typescript.suggest.autoImports": true,
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    },
+    "builder.apiKey": null,
+    "builder.env": "development",
+    "builder.useLocalProxy": true,
+    "builder.localProxyUrl": "http://localhost:5000",
+    "github.copilot.enable": {
+      "*": true
+    },
+    "github.copilot.inlineSuggest.enable": true,
+    "remote.SSH.remotePlatform": {
+      "*.replit.dev": "linux"
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "github.copilot",
+      "github.copilot-chat", 
+      "builder.builder",
+      "ms-vscode-remote.remote-ssh",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug Node Server",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/server/index.ts",
+        "env": {
+          "NODE_ENV": "development"
+        },
+        "runtimeArgs": [
+          "--loader", "tsx/esm"
+        ],
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start Dev Server",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "dev"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      }
+    ]
+  }
+}

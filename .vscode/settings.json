@@ -1,3 +1,65 @@
 {
-    "files.autoSave": "afterDelay"
+  "files.autoSave": "afterDelay",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/generated-icon.png": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/migrations": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.includeCompletionsWithSnippetText": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "builder.apiKey": null,
+  "builder.models": [
+    {
+      "name": "page",
+      "type": "page",
+      "urlPath": "/",
+      "schema": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "description", 
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "builder.env": "development",
+  "builder.useLocalProxy": true,
+  "builder.localProxyUrl": "http://localhost:5000",
+  "builder.contentApiUrl": "https://cdn.builder.io/api/v1/",
+  "builder.previewUrl": "https://preview.builder.io/",
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false,
+    "markdown": false
+  },
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "",
+    "debug.testOverrideProxyUrl": "",
+    "debug.filterLogCategories": ""
+  },
+  "remote.SSH.remotePlatform": {
+    "*.replit.dev": "linux"
+  },
+  "remote.SSH.configFile": "~/.ssh/config",
+  "remote.SSH.showLoginTerminal": true
 }

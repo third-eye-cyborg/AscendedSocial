@@ -162,7 +162,7 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
-  app.get("/api/login", (req, res, next) => {
+  app.get("/api/admin/login", (req, res, next) => {
     const redirectUrl = req.query.redirectUrl as string;
     const mobileBounce = req.query.mobile_bounce;
     
@@ -194,16 +194,16 @@ export async function setupAuth(app: Express) {
     passport.authenticate(`replitauth:${req.hostname}`, (err: any, user: any, info: any) => {
       if (err) {
         console.error("Auth error:", err);
-        return res.redirect("/api/login");
+        return res.redirect("/api/admin/login");
       }
       if (!user) {
         console.error("No user returned from auth:", info);
-        return res.redirect("/api/login");
+        return res.redirect("/api/admin/login");
       }
       req.logIn(user, (loginErr) => {
         if (loginErr) {
           console.error("Login error:", loginErr);
-          return res.redirect("/api/login");
+          return res.redirect("/api/admin/login");
         }
         console.log("Authentication successful");
         

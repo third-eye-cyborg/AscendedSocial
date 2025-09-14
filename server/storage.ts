@@ -232,24 +232,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    // Check if user exists by WorkOS ID
-    if ((userData as any).workosId) {
-      const [existingByWorkos] = await db
-        .select()
-        .from(users)
-        .where(eq(users.workosId, (userData as any).workosId));
-      
-      if (existingByWorkos) {
-        // Update existing user found by WorkOS ID
-        const { id, workosId, ...updateData } = userData as any;
-        const [user] = await db
-          .update(users)
-          .set({ ...updateData, updatedAt: new Date() })
-          .where(eq(users.id, existingByWorkos.id))
-          .returning();
-        return user;
-      }
-    }
+    // Note: Now using Replit Auth - no external auth ID needed
     
     // Check if user exists by email
     if (userData.email) {

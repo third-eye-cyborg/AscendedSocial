@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupWorkOSAuth, isAuthenticated } from "./workosAuth";
+import { setupAuth, isAuthenticated } from "./replitAuth";
 import { setupAdminAuth, isAdminAuthenticated, logAdminAction } from "./adminAuth";
 import { 
   analyzePostChakra, 
@@ -84,14 +84,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   setupRouteSegregation(app);
   
   // Authentication systems setup with proper isolation
-  await setupWorkOSAuth(app);    // WorkOS AuthKit for regular users (proper WorkOS branding)
-  await setupAdminAuth(app);     // Replit Auth for admin staff (admin portal only)
+  await setupAuth(app);         // Replit Auth for regular users (unified auth)
+  await setupAdminAuth(app);    // Replit Auth for admin staff (admin portal only)
 
   // Apply enhanced authentication middleware for additional security
   app.use(enhancedUserAuthentication);   // Enhanced user auth with cross-auth prevention
   app.use(enhancedAdminAuthentication);  // Enhanced admin auth with additional checks
 
-  // Note: Regular users use WorkOS AuthKit, admins use Replit Auth
+  // Note: Both regular users and admins use Replit Auth with proper route segregation
   // Route segregation middleware ensures no cross-authentication vulnerabilities
 
   // Debug endpoint to check route authentication requirements

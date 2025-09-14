@@ -16,12 +16,12 @@ const UPDATED_CONTENT = {
 # Mobile Development Guide - Updated Authentication
 
 ## Overview
-This guide covers mobile development for Ascended Social with the latest authentication architecture using WorkOS AuthKit.
+This guide covers mobile development for Ascended Social with the latest authentication architecture using Replit Auth.
 
 ## Authentication Integration
 
-### WorkOS AuthKit Integration
-The mobile app now uses WorkOS AuthKit for a seamless authentication experience across iOS and Android platforms.
+### Replit Auth Integration
+The mobile app now uses Replit Auth for a seamless authentication experience across iOS and Android platforms.
 
 #### Key Features
 - **Unified Login**: Same authentication flow for all platforms
@@ -32,14 +32,14 @@ The mobile app now uses WorkOS AuthKit for a seamless authentication experience 
 
 #### iOS Implementation
 \`\`\`swift
-import AuthKit
+import ReplitAuth
 
 class AuthenticationManager {
     private let authKit: AuthKit
     
     init() {
         self.authKit = AuthKit(
-            clientId: "your_workos_client_id",
+            clientId: process.env.REPL_ID,
             redirectUri: "ascended://auth/callback"
         )
     }
@@ -115,7 +115,7 @@ All API requests must include the JWT token:
 const apiClient = axios.create({
   baseURL: 'https://ascended.social/api',
   headers: {
-    'Authorization': \`Bearer \${getStoredJWT()}\`,
+    'Authorization': \`Bearer \$\{getStoredJWT()\}\`,
     'Content-Type': 'application/json'
   }
 });
@@ -746,7 +746,7 @@ function handleMobileCallback(req: Request, res: Response) {
   
   // Redirect to mobile app with token
   const redirectUrl = (req.session as any).redirectUrl;
-  const mobileCallbackUrl = `${redirectUrl}?token=${jwt}`;
+  const mobileCallbackUrl = \`\$\{redirectUrl\}?token=\$\{jwt\}\`;
   
   res.redirect(mobileCallbackUrl);
 }
@@ -780,7 +780,7 @@ class AuthManager {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
               let queryItems = components.queryItems else { return nil }
         
-        return queryItems.first { $0.name == "token" }?.value
+        return queryItems.first { \$0.name == "token" }?.value
     }
 }
 \`\`\`
@@ -1413,7 +1413,7 @@ async function updateExistingPages() {
         }
         
       } catch (error) {
-        console.log(`❌ Failed to update page ${pageName}:`, error.message);
+        console.log(`❌ Failed to update page ${pageName}:`, (error as Error).message);
       }
     }
     

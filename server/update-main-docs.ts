@@ -20,19 +20,14 @@ This document covers the development environment setup and version control pract
 - **Node.js**: Version 20.19.3 or higher
 - **TypeScript**: Version 5.6.3
 - **PostgreSQL**: Database for development
-- **Replit Account**: For Replit Auth integration
-- **WorkOS Account**: For AuthKit integration
+- **Replit Account**: For unified authentication
 
 ### Environment Variables
 \`\`\`bash
 # Database
 DATABASE_URL=postgresql://user:password@localhost:5432/ascended_social
 
-# Authentication - WorkOS AuthKit (Primary Users)
-WORKOS_API_KEY=your_workos_api_key
-WORKOS_CLIENT_ID=your_workos_client_id
-
-# Authentication - Replit Auth (Employees & Admins)
+# Authentication - Replit Auth (All Users)
 REPLIT_DOMAINS=your_domains
 REPL_ID=your_repl_id
 ISSUER_URL=https://replit.com/oidc
@@ -55,15 +50,9 @@ POSTHOG_API_KEY=your_posthog_key
 ### Dual Authentication System
 Ascended Social now uses a sophisticated dual authentication system:
 
-#### 1. WorkOS AuthKit (Primary Users)
-- **Purpose**: Main authentication for regular users
-- **Features**: Social login, MFA, enterprise SSO
-- **Implementation**: \`server/workosAuth.ts\`
-- **Endpoints**: \`/api/login\`, \`/api/callback\`
-
-#### 2. Replit Auth (Employees & Admins)
-- **Purpose**: Authentication for internal staff and community administrators
-- **Features**: Replit account integration, admin roles
+#### Replit Auth (All Users)
+- **Purpose**: Unified authentication for all users
+- **Features**: Replit account integration, secure OIDC flow
 - **Implementation**: \`server/replitAuth.ts\`
 - **Endpoints**: \`/api/login\`, \`/api/callback\`
 
@@ -97,11 +86,8 @@ npm run dev
 
 ### 2. Authentication Testing
 \`\`\`bash
-# Test WorkOS AuthKit (Primary Users)
-curl "http://localhost:5000/api/login?platform=web"
-
-# Test Replit Auth (Admins)
-curl "http://localhost:5000/api/login?platform=admin"
+# Test Replit Auth
+curl "http://localhost:5000/api/login"
 
 # Test Mobile Authentication
 curl "http://localhost:5000/api/login?platform=mobile&redirectUrl=ascended://auth/callback"
@@ -135,7 +121,7 @@ npx drizzle-kit studio
 - \`refactor/auth-middleware\`
 
 ### Commit Messages
-- \`feat: add WorkOS AuthKit integration\`
+- \`feat: implement Replit Auth integration\`
 - \`fix: resolve mobile authentication routing\`
 - \`docs: update authentication documentation\`
 - \`refactor: improve JWT token handling\`

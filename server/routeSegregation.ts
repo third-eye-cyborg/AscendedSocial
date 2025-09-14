@@ -6,7 +6,7 @@ import { logAdminAction } from "./adminAuth";
  * 
  * This module implements comprehensive route segregation to ensure:
  * 1. Admin routes are ONLY accessible via Replit Auth
- * 2. User routes are ONLY accessible via WorkOS AuthKit
+ * 2. User routes are ONLY accessible via Replit Auth
  * 3. Prevents cross-authentication vulnerabilities
  * 4. Implements session isolation
  * 5. Provides security audit logging
@@ -179,7 +179,7 @@ export const sessionIsolationMiddleware: RequestHandler = (req: Request, res: Re
   
   // For admin routes, ensure only admin session data is available
   if (requiredAuthType === AuthType.ADMIN) {
-    // Clear any WorkOS user session data that might interfere
+    // Clear any user session data that might interfere
     if ((req.session as any)?.user && !(req.user as any)?.isAdmin) {
       console.log('🧹 Clearing user session data for admin route:', req.path);
       delete (req.session as any).user;
@@ -237,7 +237,7 @@ export const userSecurityHeaders: RequestHandler = (req: Request, res: Response,
     
     // User route specific headers
     res.setHeader('X-User-Route', 'true');
-    res.setHeader('X-Auth-Required', 'workos-authkit');
+    res.setHeader('X-Auth-Required', 'replit-auth');
   }
   
   next();
@@ -262,7 +262,7 @@ export const crossAuthPreventionMiddleware: RequestHandler = async (req: Request
     return res.status(403).json({
       error: 'Authentication type mismatch',
       message: 'Admin authentication cannot be used for user endpoints. Please authenticate as a regular user.',
-      requiredAuth: 'workos-authkit',
+      requiredAuth: 'replit-auth',
       currentAuth: 'replit-admin'
     });
   }
@@ -280,7 +280,7 @@ export const crossAuthPreventionMiddleware: RequestHandler = async (req: Request
       error: 'Authentication type mismatch', 
       message: 'User authentication cannot be used for admin endpoints. Admin access requires Replit authentication.',
       requiredAuth: 'replit-admin',
-      currentAuth: 'workos-authkit'
+      currentAuth: 'replit-auth'
     });
   }
   

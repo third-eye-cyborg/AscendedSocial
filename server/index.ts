@@ -4,7 +4,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
-// Mobile auth routes removed - WorkOS handles all authentication
+// Mobile auth routes handled by Replit Auth
 import notionMcpRoutes from './notion-mcp-routes';
 import autoSyncRoutes from './auto-sync-routes';
 
@@ -56,7 +56,7 @@ app.use((req, res, next) => {
     }
   });
 
-  // Mobile auth routes removed - WorkOS handles all authentication
+  // Mobile auth routes handled by Replit Auth
 
   // Register other API routes BEFORE Vite setup to prevent catch-all route conflicts
   app.use('/api/zero-trust', zeroTrustRoutes);

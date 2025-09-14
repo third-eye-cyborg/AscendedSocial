@@ -5,6 +5,7 @@ import { Strategy, type VerifyFunction } from "openid-client/passport";
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
+import jwt from 'jsonwebtoken';
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
@@ -118,17 +119,70 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    // Extract state parameter for mobile authentication
+    const state = req.query.state as string;
+    
+    const authOptions: any = {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+    };
+    
+    // Pass through state parameter if provided (for mobile authentication)
+    if (state) {
+      authOptions.state = state;
+    }
+    
+    passport.authenticate(`replitauth:${req.hostname}`, authOptions)(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
     passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
-    })(req, res, next);
+    })(req, res, (err: any) => {
+      if (err) {
+        console.error('Authentication callback error:', err);
+        return res.redirect('/api/login');
+      }
+      
+      try {
+        const user = req.user as any;
+        const state = req.query.state as string;
+        
+        // Check if this is a mobile authentication request
+        const isMobileAuth = state && state !== 'default';
+        
+        if (isMobileAuth) {
+          // Generate JWT token for mobile authentication
+          const tokenPayload = {
+            userId: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profileImageUrl: user.profileImageUrl,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+          };
+          
+          const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
+          
+          console.log('🔐 Generated JWT token for mobile auth:', {
+            userId: user.id,
+            email: user.email,
+            state: state.substring(0, 50) + '...'
+          });
+          
+          // Redirect to auth-callback with token and state
+          const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
+          return res.redirect(callbackUrl);
+        } else {
+          // Web authentication - redirect to home
+          return res.redirect('/');
+        }
+      } catch (error) {
+        console.error('Error processing authentication callback:', error);
+        return res.redirect('/api/login');
+      }
+    });
   });
 
   app.get("/api/logout", (req, res) => {

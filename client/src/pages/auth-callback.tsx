@@ -8,12 +8,12 @@ export default function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Check URL parameters for WorkOS mobile authentication
+        // Check URL parameters for Replit mobile authentication
         const urlParams = new URLSearchParams(window.location.search);
         const token = urlParams.get('token');
         const state = urlParams.get('state');
         
-        console.log('🔄 WorkOS Auth callback processing:', {
+        console.log('🔄 Replit Auth callback processing:', {
           hasToken: !!token,
           state,
           currentUrl: window.location.href
@@ -40,12 +40,12 @@ export default function AuthCallback() {
             console.log('📱 Simple state parameter, storing token for mobile app');
             
             // Store token in localStorage for mobile apps to pick up
-            localStorage.setItem('workos_auth_token', token);
+            localStorage.setItem('replit_auth_token', token);
             
             // Try to communicate with mobile app via postMessage
             if (window.parent !== window) {
               window.parent.postMessage({ 
-                type: 'workos_auth_success', 
+                type: 'replit_auth_success', 
                 token,
                 state 
               }, '*');
@@ -54,11 +54,11 @@ export default function AuthCallback() {
         }
 
         // Regular web app authentication - go to dashboard
-        console.log('🏠 WorkOS web auth - redirecting to dashboard');
+        console.log('🏠 Replit web auth - redirecting to dashboard');
         setLocation('/');
         
       } catch (error) {
-        console.error('❌ WorkOS auth callback error:', error);
+        console.error('❌ Replit auth callback error:', error);
         setLocation('/?error=auth_failed');
       }
     };

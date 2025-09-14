@@ -1,5 +1,5 @@
 /**
- * WorkOS Authentication Utility
+ * Replit Authentication Utility
  * Handles authentication flow for both web and mobile environments
  */
 
@@ -56,7 +56,7 @@ export function getAuthUrl(redirectUrl?: string): string {
     console.log('🔧 [AUTH-DEBUG] Mobile environment check:', isMobile);
     
     if (isMobile) {
-      console.log('🔍 [AUTH-DEBUG] WorkOS mobile auth flow:', {
+      console.log('🔍 [AUTH-DEBUG] Replit Auth mobile flow:', {
         platform: 'mobile',
         environment: window.location.hostname.includes('app.ascended.social') ? 'Production' : 'Development',
         redirectUrl: redirectUrl || window.location.origin,
@@ -74,14 +74,14 @@ export function getAuthUrl(redirectUrl?: string): string {
       console.log('🔧 [AUTH-DEBUG] Generated mobile auth URL:', finalUrl);
       return finalUrl;
     } else {
-      console.log('🔍 [AUTH-DEBUG] WorkOS web auth flow:', {
+      console.log('🔍 [AUTH-DEBUG] Replit Auth web flow:', {
         platform: 'web', 
         environment: window.location.hostname.includes('ascended.social') ? 'Production' : 'Development',
         redirectUrl: redirectUrl || window.location.origin,
         authEndpoint: baseUrl
       });
       
-      // Web authentication
+      // Web authentication - simple redirect to Replit Auth
       const finalUrl = redirectUrl ? `${baseUrl}?redirectUrl=${encodeURIComponent(redirectUrl)}` : baseUrl;
       console.log('🔧 [AUTH-DEBUG] Generated web auth URL:', finalUrl);
       return finalUrl;
@@ -93,7 +93,7 @@ export function getAuthUrl(redirectUrl?: string): string {
 }
 
 /**
- * Initiates authentication flow - Uses WorkOS AuthKit for all environments
+ * Initiates authentication flow - Uses Replit Auth for all environments
  */
 export function initiateAuth(redirectUrl?: string): void {
   try {
@@ -124,20 +124,20 @@ export function initiateAuth(redirectUrl?: string): void {
 }
 
 /**
- * Checks if there's a stored WorkOS auth token (for mobile apps)
+ * Checks if there's a stored Replit auth token (for mobile apps)
  */
 export function getStoredAuthToken(): string | null {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('workos_auth_token');
+    return localStorage.getItem('replit_auth_token');
   }
   return null;
 }
 
 /**
- * Clears stored WorkOS auth token
+ * Clears stored Replit auth token
  */
 export function clearStoredAuthToken(): void {
   if (typeof window !== 'undefined') {
-    localStorage.removeItem('workos_auth_token');
+    localStorage.removeItem('replit_auth_token');
   }
 }

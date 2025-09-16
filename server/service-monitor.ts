@@ -24,8 +24,10 @@ class ServiceMonitor {
   private healthCheckInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    // Start periodic health checks
-    this.startPeriodicHealthChecks();
+    // Start periodic health checks with a delay to allow app startup
+    setTimeout(() => {
+      this.startPeriodicHealthChecks();
+    }, 10000); // Wait 10 seconds before starting health checks
   }
 
   // Get comprehensive system health
@@ -47,12 +49,21 @@ class ServiceMonitor {
         details: browserlessHealth
       });
     } catch (error: any) {
+      // Check if it's a usage limit error (treat as degraded, not unhealthy)
+      const isUsageLimitError = error.message?.includes('usage limit') || 
+                                error.message?.includes('401 Unauthorized') ||
+                                error.message?.includes('upgrade to a paid plan');
+      
       services.push({
         name: 'browserless',
-        status: 'unhealthy',
+        status: isUsageLimitError ? 'degraded' : 'unhealthy',
         lastCheck: new Date().toISOString(),
         responseTime: Date.now() - startTime,
-        details: { error: error.message }
+        details: { 
+          error: error.message,
+          isUsageLimitError,
+          note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+        }
       });
     }
 
@@ -69,12 +80,21 @@ class ServiceMonitor {
         details: authHealth
       });
     } catch (error: any) {
+      // Check if it's a usage limit error (treat as degraded, not unhealthy)
+      const isUsageLimitError = error.message?.includes('usage limit') || 
+                                error.message?.includes('401 Unauthorized') ||
+                                error.message?.includes('upgrade to a paid plan');
+      
       services.push({
         name: 'browserless-auth',
-        status: 'unhealthy',
+        status: isUsageLimitError ? 'degraded' : 'unhealthy',
         lastCheck: new Date().toISOString(),
         responseTime: Date.now() - startTime,
-        details: { error: error.message }
+        details: { 
+          error: error.message,
+          isUsageLimitError,
+          note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+        }
       });
     }
 

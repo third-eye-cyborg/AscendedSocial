@@ -722,13 +722,23 @@ class BrowserlessService {
         }
       } catch (playwrightError: any) {
         const isRateLimit = playwrightError.message?.includes('429') || playwrightError.message?.includes('Too Many Requests');
+        const isUsageLimit = playwrightError.message?.includes('usage limit') || 
+                            playwrightError.message?.includes('401 Unauthorized') ||
+                            playwrightError.message?.includes('upgrade to a paid plan');
+        
         details.tests.playwright = { 
           success: false, 
           error: playwrightError.message,
           duration: Date.now() - playwrightStart,
-          isRateLimit
+          isRateLimit,
+          isUsageLimit
         };
-        console.warn(`⚠️ [BROWSERLESS-HEALTH] Playwright test failed:`, playwrightError.message);
+        
+        if (isUsageLimit) {
+          console.warn(`⚠️ [BROWSERLESS-HEALTH] Playwright test failed: Service usage limit reached`);
+        } else {
+          console.warn(`⚠️ [BROWSERLESS-HEALTH] Playwright test failed:`, playwrightError.message);
+        }
       }
 
       // Test Puppeteer connection with timeout
@@ -749,13 +759,23 @@ class BrowserlessService {
         }
       } catch (puppeteerError: any) {
         const isRateLimit = puppeteerError.message?.includes('429') || puppeteerError.message?.includes('Too Many Requests');
+        const isUsageLimit = puppeteerError.message?.includes('usage limit') || 
+                            puppeteerError.message?.includes('401 Unauthorized') ||
+                            puppeteerError.message?.includes('upgrade to a paid plan');
+        
         details.tests.puppeteer = { 
           success: false, 
           error: puppeteerError.message,
           duration: Date.now() - puppeteerStart,
-          isRateLimit
+          isRateLimit,
+          isUsageLimit
         };
-        console.warn(`⚠️ [BROWSERLESS-HEALTH] Puppeteer test failed:`, puppeteerError.message);
+        
+        if (isUsageLimit) {
+          console.warn(`⚠️ [BROWSERLESS-HEALTH] Puppeteer test failed: Service usage limit reached`);
+        } else {
+          console.warn(`⚠️ [BROWSERLESS-HEALTH] Puppeteer test failed:`, puppeteerError.message);
+        }
       }
 
     } catch (error: any) {
@@ -765,9 +785,20 @@ class BrowserlessService {
 
     const totalDuration = Date.now() - startTime;
     const healthyCount = [browserlessOk, playwrightOk, puppeteerOk].filter(Boolean).length;
-    const status = healthyCount === 3 ? 'healthy' : healthyCount > 0 ? 'degraded' : 'unhealthy';
     
-    console.log(`📊 [BROWSERLESS-HEALTH] Health check completed in ${totalDuration}ms - Status: ${status} (${healthyCount}/3 services)`);
+    // Check if failures are due to usage limits (should be degraded, not unhealthy)
+    const hasUsageLimitErrors = (details.tests.playwright?.isUsageLimit || details.tests.puppeteer?.isUsageLimit);
+    
+    let status: string;
+    if (healthyCount === 3) {
+      status = 'healthy';
+    } else if (healthyCount > 0 || hasUsageLimitErrors) {
+      status = 'degraded';
+    } else {
+      status = 'unhealthy';
+    }
+    
+    console.log(`📊 [BROWSERLESS-HEALTH] Health check completed in ${totalDuration}ms - Status: ${status} (${healthyCount}/3 services)${hasUsageLimitErrors ? ' - Usage limits detected' : ''}`);
 
     return {
       status,

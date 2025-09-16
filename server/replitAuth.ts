@@ -122,7 +122,7 @@ export async function setupAuth(app: Express) {
         name: `replitauth:localhost`,
         config,
         scope: "openid email profile offline_access",
-        callbackURL: `http://localhost:8080/api/callback`,
+        callbackURL: `http://localhost:5000/api/callback`,
       },
       verify,
     );

@@ -37,7 +37,7 @@ const zodiacEmojis: { [key: string]: string } = {
 };
 
 export default function Profile() {
-  const { userId } = useParams();
+  const { id } = useParams();
   const { user: currentUser } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -46,6 +46,9 @@ export default function Profile() {
     username: "",
     bio: "",
   });
+
+  // Use the provided ID, or fall back to current user's ID if no ID is provided
+  const userId = id || (currentUser as any)?.id;
 
   const { data: userProfile, isLoading: userLoading } = useQuery({
     queryKey: ["/api/users", userId],
@@ -63,6 +66,30 @@ export default function Profile() {
   });
 
   const isOwnProfile = currentUser && (currentUser as any)?.id === userId;
+
+  // If no userId and no currentUser, show authentication required message
+  if (!userId && !currentUser) {
+    return (
+      <Layout>
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 bg-primary/20 rounded-full flex items-center justify-center">
+              <i className="fas fa-sign-in-alt text-primary text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-semibold text-subtle mb-2">Authentication Required</h3>
+            <p className="text-muted mb-4">Please log in to view your profile or visit a specific user's profile.</p>
+            <Button 
+              onClick={() => window.location.href = '/'}
+              className="bg-primary text-white hover:bg-primary/80 hover:text-white"
+              data-testid="button-go-home"
+            >
+              Go to Home
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Mutation for updating profile
   const updateProfileMutation = useMutation({

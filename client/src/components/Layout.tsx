@@ -145,6 +145,23 @@ export default function Layout({ children }: LayoutProps) {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="bg-cosmic border-primary/30 w-48 shadow-xl">
+                  {/* Profile Section - Most prominent */}
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0 border-b border-primary/20">
+                    <Link href={`/profile/${(user as any)?.id}`} className="w-full">
+                      <div className="flex items-center w-full px-3 py-3 text-white hover:text-primary transition-colors">
+                        <i className="fas fa-user mr-2"></i>
+                        <span className="font-medium">My Profile</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0 border-b border-primary/20 mb-1">
+                    <Link href="/settings" className="w-full">
+                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
+                        <i className="fas fa-cog mr-2"></i>
+                        Settings
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <Link href="/community" className="w-full">
                       <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
@@ -178,14 +195,6 @@ export default function Layout({ children }: LayoutProps) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
-                    <Link href="/settings" className="w-full">
-                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
-                        <i className="fas fa-cog mr-2"></i>
-                        Settings
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <button 
                       onClick={() => window.location.hash = 'manage_cookies'}
                       className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors"
@@ -194,14 +203,6 @@ export default function Layout({ children }: LayoutProps) {
                       <i className="fas fa-cookie-bite mr-2"></i>
                       Cookie Preferences
                     </button>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
-                    <Link href={`/profile/${(user as any)?.id}`} className="w-full">
-                      <div className="flex items-center w-full px-3 py-2 text-white hover:text-primary transition-colors">
-                        <i className="fas fa-user mr-2"></i>
-                        Profile
-                      </div>
-                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="focus:bg-cosmic-light hover:bg-cosmic-light p-0">
                     <div 

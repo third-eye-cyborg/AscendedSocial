@@ -55,7 +55,11 @@ localPort = 6006
 externalPort = 3002
 
 [[ports]]
-localPort = 43031
+localPort = 6007
+externalPort = 4200
+
+[[ports]]
+localPort = 42723
 externalPort = 3000
 
 [objectStorage]

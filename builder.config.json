@@ -1,6 +1,6 @@
 {
   "command": "npm run dev:client",
-  "serverUrl": "http://localhost:3004",
+  "serverUrl": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
   "authenticateProxy": false,
   "commitMode": "commits",
   "setupScript": "npm install && npm run db:push",
@@ -8,9 +8,9 @@
   "framework": "react",
   "typescript": true,
   "devServer": {
-    "url": "http://localhost:3004",
+    "url": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
     "command": "npm run dev:client",
-    "port": 3004,
+    "port": 3000,
     "env": {
       "NODE_ENV": "development",
       "VITE_STRIPE_PUBLIC_KEY": "${VITE_STRIPE_PUBLIC_KEY}",
@@ -18,13 +18,13 @@
     }
   },
   "storybook": {
-    "url": "http://localhost:6006",
+    "url": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:6006",
     "command": "npm run storybook",
     "port": 6006,
     "enabled": true
   },
   "backend": {
-    "url": "http://localhost:8080",
+    "url": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
     "command": "npm run dev:server",
     "port": 8080,
     "env": {

@@ -1,0 +1,27 @@
+{
+  "replit": {
+    "database": {
+      "provider": "neon",
+      "connection": "${DATABASE_URL}"
+    },
+    "storage": {
+      "enabled": true,
+      "bucket": "ascended-social-assets"
+    },
+    "secrets": [
+      "CHROMATIC_PROJECT_TOKEN",
+      "DATABASE_URL",
+      "STORYBOOK_API_KEY"
+    ]
+  },
+  "ports": {
+    "app": 3000,
+    "storybook": 6006,
+    "cypress": 3001
+  },
+  "logging": {
+    "replit": "./logs/replit.log",
+    "mcp": "./logs/mcp-servers.log",
+    "visual-tests": "./logs/visual-tests.log"
+  }
+}

@@ -61,5 +61,9 @@
     "*.replit.dev": "linux"
   },
   "remote.SSH.configFile": "~/.ssh/config",
-  "remote.SSH.showLoginTerminal": true
+  "remote.SSH.showLoginTerminal": true,
+  "builder.serverUrl": "http://localhost:3000",
+  "builder.setupScript": "npm install && npm run db:push",
+  "builder.command": "npm run dev:client",
+  "builder.openInBrowser": true
 }

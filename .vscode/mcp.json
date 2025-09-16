@@ -1,0 +1,48 @@
+{
+  "mcpServers": {
+    "chromatic-storybook": {
+      "command": "npx",
+      "args": [
+        "@chromatic-com/storybook-mcp",
+        "--project-token", "${CHROMATIC_PROJECT_TOKEN}",
+        "--storybook-url", "http://localhost:6006"
+      ],
+      "env": {
+        "NODE_ENV": "development",
+        "CHROMATIC_PROJECT_TOKEN": "${CHROMATIC_PROJECT_TOKEN}"
+      }
+    },
+    "storybook": {
+      "command": "npx",
+      "args": [
+        "@storybook/mcp-server",
+        "--port", "6006",
+        "--config-dir", ".storybook"
+      ]
+    },
+    "chromatic-cypress": {
+      "command": "npx",
+      "args": [
+        "@chromatic-com/cypress-mcp",
+        "--project-token", "${CHROMATIC_PROJECT_TOKEN}",
+        "--cypress-config", "cypress.config.js"
+      ]
+    },
+    "playwright-chromatic": {
+      "command": "npx",
+      "args": [
+        "@chromatic-com/playwright-mcp",
+        "--project-token", "${CHROMATIC_PROJECT_TOKEN}",
+        "--headless",
+        "--no-sandbox"
+      ]
+    },
+    "bytebot": {
+      "command": "npx",
+      "args": [
+        "@bytebot/mcp-server",
+        "--config", ".bytebot/replit-config.json"
+      ]
+    }
+  }
+}

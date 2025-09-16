@@ -176,3 +176,59 @@ These standards ensure the Ascended Social platform maintains professional devel
 - **shadcn/ui**: Component library.
 - **React Three Fiber**: 3D rendering.
 - **Three.js**: 3D graphics engine.
+
+## 🤖 Advanced Visual Testing with MCP
+
+Ascended Social integrates multiple MCP (Model Context Protocol) servers to provide GitHub Copilot with comprehensive testing capabilities:
+
+### Quick Start
+1. **Connect VS Code via SSH** (already configured)
+2. **Start MCP servers**: `npm run mcp:start`
+3. **Open GitHub Copilot Agent Mode**
+4. **Use natural language** to generate and run tests
+
+### Available Testing Tools
+- **🎨 Chromatic Storybook**: Visual component testing
+- **📚 Storybook MCP**: Component story management  
+- **🔧 Chromatic Cypress**: Interactive component testing
+- **🎭 Playwright Chromatic**: E2E visual testing
+- **🤖 ByteBot OS**: Desktop automation
+
+### Example Commands
+```bash
+# Start all MCP servers
+npm run mcp:start
+
+# Run comprehensive visual tests
+npm run test:visual:all
+
+# Monitor all logs in real-time
+npm run logs:all
+
+# Test specific tools
+npm run test:storybook    # Storybook component tests
+npm run test:cypress      # Cypress component tests  
+npm run test:playwright   # Playwright E2E tests
+```
+
+### Copilot Integration Examples
+- *"Create a new social media post component with Storybook story and visual tests"*
+- *"Test the user authentication flow with database validation using Playwright"*
+- *"Generate Cypress tests for the messaging system with real-time updates"*
+- *"Set up automated visual regression testing for the entire platform"*
+
+### Tech Stack Integration
+- **Database**: PostgreSQL (Neon) with Drizzle ORM
+- **Storage**: Replit Storage for media assets
+- **Secrets**: Replit Secrets management
+- **Frontend**: React with Vite
+- **Backend**: Express.js API
+
+### Monitoring
+Real-time logging captures:
+- ✅ Component test results
+- ✅ Visual regression status  
+- ✅ Database operation logs
+- ✅ Storage access patterns
+- ✅ MCP server interactions
+- ✅ Replit service health

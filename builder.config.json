@@ -1,6 +1,173 @@
 {
-  "command": "npm run dev",
-  "serverUrl": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:8080",
+  "command": "npm run dev:client",
+  "serverUrl": "http://localhost:3004",
   "authenticateProxy": false,
-  "commitMode": "commits"
+  "commitMode": "commits",
+  "setupScript": "npm install && npm run db:push",
+  "project": "ascended-social",
+  "framework": "react",
+  "typescript": true,
+  "devServer": {
+    "url": "http://localhost:3004",
+    "command": "npm run dev:client",
+    "port": 3004,
+    "env": {
+      "NODE_ENV": "development",
+      "VITE_STRIPE_PUBLIC_KEY": "${VITE_STRIPE_PUBLIC_KEY}",
+      "VITE_TURNSTILE_SITE_KEY": "${VITE_TURNSTILE_SITE_KEY}"
+    }
+  },
+  "storybook": {
+    "url": "http://localhost:6006",
+    "command": "npm run storybook",
+    "port": 6006,
+    "enabled": true
+  },
+  "backend": {
+    "url": "http://localhost:8080",
+    "command": "npm run dev:server",
+    "port": 8080,
+    "env": {
+      "NODE_ENV": "development",
+      "SESSION_SECRET": "${SESSION_SECRET}",
+      "DATABASE_URL": "${DATABASE_URL}",
+      "PGDATABASE": "${PGDATABASE}",
+      "PGHOST": "${PGHOST}",
+      "PGPORT": "${PGPORT}",
+      "PGUSER": "${PGUSER}",
+      "PGPASSWORD": "${PGPASSWORD}",
+      "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
+      "STRIPE_PRICE_ID": "${STRIPE_PRICE_ID}",
+      "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+      "NOTION_INTEGRATION_SECRET": "${NOTION_INTEGRATION_SECRET}",
+      "NOTION_PAGE_URL": "${NOTION_PAGE_URL}",
+      "WORKOS_CLIENT_ID": "${WORKOS_CLIENT_ID}",
+      "WORKOS_API_KEY": "${WORKOS_API_KEY}"
+    }
+  },
+  "replit": {
+    "enabled": true,
+    "secrets": {
+      "storage": {
+        "DEFAULT_OBJECT_STORAGE_BUCKET_ID": "${DEFAULT_OBJECT_STORAGE_BUCKET_ID}",
+        "PUBLIC_OBJECT_SEARCH_PATHS": "${PUBLIC_OBJECT_SEARCH_PATHS}",
+        "PRIVATE_OBJECT_DIR": "${PRIVATE_OBJECT_DIR}"
+      },
+      "cloudflare": {
+        "CLOUDFLARE_ACCOUNT_ID": "${CLOUDFLARE_ACCOUNT_ID}",
+        "CLOUDFLARE_IMAGES_API_KEY": "${CLOUDFLARE_IMAGES_API_KEY}",
+        "CLOUDFLARE_R2_ACCESS_KEY_ID": "${CLOUDFLARE_R2_ACCESS_KEY_ID}",
+        "CLOUDFLARE_R2_SECRET_ACCESS_KEY": "${CLOUDFLARE_R2_SECRET_ACCESS_KEY}",
+        "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}",
+        "CLOUDFLARE_WORKERS_API_KEY": "${CLOUDFLARE_WORKERS_API_KEY}",
+        "CLOUDFLARE_AUD_TAG": "${CLOUDFLARE_AUD_TAG}",
+        "CLOUDFLARE_TEAM_DOMAIN": "${CLOUDFLARE_TEAM_DOMAIN}"
+      },
+      "security": {
+        "TURNSTILE_SECRET_KEY": "${TURNSTILE_SECRET_KEY}",
+        "TURNSTILE_SITE_KEY": "${TURNSTILE_SITE_KEY}"
+      },
+      "analytics": {
+        "POSTHOG_API_KEY": "${POSTHOG_API_KEY}",
+        "POSTHOG_HOST": "${POSTHOG_HOST}",
+        "ONESIGNAL_REST_API_KEY": "${ONESIGNAL_REST_API_KEY}"
+      },
+      "testing": {
+        "BROWSERLESS_TOKEN": "${BROWSERLESS_TOKEN}",
+        "CHROMATIC_PROJECT_TOKEN": "${CHROMATIC_PROJECT_TOKEN}",
+        "PLAYWRIGHT_PROJECT_TOKEN": "${PLAYWRIGHT_PROJECT_TOKEN}",
+        "CYPRESS_PROJECT_TOKEN": "${CYPRESS_PROJECT_TOKEN}",
+        "TESTING_STRIPE_SECRET_KEY": "${TESTING_STRIPE_SECRET_KEY}",
+        "TESTING_VITE_STRIPE_PUBLIC_KEY": "${TESTING_VITE_STRIPE_PUBLIC_KEY}"
+      },
+      "integrations": {
+        "FIGMA_ACCESS_TOKEN": "${FIGMA_ACCESS_TOKEN}",
+        "FIGMA_FILE_KEY": "${FIGMA_FILE_KEY}"
+      }
+    }
+  },
+  "designSystem": {
+    "tokensPath": "./shared/design-tokens",
+    "componentsPath": "./client/components",
+    "storiesPath": "./stories",
+    "figmaIntegration": {
+      "enabled": true,
+      "fileKey": "${FIGMA_FILE_KEY}",
+      "accessToken": "${FIGMA_ACCESS_TOKEN}"
+    }
+  },
+  "ai": {
+    "enabled": true,
+    "provider": "openai",
+    "model": "gpt-4",
+    "apiKey": "${OPENAI_API_KEY}",
+    "context": "social-media-platform",
+    "features": {
+      "componentGeneration": true,
+      "codeCompletion": true,
+      "designSuggestions": true,
+      "accessibilityChecks": true
+    }
+  },
+  "database": {
+    "provider": "drizzle",
+    "url": "${DATABASE_URL}",
+    "migrations": "./server/migrations",
+    "schema": "./server/schema"
+  },
+  "testing": {
+    "visual": {
+      "chromatic": {
+        "enabled": true,
+        "projectToken": "${CHROMATIC_PROJECT_TOKEN}"
+      },
+      "storybook": {
+        "enabled": true,
+        "testRunner": true
+      }
+    },
+    "e2e": {
+      "playwright": {
+        "enabled": true,
+        "projectToken": "${PLAYWRIGHT_PROJECT_TOKEN}"
+      },
+      "cypress": {
+        "enabled": true,
+        "projectToken": "${CYPRESS_PROJECT_TOKEN}"
+      }
+    },
+    "browser": {
+      "browserless": {
+        "enabled": true,
+        "token": "${BROWSERLESS_TOKEN}"
+      }
+    }
+  },
+  "deployment": {
+    "platform": "replit",
+    "autoPreview": true,
+    "domains": {
+      "production": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:3000",
+      "staging": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:3000",
+      "backend": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:8080"
+    }
+  },
+  "integrations": {
+    "stripe": {
+      "enabled": true,
+      "secretKey": "${STRIPE_SECRET_KEY}",
+      "publicKey": "${VITE_STRIPE_PUBLIC_KEY}",
+      "priceId": "${STRIPE_PRICE_ID}"
+    },
+    "notion": {
+      "enabled": true,
+      "integrationSecret": "${NOTION_INTEGRATION_SECRET}",
+      "pageUrl": "${NOTION_PAGE_URL}"
+    },
+    "workos": {
+      "enabled": true,
+      "clientId": "${WORKOS_CLIENT_ID}",
+      "apiKey": "${WORKOS_API_KEY}"
+    }
+  }
 }

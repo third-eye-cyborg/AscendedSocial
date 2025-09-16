@@ -10,12 +10,15 @@
       "**/node_modules": true,
       "**/dist": true,
       "**/.git": true,
-      "**/generated-icon.png": true
+      "**/generated-icon.png": true,
+      "**/.builder": true
     },
     "search.exclude": {
       "**/node_modules": true,
       "**/dist": true,
-      "**/migrations": true
+      "**/migrations": true,
+      "**/.builder": true,
+      "**/storybook-static": true
     },
     "typescript.preferences.includePackageJsonAutoImports": "on",
     "typescript.suggest.autoImports": true,
@@ -24,16 +27,71 @@
       "comments": false,
       "strings": true
     },
-    "builder.apiKey": null,
+    
+    // Builder.io Fusion Configuration
+    "builder.apiKey": "${BUILDER_IO_API_KEY}",
+    "builder.projectId": "ascended-social",
     "builder.env": "development",
     "builder.useLocalProxy": true,
-    "builder.localProxyUrl": "http://localhost:5000",
+    "builder.localProxyUrl": "http://localhost:3000",
+    "builder.devServerPort": 3000,
+    "builder.storybookPort": 6006,
+    "builder.enableHotReload": true,
+    "builder.autoSave": true,
+    "builder.framework": "react",
+    "builder.typescript": true,
+    "builder.tailwindcss": true,
+    "builder.designTokensPath": "./shared/design-tokens",
+    "builder.componentsPath": "./client/components",
+    "builder.storiesPath": "./stories",
+    "builder.figmaIntegration": true,
+    "builder.figmaFileKey": "${FIGMA_FILE_KEY}",
+    "builder.aiAssistant": true,
+    "builder.openaiKey": "${OPENAI_API_KEY}",
+    "builder.replit": {
+      "enabled": true,
+      "domain": "6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
+      "ports": {
+        "client": 3000,
+        "server": 8080,
+        "storybook": 6006
+      }
+    },
+    
+    // GitHub Copilot Integration
     "github.copilot.enable": {
-      "*": true
+      "*": true,
+      "builder": true
     },
     "github.copilot.inlineSuggest.enable": true,
+    "github.copilot.advanced": {
+      "length": 500,
+      "temperature": 0.1
+    },
+    
+    // Remote SSH for Replit
     "remote.SSH.remotePlatform": {
       "*.replit.dev": "linux"
+    },
+    "remote.SSH.enableDynamicForwarding": true,
+    "remote.SSH.showLoginTerminal": true,
+    
+    // Storybook Integration
+    "storybook.chromatic.projectToken": "${CHROMATIC_PROJECT_TOKEN}",
+    "storybook.defaultStory": "Introduction",
+    
+    // Visual Testing
+    "playwright.projectToken": "${PLAYWRIGHT_PROJECT_TOKEN}",
+    "cypress.projectToken": "${CYPRESS_PROJECT_TOKEN}",
+    
+    // Design System
+    "figma.accessToken": "${FIGMA_ACCESS_TOKEN}",
+    "figma.fileKey": "${FIGMA_FILE_KEY}",
+    
+    // Environment Variables
+    "terminal.integrated.env.linux": {
+      "BUILDER_CONFIG_PATH": "${workspaceFolder}/builder.config.json",
+      "BUILDER_ENV_PATH": "${workspaceFolder}/.env.builder"
     }
   },
   "extensions": {
@@ -41,8 +99,17 @@
       "github.copilot",
       "github.copilot-chat", 
       "builder.builder",
+      "builder.fusion",
       "ms-vscode-remote.remote-ssh",
-      "ms-vscode.vscode-typescript-next"
+      "ms-vscode.vscode-typescript-next",
+      "ms-playwright.playwright",
+      "cypress-io.cypress-helper",
+      "chromatic-com.chromatic-vscode",
+      "figma.figma-vscode-extension",
+      "bradlc.vscode-tailwindcss",
+      "esbenp.prettier-vscode",
+      "formulahendry.auto-rename-tag",
+      "ms-vscode.vscode-json"
     ]
   },
   "launch": {
@@ -60,6 +127,29 @@
           "--loader", "tsx/esm"
         ],
         "console": "integratedTerminal"
+      },
+      {
+        "name": "Builder.io Fusion Dev Mode",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/@builder.io/fusion/bin/fusion",
+        "args": ["dev"],
+        "env": {
+          "NODE_ENV": "development",
+          "BUILDER_CONFIG_PATH": "${workspaceFolder}/builder.config.json"
+        },
+        "console": "integratedTerminal"
+      },
+      {
+        "name": "Debug Storybook",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/.bin/storybook",
+        "args": ["dev", "-p", "6006"],
+        "env": {
+          "NODE_ENV": "development"
+        },
+        "console": "integratedTerminal"
       }
     ]
   },
@@ -75,6 +165,78 @@
           "kind": "build",
           "isDefault": true
         },
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Builder.io Fusion Start",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "builder:dev"],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Builder.io Generate Component",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "builder:generate"],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Builder.io Sync Design System",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "builder:sync"],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Builder.io Figma Sync",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "builder:figma:sync"],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Start Storybook",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "storybook"],
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Run Visual Tests",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "test:visual:all"],
+        "group": "test",
         "presentation": {
           "echo": true,
           "reveal": "always",

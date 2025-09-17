@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+X-Powered-By: Ascended Social
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 1; mode=block
+X-Route-Auth-Type: public
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Cache-Control: public, max-age=3600
+Vary: Origin
+Content-Type: text/html; charset=utf-8
+Date: Wed, 17 Sep 2025 01:07:13 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+Content-Length: 4062
+

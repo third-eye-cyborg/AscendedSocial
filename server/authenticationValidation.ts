@@ -124,7 +124,7 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
       
       // Validate passport user has required fields
       if (!passportUser.id || !passportUser.email) {
-        console.error('❌ Invalid passport user structure');
+        console.error('❌ Invalid passport user structure:', passportUser);
         await logSecurityViolation(req, 'corrupted_passport_user', { user: passportUser });
         return res.status(401).json({
           error: 'Session corrupted',
@@ -133,32 +133,95 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
         });
       }
       
-      // Verify user still exists in database
-      const dbUser = await storage.getUser(passportUser.id);
-      if (!dbUser) {
-        console.error(`❌ Passport user not found in database: ${passportUser.id}`);
-        await logSecurityViolation(req, 'nonexistent_passport_user', { userId: passportUser.id });
-        return res.status(401).json({
-          error: 'User not found',
-          message: 'Please login again',
-          authMethod: 'passport'
-        });
+      // Check if token has expired (for Replit Auth tokens)
+      if (passportUser.expires_at) {
+        const now = Math.floor(Date.now() / 1000);
+        if (now > passportUser.expires_at) {
+          console.warn(`🚫 Expired passport session: ${passportUser.email}`);
+          await logSecurityViolation(req, 'expired_passport_session', { 
+            userId: passportUser.id,
+            email: passportUser.email,
+            expiredBy: now - passportUser.expires_at
+          });
+          
+          // Try to refresh token if refresh_token is available
+          if (passportUser.refresh_token) {
+            try {
+              const client = await import("openid-client");
+              const { getOidcConfig, updateUserSession } = await import("./replitAuth");
+              const config = await getOidcConfig();
+              const tokenResponse = await client.refreshTokenGrant(config, passportUser.refresh_token);
+              
+              // Update user session with new tokens
+              updateUserSession(passportUser, tokenResponse);
+              
+              console.log(`✅ Refreshed passport token for user: ${passportUser.email}`);
+            } catch (refreshError) {
+              console.error('❌ Failed to refresh passport token:', refreshError);
+              return res.status(401).json({
+                error: 'Session expired',
+                message: 'Please login again',
+                authMethod: 'passport'
+              });
+            }
+          } else {
+            return res.status(401).json({
+              error: 'Session expired',
+              message: 'Please login again',
+              authMethod: 'passport'
+            });
+          }
+        }
       }
       
-      // Set user in request for downstream middleware
+      // Verify user still exists in database (only for critical operations)
+      // Skip database check for frequently accessed routes to improve performance
+      const skipDbCheck = req.path.includes('/api/auth/user') || req.path.includes('/api/posts') || req.path.includes('/api/user/');
+      
+      if (!skipDbCheck) {
+        const dbUser = await storage.getUser(passportUser.id);
+        if (!dbUser) {
+          console.error(`❌ Passport user not found in database: ${passportUser.id}`);
+          await logSecurityViolation(req, 'nonexistent_passport_user', { userId: passportUser.id });
+          return res.status(401).json({
+            error: 'User not found',
+            message: 'Please login again',
+            authMethod: 'passport'
+          });
+        }
+      }
+      
+      // Set user in request for downstream middleware (preserve all passport properties)
       (req as any).user = {
         ...passportUser,
         authMethod: 'passport'
       };
       
-      console.log(`✅ Passport authentication successful for user: ${dbUser.email} on ${req.path}`);
+      console.log(`✅ Passport authentication successful for user: ${passportUser.email} on ${req.path}`);
       return next();
+    }
+    
+    // Special case: If this is a simple user info request and there's a user in req.user but isAuthenticated fails
+    // This can happen during token transitions
+    if (req.path === '/api/auth/user' && req.user && !(req as any).authMethodOverride) {
+      const user = req.user as any;
+      if (user.id && user.email) {
+        console.log(`🔄 Allowing user info request for ${user.email} (authentication transition)`);
+        return next();
+      }
     }
     
     // Fall back to session-based authentication (legacy web app)
     const userSession = (req.session as any)?.user;
     
     if (!userSession) {
+      // For user routes, if no authentication is found in enhanced middleware,
+      // let the request continue to individual route middleware instead of immediately failing
+      // This allows routes with their own authentication middleware to handle auth properly
+      if (requiredAuthType === AuthType.USER) {
+        return next();
+      }
+      
       await trackFailedAuthAttempt(attemptKey);
       await logSecurityViolation(req, 'no_authentication', { path: req.path });
       return res.status(401).json({

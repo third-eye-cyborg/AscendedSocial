@@ -20,6 +20,11 @@ PostgreSQL serves as the primary database with Drizzle ORM. Google Cloud Storage
 ### Authentication and Authorization
 Authentication is managed by Replit Auth (OpenID Connect via Passport.js), with user sessions stored in PostgreSQL. Authorization uses middleware for permission checks. 
 
+**Recent Authentication Fixes (September 2025):**
+- **Resolved Authentication Middleware Conflict**: Fixed issue where enhanced security middleware was conflicting with Passport authentication, causing 401 errors on `/api/auth/user` endpoint
+- **Improved Profile Loading**: Updated profile page to properly handle authentication loading states and wait for authentication completion before attempting to fetch user data
+- **Enhanced Middleware Compatibility**: Modified enhanced authentication middleware to work seamlessly with both Passport web authentication and JWT mobile authentication flows
+
 **Enhanced Mobile Authentication System:**
 - **Cross-Platform Support**: Native mobile apps, mobile web apps, and desktop web
 - **Platform Detection**: Automatic detection via referer headers, user agents, and query parameters

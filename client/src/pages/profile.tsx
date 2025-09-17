@@ -38,7 +38,7 @@ const zodiacEmojis: { [key: string]: string } = {
 
 export default function Profile() {
   const { id } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -67,7 +67,39 @@ export default function Profile() {
 
   const isOwnProfile = currentUser && (currentUser as any)?.id === userId;
 
-  // If no userId and no currentUser, show authentication required message
+  // If auth is loading and no ID provided, show loading state (need to wait for auth to get current user's ID)
+  if (authLoading && !id) {
+    return (
+      <Layout>
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1">
+              <Card className="bg-cosmic-light border border-primary/30">
+                <CardHeader>
+                  <div className="flex flex-col items-center">
+                    <Skeleton className="w-24 h-24 rounded-full mb-4" />
+                    <Skeleton className="h-6 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-32 w-full" />
+                </CardContent>
+              </Card>
+            </div>
+            <div className="lg:col-span-2">
+              <Skeleton className="h-8 w-48 mb-6" />
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 w-full mb-4" />
+              ))}
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // If no userId and no currentUser (and auth is not loading), show authentication required message
   if (!userId && !currentUser) {
     return (
       <Layout>

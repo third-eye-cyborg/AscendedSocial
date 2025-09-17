@@ -7,6 +7,7 @@ import mcpRoutes from './mcp-routes';
 // Mobile auth routes handled by Replit Auth
 import notionMcpRoutes from './notion-mcp-routes';
 import autoSyncRoutes from './auto-sync-routes';
+import builderRoutes from './builder-integration';
 
 const app = express();
 app.use(express.json());
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
   app.use('/api/mcp', mcpRoutes);
   app.use('/api/notion-mcp', notionMcpRoutes);
   app.use('/api/auto-sync', autoSyncRoutes);
+  app.use('/api/builder', builderRoutes);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

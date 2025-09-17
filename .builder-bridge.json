@@ -1,0 +1,23 @@
+{
+  "apiKey": "bpk-c2cca3a124a349d6a8b733e8b7ce5637",
+  "localUrl": "http://localhost:5000",
+  "previewUrl": "http://localhost:3001",
+  "models": [
+    {
+      "name": "page",
+      "type": "page",
+      "urlPath": "/"
+    },
+    {
+      "name": "component",
+      "type": "component"
+    }
+  ],
+  "framework": "react",
+  "project": "ascended-social",
+  "workspace": {
+    "client": "./client",
+    "server": "./server",
+    "shared": "./shared"
+  }
+}

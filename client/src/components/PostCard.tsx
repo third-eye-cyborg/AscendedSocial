@@ -202,6 +202,8 @@ export default function PostCard({ post }: PostCardProps) {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}`] }); // Also invalidate individual post query
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id, "engage/user"] }); // Refresh user engagement data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
       
@@ -255,6 +257,7 @@ export default function PostCard({ post }: PostCardProps) {
       
       queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id, "spiritual-mark/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}`] }); // Also invalidate individual post query
       
       toast({
         title: "Success",
@@ -387,6 +390,7 @@ export default function PostCard({ post }: PostCardProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}`] }); // Also invalidate individual post query
       queryClient.invalidateQueries({ queryKey: ["/api/bookmarks"] });
     },
     onError: () => {

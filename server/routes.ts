@@ -57,6 +57,7 @@ import {
   enhancedSecurityHeaders,
   securityErrorHandler 
 } from "./authenticationValidation";
+import { bypassAuthForTesting } from "./auth-bypass";
 
 // Stripe setup
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -79,6 +80,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Apply security error handling middleware
   app.use(securityErrorHandler);
+  
+  // 🧪 Apply auth bypass middleware BEFORE route segregation for testing
+  app.use(bypassAuthForTesting);
   
   // Apply route segregation middleware FIRST - this validates authentication types
   setupRouteSegregation(app);
@@ -588,7 +592,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/posts', async (req, res) => {
+  app.get('/api/posts', isAuthenticated, async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 20;
       const offset = parseInt(req.query.offset as string) || 0;
@@ -617,7 +621,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/posts/:id', async (req, res) => {
+  app.get('/api/posts/:id', isAuthenticated, async (req, res) => {
     try {
       const post = await storage.getPost(req.params.id);
       if (!post) {

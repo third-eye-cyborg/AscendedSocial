@@ -103,7 +103,9 @@ export default function PostCard({ post }: PostCardProps) {
       const response = await apiRequest("GET", `/api/posts/${post.id}/engage/user`);
       return response.json();
     },
-    enabled: !!user,
+    enabled: !!user && !!post.id,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
   // Fetch user spiritual mark status for this post
@@ -113,7 +115,9 @@ export default function PostCard({ post }: PostCardProps) {
       const response = await apiRequest("GET", `/api/posts/${post.id}/spiritual-mark/user`);
       return response.json();
     },
-    enabled: !!user,
+    enabled: !!user && !!post.id,
+    staleTime: 30 * 1000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
   // Set initial engagement state when data is fetched
@@ -328,30 +332,10 @@ export default function PostCard({ post }: PostCardProps) {
       remove: isEngaged && type !== 'energy', // Never remove energy engagements
       energyAmount: type === 'energy' ? currentEnergyAmount : undefined
     });
-    
-    // Optimistic update with mutual exclusion for votes
-    // Energy engagements cannot be removed once made
-    if (isEngaged && type !== 'energy') {
-      setUserEngagements(prev => prev.filter(e => e !== type));
-    } else if (!isEngaged) {
-      setUserEngagements(prev => {
-        let newEngagements = [...prev];
-        
-        // Remove opposite vote for upvote/downvote mutual exclusion
-        if (type === 'upvote') {
-          newEngagements = newEngagements.filter(e => e !== 'downvote');
-        } else if (type === 'downvote') {
-          newEngagements = newEngagements.filter(e => e !== 'upvote');
-        }
-        
-        // Add the new engagement
-        return [...newEngagements, type];
-      });
-    }
   };
 
   const handleShare = () => {
-    const postUrl = `${window.location.origin}/?post=${post.id}`;
+    const postUrl = `${window.location.origin}/post/${post.id}`;
     const shareText = `🔮 Sacred wisdom from ${post.author.username || post.author.email || 'a mystical soul'} on Ascended Social:\n\n"${post.content.substring(0, 100)}${post.content.length > 100 ? '...' : ''}"\n\nEmbark on this spiritual journey: ${postUrl} ✨`;
     
     if (navigator.share) {

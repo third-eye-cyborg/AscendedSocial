@@ -16,7 +16,7 @@ export default function Post() {
 
   const { data: post, isLoading, error } = useQuery({
     queryKey: ["/api/posts", postId],
-    enabled: !!postId,
+    enabled: !!postId && !!user,
   });
 
   if (!user) {

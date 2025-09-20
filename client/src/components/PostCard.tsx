@@ -158,9 +158,35 @@ export default function PostCard({ post }: PostCardProps) {
       }
     },
     onMutate: async (variables) => {
+      // Store previous states for rollback on error
+      const previousEngagements = [...userEngagements];
+      const previousLocalEngagements = localEngagements;
+      const previousLocalFrequency = localFrequency;
+
       // Optimistic frequency and engagement updates for immediate UI response
       const { type, remove, energyAmount = 10 } = variables;
       const wasEngaged = userEngagements.includes(type);
+      
+      // Update userEngagements array optimistically
+      if (wasEngaged && remove && type !== 'energy') {
+        // Remove engagement (but never remove energy)
+        setUserEngagements(prev => prev.filter(e => e !== type));
+      } else if (!wasEngaged && !remove) {
+        // Add new engagement with mutual exclusion for votes
+        setUserEngagements(prev => {
+          let newEngagements = [...prev];
+          
+          // Remove opposite vote for upvote/downvote mutual exclusion
+          if (type === 'upvote') {
+            newEngagements = newEngagements.filter(e => e !== 'downvote');
+          } else if (type === 'downvote') {
+            newEngagements = newEngagements.filter(e => e !== 'upvote');
+          }
+          
+          // Add the new engagement
+          return [...newEngagements, type];
+        });
+      }
       
       if (type === 'upvote' || type === 'downvote' || type === 'like') {
         setLocalEngagements(prev => {
@@ -169,7 +195,7 @@ export default function PostCard({ post }: PostCardProps) {
           if (type === 'upvote') {
             if (!wasEngaged && !remove) {
               newEngagements.upvote = prev.upvote + 1;
-              if (userEngagements.includes('downvote')) {
+              if (previousEngagements.includes('downvote')) {
                 newEngagements.downvote = Math.max(0, prev.downvote - 1);
               }
             } else if (wasEngaged && remove) {
@@ -178,7 +204,7 @@ export default function PostCard({ post }: PostCardProps) {
           } else if (type === 'downvote') {
             if (!wasEngaged && !remove) {
               newEngagements.downvote = prev.downvote + 1;
-              if (userEngagements.includes('upvote')) {
+              if (previousEngagements.includes('upvote')) {
                 newEngagements.upvote = Math.max(0, prev.upvote - 1);
               }
             } else if (wasEngaged && remove) {
@@ -203,10 +229,13 @@ export default function PostCard({ post }: PostCardProps) {
           return newEngagements;
         });
       }
+
+      // Return rollback data
+      return { previousEngagements, previousLocalEngagements, previousLocalFrequency };
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}`] }); // Also invalidate individual post query
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id] }); // Also invalidate individual post query
       queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id, "engage/user"] }); // Refresh user engagement data
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] }); // Refresh user energy
       if (energyPopoverOpen) setEnergyPopoverOpen(false);
@@ -219,7 +248,14 @@ export default function PostCard({ post }: PostCardProps) {
         }, 600);
       }
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      // Rollback optimistic updates on error
+      if (context) {
+        setUserEngagements(context.previousEngagements);
+        setLocalEngagements(context.previousLocalEngagements);
+        setLocalFrequency(context.previousLocalFrequency);
+      }
+
       toast({
         title: "Error",
         description: error.message,
@@ -261,7 +297,7 @@ export default function PostCard({ post }: PostCardProps) {
       
       queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id, "spiritual-mark/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/posts"] });
-      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}`] }); // Also invalidate individual post query
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", post.id] }); // Also invalidate individual post query
       
       toast({
         title: "Success",
@@ -294,6 +330,16 @@ export default function PostCard({ post }: PostCardProps) {
       toast({
         title: "⚡ Energy Transfer is Permanent",
         description: "Your spiritual energy has been permanently transferred to this post. This cannot be reversed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Prevent duplicate energy transfers while mutation is pending
+    if (type === 'energy' && engageMutation.isPending) {
+      toast({
+        title: "⚡ Energy Transfer in Progress",
+        description: "Please wait while your spiritual energy is being transferred.",
         variant: "destructive",
       });
       return;

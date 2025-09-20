@@ -15,7 +15,7 @@ export default function Post() {
   const [, setLocation] = useLocation();
 
   const { data: post, isLoading, error } = useQuery({
-    queryKey: [`/api/posts/${postId}`],
+    queryKey: ["/api/posts", postId],
     enabled: !!postId,
   });
 

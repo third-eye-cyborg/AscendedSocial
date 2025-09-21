@@ -40,10 +40,11 @@ export class NotificationService {
       return;
     }
 
-    // Validate OneSignal App ID is configured
+    // Validate OneSignal App ID is configured - make it optional
     if (!ONESIGNAL_APP_ID) {
-      console.error('❌ VITE_ONESIGNAL_APP_ID environment variable is required for OneSignal integration');
-      throw new Error('OneSignal App ID not configured');
+      console.warn('⚠️ VITE_ONESIGNAL_APP_ID environment variable not set. Push notifications will be disabled.');
+      this.initialized = true; // Mark as initialized but disabled
+      return;
     }
 
     try {

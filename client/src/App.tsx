@@ -105,8 +105,8 @@ const Router = React.memo(() => {
 
   // Initialize analytics, notifications, and privacy banner when user loads
   useEffect(() => {
-    // Initialize Enzuzo cookie banner integration
-    consentManager.initializeEnzuzo();
+    // Initialize Klaro cookie banner integration
+    consentManager.initializeKlaro();
 
     // Initialize push notifications
     NotificationService.initialize().catch(console.error);

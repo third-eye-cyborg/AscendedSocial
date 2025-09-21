@@ -127,6 +127,7 @@
     "input-otp": "^1.4.2",
     "ipaddr.js": "^2.2.0",
     "jsonwebtoken": "^9.0.2",
+    "klaro": "^0.7.21",
     "lucide-react": "^0.453.0",
     "memoizee": "^0.4.17",
     "memorystore": "^1.6.7",

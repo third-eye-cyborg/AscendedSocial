@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
-// Privacy consent management for PostHog integration with Enzuzo
+// Privacy consent management for PostHog integration with Klaro
 export interface ConsentPreferences {
   analytics: boolean;
   marketing: boolean;
-  preferences: boolean; // Enzuzo uses 'preferences' instead of 'functional'
+  functional: boolean; // Klaro uses 'functional' for enhanced features
   necessary: boolean;
 }
 
@@ -79,10 +79,10 @@ export class ConsentManager {
     return state?.preferences.marketing ?? false;
   }
 
-  // Check if preferences consent is given
-  hasPreferencesConsent(): boolean {
+  // Check if functional consent is given
+  hasFunctionalConsent(): boolean {
     const state = this.getConsentState();
-    return state?.preferences.preferences ?? false;
+    return state?.preferences.functional ?? false;
   }
 
   // Check if user has provided any consent
@@ -100,7 +100,7 @@ export class ConsentManager {
         preferences: {
           analytics: false,
           marketing: false,
-          preferences: false,
+          functional: false,
           necessary: true, // Always true for essential functionality
         },
         timestamp: new Date().toISOString(),
@@ -117,7 +117,7 @@ export class ConsentManager {
     this.setConsentPreferences({
       analytics: true,
       marketing: true,
-      preferences: true,
+      functional: true,
       necessary: true,
     });
   }
@@ -156,143 +156,246 @@ export class ConsentManager {
     });
   }
 
-  // Get consent data for Enzuzo integration
+  // Get consent data for Klaro integration (this method has been replaced by getKlaroCompatibleState)
+  // Keeping for backward compatibility
   getEnzuzoCompatibleState(): {
     analytics: boolean;
     marketing: boolean;
-    preferences: boolean;
+    functional: boolean;
     necessary: boolean;
     timestamp?: string;
   } {
-    const state = this.getConsentState();
-    if (!state) {
-      return {
-        analytics: false,
-        marketing: false,
-        preferences: false,
-        necessary: true,
-      };
-    }
-
-    return {
-      ...state.preferences,
-      timestamp: state.timestamp,
-    };
+    return this.getKlaroCompatibleState();
   }
 
-  // Update from Enzuzo banner
-  updateFromEnzuzo(enzuzoConsent: {
+  // Update from Klaro banner
+  updateFromKlaro(klaroConsent: {
     analytics?: boolean;
     marketing?: boolean;
-    preferences?: boolean;
+    functional?: boolean;
   }): void {
     this.setConsentPreferences({
-      analytics: enzuzoConsent.analytics ?? false,
-      marketing: enzuzoConsent.marketing ?? false,
-      preferences: enzuzoConsent.preferences ?? false,
+      analytics: klaroConsent.analytics ?? false,
+      marketing: klaroConsent.marketing ?? false,
+      functional: klaroConsent.functional ?? false,
       necessary: true,
     });
   }
 
-  // Initialize Enzuzo banner integration
-  initializeEnzuzo(): void {
+  // Initialize Klaro banner integration
+  initializeKlaro(): void {
     if (typeof window === 'undefined') return;
 
-    // Load Enzuzo script securely
-    this.loadEnzuzoScript();
+    // Set up Klaro configuration and load script
+    this.setupKlaroConfig();
+    this.loadKlaroScript();
   }
 
-  private loadEnzuzoScript(): void {
+  private setupKlaroConfig(): void {
+    // Define Klaro configuration
+    (window as any).klaroConfig = {
+      version: 1,
+      lang: 'en',
+      htmlTexts: true,
+      embedded: false,
+      groupByPurpose: true,
+      storageMethod: 'localStorage',
+      cookieName: 'ascended_klaro',
+      cookieExpiresAfterDays: 365,
+      default: false,
+      mustConsent: true,
+      acceptAll: true,
+      hideDeclineAll: false,
+      hideLearnMore: false,
+      noticeAsModal: true,
+      disablePoweredBy: false,
+      additionalClass: 'ascended-cmp',
+      
+      privacyPolicy: {
+        en: {
+          name: 'Privacy Policy',
+          text: 'Read our privacy policy to understand how we handle your data.',
+          url: '/privacy'
+        }
+      },
+      
+      apps: [
+        {
+          name: 'necessary',
+          title: {
+            en: 'Essential Cookies'
+          },
+          description: {
+            en: 'Essential cookies required for basic website functionality. These cannot be disabled.'
+          },
+          purposes: ['security', 'functionality'],
+          required: true,
+          optOut: false,
+          onlyOnce: true
+        },
+        {
+          name: 'analytics',
+          title: {
+            en: 'Analytics'
+          },
+          description: {
+            en: 'Analytics cookies help us understand how visitors interact with our website to improve user experience.'
+          },
+          purposes: ['analytics'],
+          required: false,
+          optOut: true,
+          default: false,
+          cookies: [
+            'ph_*', // PostHog analytics
+            '_ga', '_ga_*', '_gid', '_gat', // Google Analytics
+            'amplitude_*'
+          ]
+        },
+        {
+          name: 'marketing',
+          title: {
+            en: 'Marketing'
+          },
+          description: {
+            en: 'Marketing cookies track visitors across websites to deliver relevant advertisements.'
+          },
+          purposes: ['advertising'],
+          required: false,
+          optOut: true,
+          default: false,
+          cookies: [
+            'fbp', '_fbp', // Facebook Pixel
+            'gads', '_gads', // Google Ads
+            'linkedin_*' // LinkedIn tracking
+          ]
+        },
+        {
+          name: 'functional',
+          title: {
+            en: 'Functional'
+          },
+          description: {
+            en: 'Functional cookies enable enhanced features and personalization for a better user experience.'
+          },
+          purposes: ['personalization'],
+          required: false,
+          optOut: true,
+          default: false,
+          cookies: [
+            'theme', 'language', 'preferences', // User preferences
+            'ascended_*' // Our app preferences
+          ]
+        }
+      ],
+      
+      // Set up callbacks for consent changes
+      callback: (consent: any, app: any) => {
+        this.handleKlaroConsentChange(consent, app);
+      }
+    };
+  }
+
+  private loadKlaroScript(): void {
     // Check if script already exists
-    if (document.querySelector('script[src*="enzuzo-cookiebar"]')) {
+    if (document.querySelector('script[data-klaro]')) {
       return;
     }
 
     const script = document.createElement('script');
-    script.src = 'https://app.enzuzo.com/apps/enzuzo/static/js/__enzuzo-cookiebar.js?uuid=1bf8f8f8-a786-11ed-a83e-eb67933cb390';
-    script.async = true;
+    script.src = 'https://cdn.kiprotect.com/klaro/v0.7.21/klaro.js';
     script.defer = true;
+    script.setAttribute('data-klaro', 'true');
     
     // Add security measures
     script.crossOrigin = 'anonymous';
     
     // Set up error handling
     script.onerror = () => {
-      console.warn('Enzuzo cookie banner failed to load');
+      console.warn('Klaro cookie banner failed to load, falling back to basic consent');
+      this.setupFallbackConsent();
     };
 
     script.onload = () => {
-      console.log('✅ Enzuzo cookie banner loaded successfully');
-      this.setupEnzuzoIntegration();
+      console.log('✅ Klaro cookie banner loaded successfully');
+      this.setupKlaroIntegration();
     };
 
     document.head.appendChild(script);
   }
 
-  private setupEnzuzoIntegration(): void {
-    // Wait for Enzuzo to be available and set up bidirectional sync
-    const checkEnzuzo = () => {
-      if ((window as any).ezCookieSettings || (window as any).Enzuzo) {
-        this.setupEnzuzoBidirectionalSync();
+  private setupKlaroIntegration(): void {
+    // Wait for Klaro to be available and set up integration
+    const checkKlaro = () => {
+      if ((window as any).klaro) {
+        this.setupKlaroSync();
       } else {
-        setTimeout(checkEnzuzo, 100);
+        setTimeout(checkKlaro, 100);
       }
     };
-    checkEnzuzo();
+    checkKlaro();
   }
 
-  private setupEnzuzoBidirectionalSync(): void {
+  private setupKlaroSync(): void {
     if (typeof window === 'undefined') return;
 
-    // Set up Enzuzo consent callback
-    (window as any).enzuzoConsentCallback = (consent: any) => {
-      console.log('📝 Enzuzo consent updated:', consent);
-      this.updateFromEnzuzo({
-        analytics: consent.analytics || consent.statisticalCookies || consent.statistical || false,
-        marketing: consent.marketing || consent.marketingCookies || consent.advertising || false,
-        preferences: consent.preferences || consent.functionalCookies || consent.functional || false,
-      });
-    };
-
-    // Sync our internal consent to Enzuzo when our state changes
-    this.onConsentChange((state) => {
-      const enzuzoSettings = (window as any).ezCookieSettings || (window as any).Enzuzo;
-      if (enzuzoSettings && enzuzoSettings.updateConsent) {
-        enzuzoSettings.updateConsent({
-          analytics: state.preferences.analytics,
-          marketing: state.preferences.marketing,
-          preferences: state.preferences.preferences,
-          necessary: true,
-        });
-      }
-    });
-
-    // Sync initial state to Enzuzo
+    // Sync existing consent state to Klaro
     const currentState = this.getConsentState();
-    if (currentState) {
-      const enzuzoSettings = (window as any).ezCookieSettings || (window as any).Enzuzo;
-      if (enzuzoSettings && enzuzoSettings.updateConsent) {
-        enzuzoSettings.updateConsent({
+    if (currentState && (window as any).klaro) {
+      const klaroManager = (window as any).klaro.getManager();
+      if (klaroManager) {
+        klaroManager.updateConsent({
+          necessary: true,
           analytics: currentState.preferences.analytics,
           marketing: currentState.preferences.marketing,
-          functional: currentState.preferences.preferences,
-          necessary: true,
+          functional: currentState.preferences.functional,
         });
       }
     }
 
-    console.log('🔄 Enzuzo bidirectional sync setup complete');
+    console.log('🔄 Klaro sync setup complete');
     
     // Verify GDPR compliance
     this.verifyGDPRCompliance();
   }
 
+  private handleKlaroConsentChange(consent: any, app: any): void {
+    console.log('📝 Klaro consent updated:', consent, app);
+    
+    // Update our internal state based on Klaro consent
+    const klaroManager = (window as any).klaro?.getManager();
+    if (klaroManager) {
+      const currentConsent = klaroManager.consents || {};
+      this.updateFromKlaro({
+        analytics: currentConsent.analytics || false,
+        marketing: currentConsent.marketing || false,
+        functional: currentConsent.functional || false,
+      });
+    }
+  }
+
+  private setupFallbackConsent(): void {
+    // Create a basic consent banner if Klaro fails to load
+    console.log('Setting up fallback consent mechanism');
+    
+    // You could implement a simple banner here as fallback
+    // For now, we'll just ensure the basic functionality works
+    if (!this.hasUserConsented()) {
+      // Show a simple browser confirm dialog as last resort
+      const consent = confirm('This website uses cookies to improve your experience. Do you accept cookies?');
+      if (consent) {
+        this.acceptAll();
+      } else {
+        this.rejectAll();
+      }
+    }
+  }
+
   private verifyGDPRCompliance(): void {
     const hasRequiredFeatures = {
-      consentBanner: document.querySelector('script[src*="enzuzo-cookiebar"]') !== null,
+      consentBanner: document.querySelector('script[data-klaro]') !== null || (window as any).klaro !== undefined,
       privacySettings: typeof this.getConsentState === 'function',
       dataExportAPI: fetch('/api/privacy/status').then(r => r.ok).catch(() => false),
-      cookieCategories: Object.keys(this.getEnzuzoCompatibleState()).length === 4,
+      cookieCategories: Object.keys(this.getKlaroCompatibleState()).length === 4,
       optOutDefault: !this.hasAnalyticsConsent() // Should be false by default
     };
 
@@ -303,6 +406,25 @@ export class ConsentManager {
     } else {
       console.warn('⚠️ GDPR compliance issues detected');
     }
+  }
+
+  // Get consent state in Klaro-compatible format
+  getKlaroCompatibleState(): ConsentPreferences & { timestamp?: string } {
+    const state = this.getConsentState();
+    
+    if (!state) {
+      return {
+        necessary: true,
+        analytics: false,
+        marketing: false,
+        functional: false,
+      };
+    }
+
+    return {
+      ...state.preferences,
+      timestamp: state.timestamp,
+    };
   }
 }
 
@@ -325,7 +447,7 @@ export function useConsent() {
     hasConsented: consentManager.hasUserConsented(),
     hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
     hasMarketingConsent: consentManager.hasMarketingConsent(),
-    hasFunctionalConsent: consentManager.hasPreferencesConsent(),
+    hasFunctionalConsent: consentManager.hasFunctionalConsent(),
     acceptAll: () => consentManager.acceptAll(),
     rejectAll: () => consentManager.rejectAll(),
     setPreferences: (prefs: ConsentPreferences) => consentManager.setConsentPreferences(prefs),

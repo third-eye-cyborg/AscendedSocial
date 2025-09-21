@@ -11,6 +11,7 @@ import {
   decimal,
   pgEnum,
   unique,
+  AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -70,21 +71,18 @@ export const users = pgTable("users", {
   oracleNotifications: boolean("oracle_notifications").default(true),
   emailNotifications: boolean("email_notifications").default(false),
   
-  // Legacy payment fields (keeping for backward compatibility)
-  stripeCustomerId: varchar("stripe_customer_id"),
-  stripeSubscriptionId: varchar("stripe_subscription_id"),
   
   // User moderation fields
   role: userRoleEnum("role").default("user"),
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
   bannedAt: timestamp("banned_at"),
-  bannedBy: varchar("banned_by").references(() => users.id),
+  bannedBy: varchar("banned_by").references((): AnyPgColumn => users.id),
   banExpiresAt: timestamp("ban_expires_at"),
   isSuspended: boolean("is_suspended").default(false),
   suspensionReason: text("suspension_reason"),
   suspendedAt: timestamp("suspended_at"),
-  suspendedBy: varchar("suspended_by").references(() => users.id),
+  suspendedBy: varchar("suspended_by").references((): AnyPgColumn => users.id),
   suspensionExpiresAt: timestamp("suspension_expires_at"),
   warningCount: integer("warning_count").default(0),
   lastWarningAt: timestamp("last_warning_at"),
@@ -545,8 +543,7 @@ export const platformEnum = pgEnum("platform", [
   "web",
   "ios", 
   "android",
-  "stripe", // Legacy Stripe subscriptions
-  "paddle"  // New Paddle subscriptions
+  "paddle"  // Paddle subscriptions
 ]);
 
 // RevenueCat entitlements - central source of truth for premium features
@@ -617,7 +614,7 @@ export const webhookEvents = pgTable("webhook_events", {
 // Feature flags for dual-run migration
 export const featureFlags = pgTable("feature_flags", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: varchar("name").notNull().unique(), // stripe_dual_run, new_privacy_stack, etc
+  name: varchar("name").notNull().unique(), // new_privacy_stack, enhanced_analytics, etc
   enabled: boolean("enabled").default(false),
   percentage: integer("percentage").default(0), // Rollout percentage (0-100)
   userId: varchar("user_id").references(() => users.id), // User-specific flag
@@ -685,7 +682,7 @@ export type DSARStatus = "submitted" | "verified" | "processing" | "completed" |
 export type Entitlement = typeof entitlements.$inferSelect;
 export type InsertEntitlement = z.infer<typeof insertEntitlementSchema>;
 export type EntitlementStatus = "active" | "inactive" | "expired" | "cancelled" | "paused";
-export type Platform = "web" | "ios" | "android" | "stripe" | "paddle";
+export type Platform = "web" | "ios" | "android" | "paddle";
 
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type InsertWebhookEvent = z.infer<typeof insertWebhookEventSchema>;

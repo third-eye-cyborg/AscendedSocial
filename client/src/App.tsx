@@ -103,21 +103,42 @@ const Router = React.memo(() => {
     };
   }, [user]);
 
-  // Initialize analytics, notifications, and privacy banner when user loads
+  // Initialize privacy banner when app loads
   useEffect(() => {
     // Initialize Klaro cookie banner integration
     consentManager.initializeKlaro();
-
-    // Initialize push notifications
-    NotificationService.initialize().catch(console.error);
   }, []);
 
-  // Handle user analytics separately to avoid re-running on every render
+  // Initialize analytics and notifications only after consent is given
   useEffect(() => {
-    if (analyticsData) {
-      ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
-      NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
+    const unsubscribe = consentManager.onConsentChange((consentState) => {
+      if (consentState.hasConsented) {
+        // Initialize analytics if analytics consent is given
+        if (consentState.preferences.analytics && analyticsData) {
+          ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
+        }
+        
+        // Initialize push notifications if marketing consent is given
+        if (consentState.preferences.marketing && analyticsData) {
+          NotificationService.initialize().catch(console.error);
+          NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
+        }
+      }
+    });
+
+    // Check if consent already exists and initialize accordingly
+    const existingConsent = consentManager.getConsentState();
+    if (existingConsent?.hasConsented && analyticsData) {
+      if (existingConsent.preferences.analytics) {
+        ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
+      }
+      if (existingConsent.preferences.marketing) {
+        NotificationService.initialize().catch(console.error);
+        NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
+      }
     }
+
+    return unsubscribe;
   }, [analyticsData]);
 
   // Show loading state while checking authentication

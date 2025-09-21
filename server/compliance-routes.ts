@@ -2,13 +2,15 @@ import express from "express";
 import { isAuthenticated } from "./replitAuth";
 import { ComplianceScanner } from "./compliance-scanner";
 import { BrowserAutomationService } from "./browser-automation-service";
-import { browserlessService } from "./browserless-service";
+// Browserless service disabled - import commented out
+// import { browserlessService } from "./browserless-service";
 
 const router = express.Router();
 
 // Initialize services
 const complianceScanner = new ComplianceScanner();
-const browserAutomation = new BrowserAutomationService(browserlessService);
+// Browserless service disabled - automation service temporarily disabled
+// const browserAutomation = new BrowserAutomationService(browserlessService);
 
 // Privacy compliance scanning
 router.get('/privacy', isAuthenticated, async (req, res) => {
@@ -80,76 +82,31 @@ router.get('/report', isAuthenticated, async (req, res) => {
   });
 
 
-// Execute browser automation task
+// Execute browser automation task - DISABLED (browserless service removed)
 router.post('/automation/execute', isAuthenticated, async (req, res) => {
-    try {
-      const { instructions, url } = req.body;
-      
-      if (!instructions || !url) {
-        return res.status(400).json({
-          success: false,
-          error: 'Instructions and URL are required'
-        });
-      }
-
-      console.log(`🤖 Executing automation: ${instructions}`);
-      const results = await browserAutomation.executeAutomationTask(instructions, url);
-      
-      res.json({
-        success: results.success,
-        results,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error: any) {
-      console.error('Browser automation failed:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Browser automation failed',
-        details: error.message
-      });
-    }
+    res.status(503).json({
+      success: false,
+      error: 'Browser automation service temporarily disabled',
+      message: 'Browserless service has been removed and will be replaced with bytesbot os'
+    });
   });
 
-// Generate spiritual platform test suites
+// Generate spiritual platform test suites - DISABLED (browserless service removed)
 router.get('/automation/tests/spiritual', isAuthenticated, async (req, res) => {
-    try {
-      console.log('🕉️ Generating spiritual platform test suites...');
-      const testSuites = await browserAutomation.generateSpiritualTests();
-      
-      res.json({
-        success: true,
-        testSuites,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error: any) {
-      console.error('Test generation failed:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Test generation failed',
-        details: error.message
-      });
-    }
+    res.status(503).json({
+      success: false,
+      error: 'Browser automation service temporarily disabled',
+      message: 'Browserless service has been removed and will be replaced with bytesbot os'
+    });
   });
 
-// Monitor platform health with spiritual metrics
+// Monitor platform health with spiritual metrics - DISABLED (browserless service removed)
 router.get('/automation/monitor', isAuthenticated, async (req, res) => {
-    try {
-      console.log('📊 Monitoring spiritual platform health...');
-      const healthStatus = await browserAutomation.monitorPlatformHealth();
-      
-      res.json({
-        success: true,
-        monitoring: healthStatus,
-        timestamp: new Date().toISOString()
-      });
-    } catch (error: any) {
-      console.error('Platform monitoring failed:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Platform monitoring failed',
-        details: error.message
-      });
-    }
+    res.status(503).json({
+      success: false,
+      error: 'Browser automation service temporarily disabled',
+      message: 'Browserless service has been removed and will be replaced with bytesbot os'
+    });
   });
 
 // Run automated tests for specific features
@@ -183,7 +140,8 @@ router.post('/automation/test/:feature', isAuthenticated, async (req, res) => {
           });
       }
       
-      const results = await browserAutomation.executeAutomationTask(instructions, url);
+      // Browser automation disabled
+      const results = { success: false, error: 'Browser automation disabled' };
       
       res.json({
         success: results.success,

@@ -1,7 +1,8 @@
 import express, { Request, Response } from 'express';
 // Note: MCP routes should be protected with Zero Trust auth for enterprise security
 // For now using basic Express middleware, upgrade to Zero Trust when available
-import { MCPBrowserlessServer } from './mcp-browserless';
+// Browserless MCP server disabled - will be replaced with Bytebot
+// import { MCPBrowserlessServer } from './mcp-browserless';
 
 const router = express.Router();
 console.log('🤖 MCP routes registered');
@@ -9,7 +10,8 @@ console.log('🤖 MCP routes registered');
 // Initialize MCP server endpoint
 router.post('/init', async (req: Request, res: Response) => {
     try {
-      const mcpServer = new MCPBrowserlessServer();
+      // Browserless server disabled - will be replaced with Bytebot
+      // const mcpServer = new MCPBrowserlessServer();
       
       res.json({
         success: true,
@@ -104,7 +106,8 @@ router.post('/execute/:toolName', async (req: Request, res: Response) => {
       const { arguments: args } = req.body;
 
       // Create a temporary MCP server instance for tool execution
-      const mcpServer = new MCPBrowserlessServer();
+      // Browserless server disabled - will be replaced with Bytebot
+      // const mcpServer = new MCPBrowserlessServer();
       
       // Mock MCP tool call format
       const mockRequest = {

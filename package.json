@@ -85,6 +85,7 @@
     "@radix-ui/react-tooltip": "^1.2.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
+    "@revenuecat/purchases-js": "^1.14.0",
     "@storybook/addon-coverage": "^2.0.0",
     "@storybook/test-runner": "^0.23.0",
     "@stripe/react-stripe-js": "^3.9.2",

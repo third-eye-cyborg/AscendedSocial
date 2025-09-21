@@ -297,7 +297,6 @@ export class PrivacyManager {
         retention_period: '12 months or until consent withdrawn',
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
-          { service: 'Stripe', purpose: 'Payment processing and subscription management', dataTypes: ['billing', 'payment_methods', 'customer_profile'] },
           { service: 'OneSignal', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
           { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
           { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },

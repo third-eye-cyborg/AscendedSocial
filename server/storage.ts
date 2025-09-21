@@ -57,7 +57,6 @@ export interface IStorage {
   updateUserSigil(userId: string, sigil: string, sigilImageUrl?: string): Promise<User>;
   updateUserEnergy(userId: string, energy: number): Promise<User>;
   updateUserAura(userId: string, aura: number): Promise<User>;
-  updateUserStripeInfo(userId: string, customerId: string, subscriptionId?: string): Promise<User>;
   
   // User activity operations
   getUserLikedPosts(userId: string): Promise<PostWithAuthor[]>;
@@ -318,18 +317,6 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUserStripeInfo(userId: string, customerId: string, subscriptionId?: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ 
-        stripeCustomerId: customerId,
-        stripeSubscriptionId: subscriptionId,
-        updatedAt: new Date() 
-      })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
 
   // Post operations
   async createPost(post: InsertPost, authorId: string): Promise<Post> {

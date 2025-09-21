@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ChakraLegend } from '@/components/ChakraLegend';
+import ChakraLegend from '@/components/ChakraLegend';
 
 const meta = {
   title: 'Spiritual/ChakraLegend',
@@ -31,5 +31,5 @@ export const WithDescription: Story = {
       </p>
       <ChakraLegend {...args} />
     </div>
-  ),
+  )
 };

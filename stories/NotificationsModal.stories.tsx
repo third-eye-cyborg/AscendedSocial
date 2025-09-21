@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { NotificationsModal } from '@/components/NotificationsModal';
+import NotificationsModal from '@/components/NotificationsModal';
 import { Button } from '@/components/ui/button';
 
 const meta = {

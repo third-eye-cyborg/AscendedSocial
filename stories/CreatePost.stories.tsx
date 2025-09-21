@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { CreatePost } from '@/components/CreatePost';
+import CreatePost from '@/components/CreatePost';
 
 const meta = {
   title: 'Complex/CreatePost',
@@ -24,5 +24,5 @@ export const WithPlaceholder: Story = {
         Your post will be automatically analyzed and categorized by its spiritual frequency and chakra alignment.
       </p>
     </div>
-  ),
+  )
 };

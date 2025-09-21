@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { OracleSidebar } from '@/components/OracleSidebar';
+import OracleSidebar from '@/components/OracleSidebar';
 
 const meta = {
   title: 'Complex/OracleSidebar',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { StarmapVisualizer } from '@/components/StarmapVisualizer';
+import StarmapVisualizer from '@/components/StarmapVisualizer';
 
 const meta = {
   title: 'Complex/StarmapVisualizer',

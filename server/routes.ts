@@ -47,7 +47,6 @@ import { registerCommunitiesRoutes } from "./communitiesApi";
 import { turnstileService } from "./turnstileService";
 import { AnalyticsService, analyticsMiddleware } from "./analytics";
 import { ServerNotificationService } from "./notificationService";
-import Stripe from "stripe";
 import { emailService } from "./emailService";
 import { cloudflareImages } from "./cloudflareImages";
 import { setupRouteSegregation, routeInfoEndpoint, AuthType, getRequiredAuthType } from "./routeSegregation";
@@ -60,14 +59,7 @@ import {
 import { bypassAuthForTesting } from "./auth-bypass";
 import webhookRouter from "./webhooks";
 
-// Stripe setup
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn('STRIPE_SECRET_KEY not found, subscription features will be disabled');
-}
-
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-08-27.basil",
-}) : null;
+// Payment processing handled by RevenueCat + Paddle integration
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
@@ -1593,65 +1585,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe subscription routes
-  if (stripe) {
-    app.post('/api/get-or-create-subscription', isAuthenticated, async (req: any, res) => {
-      const userId = req.user.id;
-      let user = await storage.getUser(userId);
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
-
-        res.send({
-          subscriptionId: subscription.id,
-          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
-        });
-
-        return;
-      }
-
-      if (!user.email) {
-        return res.status(400).json({ error: 'No user email on file' });
-      }
-
-      try {
-        const customer = await stripe.customers.create({
-          email: user.email,
-          name: user.username || `${user.firstName} ${user.lastName}` || user.email,
-        });
-
-        user = await storage.updateUserStripeInfo(user.id, customer.id);
-
-        // You'll need to set STRIPE_PRICE_ID environment variable
-        const priceId = process.env.STRIPE_PRICE_ID;
-        if (!priceId) {
-          return res.status(500).json({ error: 'Stripe price ID not configured' });
-        }
-
-        const subscription = await stripe.subscriptions.create({
-          customer: customer.id,
-          items: [{
-            price: priceId,
-          }],
-          payment_behavior: 'default_incomplete',
-          expand: ['latest_invoice.payment_intent'],
-        });
-
-        await storage.updateUserStripeInfo(user.id, customer.id, subscription.id);
-
-        res.send({
-          subscriptionId: subscription.id,
-          clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
-        });
-      } catch (error: any) {
-        return res.status(400).send({ error: { message: error.message } });
-      }
-    });
-  }
+  // Payment processing handled by RevenueCat + Paddle integration
+  // See documentation for RevenueCat and Paddle setup instructions
 
   // Starmap endpoints
   app.get('/api/starmap/users', isAuthenticated, async (req: any, res) => {
@@ -2536,7 +2471,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
-          { service: 'Stripe', purpose: 'Payment processing and subscription management', dataTypes: ['billing', 'payment_methods', 'customer_profile'] },
+          { service: 'RevenueCat', purpose: 'Cross-platform subscription management', dataTypes: ['subscription_status', 'customer_profile'] },
+          { service: 'Paddle', purpose: 'Web payment processing and checkout', dataTypes: ['billing', 'payment_methods'] },
           { service: 'OneSignal', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
           { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
           { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },

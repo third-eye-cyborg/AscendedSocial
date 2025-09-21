@@ -13,7 +13,6 @@
     "port": 3000,
     "env": {
       "NODE_ENV": "development",
-      "VITE_STRIPE_PUBLIC_KEY": "${VITE_STRIPE_PUBLIC_KEY}",
       "VITE_TURNSTILE_SITE_KEY": "${VITE_TURNSTILE_SITE_KEY}"
     }
   },
@@ -36,8 +35,6 @@
       "PGPORT": "${PGPORT}",
       "PGUSER": "${PGUSER}",
       "PGPASSWORD": "${PGPASSWORD}",
-      "STRIPE_SECRET_KEY": "${STRIPE_SECRET_KEY}",
-      "STRIPE_PRICE_ID": "${STRIPE_PRICE_ID}",
       "OPENAI_API_KEY": "${OPENAI_API_KEY}",
       "NOTION_INTEGRATION_SECRET": "${NOTION_INTEGRATION_SECRET}",
       "NOTION_PAGE_URL": "${NOTION_PAGE_URL}",
@@ -151,12 +148,6 @@
     }
   },
   "integrations": {
-    "stripe": {
-      "enabled": true,
-      "secretKey": "${STRIPE_SECRET_KEY}",
-      "publicKey": "${VITE_STRIPE_PUBLIC_KEY}",
-      "priceId": "${STRIPE_PRICE_ID}"
-    },
     "notion": {
       "enabled": true,
       "integrationSecret": "${NOTION_INTEGRATION_SECRET}",

@@ -1,139 +1,67 @@
-import { useStripe, Elements, PaymentElement, useElements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useState } from 'react';
-import { apiRequest } from "@/lib/queryClient";
+import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Make sure to call `loadStripe` outside of a component's render to avoid
-// recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  console.warn('Missing Stripe public key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY ? 
-  loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY) : null;
-
-const SubscribeForm = () => {
-  const stripe = useStripe();
-  const elements = useElements();
+const SubscribeForm = ({ plan, price, features }: { plan: string; price: string; features: string[] }) => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: window.location.origin,
-      },
-    });
-
-    if (error) {
+  const handlePaddleCheckout = async () => {
+    setIsLoading(true);
+    try {
+      // TODO: Implement Paddle checkout integration
+      // This will redirect to Paddle's hosted checkout page
       toast({
-        title: "Payment Failed",
-        description: error.message,
+        title: "Redirecting to Checkout",
+        description: "You'll be redirected to our secure payment page...",
+      });
+      
+      // Placeholder for Paddle checkout URL
+      console.log(`Starting ${plan} subscription checkout with Paddle`);
+      
+    } catch (error) {
+      toast({
+        title: "Checkout Error",
+        description: "Failed to start checkout process. Please try again.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Payment Successful",
-        description: "Welcome to Ascended Social Premium!",
-      });
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto bg-cosmic-light border-primary/30">
       <CardHeader>
-        <CardTitle className="text-accent-light text-center">Complete Your Ascension</CardTitle>
+        <CardTitle className="text-accent-light text-center">{plan} Plan</CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <PaymentElement />
-          <Button 
-            type="submit" 
-            disabled={!stripe}
-            className="w-full bg-primary text-white hover:bg-primary/90 font-semibold"
-            data-testid="button-subscribe"
-          >
-            Subscribe to Premium
-          </Button>
-        </form>
+      <CardContent className="text-center">
+        <div className="text-3xl font-bold text-primary mb-4">{price}</div>
+        <div className="space-y-2 mb-6">
+          {features.map((feature, index) => (
+            <div key={index} className="flex items-center text-sm text-muted-foreground">
+              <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center mr-2">
+                <i className="fas fa-check text-cosmic text-xs"></i>
+              </div>
+              {feature}
+            </div>
+          ))}
+        </div>
+        <Button 
+          onClick={handlePaddleCheckout}
+          disabled={isLoading}
+          className="w-full bg-primary hover:bg-accent transition-colors"
+          data-testid={`button-subscribe-${plan.toLowerCase()}`}
+        >
+          {isLoading ? 'Loading...' : `Choose ${plan}`}
+        </Button>
       </CardContent>
     </Card>
   );
 };
 
 export default function Subscribe() {
-  const [clientSecret, setClientSecret] = useState("");
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    // Create subscription as soon as the page loads
-    apiRequest("POST", "/api/get-or-create-subscription")
-      .then((res) => res.json())
-      .then((data) => {
-        setClientSecret(data.clientSecret);
-      })
-      .catch((error) => {
-        console.error("Error creating subscription:", error);
-        setError("Failed to initialize payment. Please try again.");
-      });
-  }, []);
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-cosmic text-white flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-cosmic-light border-destructive/50">
-          <CardContent className="p-6 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-destructive/20 rounded-full flex items-center justify-center">
-              <i className="fas fa-exclamation-triangle text-destructive text-2xl"></i>
-            </div>
-            <h2 className="text-xl font-semibold mb-2 text-white">Payment Error</h2>
-            <p className="text-muted mb-4">{error}</p>
-            <Button 
-              onClick={() => window.location.href = '/'}
-              variant="outline"
-              className="border-primary text-primary hover:bg-primary/10"
-              data-testid="button-home"
-            >
-              Return Home
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!clientSecret) {
-    return (
-      <div className="min-h-screen bg-cosmic text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 mx-auto mb-4 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-muted">Preparing your ascension...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!stripePromise) {
-    return (
-      <div className="min-h-screen bg-cosmic text-white flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-cosmic-light border-destructive/50">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-semibold mb-2">Payment Unavailable</h2>
-            <p className="text-muted">Payment processing is not available at this time.</p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-cosmic text-white">
       {/* Header */}
@@ -172,9 +100,36 @@ export default function Subscribe() {
           </p>
         </div>
 
+        {/* Subscription Plans */}
         <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6 text-accent-light">Premium Features</h2>
+          <SubscribeForm 
+            plan="Mystic"
+            price="$9.99/month"
+            features={[
+              "Unlimited energy allocation",
+              "Enhanced oracle readings", 
+              "Custom sigil generation",
+              "Priority community support"
+            ]}
+          />
+          
+          <SubscribeForm 
+            plan="Enlightened"
+            price="$19.99/month"
+            features={[
+              "All Mystic features",
+              "Live streaming capabilities",
+              "Premium content creation tools",
+              "Advanced starmap features",
+              "Personal spiritual advisor"
+            ]}
+          />
+        </div>
+
+        {/* Premium Features Detail */}
+        <div className="bg-cosmic-light rounded-xl p-6 border border-primary/30 mb-8">
+          <h2 className="text-2xl font-semibold mb-6 text-accent-light text-center">Premium Features</h2>
+          <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -205,7 +160,9 @@ export default function Subscribe() {
                   <p className="text-muted text-sm">Create unlimited unique mystical sigils</p>
                 </div>
               </div>
-
+            </div>
+            
+            <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                   <i className="fas fa-check text-cosmic text-sm"></i>
@@ -225,21 +182,23 @@ export default function Subscribe() {
                   <p className="text-muted text-sm">Host live spiritual sessions and workshops</p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-center">
-            <Elements stripe={stripePromise} options={{ clientSecret }}>
-              <SubscribeForm />
-            </Elements>
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i className="fas fa-check text-cosmic text-sm"></i>
+                </div>
+                <div>
+                  <h3 className="font-semibold text-white">Advanced Analytics</h3>
+                  <p className="text-muted text-sm">Track your spiritual growth journey</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Pricing */}
-        <div className="text-center bg-cosmic-light rounded-xl p-6 border border-primary/30">
-          <div className="text-3xl font-bold text-accent-light mb-2">$9.99/month</div>
-          <p className="text-muted">Cancel anytime • Start your 7-day free trial</p>
-          <div className="mt-4 text-sm">
+        {/* Legal */}
+        <div className="text-center">
+          <div className="text-sm">
             <span className="text-muted">By subscribing, you agree to our </span>
             <a href="/payment-terms" className="text-primary hover:text-primary/80 underline" data-testid="link-payment-terms">
               Payment Terms
@@ -248,6 +207,7 @@ export default function Subscribe() {
             <a href="/terms-of-service" className="text-primary hover:text-primary/80 underline" data-testid="link-terms">
               Terms of Service
             </a>
+            <span className="text-muted">. Subscriptions managed by RevenueCat and processed securely by Paddle.</span>
           </div>
         </div>
       </div>

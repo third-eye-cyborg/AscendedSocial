@@ -5,14 +5,28 @@ let posthogServer: PostHog | null = null;
 
 if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
   try {
-    posthogServer = new PostHog(process.env.POSTHOG_API_KEY, {
-      host: process.env.POSTHOG_HOST,
-      flushAt: 20,
-      flushInterval: 30000,
-      // Disable geo-location in development to prevent issues
-      disableGeoip: process.env.NODE_ENV === 'development',
-    });
-    console.log('✅ PostHog server analytics initialized');
+    // Validate that the API key is not a placeholder
+    if (process.env.POSTHOG_API_KEY === 'personal_api_key' || process.env.POSTHOG_API_KEY.length < 10) {
+      console.warn('⚠️ PostHog API key appears to be invalid or placeholder - analytics disabled');
+      posthogServer = null;
+    } else {
+      posthogServer = new PostHog(process.env.POSTHOG_API_KEY, {
+        host: process.env.POSTHOG_HOST,
+        flushAt: 20,
+        flushInterval: 30000,
+        // Disable geo-location in development to prevent issues
+        disableGeoip: process.env.NODE_ENV === 'development',
+        // Add error handling for auth issues
+        errorHandler: (error: any) => {
+          // Only log auth errors once in development
+          if (error.response?.status === 401 && process.env.NODE_ENV === 'development') {
+            console.warn('⚠️ PostHog authentication failed - disabling analytics');
+            posthogServer = null;
+          }
+        },
+      });
+      console.log('✅ PostHog server analytics initialized');
+    }
   } catch (error) {
     console.warn('⚠️ PostHog initialization failed:', error);
     posthogServer = null;
@@ -55,8 +69,15 @@ export class AnalyticsService {
         groups: event.groups,
       });
     } catch (error: any) {
-      // Don't spam logs with auth errors in development
-      if (process.env.NODE_ENV !== 'development' || !error.message?.includes('401')) {
+      // Handle auth errors by disabling PostHog
+      if (error.response?.status === 401 || error.message?.includes('401')) {
+        console.warn('⚠️ PostHog authentication failed - disabling server analytics');
+        posthogServer = null;
+        return;
+      }
+      
+      // Don't spam logs with other errors in development
+      if (process.env.NODE_ENV !== 'development') {
         console.error('Analytics tracking error:', error);
       }
     }
@@ -74,8 +95,18 @@ export class AnalyticsService {
         distinctId: profile.distinctId,
         properties: profile.properties,
       });
-    } catch (error) {
-      console.error('Analytics identification error:', error);
+    } catch (error: any) {
+      // Handle auth errors by disabling PostHog
+      if (error.response?.status === 401 || error.message?.includes('401')) {
+        console.warn('⚠️ PostHog authentication failed - disabling server analytics');
+        posthogServer = null;
+        return;
+      }
+      
+      // Don't spam logs with other errors in development
+      if (process.env.NODE_ENV !== 'development') {
+        console.error('Analytics identification error:', error);
+      }
     }
   }
 

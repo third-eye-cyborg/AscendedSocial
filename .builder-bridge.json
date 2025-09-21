@@ -1,5 +1,5 @@
 {
-  "apiKey": "bpk-c2cca3a124a349d6a8b733e8b7ce5637",
+  "apiKey": "${BUILDER_API_KEY}",
   "localUrl": "http://localhost:5000",
   "previewUrl": "http://localhost:3001",
   "models": [

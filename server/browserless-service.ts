@@ -108,13 +108,10 @@ class BrowserlessService {
         this.playwrightBrowser = await chromium.connectOverCDP(this.getWebSocketUrl());
         console.log('✅ Playwright browser connected');
       } catch (error: any) {
-        // Security: Redact sensitive info before logging
-        const sanitizedError = { ...error };
-        if (error.message) {
-          sanitizedError.message = error.message.replace(/token=[^&\s]+/g, 'token=***');
-        }
-        console.error('❌ Playwright connection failed:', sanitizedError);
-        throw new Error(`Failed to connect Playwright browser: ${error.message}`);
+        // Security: Redact sensitive info before logging and rethrowing
+        const sanitizedMessage = error.message ? error.message.replace(/token=[^&\s]+/g, 'token=***') : 'Unknown error';
+        console.error('❌ Playwright connection failed:', { ...error, message: sanitizedMessage });
+        throw new Error(`Failed to connect Playwright browser: ${sanitizedMessage}`);
       }
     }
     return this.playwrightBrowser;
@@ -138,12 +135,14 @@ class BrowserlessService {
         });
         console.log('✅ Puppeteer browser connected');
       } catch (error: any) {
-        console.error('❌ Puppeteer connection failed:', error);
+        // Security: Redact sensitive info before logging and rethrowing
+        const sanitizedMessage = error.message ? error.message.replace(/token=[^&\s]+/g, 'token=***') : 'Unknown error';
+        console.error('❌ Puppeteer connection failed:', { ...error, message: sanitizedMessage });
         // Handle rate limiting gracefully
         if (error.message && (error.message.includes('429') || error.message.includes('rate'))) {
           throw new Error('Rate limit exceeded. Please try again in a moment.');
         }
-        throw new Error(`Failed to connect Puppeteer browser: ${error.message || 'Unknown error'}`);
+        throw new Error(`Failed to connect Puppeteer browser: ${sanitizedMessage}`);
       }
     }
     return this.puppeteerBrowser;

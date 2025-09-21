@@ -37,63 +37,87 @@ class ServiceMonitor {
 
     const services: ServiceHealth[] = [];
 
-    // Check Browserless service
-    try {
-      const browserlessStart = Date.now();
-      const browserlessHealth = await browserlessService.healthCheck();
+    // Check Browserless service (skip in development if no token)
+    if (process.env.BROWSERLESS_TOKEN || process.env.NODE_ENV !== 'development') {
+      try {
+        const browserlessStart = Date.now();
+        const browserlessHealth = await browserlessService.healthCheck();
+        services.push({
+          name: 'browserless',
+          status: browserlessHealth.status as any,
+          lastCheck: new Date().toISOString(),
+          responseTime: Date.now() - browserlessStart,
+          details: browserlessHealth
+        });
+      } catch (error: any) {
+        // Check if it's a usage limit error (treat as degraded, not unhealthy)
+        const isUsageLimitError = error.message?.includes('usage limit') || 
+                                  error.message?.includes('401 Unauthorized') ||
+                                  error.message?.includes('upgrade to a paid plan');
+        
+        services.push({
+          name: 'browserless',
+          status: isUsageLimitError ? 'degraded' : 'unhealthy',
+          lastCheck: new Date().toISOString(),
+          responseTime: Date.now() - startTime,
+          details: { 
+            error: error.message,
+            isUsageLimitError,
+            note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+          }
+        });
+      }
+    } else {
       services.push({
         name: 'browserless',
-        status: browserlessHealth.status as any,
+        status: 'degraded',
         lastCheck: new Date().toISOString(),
-        responseTime: Date.now() - browserlessStart,
-        details: browserlessHealth
-      });
-    } catch (error: any) {
-      // Check if it's a usage limit error (treat as degraded, not unhealthy)
-      const isUsageLimitError = error.message?.includes('usage limit') || 
-                                error.message?.includes('401 Unauthorized') ||
-                                error.message?.includes('upgrade to a paid plan');
-      
-      services.push({
-        name: 'browserless',
-        status: isUsageLimitError ? 'degraded' : 'unhealthy',
-        lastCheck: new Date().toISOString(),
-        responseTime: Date.now() - startTime,
+        responseTime: 0,
         details: { 
-          error: error.message,
-          isUsageLimitError,
-          note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+          note: 'Browserless health checks disabled in development (no token configured)'
         }
       });
     }
 
-    // Check Browserless Auth service
-    try {
-      const authStart = Date.now();
-      const authService = new BrowserlessAuthService();
-      const authHealth = await authService.healthCheck();
+    // Check Browserless Auth service (skip in development if no token)
+    if (process.env.BROWSERLESS_TOKEN || process.env.NODE_ENV !== 'development') {
+      try {
+        const authStart = Date.now();
+        const authService = new BrowserlessAuthService();
+        const authHealth = await authService.healthCheck();
+        services.push({
+          name: 'browserless-auth',
+          status: authHealth.status as any,
+          lastCheck: new Date().toISOString(),
+          responseTime: Date.now() - authStart,
+          details: authHealth
+        });
+      } catch (error: any) {
+        // Check if it's a usage limit error (treat as degraded, not unhealthy)
+        const isUsageLimitError = error.message?.includes('usage limit') || 
+                                  error.message?.includes('401 Unauthorized') ||
+                                  error.message?.includes('upgrade to a paid plan');
+        
+        services.push({
+          name: 'browserless-auth',
+          status: isUsageLimitError ? 'degraded' : 'unhealthy',
+          lastCheck: new Date().toISOString(),
+          responseTime: Date.now() - startTime,
+          details: { 
+            error: error.message,
+            isUsageLimitError,
+            note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+          }
+        });
+      }
+    } else {
       services.push({
         name: 'browserless-auth',
-        status: authHealth.status as any,
+        status: 'degraded',
         lastCheck: new Date().toISOString(),
-        responseTime: Date.now() - authStart,
-        details: authHealth
-      });
-    } catch (error: any) {
-      // Check if it's a usage limit error (treat as degraded, not unhealthy)
-      const isUsageLimitError = error.message?.includes('usage limit') || 
-                                error.message?.includes('401 Unauthorized') ||
-                                error.message?.includes('upgrade to a paid plan');
-      
-      services.push({
-        name: 'browserless-auth',
-        status: isUsageLimitError ? 'degraded' : 'unhealthy',
-        lastCheck: new Date().toISOString(),
-        responseTime: Date.now() - startTime,
+        responseTime: 0,
         details: { 
-          error: error.message,
-          isUsageLimitError,
-          note: isUsageLimitError ? 'Service degraded due to usage limits' : undefined
+          note: 'Browserless auth health checks disabled in development (no token configured)'
         }
       });
     }

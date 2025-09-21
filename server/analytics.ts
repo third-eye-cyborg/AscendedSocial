@@ -4,12 +4,19 @@ import { PostHog } from 'posthog-node';
 let posthogServer: PostHog | null = null;
 
 if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
-  posthogServer = new PostHog(process.env.POSTHOG_API_KEY, {
-    host: process.env.POSTHOG_HOST,
-    flushAt: 20,
-    flushInterval: 30000,
-  });
-  console.log('✅ PostHog server analytics initialized');
+  try {
+    posthogServer = new PostHog(process.env.POSTHOG_API_KEY, {
+      host: process.env.POSTHOG_HOST,
+      flushAt: 20,
+      flushInterval: 30000,
+      // Disable geo-location in development to prevent issues
+      disableGeoip: process.env.NODE_ENV === 'development',
+    });
+    console.log('✅ PostHog server analytics initialized');
+  } catch (error) {
+    console.warn('⚠️ PostHog initialization failed:', error);
+    posthogServer = null;
+  }
 } else {
   console.warn('⚠️ PostHog not configured - analytics disabled');
 }
@@ -30,7 +37,9 @@ export class AnalyticsService {
   // Track events on the server side
   static async track(event: AnalyticsEvent): Promise<void> {
     if (!posthogServer) {
-      console.log('📊 Analytics event (offline):', event.event);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('📊 Analytics event (offline):', event.event);
+      }
       return;
     }
 
@@ -45,8 +54,11 @@ export class AnalyticsService {
         },
         groups: event.groups,
       });
-    } catch (error) {
-      console.error('Analytics tracking error:', error);
+    } catch (error: any) {
+      // Don't spam logs with auth errors in development
+      if (process.env.NODE_ENV !== 'development' || !error.message?.includes('401')) {
+        console.error('Analytics tracking error:', error);
+      }
     }
   }
 

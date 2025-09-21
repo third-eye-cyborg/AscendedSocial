@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
 
 interface ConsentPreferences {
   analytics: boolean;
@@ -45,10 +44,11 @@ export default function PrivacyManagement() {
   // Submit consent preferences
   const consentMutation = useMutation({
     mutationFn: (preferences: Partial<ConsentPreferences>) =>
-      apiRequest('/api/privacy/consent', {
+      fetch('/api/privacy/consent', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ purposes: preferences })
-      }),
+      }).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: "Consent Updated",
@@ -67,10 +67,11 @@ export default function PrivacyManagement() {
   // Submit DSAR
   const dsarMutation = useMutation({
     mutationFn: (request: DataSubjectRequest) =>
-      apiRequest('/api/privacy/dsar', {
+      fetch('/api/privacy/dsar', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(request)
-      }),
+      }).then(res => res.json()),
     onSuccess: (data: any) => {
       toast({
         title: "Request Submitted",
@@ -95,10 +96,11 @@ export default function PrivacyManagement() {
   // Submit Do Not Sell request
   const doNotSellMutation = useMutation({
     mutationFn: (email: string) =>
-      apiRequest('/api/privacy/do-not-sell', {
+      fetch('/api/privacy/do-not-sell', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
-      }),
+      }).then(res => res.json()),
     onSuccess: () => {
       toast({
         title: "Request Processed",

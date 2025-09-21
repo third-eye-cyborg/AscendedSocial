@@ -8,11 +8,27 @@ export default function DoNotSell() {
     reason: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log('CCPA request submitted:', formData);
-    setFormSubmitted(true);
+    
+    try {
+      const response = await fetch('/api/privacy/do-not-sell', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      if (response.ok) {
+        setFormSubmitted(true);
+      } else {
+        throw new Error('Failed to submit CCPA request');
+      }
+    } catch (error) {
+      // Show error notification instead of console logging
+      alert('There was an error submitting your request. Please try again or contact support at privacy@ascended.social');
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -99,40 +115,9 @@ export default function DoNotSell() {
                       placeholder="your.email@example.com"
                       data-testid="input-email"
                     />
-                  </div>
-
-                  <div>
-                    <label htmlFor="requestType" className="block text-sm font-medium text-white/90 mb-2">
-                      Request Type *
-                    </label>
-                    <select
-                      id="requestType"
-                      name="requestType"
-                      value={formData.requestType}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 bg-cosmic/50 border border-primary/30 rounded-xl text-white focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
-                      data-testid="select-request-type"
-                    >
-                      <option value="opt-out">Do Not Sell My Personal Information</option>
-                      <option value="delete">Delete My Personal Information</option>
-                      <option value="access">Access My Personal Information</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="reason" className="block text-sm font-medium text-white/90 mb-2">
-                      Additional Details (Optional)
-                    </label>
-                    <textarea
-                      id="reason"
-                      name="reason"
-                      value={formData.reason}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className="w-full px-4 py-3 bg-cosmic/50 border border-primary/30 rounded-xl text-white placeholder-white/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none resize-none"
-                      placeholder="Please provide any additional details about your request..."
-                      data-testid="textarea-reason"
-                    />
+                    <p className="text-white/60 text-sm mt-2">
+                      Enter the email address associated with your account to opt-out of personal information sales under CCPA.
+                    </p>
                   </div>
                 </div>
 

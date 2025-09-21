@@ -259,28 +259,49 @@ export class EmailService {
 
   private async sendOneSignalEmail(data: { email: string; subject: string; html: string }): Promise<void> {
     if (!oneSignalApiKey || !oneSignalAppId) {
-      throw new Error('OneSignal not configured');
+      throw new Error('OneSignal not configured - missing API key or App ID');
     }
 
-    const response = await fetch('https://onesignal.com/api/v1/notifications', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${oneSignalApiKey}`,
-      },
-      body: JSON.stringify({
-        app_id: oneSignalAppId,
-        email_subject: data.subject,
-        email_body: data.html,
-        include_email_tokens: [data.email],
-        email_from_name: 'Ascended Social',
-        email_from_address: 'noreply@ascended.social',
-      }),
-    });
+    const payload = {
+      app_id: oneSignalAppId,
+      email_subject: data.subject,
+      email_body: data.html,
+      include_email_tokens: [data.email],
+      email_from_name: 'Ascended Social',
+      email_from_address: 'noreply@ascended.social',
+    };
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`OneSignal email failed: ${response.status} ${errorText}`);
+    console.log(`📧 Sending OneSignal email to ${data.email} with subject: ${data.subject}`);
+
+    try {
+      const response = await fetch('https://onesignal.com/api/v1/notifications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${oneSignalApiKey}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const responseText = await response.text();
+      
+      if (!response.ok) {
+        console.error(`❌ OneSignal email API error: ${response.status}`, responseText);
+        throw new Error(`OneSignal email failed: ${response.status} - ${responseText}`);
+      }
+
+      // Parse successful response
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        responseData = responseText;
+      }
+
+      console.log(`✅ OneSignal email sent successfully:`, responseData);
+    } catch (error) {
+      console.error(`❌ Failed to send OneSignal email to ${data.email}:`, error);
+      throw error;
     }
   }
 

@@ -1,6 +1,6 @@
 import { ClientAnalytics } from './analytics';
 
-const ONESIGNAL_APP_ID = import.meta.env.VITE_ONESIGNAL_APP_ID || '8252cea5-144a-4c8d-b2d4-ca5c606f6ce0';
+const ONESIGNAL_APP_ID = import.meta.env.VITE_ONESIGNAL_APP_ID;
 
 // Global OneSignal types
 declare global {
@@ -40,20 +40,33 @@ export class NotificationService {
       return;
     }
 
+    // Validate OneSignal App ID is configured
+    if (!ONESIGNAL_APP_ID) {
+      console.error('❌ VITE_ONESIGNAL_APP_ID environment variable is required for OneSignal integration');
+      throw new Error('OneSignal App ID not configured');
+    }
+
     try {
       // Load OneSignal script dynamically
       await this.loadOneSignalScript();
       
-      // Initialize with deferred pattern
-      window.OneSignalDeferred = window.OneSignalDeferred || [];
-      window.OneSignalDeferred.push(async (OneSignal: any) => {
-        await OneSignal.init({
-          appId: ONESIGNAL_APP_ID,
-          allowLocalhostAsSecureOrigin: true,
+      // Initialize with deferred pattern and wait for completion
+      await new Promise<void>((resolve, reject) => {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async (OneSignal: any) => {
+          try {
+            await OneSignal.init({
+              appId: ONESIGNAL_APP_ID,
+              allowLocalhostAsSecureOrigin: true,
+            });
+            
+            // Set up event listeners
+            this.setupEventListeners();
+            resolve();
+          } catch (error) {
+            reject(error);
+          }
         });
-        
-        // Set up event listeners
-        this.setupEventListeners();
       });
 
       this.initialized = true;
@@ -72,6 +85,7 @@ export class NotificationService {
         context: 'onesignal_init',
         app_id: ONESIGNAL_APP_ID
       });
+      throw error;
     }
   }
 
@@ -128,17 +142,50 @@ export class NotificationService {
     try {
       if (!this.isSupported()) return false;
 
-      // Use native Notification API for permission
-      const permission = await Notification.requestPermission();
-      const granted = permission === 'granted';
-      
-      ClientAnalytics.trackAction('push_permission_requested', 'spiritual', {
-        granted,
-        spiritual_context: spiritualContext || 'general',
-        permission_result: permission
-      });
+      // Use OneSignal API for proper subscription creation
+      return new Promise((resolve) => {
+        if (typeof window !== 'undefined' && window.OneSignal) {
+          window.OneSignalDeferred = window.OneSignalDeferred || [];
+          window.OneSignalDeferred.push(async (OneSignal: any) => {
+            try {
+              // Request permission through OneSignal
+              const permission = await OneSignal.Notifications.requestPermission();
+              const granted = permission === 'granted';
+              
+              // Verify subscription was created with proper push subscription check
+              let hasSubscription = false;
+              let subscriptionInfo = '';
+              if (granted) {
+                const optedIn = OneSignal.User?.PushSubscription?.optedIn;
+                const subscriptionId = OneSignal.User?.PushSubscription?.id;
+                const userId = OneSignal.User?.onesignalId;
+                
+                hasSubscription = optedIn === true && !!subscriptionId;
+                subscriptionInfo = `UserId: ${userId}, SubscriptionId: ${subscriptionId}, OptedIn: ${optedIn}`;
+                console.log('✅ OneSignal subscription status:', subscriptionInfo);
+              }
+              
+              ClientAnalytics.trackAction('push_permission_requested', 'spiritual', {
+                granted,
+                has_subscription: hasSubscription,
+                spiritual_context: spiritualContext || 'general',
+                permission_result: permission
+              });
 
-      return granted;
+              resolve(granted && hasSubscription);
+            } catch (error) {
+              console.error('OneSignal permission request failed:', error);
+              ClientAnalytics.trackError(error as Error, {
+                context: 'onesignal_permission_request',
+                spiritual_context: spiritualContext
+              });
+              resolve(false);
+            }
+          });
+        } else {
+          resolve(false);
+        }
+      });
     } catch (error) {
       console.error('Permission request failed:', error);
       ClientAnalytics.trackError(error as Error, {
@@ -230,8 +277,22 @@ export class NotificationService {
     try {
       const permission = this.isSupported() ? Notification.permission : 'denied' as NotificationPermission;
       
+      // Check actual OneSignal subscription status
+      let subscribed = false;
+      let playerId: string | undefined;
+      
+      if (permission === 'granted' && typeof window !== 'undefined' && window.OneSignal) {
+        const optedIn = (window as any).OneSignal?.User?.PushSubscription?.optedIn;
+        const subscriptionId = (window as any).OneSignal?.User?.PushSubscription?.id;
+        const userId = (window as any).OneSignal?.User?.onesignalId;
+        
+        subscribed = optedIn === true && !!subscriptionId;
+        playerId = userId;
+      }
+      
       return {
-        subscribed: permission === 'granted',
+        subscribed,
+        playerId,
         permission
       };
     } catch (error) {

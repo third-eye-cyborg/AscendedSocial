@@ -53,7 +53,6 @@ const Compliance = lazy(() => import("@/pages/compliance"));
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
 const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
 const DoNotSell = lazy(() => import("@/pages/do-not-sell"));
-const DataRequest = lazy(() => import("@/pages/data-request"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
 const EULA = lazy(() => import("./pages/eula"));
@@ -194,7 +193,6 @@ const Router = React.memo(() => {
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/cookie-policy" component={CookiePolicy} />
         <Route path="/do-not-sell" component={DoNotSell} />
-        <Route path="/data-request" component={DataRequest} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms-of-service" component={TermsOfService} />
         <Route path="/eula" component={EULA} />

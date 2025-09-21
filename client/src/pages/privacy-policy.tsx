@@ -136,17 +136,11 @@ export default function PrivacyPolicy() {
               <p className="text-white/90 leading-relaxed mb-6">
                 Exercise your data privacy rights by requesting access to your personal information or requesting deletion of your data.
               </p>
-              <a
-                href="/data-request"
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 inline-flex items-center space-x-2"
-                data-testid="link-data-request"
-              >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <i className="fas fa-arrow-right"></i>
-                  <span>Submit Data Request</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-              </a>
+              <div className="text-center">
+                <p className="text-white/70 italic">
+                  Data request functionality will be available through our new privacy management system.
+                </p>
+              </div>
             </div>
 
             <div className="bg-gradient-to-br from-cosmic/90 to-cosmic/70 border border-secondary/40 glass-effect shadow-xl rounded-3xl p-8">

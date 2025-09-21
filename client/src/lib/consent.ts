@@ -156,17 +156,6 @@ export class ConsentManager {
     });
   }
 
-  // Get consent data for Klaro integration (this method has been replaced by getKlaroCompatibleState)
-  // Keeping for backward compatibility
-  getEnzuzoCompatibleState(): {
-    analytics: boolean;
-    marketing: boolean;
-    functional: boolean;
-    necessary: boolean;
-    timestamp?: string;
-  } {
-    return this.getKlaroCompatibleState();
-  }
 
   // Update from Klaro banner
   updateFromKlaro(klaroConsent: {

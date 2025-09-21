@@ -2,15 +2,14 @@ import express from "express";
 import { isAuthenticated } from "./replitAuth";
 import { ComplianceScanner } from "./compliance-scanner";
 import { BrowserAutomationService } from "./browser-automation-service";
-// Browserless service disabled - import commented out
-// import { browserlessService } from "./browserless-service";
+import { bytebotService } from "./bytebot-service";
 
 const router = express.Router();
 
 // Initialize services
 const complianceScanner = new ComplianceScanner();
-// Browserless service disabled - automation service temporarily disabled
-// const browserAutomation = new BrowserAutomationService(browserlessService);
+// Bytebot service enabled - automation service using open-source Bytebot
+const browserAutomation = new BrowserAutomationService(bytebotService);
 
 // Privacy compliance scanning
 router.get('/privacy', isAuthenticated, async (req, res) => {
@@ -82,31 +81,79 @@ router.get('/report', isAuthenticated, async (req, res) => {
   });
 
 
-// Execute browser automation task - DISABLED (browserless service removed)
+// Execute browser automation task - ENABLED (using Bytebot OS)
 router.post('/automation/execute', isAuthenticated, async (req, res) => {
-    res.status(503).json({
-      success: false,
-      error: 'Browser automation service temporarily disabled',
-      message: 'Browserless service has been removed and will be replaced with bytesbot os'
-    });
+    try {
+      const { instructions, url } = req.body;
+      
+      if (!instructions || !url) {
+        return res.status(400).json({
+          success: false,
+          error: 'Instructions and URL are required'
+        });
+      }
+
+      console.log(`🤖 Executing automation with Bytebot: ${instructions}`);
+      const results = await browserAutomation.executeAutomationTask(instructions, url);
+      
+      res.json({
+        success: results.success,
+        results,
+        timestamp: new Date().toISOString(),
+        service: 'Bytebot OS (open-source)'
+      });
+    } catch (error: any) {
+      console.error('Browser automation failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Browser automation failed',
+        details: error.message
+      });
+    }
   });
 
-// Generate spiritual platform test suites - DISABLED (browserless service removed)
+// Generate spiritual platform test suites - ENABLED (using Bytebot OS)
 router.get('/automation/tests/spiritual', isAuthenticated, async (req, res) => {
-    res.status(503).json({
-      success: false,
-      error: 'Browser automation service temporarily disabled',
-      message: 'Browserless service has been removed and will be replaced with bytesbot os'
-    });
+    try {
+      console.log('🕉️ Generating spiritual platform test suites with Bytebot...');
+      const testSuites = await browserAutomation.generateSpiritualTests();
+      
+      res.json({
+        success: true,
+        testSuites,
+        timestamp: new Date().toISOString(),
+        service: 'Bytebot OS (open-source)'
+      });
+    } catch (error: any) {
+      console.error('Test generation failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Test generation failed',
+        details: error.message
+      });
+    }
   });
 
-// Monitor platform health with spiritual metrics - DISABLED (browserless service removed)
+// Monitor platform health with spiritual metrics - ENABLED (using Bytebot OS)
 router.get('/automation/monitor', isAuthenticated, async (req, res) => {
-    res.status(503).json({
-      success: false,
-      error: 'Browser automation service temporarily disabled',
-      message: 'Browserless service has been removed and will be replaced with bytesbot os'
-    });
+    try {
+      console.log('📊 Monitoring spiritual platform health with Bytebot...');
+      const healthStatus = await browserAutomation.monitorPlatformHealth();
+      
+      res.json({
+        success: true,
+        monitoring: healthStatus,
+        timestamp: new Date().toISOString(),
+        service: 'Bytebot OS (open-source)'
+      });
+    } catch (error: any) {
+      console.error('Platform monitoring failed:', error);
+      res.status(500).json({
+        success: false,
+        error: 'Platform monitoring failed',
+        details: error.message
+      });
+    }
   });
 
 // Run automated tests for specific features
@@ -140,8 +187,8 @@ router.post('/automation/test/:feature', isAuthenticated, async (req, res) => {
           });
       }
       
-      // Browser automation disabled
-      const results = { success: false, error: 'Browser automation disabled' };
+      // Use Bytebot for automation
+      const results = await browserAutomation.executeAutomationTask(instructions, url);
       
       res.json({
         success: results.success,

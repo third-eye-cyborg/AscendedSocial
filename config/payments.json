@@ -88,8 +88,8 @@
     }
   },
   "stripe": {
-    "enabled": true,
-    "dualRun": true,
+    "enabled": false,
+    "dualRun": false,
     "deprecationDate": "2025-12-31",
     "migrationStrategy": "grandfather_existing_users",
     "products": [
@@ -107,7 +107,7 @@
   },
   "features": {
     "dualRunMode": {
-      "enabled": true,
+      "enabled": false,
       "percentage": 0,
       "newUserDefault": "paddle"
     },

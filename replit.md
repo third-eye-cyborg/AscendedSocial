@@ -56,10 +56,10 @@ Both modes provide real-time user data, interactive features, and professional v
 An AI-powered oracle system, utilizing OpenAI's API, provides daily spiritual readings, personalized recommendations, and tarot-style guidance based on user behavior.
 
 ### Payment Integration
-Stripe handles premium subscriptions and recurring payments, enabling features like unlimited energy and enhanced oracle readings.
+RevenueCat manages subscription lifecycle and customer data, while Paddle handles web-based checkout and payment processing for premium subscriptions, enabling features like unlimited energy and enhanced oracle readings.
 
 ### Privacy and Compliance
-The platform includes comprehensive GDPR compliance with bidirectional consent management via Enzuzo, opt-out by default analytics (PostHog), granular cookie categorization, and data subject rights APIs.
+The platform includes comprehensive GDPR compliance with an open-source privacy stack: Klaro for cookie consent management, Fides for privacy orchestration, opt-out by default analytics (PostHog), granular cookie categorization, and data subject rights APIs. This replaces previous proprietary solutions with transparent, auditable privacy controls.
 
 ### Legal Documentation Framework
 Comprehensive legal documentation provides protection and compliance for Third Eye Cyborg, LLC operations, including payment terms, copyright assignment & IP protection, community protection framework, copyright policy, service agreement, and third-party service disclaimers.
@@ -145,21 +145,25 @@ These standards ensure the Ascended Social platform maintains professional devel
 - **OpenAI API**: GPT-4 for content analysis and oracle readings.
 
 ### Payment Processing
-- **Stripe**: Subscription and payment management.
+- **RevenueCat**: Cross-platform subscription management and customer lifecycle.
+- **Paddle**: Web-based checkout, payment processing, and merchant of record services.
 
 ### Media and Storage
 - **Google Cloud Storage**: File and media storage.
 - **Uppy**: File upload interface.
 
 ### Email and Notifications
-- **OneSignal**: Transactional and marketing email service.
+- **OneSignal**: Complete notification platform handling both push notifications for mobile/web and transactional/marketing email delivery with comprehensive analytics and segmentation.
 
 ### Video Services
 - **Bunny.net VOD**: Video on demand.
 
 ### Analytics and Monitoring
-- **PostHog**: Privacy-first user analytics.
-- **Enzuzo**: GDPR-compliant cookie consent and preference management.
+- **PostHog**: Privacy-first user analytics with consent-gated initialization.
+
+### Privacy and Consent Management
+- **Klaro**: Open-source, GDPR-compliant cookie consent banner with granular service controls.
+- **Fides**: Privacy orchestration platform for data subject rights and compliance workflows.
 
 ### Security and Infrastructure
 - **Cloudflare Zero Trust**: Enterprise security platform providing layered protection with Access policies, Gateway DNS filtering, and Web Application Firewall.

@@ -1,0 +1,124 @@
+{
+  "consent": {
+    "defaultVersion": "1.0",
+    "types": {
+      "necessary": {
+        "enabled": true,
+        "locked": true,
+        "description": "Essential cookies required for basic website functionality"
+      },
+      "analytics": {
+        "enabled": false,
+        "locked": false,
+        "description": "Analytics cookies help us understand how visitors interact with our website"
+      },
+      "marketing": {
+        "enabled": false,
+        "locked": false,
+        "description": "Marketing cookies track visitors for advertising purposes"
+      },
+      "functional": {
+        "enabled": false,
+        "locked": false,
+        "description": "Functional cookies enable enhanced features and personalization"
+      }
+    },
+    "retention": {
+      "consentExpiryDays": 365,
+      "dataRetentionDays": 2555
+    }
+  },
+  "fides": {
+    "apiUrl": "https://privacy-api.ascendedsocial.com",
+    "organization": "Ascended Social",
+    "privacyPolicyVersion": "1.0",
+    "supportedRequests": [
+      "access",
+      "delete", 
+      "correct",
+      "restrict",
+      "object",
+      "portability"
+    ],
+    "verificationRequired": true,
+    "verificationExpiryHours": 48
+  },
+  "klaro": {
+    "version": "v1.0",
+    "lang": "en",
+    "htmlTexts": true,
+    "embedded": false,
+    "groupByPurpose": true,
+    "storageMethod": "localStorage",
+    "cookieName": "ascended_klaro",
+    "cookieExpiresAfterDays": 365,
+    "default": false,
+    "mustConsent": true,
+    "acceptAll": true,
+    "hideDeclineAll": false,
+    "hideLearnMore": false,
+    "noticeAsModal": true,
+    "disablePoweredBy": false,
+    "additionalClass": "ascended-cmp"
+  },
+  "gdpr": {
+    "enabled": true,
+    "autoDetectCountry": true,
+    "dataProcessingPurposes": [
+      "Core platform functionality",
+      "User experience personalization", 
+      "Analytics and usage statistics",
+      "Marketing communications",
+      "Security and fraud prevention"
+    ],
+    "legalBases": {
+      "necessary": "legitimate_interest",
+      "analytics": "consent",
+      "marketing": "consent",
+      "functional": "consent"
+    }
+  },
+  "ccpa": {
+    "enabled": true,
+    "doNotSellEnabled": true,
+    "autoDetectRegion": true,
+    "optOutText": "Do Not Sell My Personal Information"
+  },
+  "dataCategories": [
+    {
+      "id": "profile",
+      "name": "Profile Information",
+      "description": "Basic user profile data like name, email, username",
+      "retention": "Until account deletion",
+      "purposes": ["Core platform functionality"]
+    },
+    {
+      "id": "spiritual",
+      "name": "Spiritual Data", 
+      "description": "Posts, visions, spiritual readings, connections",
+      "retention": "Until account deletion or post removal",
+      "purposes": ["Core platform functionality", "User experience personalization"]
+    },
+    {
+      "id": "engagement",
+      "name": "Engagement Data",
+      "description": "Likes, comments, spiritual marks, energy transfers",
+      "retention": "Until account deletion",
+      "purposes": ["Core platform functionality", "Analytics and usage statistics"]
+    },
+    {
+      "id": "usage",
+      "name": "Usage Analytics",
+      "description": "Page views, clicks, session data",
+      "retention": "26 months",
+      "purposes": ["Analytics and usage statistics", "User experience personalization"]
+    },
+    {
+      "id": "payment",
+      "name": "Payment Information",
+      "description": "Subscription status, payment history (no card details stored)",
+      "retention": "7 years for tax/legal compliance",
+      "purposes": ["Core platform functionality"]
+    }
+  ]
+}

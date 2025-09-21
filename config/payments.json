@@ -1,0 +1,158 @@
+{
+  "revenuecat": {
+    "apiKey": "{{ REVENUECAT_API_KEY }}",
+    "publicKey": "{{ REVENUECAT_PUBLIC_KEY }}", 
+    "environment": "development",
+    "webhookUrl": "/api/webhooks/revenuecat",
+    "products": [
+      {
+        "id": "premium_monthly",
+        "type": "subscription",
+        "name": "Premium Monthly",
+        "description": "Premium features with monthly billing",
+        "price": 999,
+        "currency": "USD",
+        "interval": "month",
+        "entitlements": ["premium", "unlimited_energy", "advanced_spiritual_tools"]
+      },
+      {
+        "id": "premium_yearly", 
+        "type": "subscription",
+        "name": "Premium Yearly",
+        "description": "Premium features with yearly billing (save 20%)",
+        "price": 9599,
+        "currency": "USD", 
+        "interval": "year",
+        "entitlements": ["premium", "unlimited_energy", "advanced_spiritual_tools"]
+      },
+      {
+        "id": "energy_boost",
+        "type": "consumable",
+        "name": "Energy Boost",
+        "description": "Additional spiritual energy for premium interactions",
+        "price": 299,
+        "currency": "USD",
+        "quantity": 500
+      }
+    ],
+    "entitlements": {
+      "premium": {
+        "name": "Premium Access",
+        "description": "Access to all premium features and content"
+      },
+      "unlimited_energy": {
+        "name": "Unlimited Energy",
+        "description": "Unlimited spiritual energy for interactions"
+      },
+      "advanced_spiritual_tools": {
+        "name": "Advanced Spiritual Tools",
+        "description": "Access to advanced spiritual reading and tools"
+      }
+    }
+  },
+  "paddle": {
+    "vendorId": "{{ PADDLE_VENDOR_ID }}",
+    "publicKey": "{{ PADDLE_PUBLIC_KEY }}",
+    "environment": "sandbox",
+    "webhookUrl": "/api/webhooks/paddle",
+    "products": [
+      {
+        "paddleProductId": "{{ PADDLE_PREMIUM_MONTHLY_ID }}",
+        "revenueCatProductId": "premium_monthly",
+        "name": "Premium Monthly",
+        "price": "$9.99",
+        "billingCycle": "monthly"
+      },
+      {
+        "paddleProductId": "{{ PADDLE_PREMIUM_YEARLY_ID }}",
+        "revenueCatProductId": "premium_yearly", 
+        "name": "Premium Yearly",
+        "price": "$95.99",
+        "billingCycle": "yearly"
+      },
+      {
+        "paddleProductId": "{{ PADDLE_ENERGY_BOOST_ID }}",
+        "revenueCatProductId": "energy_boost",
+        "name": "Energy Boost",
+        "price": "$2.99",
+        "billingCycle": "one-time"
+      }
+    ],
+    "checkout": {
+      "displayMode": "overlay",
+      "theme": "dark",
+      "locale": "en",
+      "allowQuantity": false,
+      "frameTarget": "self",
+      "frameStyle": "width: 100%; background-color: transparent; border: none;"
+    }
+  },
+  "stripe": {
+    "enabled": true,
+    "dualRun": true,
+    "deprecationDate": "2025-12-31",
+    "migrationStrategy": "grandfather_existing_users",
+    "products": [
+      {
+        "stripeProductId": "{{ STRIPE_PREMIUM_MONTHLY_ID }}",
+        "revenueCatMapping": "premium_monthly",
+        "status": "legacy_support"
+      },
+      {
+        "stripeProductId": "{{ STRIPE_PREMIUM_YEARLY_ID }}",
+        "revenueCatMapping": "premium_yearly",
+        "status": "legacy_support"
+      }
+    ]
+  },
+  "features": {
+    "dualRunMode": {
+      "enabled": true,
+      "percentage": 0,
+      "newUserDefault": "paddle"
+    },
+    "webhookRetry": {
+      "maxAttempts": 5,
+      "backoffMultiplier": 2,
+      "initialDelayMs": 1000
+    },
+    "entitlementSync": {
+      "enabled": true,
+      "syncIntervalMinutes": 15,
+      "fallbackToCache": true,
+      "cacheExpiryMinutes": 60
+    }
+  },
+  "security": {
+    "webhookVerification": {
+      "revenuecat": {
+        "enabled": true,
+        "secret": "{{ REVENUECAT_WEBHOOK_SECRET }}"
+      },
+      "paddle": {
+        "enabled": true,
+        "publicKey": "{{ PADDLE_PUBLIC_KEY_WEBHOOK }}"
+      }
+    },
+    "rateLimiting": {
+      "enabled": true,
+      "requestsPerMinute": 60,
+      "burstLimit": 10
+    }
+  },
+  "compliance": {
+    "taxCalculation": {
+      "enabled": true,
+      "provider": "paddle"
+    },
+    "invoicing": {
+      "enabled": true,
+      "provider": "paddle"
+    },
+    "dataRetention": {
+      "paymentDataDays": 2555,
+      "failedPaymentDataDays": 90,
+      "subscriptionHistoryDays": 2555
+    }
+  }
+}

@@ -12,6 +12,21 @@ const STORYBOOK_URL = 'http://localhost:6006';
 const API_BASE = 'http://localhost:5000/api';
 
 async function runCommand(command, description) {
+  // Validate command against allowlist to prevent injection
+  const allowedCommands = [
+    'npx cypress run --component --config-file .storybook/cypress.config.js',
+    'npx playwright test --config playwright.config.ts',
+    'npx test-storybook --url http://localhost:6006',
+    'npm run build-storybook',
+    'npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes --auto-accept-changes',
+    'npx playwright test --project=chromatic --reporter=html',
+    'npm run storybook'
+  ];
+  
+  if (!allowedCommands.includes(command)) {
+    throw new Error(`Command not allowed: ${command}`);
+  }
+  
   console.log(`🔄 ${description}...`);
   try {
     const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' });
@@ -137,11 +152,7 @@ async function runDesignWorkflow() {
     
     // Step 2: Start Storybook for testing
     console.log('🔄 Starting Storybook server...');
-    const storybookProcess = execSync('npm run storybook', { 
-      encoding: 'utf8', 
-      stdio: 'pipe',
-      detached: true 
-    });
+    const storybookProcess = await runCommand('npm run storybook', 'Starting Storybook server');
     
     // Wait for Storybook to be ready
     await new Promise(resolve => setTimeout(resolve, 10000));

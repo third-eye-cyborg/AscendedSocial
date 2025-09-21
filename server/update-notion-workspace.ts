@@ -40,12 +40,12 @@ const WEB_DEVELOPMENT_TODOS = [
         assignedTo: "AI Integration Team"
     },
     {
-        title: "Stripe Subscription Management Dashboard",
-        type: "Feature",
+        title: "RevenueCat + Paddle Subscription Dashboard",
+        type: "Feature", 
         status: "To Do",
         priority: "Medium",
-        description: "Build comprehensive subscription management interface for premium spiritual features",
-        technicalNotes: "Integrate Stripe Customer Portal with custom spiritual features management",
+        description: "Build comprehensive subscription management interface for premium spiritual features using RevenueCat and Paddle",
+        technicalNotes: "Integrate RevenueCat customer management with Paddle web checkout for spiritual features subscription management",
         assignedTo: "Payment Integration Team"
     },
     {

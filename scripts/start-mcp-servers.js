@@ -86,34 +86,46 @@ class ReplitMCPManager {
     });
   }
 
+  /**
+   * Starts a child process for an MCP server.
+   * SECURITY: Only whitelisted commands are allowed. Args must be an array of strings.
+   * Never pass user input directly to this function.
+   */
   async startServer(name, command, args) {
+    // Whitelist allowed commands for extra safety
+    const allowedCommands = ['npx', 'npm'];
+    if (!allowedCommands.includes(command)) {
+      throw new Error(`Blocked attempt to run disallowed command: ${command}`);
+    }
+    // Validate args is an array of strings and does not contain dangerous characters
+    if (!Array.isArray(args) || !args.every(arg => typeof arg === 'string')) {
+      throw new Error('Arguments to startServer must be an array of strings');
+    }
+    // Optionally, check for shell metacharacters (paranoia)
+    const forbiddenPattern = /[;&|$><`\\]/;
+    if (args.some(arg => forbiddenPattern.test(arg))) {
+      throw new Error('Arguments to startServer contain forbidden shell metacharacters');
+    }
     try {
       console.log(`🔧 Starting ${name}...`);
       const process = spawn(command, args, {
         stdio: 'pipe',
         env: { ...process.env }
       });
-      
       this.servers.set(name, process);
-      
       process.stdout.on('data', (data) => {
         this.logger.log(name, 'info', data.toString().trim());
       });
-      
       process.stderr.on('data', (data) => {
         this.logger.log(name, 'error', data.toString().trim());
       });
-
       process.on('exit', (code) => {
         this.logger.log('replit', 'warn', `MCP server ${name} exited with code ${code}`);
         this.servers.delete(name);
       });
-      
       this.logger.log('replit', 'info', `Started MCP server: ${name}`);
-      
       // Give each server a moment to start
       await this.sleep(1000);
-      
     } catch (error) {
       this.logger.log('replit', 'error', `Failed to start ${name}: ${error.message}`);
       console.error(`❌ Failed to start ${name}:`, error.message);

@@ -1,6 +1,6 @@
 import { ClientAnalytics } from './analytics';
 
-const ONESIGNAL_APP_ID = '8252cea5-144a-4c8d-b2d4-ca5c606f6ce0';
+const ONESIGNAL_APP_ID = import.meta.env.VITE_ONESIGNAL_APP_ID || '8252cea5-144a-4c8d-b2d4-ca5c606f6ce0';
 
 // Global OneSignal types
 declare global {

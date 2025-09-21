@@ -41,8 +41,8 @@ export const users = pgTable("users", {
   energy: integer("energy").default(1000), // Monthly energy allocation
   energyLastReset: timestamp("energy_last_reset").defaultNow(),
   isPremium: boolean("is_premium").default(false),
-  stripeCustomerId: varchar("stripe_customer_id"),
-  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  revenueCatCustomerId: varchar("revenuecat_customer_id"),
+  paddleSubscriptionId: varchar("paddle_subscription_id"),
   hasCompletedOnboarding: boolean("has_completed_onboarding").default(false),
   astrologySign: varchar("astrology_sign"),
   birthDate: timestamp("birth_date"),

@@ -1,0 +1,122 @@
+# Semgrep configuration for privacy and security scanning
+# https://semgrep.dev/docs/writing-rules/
+
+rules:
+  # Privacy & GDPR/CCPA Compliance Rules
+  - id: privacy-email-logging
+    pattern-either:
+      - pattern: console.log(..., $EMAIL, ...)
+      - pattern: logger.info(..., $EMAIL, ...)
+      - pattern: console.error(..., $EMAIL, ...)
+    where:
+      - metavariable-regex:
+          metavariable: $EMAIL
+          regex: '.*email.*'
+    message: "Potential email address logging detected - ensure GDPR/CCPA compliance"
+    severity: WARNING
+    languages: [javascript, typescript]
+    
+  - id: privacy-personal-data-exposure
+    patterns:
+      - pattern-either:
+          - pattern: res.json({..., email: $EMAIL, ...})
+          - pattern: res.send({..., ssn: $SSN, ...})
+          - pattern: return {..., personalInfo: $DATA, ...}
+    message: "Personal data exposure in response - verify privacy compliance"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # Authentication & Authorization
+  - id: auth-missing-authentication
+    pattern: |
+      app.$METHOD($PATH, ($REQ, $RES) => {
+        ...
+      })
+    where:
+      - metavariable-regex:
+          metavariable: $PATH
+          regex: '/api/(?!public).*'
+      - pattern-not-inside: |
+          app.$METHOD($PATH, isAuthenticated, ...)
+      - pattern-not-inside: |
+          app.$METHOD($PATH, authenticateUser, ...)
+    message: "API endpoint missing authentication middleware"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # JWT Security
+  - id: jwt-hardcoded-secret
+    pattern-either:
+      - pattern: jwt.sign($PAYLOAD, "...")
+      - pattern: jwt.verify($TOKEN, "...")
+    message: "Hardcoded JWT secret detected - use environment variables"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # SQL Injection Prevention
+  - id: sql-injection-risk
+    pattern-either:
+      - pattern: |
+          query($QUERY + $USER_INPUT)
+      - pattern: |
+          db.raw($QUERY + $USER_INPUT)
+      - pattern: |
+          execute("SELECT * FROM ... WHERE " + $INPUT)
+    message: "Potential SQL injection vulnerability - use parameterized queries"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # XSS Prevention
+  - id: xss-innerHTML-risk
+    pattern-either:
+      - pattern: $ELEMENT.innerHTML = $USER_INPUT
+      - pattern: $ELEMENT.outerHTML = $USER_INPUT
+    message: "Potential XSS vulnerability - sanitize user input"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # Secrets Detection
+  - id: hardcoded-api-keys
+    pattern-either:
+      - pattern: |
+          const $VAR = "sk_..."
+      - pattern: |
+          const $VAR = "pk_..."
+      - pattern: |
+          const $VAR = "rk_..."
+    message: "Hardcoded API key detected - use environment variables"
+    severity: ERROR
+    languages: [javascript, typescript]
+
+  # Privacy Settings Validation
+  - id: privacy-consent-missing
+    patterns:
+      - pattern: |
+          $USER.update({...})
+      - pattern-not-inside: |
+          if ($USER.hasConsented) { ... }
+      - pattern-not-inside: |
+          if (consent.analytics) { ... }
+    message: "User data update without consent validation"
+    severity: WARNING
+    languages: [javascript, typescript]
+
+  # File Upload Security
+  - id: file-upload-missing-validation
+    pattern: |
+      multer({...})
+    where:
+      - pattern-not-inside: |
+          fileFilter: ...
+    message: "File upload missing security validation"
+    severity: WARNING
+    languages: [javascript, typescript]
+
+# Include additional rulesets
+extends:
+  - p/security-audit
+  - p/javascript
+  - p/typescript
+  - p/react
+  - p/express
+  - p/jwt

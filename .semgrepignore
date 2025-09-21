@@ -1,0 +1,50 @@
+# Semgrep ignore patterns for Replit Semgrep security scanning
+# https://semgrep.dev/docs/ignoring-files-and-rules/
+
+# Dependencies and build artifacts
+node_modules/
+dist/
+build/
+.next/
+coverage/
+tmp/
+.replit/
+
+# Test files (generally safe from security scanning)
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+test/
+tests/
+__tests__/
+cypress/
+playwright/
+storybook-static/
+
+# Development and configuration files
+.env.example
+.gitignore
+*.md
+package-lock.json
+yarn.lock
+
+# Generated files
+schema.prisma
+migrations/
+*.generated.*
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Platform specific
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+*.md

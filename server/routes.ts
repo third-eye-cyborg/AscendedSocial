@@ -58,6 +58,7 @@ import {
   securityErrorHandler 
 } from "./authenticationValidation";
 import { bypassAuthForTesting } from "./auth-bypass";
+import webhookRouter from "./webhooks";
 
 // Stripe setup
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -2662,6 +2663,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerFigmaMCPRoutes(app);    // Figma design sync - should be Zero Trust protected
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only
+  
+  // Webhook routes for payment and privacy integrations
+  app.use('/', webhookRouter); // Public webhooks for external services
+  console.log('🔗 Webhook routes registered');
 
   // System health monitoring endpoint with comprehensive service status
   app.get('/api/system/health', async (req, res) => {

@@ -12,6 +12,8 @@ import {
   newsletterSubscriptions,
   reports,
   auditLogs,
+  webhookEvents,
+  entitlements,
   type User,
   type UpsertUser,
   type Post,
@@ -33,6 +35,10 @@ import {
   type InsertReport,
   type AuditLog,
   type InsertAuditLog,
+  type WebhookEvent,
+  type InsertWebhookEvent,
+  type Entitlement,
+  type InsertEntitlement,
   type ChakraType,
   type EngagementType,
   type UserRole,
@@ -222,6 +228,15 @@ export interface IStorage {
   getEngagementTypesDistribution(): Promise<{ type: string; count: number; percentage: number }[]>;
   getDailySignups(days: number): Promise<{ date: string; count: number }[]>;
   getRecentActivity(limit: number): Promise<{ type: string; description: string; timestamp: string; userId: string; userEmail: string }[]>;
+
+  // Webhook event operations
+  createWebhookEvent(webhookEvent: InsertWebhookEvent): Promise<WebhookEvent>;
+  updateWebhookEventStatus(eventId: string, status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'retry', errorMessage?: string): Promise<void>;
+
+  // Entitlement operations
+  createEntitlement(entitlement: InsertEntitlement): Promise<Entitlement>;
+  updateEntitlement(userId: string, entitlementId: string, updates: Partial<Entitlement>): Promise<void>;
+  getUserEntitlements(userId: string): Promise<Entitlement[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2190,6 +2205,42 @@ export class DatabaseStorage implements IStorage {
       suspensionExpiresAt: user.suspensionExpiresAt || undefined,
       warningCount: user.warningCount || 0
     };
+  }
+
+  // Webhook event operations
+  async createWebhookEvent(webhookEvent: InsertWebhookEvent): Promise<WebhookEvent> {
+    const [event] = await db.insert(webhookEvents).values(webhookEvent).returning();
+    return event;
+  }
+
+  async updateWebhookEventStatus(eventId: string, status: 'pending' | 'processing' | 'succeeded' | 'failed' | 'retry', errorMessage?: string): Promise<void> {
+    await db.update(webhookEvents)
+      .set({ 
+        status,
+        errorMessage,
+        lastProcessedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(eq(webhookEvents.eventId, eventId));
+  }
+
+  // Entitlement operations
+  async createEntitlement(entitlement: InsertEntitlement): Promise<Entitlement> {
+    const [ent] = await db.insert(entitlements).values(entitlement).returning();
+    return ent;
+  }
+
+  async updateEntitlement(userId: string, entitlementId: string, updates: Partial<Entitlement>): Promise<void> {
+    await db.update(entitlements)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(and(
+        eq(entitlements.userId, userId),
+        eq(entitlements.entitlementId, entitlementId)
+      ));
+  }
+
+  async getUserEntitlements(userId: string): Promise<Entitlement[]> {
+    return await db.select().from(entitlements).where(eq(entitlements.userId, userId));
   }
 }
 

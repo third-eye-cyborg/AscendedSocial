@@ -426,6 +426,248 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
 export type AuditAction = "user_banned" | "user_unbanned" | "user_suspended" | "user_unsuspended" | "user_warned" | "user_role_changed" | "post_removed" | "post_restored" | "comment_removed" | "comment_restored" | "report_reviewed" | "community_banned" | "community_created" | "community_deleted" | "other_action";
 
+// ====================================
+// PRIVACY & COMPLIANCE MODELS
+// ====================================
+
+// Consent types enum
+export const consentTypeEnum = pgEnum("consent_type", [
+  "analytics",
+  "marketing", 
+  "functional",
+  "necessary"
+]);
+
+// Consent status enum
+export const consentStatusEnum = pgEnum("consent_status", [
+  "given",
+  "withdrawn",
+  "expired"
+]);
+
+// User consent records (replacing Enzuzo)
+export const userConsents = pgTable("user_consents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  consentType: consentTypeEnum("consent_type").notNull(),
+  status: consentStatusEnum("status").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+  version: varchar("version").notNull().default("1.0"), // Privacy policy version
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  source: varchar("source").default("banner"), // banner, settings, api
+  expiresAt: timestamp("expires_at"), // For temporary consents
+  metadata: jsonb("metadata"), // Additional consent details
+});
+
+// DSAR request types enum
+export const dsarTypeEnum = pgEnum("dsar_type", [
+  "access",      // Data portability request
+  "delete",      // Right to be forgotten
+  "correct",     // Data rectification
+  "restrict",    // Processing restriction
+  "object",      // Object to processing
+  "portability"  // Data portability
+]);
+
+// DSAR status enum
+export const dsarStatusEnum = pgEnum("dsar_status", [
+  "submitted",
+  "verified",
+  "processing", 
+  "completed",
+  "rejected",
+  "cancelled"
+]);
+
+// Data Subject Access Requests (DSAR)
+export const dsarRequests = pgTable("dsar_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  type: dsarTypeEnum("type").notNull(),
+  status: dsarStatusEnum("status").default("submitted"),
+  description: text("description"),
+  requestedData: text("requested_data").array(), // Specific data categories requested
+  verificationToken: varchar("verification_token"), // Email verification
+  verificationExpiresAt: timestamp("verification_expires_at"),
+  processedBy: varchar("processed_by").references(() => users.id), // Admin who processed
+  processedAt: timestamp("processed_at"),
+  downloadUrl: varchar("download_url"), // Secure download link for data export
+  downloadExpiresAt: timestamp("download_expires_at"),
+  rejectionReason: text("rejection_reason"),
+  metadata: jsonb("metadata"), // Request-specific details
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ====================================
+// PAYMENT & SUBSCRIPTION MODELS  
+// ====================================
+
+// RevenueCat entitlement status enum
+export const entitlementStatusEnum = pgEnum("entitlement_status", [
+  "active",
+  "inactive", 
+  "expired",
+  "cancelled",
+  "paused"
+]);
+
+// Platform enum for subscriptions
+export const platformEnum = pgEnum("platform", [
+  "web",
+  "ios", 
+  "android",
+  "stripe", // Legacy Stripe subscriptions
+  "paddle"  // New Paddle subscriptions
+]);
+
+// RevenueCat entitlements - central source of truth for premium features
+export const entitlements = pgTable("entitlements", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
+  revenuecatUserId: varchar("revenuecat_user_id").notNull(), // RevenueCat customer ID
+  entitlementId: varchar("entitlement_id").notNull(), // RevenueCat entitlement identifier
+  productId: varchar("product_id").notNull(), // Product identifier (premium, pro, etc)
+  status: entitlementStatusEnum("status").notNull(),
+  platform: platformEnum("platform").notNull(),
+  purchaseDate: timestamp("purchase_date"),
+  expirationDate: timestamp("expiration_date"), 
+  autoRenewStatus: boolean("auto_renew_status").default(true),
+  isTrialPeriod: boolean("is_trial_period").default(false),
+  trialExpirationDate: timestamp("trial_expiration_date"),
+  originalTransactionId: varchar("original_transaction_id"), // Platform transaction ID
+  latestTransactionId: varchar("latest_transaction_id"), // Most recent transaction
+  subscriptionId: varchar("subscription_id"), // Subscription identifier from platform
+  priceInCents: integer("price_in_cents"), // Price in cents
+  currency: varchar("currency").default("USD"),
+  metadata: jsonb("metadata"), // Platform-specific data
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Webhook event types enum
+export const webhookTypeEnum = pgEnum("webhook_type", [
+  "paddle.subscription.created",
+  "paddle.subscription.updated", 
+  "paddle.subscription.cancelled",
+  "paddle.payment.succeeded",
+  "paddle.payment.failed",
+  "revenuecat.purchase.made",
+  "revenuecat.renewal.succeeded",
+  "revenuecat.cancellation",
+  "revenuecat.expiration",
+  "fides.consent.updated",
+  "fides.dsar.completed"
+]);
+
+// Webhook processing status enum  
+export const webhookStatusEnum = pgEnum("webhook_status", [
+  "pending",
+  "processing",
+  "succeeded", 
+  "failed",
+  "retry"
+]);
+
+// Webhook events for payment and privacy system integration
+export const webhookEvents = pgTable("webhook_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar("event_id").unique(), // External system event ID for idempotency
+  type: webhookTypeEnum("type").notNull(),
+  status: webhookStatusEnum("status").default("pending"),
+  source: varchar("source").notNull(), // paddle, revenuecat, fides
+  payload: jsonb("payload").notNull(), // Full webhook payload
+  signature: varchar("signature"), // Webhook signature for verification
+  processingAttempts: integer("processing_attempts").default(0),
+  lastProcessedAt: timestamp("last_processed_at"),
+  errorMessage: text("error_message"),
+  metadata: jsonb("metadata"), // Processing metadata
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Feature flags for dual-run migration
+export const featureFlags = pgTable("feature_flags", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: varchar("name").notNull().unique(), // stripe_dual_run, new_privacy_stack, etc
+  enabled: boolean("enabled").default(false),
+  percentage: integer("percentage").default(0), // Rollout percentage (0-100)
+  userId: varchar("user_id").references(() => users.id), // User-specific flag
+  metadata: jsonb("metadata"), // Flag configuration
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// ====================================
+// INSERT SCHEMAS & TYPES
+// ====================================
+
+export const insertUserConsentSchema = createInsertSchema(userConsents).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertDSARRequestSchema = createInsertSchema(dsarRequests).omit({
+  id: true,
+  verificationToken: true,
+  verificationExpiresAt: true,
+  processedBy: true,
+  processedAt: true,
+  downloadUrl: true,
+  downloadExpiresAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertEntitlementSchema = createInsertSchema(entitlements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWebhookEventSchema = createInsertSchema(webhookEvents).omit({
+  id: true,
+  processingAttempts: true,
+  lastProcessedAt: true,
+  errorMessage: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFeatureFlagSchema = createInsertSchema(featureFlags).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// ====================================
+// TYPES
+// ====================================
+
+export type UserConsent = typeof userConsents.$inferSelect;
+export type InsertUserConsent = z.infer<typeof insertUserConsentSchema>;
+export type ConsentType = "analytics" | "marketing" | "functional" | "necessary";
+export type ConsentStatus = "given" | "withdrawn" | "expired";
+
+export type DSARRequest = typeof dsarRequests.$inferSelect;
+export type InsertDSARRequest = z.infer<typeof insertDSARRequestSchema>;
+export type DSARType = "access" | "delete" | "correct" | "restrict" | "object" | "portability";
+export type DSARStatus = "submitted" | "verified" | "processing" | "completed" | "rejected" | "cancelled";
+
+export type Entitlement = typeof entitlements.$inferSelect;
+export type InsertEntitlement = z.infer<typeof insertEntitlementSchema>;
+export type EntitlementStatus = "active" | "inactive" | "expired" | "cancelled" | "paused";
+export type Platform = "web" | "ios" | "android" | "stripe" | "paddle";
+
+export type WebhookEvent = typeof webhookEvents.$inferSelect;
+export type InsertWebhookEvent = z.infer<typeof insertWebhookEventSchema>;
+export type WebhookType = "paddle.subscription.created" | "paddle.subscription.updated" | "paddle.subscription.cancelled" | "paddle.payment.succeeded" | "paddle.payment.failed" | "revenuecat.purchase.made" | "revenuecat.renewal.succeeded" | "revenuecat.cancellation" | "revenuecat.expiration" | "fides.consent.updated" | "fides.dsar.completed";
+export type WebhookStatus = "pending" | "processing" | "succeeded" | "failed" | "retry";
+
+export type FeatureFlag = typeof featureFlags.$inferSelect;
+export type InsertFeatureFlag = z.infer<typeof insertFeatureFlagSchema>;
+
 // Vision privacy enum
 export const visionPrivacyEnum = pgEnum("vision_privacy", [
   "public",    // Visible to everyone

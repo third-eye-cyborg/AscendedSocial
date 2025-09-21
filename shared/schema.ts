@@ -26,6 +26,13 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// User role enum
+export const userRoleEnum = pgEnum("user_role", [
+  "user",
+  "moderator", 
+  "admin"
+]);
+
 // User storage table (required for Replit Auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -62,6 +69,25 @@ export const users = pgTable("users", {
   followNotifications: boolean("follow_notifications").default(true),
   oracleNotifications: boolean("oracle_notifications").default(true),
   emailNotifications: boolean("email_notifications").default(false),
+  
+  // Legacy payment fields (keeping for backward compatibility)
+  stripeCustomerId: varchar("stripe_customer_id"),
+  stripeSubscriptionId: varchar("stripe_subscription_id"),
+  
+  // User moderation fields
+  role: userRoleEnum("role").default("user"),
+  isBanned: boolean("is_banned").default(false),
+  banReason: text("ban_reason"),
+  bannedAt: timestamp("banned_at"),
+  bannedBy: varchar("banned_by").references(() => users.id),
+  banExpiresAt: timestamp("ban_expires_at"),
+  isSuspended: boolean("is_suspended").default(false),
+  suspensionReason: text("suspension_reason"),
+  suspendedAt: timestamp("suspended_at"),
+  suspendedBy: varchar("suspended_by").references(() => users.id),
+  suspensionExpiresAt: timestamp("suspension_expires_at"),
+  warningCount: integer("warning_count").default(0),
+  lastWarningAt: timestamp("last_warning_at"),
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -298,6 +324,7 @@ export type NewSpiritualInteraction = typeof spiritualInteractions.$inferInsert;
 export type ChakraType = "root" | "sacral" | "solar" | "heart" | "throat" | "third_eye" | "crown";
 export type EngagementType = "upvote" | "downvote" | "like" | "energy";
 export type ConnectionStatus = "pending" | "accepted" | "declined" | "blocked";
+export type UserRole = "user" | "moderator" | "admin";
 
 // Bookmarks table
 export const bookmarks = pgTable('bookmarks', {

@@ -17,7 +17,8 @@ export default function DataRequest() {
     // Add the DSAR script
     const script = document.createElement('script');
     script.id = '__enzuzo-dsar-script';
-    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=data&apiHost=https://app.enzuzo.com&qt=1756597779382&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1OTczNTB9.ZW9Ke3piBCfm3jsHE_9XChLc7KljrsobSwzzW-5VLjE';
+    const enzuzoReferralToken = import.meta.env.VITE_ENZUZO_REFERRAL_TOKEN || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1OTczNTB9.ZW9Ke3piBCfm3jsHE_9XChLc7KljrsobSwzzW-5VLjE';
+    script.src = `https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=data&apiHost=https://app.enzuzo.com&qt=1756597779382&referral=${enzuzoReferralToken}`;
     script.async = true;
     
     // Add load event listener

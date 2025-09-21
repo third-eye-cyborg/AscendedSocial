@@ -86,6 +86,11 @@ class BrowserlessService {
     return `${this.config.endpoint}?token=${this.config.token}`;
   }
 
+  // Security: Redact token from URLs for logging
+  private redactTokenFromUrl(url: string): string {
+    return url.replace(/token=[^&]+/g, 'token=***');
+  }
+
   private getRestApiUrl(): string {
     if (!this.config) {
       throw new Error('Browserless not configured. Please provide token and endpoint.');
@@ -103,7 +108,12 @@ class BrowserlessService {
         this.playwrightBrowser = await chromium.connectOverCDP(this.getWebSocketUrl());
         console.log('✅ Playwright browser connected');
       } catch (error: any) {
-        console.error('❌ Playwright connection failed:', error);
+        // Security: Redact sensitive info before logging
+        const sanitizedError = { ...error };
+        if (error.message) {
+          sanitizedError.message = error.message.replace(/token=[^&\s]+/g, 'token=***');
+        }
+        console.error('❌ Playwright connection failed:', sanitizedError);
         throw new Error(`Failed to connect Playwright browser: ${error.message}`);
       }
     }

@@ -1,6 +1,7 @@
 // Service monitoring and health aggregation system
-import { browserlessService } from './browserless-service';
-import { BrowserlessAuthService } from './browserless-auth-service';
+// Browserless service removed - no longer using browserless
+// import { browserlessService } from './browserless-service';
+// import { BrowserlessAuthService } from './browserless-auth-service';
 import { figmaMCPServer } from './figma-mcp-server';
 
 interface ServiceHealth {
@@ -37,7 +38,8 @@ class ServiceMonitor {
 
     const services: ServiceHealth[] = [];
 
-    // Check Browserless service (skip in development if no token)
+    // Browserless service removed - no longer checking browserless health
+    /* Check Browserless service (skip in development if no token)
     if (process.env.BROWSERLESS_TOKEN || process.env.NODE_ENV !== 'development') {
       try {
         const browserlessStart = Date.now();
@@ -77,9 +79,10 @@ class ServiceMonitor {
           note: 'Browserless health checks disabled in development (no token configured)'
         }
       });
-    }
+    } */
 
-    // Check Browserless Auth service (skip in development if no token)
+    // Browserless Auth service removed - no longer checking browserless auth health
+    /* Check Browserless Auth service (skip in development if no token)
     if (process.env.BROWSERLESS_TOKEN || process.env.NODE_ENV !== 'development') {
       try {
         const authStart = Date.now();
@@ -120,7 +123,7 @@ class ServiceMonitor {
           note: 'Browserless auth health checks disabled in development (no token configured)'
         }
       });
-    }
+    } */
 
     // Check Figma MCP service
     try {

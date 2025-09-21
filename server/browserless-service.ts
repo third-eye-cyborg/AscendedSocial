@@ -65,13 +65,15 @@ class BrowserlessService {
   private puppeteerBrowser: PuppeteerBrowser | null = null;
 
   constructor() {
+    // Browserless service disabled - no longer auto-initializing
     // Initialize with environment variables if available
-    const token = process.env.BROWSERLESS_TOKEN;
-    const endpoint = process.env.BROWSERLESS_ENDPOINT || 'wss://production-sfo.browserless.io';
+    // const token = process.env.BROWSERLESS_TOKEN;
+    // const endpoint = process.env.BROWSERLESS_ENDPOINT || 'wss://production-sfo.browserless.io';
     
-    if (token) {
-      this.initialize({ token, endpoint });
-    }
+    // if (token) {
+    //   this.initialize({ token, endpoint });
+    // }
+    console.log('📴 Browserless service disabled - not initializing');
   }
 
   public initialize(config: BrowserlessConfig): void {
@@ -834,7 +836,8 @@ class BrowserlessService {
   }
 }
 
-export const browserlessService = new BrowserlessService();
+// Browserless service disabled - not exporting singleton instance
+// export const browserlessService = new BrowserlessService();
 export { 
   BrowserlessService, 
   type BrowserlessConfig, 

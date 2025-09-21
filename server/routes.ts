@@ -38,8 +38,9 @@ const upload = multer({
     }
   }
 });
-import { registerBrowserlessRoutes } from "./browserless-routes";
-import { registerBrowserlessAuthRoutes } from "./browserless-auth-routes";
+// Browserless routes removed - no longer using browserless service
+// import { registerBrowserlessRoutes } from "./browserless-routes";
+// import { registerBrowserlessAuthRoutes } from "./browserless-auth-routes";
 import { registerFigmaMCPRoutes } from "./figma-mcp-routes";
 import { serviceMonitor } from "./service-monitor";
 import { registerVisionsRoutes } from "./visionsApi";
@@ -2594,8 +2595,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Register routes with appropriate Zero Trust protection levels
-  registerBrowserlessRoutes(app); // Browser automation - should be Zero Trust protected
-  registerBrowserlessAuthRoutes(app); // Authenticated browser automation for testing
+  // Browserless routes removed - no longer using browserless service
+  // registerBrowserlessRoutes(app); // Browser automation - should be Zero Trust protected
+  // registerBrowserlessAuthRoutes(app); // Authenticated browser automation for testing
   registerFigmaMCPRoutes(app);    // Figma design sync - should be Zero Trust protected
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only

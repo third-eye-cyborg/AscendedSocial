@@ -1086,7 +1086,7 @@ GET /api/callback
 
 **Example**:
 \`\`\`http
-ascended://auth/callback?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ascended://auth/callback?token=TOKEN_REDACTED
 \`\`\`
 
 ### User Information

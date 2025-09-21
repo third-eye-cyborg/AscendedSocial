@@ -59,8 +59,10 @@ import {
 } from "./authenticationValidation";
 import { bypassAuthForTesting } from "./auth-bypass";
 import webhookRouter from "./webhooks";
+import privacyRouter from "./routes/privacy";
+import paymentsRouter from "./routes/payments";
 
-// Payment processing handled by RevenueCat + Paddle integration
+// Privacy and Payment processing handled by Fides + RevenueCat + Paddle integration
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
@@ -2602,6 +2604,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   registerVisionsRoutes(app);     // Regular user features - Replit Auth only
   registerCommunitiesRoutes(app); // Regular user features - Replit Auth only
   
+  // Privacy management routes (Fides integration)
+  app.use('/api/privacy', privacyRouter); // DSAR, consent management, compliance
+  console.log('🛡️ Privacy management routes registered');
+
+  // Payment routes (RevenueCat + Paddle integration)  
+  app.use('/api/payments', paymentsRouter); // Subscriptions, billing, webhooks
+  console.log('💳 Payment routes registered');
+
   // Webhook routes for payment and privacy integrations
   app.use('/', webhookRouter); // Public webhooks for external services
   console.log('🔗 Webhook routes registered');

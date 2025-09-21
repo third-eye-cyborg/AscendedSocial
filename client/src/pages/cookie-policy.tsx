@@ -62,19 +62,9 @@ export default function CookiePolicy() {
             </div>
 
             <div className="text-center">
-              <a
-                href="https://app.enzuzo.com/policies/cookies/1bf8f8f8-a786-11ed-a83e-eb67933cb390"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
-                data-testid="link-cookie-policy"
-              >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <i className="fas fa-external-link-alt"></i>
-                  <span>View Cookie Policy</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-              </a>
+              <p className="text-white/90 text-lg leading-relaxed">
+                Our complete cookie policy and privacy preferences are detailed below. You have full control over your privacy settings and can modify them at any time.
+              </p>
             </div>
 
             {/* Cookie Categories Information */}

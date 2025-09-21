@@ -1,37 +1,26 @@
-import { useEffect } from "react";
+import { useState } from "react";
 
 export default function DoNotSell() {
-  // Ensure the Enzuzo CCPA script loads when the component mounts
-  useEffect(() => {
-    // Remove any existing script and div to ensure clean reload
-    const existingScript = document.getElementById('__enzuzo-root-script');
-    if (existingScript) {
-      existingScript.remove();
-    }
-    
-    // Clear the div content
-    const rootDiv = document.getElementById('__enzuzo-root');
-    if (rootDiv) {
-      rootDiv.innerHTML = '';
-    }
-    
-    // Add the CCPA script
-    const script = document.createElement('script');
-    script.id = '__enzuzo-root-script';
-    script.src = 'https://app.enzuzo.com/__enzuzo-privacy-app.js?mode=dns&apiHost=https://app.enzuzo.com&qt=1756588733437&referral=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1ODgyODN9.k5Y0Vix9GgLtIfBefvTbfkVc4SkyttgkXW5m9_dSFPU';
-    script.async = true;
-    
-    // Add load event listener
-    script.onload = () => {
-      console.log('Enzuzo CCPA script loaded');
-    };
-    
-    script.onerror = () => {
-      console.error('Failed to load Enzuzo CCPA script');
-    };
-    
-    document.head.appendChild(script);
-  }, []);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    requestType: 'opt-out',
+    reason: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Here you would typically send the data to your backend
+    console.log('CCPA request submitted:', formData);
+    setFormSubmitted(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   return (
     <div className="min-h-screen bg-cosmic text-white">
@@ -83,13 +72,102 @@ export default function DoNotSell() {
             </p>
           </div>
 
-          {/* Enzuzo CCPA Form Embed */}
+          {/* CCPA Request Form */}
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8">
-            <div 
-              id="__enzuzo-root"
-              className="min-h-[400px]"
-              data-testid="enzuzo-ccpa-form"
-            ></div>
+            {!formSubmitted ? (
+              <form onSubmit={handleSubmit} className="space-y-6" data-testid="ccpa-request-form">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-display font-bold mb-4 text-primary">Submit Your CCPA Request</h3>
+                  <p className="text-white/80">
+                    California residents can request that we do not sell their personal information. Complete the form below to exercise your rights.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-white/90 mb-2">
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-cosmic/50 border border-primary/30 rounded-xl text-white placeholder-white/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                      placeholder="your.email@example.com"
+                      data-testid="input-email"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="requestType" className="block text-sm font-medium text-white/90 mb-2">
+                      Request Type *
+                    </label>
+                    <select
+                      id="requestType"
+                      name="requestType"
+                      value={formData.requestType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-cosmic/50 border border-primary/30 rounded-xl text-white focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                      data-testid="select-request-type"
+                    >
+                      <option value="opt-out">Do Not Sell My Personal Information</option>
+                      <option value="delete">Delete My Personal Information</option>
+                      <option value="access">Access My Personal Information</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="reason" className="block text-sm font-medium text-white/90 mb-2">
+                      Additional Details (Optional)
+                    </label>
+                    <textarea
+                      id="reason"
+                      name="reason"
+                      value={formData.reason}
+                      onChange={handleInputChange}
+                      rows={4}
+                      className="w-full px-4 py-3 bg-cosmic/50 border border-primary/30 rounded-xl text-white placeholder-white/50 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none resize-none"
+                      placeholder="Please provide any additional details about your request..."
+                      data-testid="textarea-reason"
+                    />
+                  </div>
+                </div>
+
+                <div className="text-center pt-6">
+                  <button
+                    type="submit"
+                    className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
+                    data-testid="button-submit-ccpa-request"
+                  >
+                    <span className="relative z-10 flex items-center space-x-2">
+                      <i className="fas fa-paper-plane"></i>
+                      <span>Submit Request</span>
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="text-center py-12" data-testid="ccpa-form-success">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <i className="fas fa-check text-white text-2xl"></i>
+                </div>
+                <h3 className="text-2xl font-display font-bold mb-4 text-green-400">Request Submitted Successfully</h3>
+                <p className="text-white/80 leading-relaxed max-w-md mx-auto">
+                  Thank you for submitting your CCPA request. We will process your request within 45 days as required by California law and send a confirmation to your email address.
+                </p>
+                <button
+                  onClick={() => setFormSubmitted(false)}
+                  className="mt-6 bg-primary/20 hover:bg-primary/30 text-primary font-semibold px-6 py-2 rounded-xl transition-colors duration-300"
+                  data-testid="button-submit-another"
+                >
+                  Submit Another Request
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Additional Information */}

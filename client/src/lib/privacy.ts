@@ -16,7 +16,7 @@ export interface DataDeletionRequest {
 }
 
 export class PrivacyManager {
-  // Cookie management for Enzuzo integration
+  // Cookie management for local privacy controls
   static getCookieCategories() {
     return {
       necessary: {
@@ -63,34 +63,11 @@ export class PrivacyManager {
 
   // Initialize privacy controls on page load
   static initialize() {
-    // Set up consent banner integration points
-    this.setupEnzuzoIntegration();
-
     // Set up data subject rights handlers
     this.setupDataRightsHandlers();
 
     // Initialize privacy-aware features
     this.setupPrivacyFeatures();
-  }
-
-  // Setup Enzuzo cookie banner integration
-  private static setupEnzuzoIntegration() {
-    // Listen for Enzuzo consent events
-    if (typeof window !== 'undefined') {
-      // Enzuzo will call these functions when consent changes
-      (window as any).enzuzoConsentUpdated = (consent: any) => {
-        consentManager.updateFromEnzuzo({
-          analytics: consent.analytics || consent.performance,
-          marketing: consent.marketing || consent.advertising,
-          preferences: consent.functional || consent.preferences,
-        });
-      };
-
-      // Provide current consent state to Enzuzo
-      (window as any).getAscendedConsentState = () => {
-        return consentManager.getEnzuzoCompatibleState();
-      };
-    }
   }
 
   // Setup data subject rights request handlers
@@ -175,7 +152,7 @@ export class PrivacyManager {
     consentManager.setConsentPreferences({
       analytics: preferences.analytics ?? false,
       marketing: preferences.marketing ?? false,
-      preferences: preferences.functional ?? false,
+      functional: preferences.functional ?? false,
       necessary: true,
     });
 
@@ -291,8 +268,8 @@ export class PrivacyManager {
       consentTimestamp: consentState?.timestamp,
       consentVersion: consentState?.version,
       analyticsEnabled: analyticsStatus.hasAnalyticsConsent,
-      marketingEnabled: consentManager.hasMarketingConsent(),
-      functionalEnabled: consentManager.hasPreferencesConsent(),
+      marketingEnabled: consentState?.preferences?.marketing || false,
+      functionalEnabled: consentState?.preferences?.functional || false,
       dataRetentionActive: true,
       ipAnonymization: true,
       gdprCompliant: true,

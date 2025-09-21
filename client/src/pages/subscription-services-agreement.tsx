@@ -59,19 +59,9 @@ export default function SubscriptionServicesAgreement() {
             </div>
             
             <div className="text-center">
-              <a
-                href="https://app.enzuzo.com/policies/ssa/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY2MDIyNDN9.9O2vCRYpGqPpd5vJ_j9OVuZ8MMCgSV2VM9f73KsyseI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
-                data-testid="link-subscription-services-agreement"
-              >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <i className="fas fa-external-link-alt"></i>
-                  <span>View Subscription Services Agreement</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-              </a>
+              <p className="text-white/90 text-lg leading-relaxed">
+                Our complete subscription services agreement is embedded below. This governs the terms for premium spiritual features and billing.
+              </p>
             </div>
 
             {/* Additional Information */}

@@ -59,19 +59,9 @@ export default function PrivacyPolicy() {
             </div>
             
             <div className="text-center">
-              <a
-                href="https://app.enzuzo.com/policies/privacy/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJDdXN0b21lcklEIjoxODI3OSwiQ3VzdG9tZXJOYW1lIjoiY3VzdC1FU0RQdHVDSSIsIkN1c3RvbWVyTG9nb1VSTCI6IiIsIlJvbGVzIjpbInJlZmVycmFsIl0sIlByb2R1Y3QiOiJlbnRlcnByaXNlIiwiVmVyc2lvbiI6MCwiaXNzIjoiRW56dXpvIEluYy4iLCJuYmYiOjE3NTY1OTczNTB9.ZW9Ke3piBCfm3jsHE_9XChLc7KljrsobSwzzW-5VLjE"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative bg-gradient-to-r from-primary to-secondary text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-primary/30 hover:scale-105 text-lg inline-flex items-center space-x-2"
-                data-testid="link-privacy-policy"
-              >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <i className="fas fa-external-link-alt"></i>
-                  <span>View Privacy Policy</span>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-40 group-hover:opacity-60 transition-opacity duration-300"></div>
-              </a>
+              <p className="text-white/90 text-lg leading-relaxed">
+                Our complete privacy policy is embedded below. We believe in transparency and your right to understand exactly how your personal information is handled on our spiritual platform.
+              </p>
             </div>
 
             {/* Privacy Information Categories */}

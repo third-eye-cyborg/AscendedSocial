@@ -50,8 +50,8 @@ router.post('/customer', async (req, res) => {
     }
 
     const customerId = await revenueCatManager.createCustomer(
-      req.user.id,
-      req.user.email
+      (req.user as any).id,
+      (req.user as any).email
     );
     
     res.json({
@@ -90,7 +90,7 @@ router.post('/subscribe', async (req, res) => {
     }
 
     const result = await revenueCatManager.purchaseSubscription(
-      req.user.id,
+      (req.user as any).id,
       productId,
       paymentData
     );
@@ -118,7 +118,7 @@ router.get('/subscription', async (req, res) => {
       });
     }
 
-    const subscription = await revenueCatManager.getSubscriptionStatus(req.user.id);
+    const subscription = await revenueCatManager.getSubscriptionStatus((req.user as any).id);
     res.json({ subscription });
   } catch (error) {
     console.error('Subscription status error:', error);
@@ -152,7 +152,7 @@ router.post('/cancel', async (req, res) => {
     }
 
     const success = await revenueCatManager.cancelSubscription(
-      req.user.id,
+      (req.user as any).id,
       subscriptionId
     );
     
@@ -183,7 +183,7 @@ router.post('/cancel', async (req, res) => {
 router.get('/analytics', async (req, res) => {
   try {
     // Add admin authentication check here
-    if (!req.user?.isAdmin) {
+    if (!(req.user as any)?.isAdmin) {
       return res.status(403).json({
         success: false,
         error: 'Admin access required'

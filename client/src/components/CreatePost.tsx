@@ -11,8 +11,6 @@ import { ObjectUploader } from "./ObjectUploader";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import type { UploadResult } from '@uppy/core';
 import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 
 export default function CreatePost() {
   const { user } = useAuth();

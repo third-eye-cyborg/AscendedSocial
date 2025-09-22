@@ -243,7 +243,7 @@ let figmaMCPServer: FigmaMCPServer | null = null;
 try {
   figmaMCPServer = new FigmaMCPServer();
 } catch (error) {
-  console.warn('Figma MCP server initialization skipped:', error.message);
+  console.warn('Figma MCP server initialization skipped:', error instanceof Error ? error.message : 'Unknown error');
 }
 
 export { figmaMCPServer };

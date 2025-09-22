@@ -47,11 +47,9 @@ export default function CreatePost() {
     },
   });
 
-  // Convert HTML content to plain text for validation
-  const getPlainTextContent = (htmlContent: string) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, 'text/html');
-    return doc.body.textContent || doc.body.innerText || '';
+  // Get plain text content for validation
+  const getPlainTextContent = (textContent: string) => {
+    return textContent.trim();
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -68,7 +66,7 @@ export default function CreatePost() {
     }
 
     const postData: any = {
-      content: content, // Keep HTML content
+      content: content, // Plain text content
       type: mediaType === "video" ? "spark" : postType
     };
 
@@ -162,32 +160,13 @@ export default function CreatePost() {
             {/* Enhanced Post Content */}
             <div className="flex-1 bg-gradient-to-b from-cosmic/30 to-cosmic-light/30 rounded-xl p-3 sm:p-4 border border-primary/20">
               <div className="relative">
-                <div className="rich-text-editor">
-                  <ReactQuill
-                    value={content}
-                    onChange={setContent}
-                    placeholder="Share your spiritual insight..."
-                    className="custom-quill"
-                    theme="snow"
-                    modules={{
-                      toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote', 'code-block'],
-                        [{ 'header': 1 }, { 'header': 2 }],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'script': 'sub'}, { 'script': 'super' }],
-                        [{ 'indent': '-1'}, { 'indent': '+1' }],
-                        ['link'],
-                        [{ 'color': [] }, { 'background': [] }],
-                        ['clean']
-                      ]
-                    }}
-                    formats={[
-                      'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
-                      'list', 'bullet', 'indent', 'link', 'color', 'background', 'code-block', 'script'
-                    ]}
-                  />
-                </div>
+                <Textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Share your spiritual insight..."
+                  className="min-h-[120px] resize-none border-0 bg-transparent focus:outline-none focus:ring-0 text-base text-cosmic-dark placeholder-cosmic-medium/70"
+                  data-testid="input-content"
+                />
                 <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 to-transparent pointer-events-none"></div>
               </div>
               

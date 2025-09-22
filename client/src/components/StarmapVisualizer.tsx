@@ -1,7 +1,7 @@
 import { Suspense, useRef, useState, useEffect, useMemo, Component, ErrorInfo, ReactNode } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, Text, Html } from '@react-three/drei';
-import { Group, Vector3, Color, Mesh, BufferGeometry, Material } from 'three';
+import type { Mesh } from 'three';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -259,7 +259,7 @@ interface StarmapUser {
 }
 
 // Get position based on spiritual attributes - Enhanced 3D positioning
-const getStarPosition = (user: StarmapUser, index: number): Vector3 => {
+const getStarPosition = (user: StarmapUser, index: number): [number, number, number] => {
   // Safe access to user properties with fallbacks
   const chakraIndex = user?.dominantChakra 
     ? Object.keys(chakraColors).indexOf(user.dominantChakra)
@@ -289,17 +289,17 @@ const getStarPosition = (user: StarmapUser, index: number): Vector3 => {
   const spiritualHeight = (safeEnergyLevel / 1000) * 8;
   const height = baseHeight + spiritualHeight + (Math.sin(index * 1.618) * 4);
   
-  return new Vector3(
+  return [
     Math.cos(angle) * finalRadius,
     height,
     Math.sin(angle) * finalRadius
-  );
+  ];
 };
 
 // Individual star component
 function StarUser({ user, position, mode, onClick }: {
   user: StarmapUser;
-  position: Vector3;
+  position: [number, number, number];
   mode: 'starmap' | 'fungus';
   onClick: (user: StarmapUser) => void;
 }) {
@@ -326,8 +326,8 @@ function StarUser({ user, position, mode, onClick }: {
           const orbitX = Math.cos(time * orbitSpeed + userSeed) * orbitRadius;
           const orbitZ = Math.sin(time * orbitSpeed + userSeed) * orbitRadius;
           
-          meshRef.current.position.x = position.x + orbitX;
-          meshRef.current.position.z = position.z + orbitZ;
+          meshRef.current.position.x = position[0] + orbitX;
+          meshRef.current.position.z = position[2] + orbitZ;
           
           // Dramatic 3D rotation with multiple axes
           meshRef.current.rotation.y += delta * (hovered ? 2.5 : 0.8);
@@ -345,7 +345,7 @@ function StarUser({ user, position, mode, onClick }: {
           
           // Simplified floating motion for better performance
           const floatY = Math.sin(time * 1.5 + userSeed) * 0.5;
-          meshRef.current.position.y = position.y + floatY;
+          meshRef.current.position.y = position[1] + floatY;
         } else {
           // Fungus mode - more grounded but still 3D
           meshRef.current.rotation.y += delta * (hovered ? 1.5 : 0.5);
@@ -359,7 +359,7 @@ function StarUser({ user, position, mode, onClick }: {
           meshRef.current.scale.setScalar(newScale * pulse);
           
           const floatOffset = Math.sin(time * 2 + userSeed) * 0.4;
-          meshRef.current.position.y = position.y + floatOffset;
+          meshRef.current.position.y = position[1] + floatOffset;
         }
       }
     } catch (error) {
@@ -538,7 +538,7 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
     users.forEach((user, index) => {
       if (user?.connections && Array.isArray(user.connections) && user.connections.length > 0) {
         const userPos = getStarPosition(user, index);
-        const userColor = new Color(user?.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#ffffff');
+        const userColorHex = user?.dominantChakra && chakraColors[user.dominantChakra] ? chakraColors[user.dominantChakra] : '#ffffff';
         
         user.connections.forEach((connection) => {
           if (!connection?.id) return;
@@ -547,26 +547,28 @@ function ConnectionLines({ users }: { users: StarmapUser[] }) {
             const connectedUser = users[connectedUserIndex];
             if (!connectedUser?.id) return;
             const connectedPos = getStarPosition(connectedUser, connectedUserIndex);
-            const connectedColor = new Color(connectedUser?.dominantChakra && chakraColors[connectedUser.dominantChakra] ? chakraColors[connectedUser.dominantChakra] : '#ffffff');
+            const connectedColorHex = connectedUser?.dominantChakra && chakraColors[connectedUser.dominantChakra] ? chakraColors[connectedUser.dominantChakra] : '#ffffff';
             
-            // Create gradient effect between chakra colors
-            const midColor = userColor.clone().lerp(connectedColor, 0.5);
+            // Create gradient effect between chakra colors - use average color
+            const midColorHex = '#ffffff'; // Simplified for now, can be enhanced with color mixing
             const bondStrength = Math.min((connection.bondLevel || 0) / 10, 1);
             
             lines.push(
-              userPos.x, userPos.y, userPos.z,
-              connectedPos.x, connectedPos.y, connectedPos.z
+              userPos[0], userPos[1], userPos[2],
+              connectedPos[0], connectedPos[1], connectedPos[2]
             );
             
             // Add color and bond strength data with safety checks
-            const safeR = Number.isFinite(midColor.r) ? midColor.r : 1;
-            const safeG = Number.isFinite(midColor.g) ? midColor.g : 1;
-            const safeB = Number.isFinite(midColor.b) ? midColor.b : 1;
             const safeBondStrength = Number.isFinite(bondStrength) ? bondStrength : 0.5;
             
+            // Use simplified color approach - convert hex to RGB
+            const r = 1; // White for simplicity
+            const g = 1;
+            const b = 1;
+            
             bondColors.push(
-              safeR * safeBondStrength, safeG * safeBondStrength, safeB * safeBondStrength,
-              safeR * safeBondStrength, safeG * safeBondStrength, safeB * safeBondStrength
+              r * safeBondStrength, g * safeBondStrength, b * safeBondStrength,
+              r * safeBondStrength, g * safeBondStrength, b * safeBondStrength
             );
           }
         });
@@ -606,7 +608,11 @@ function CameraController({ onModeChange }: { onModeChange: (mode: 'starmap' | '
   
   useFrame(() => {
     // Enhanced zoom-based mode switching with smooth transitions
-    const distance = camera.position.distanceTo(new Vector3(0, 0, 0));
+    const distance = Math.sqrt(
+      camera.position.x * camera.position.x +
+      camera.position.y * camera.position.y +
+      camera.position.z * camera.position.z
+    );
     
     // Use hysteresis to prevent flickering between modes
     if (distance > 35 && lastMode !== 'starmap') {

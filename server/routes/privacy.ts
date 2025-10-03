@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { getFidesManager } from '../lib/fides-integration';
 import { getPrivacyStackManager } from '../lib/privacy-stack';
+import { getD1Manager } from '../lib/cloudflare-d1-integration';
 import { createDataSubjectRequestSchema, updateConsentSchema } from '../../shared/schemas/privacy';
 
 const router = Router();
@@ -27,6 +28,22 @@ const privacyStackConfig = {
 // Initialize managers
 const fidesManager = getFidesManager(fidesConfig);
 const privacyStack = getPrivacyStackManager(privacyStackConfig);
+
+// Initialize Cloudflare D1 for consent auditing
+let d1Manager: ReturnType<typeof getD1Manager> | null = null;
+
+if (process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_D1_DATABASE_ID) {
+  const d1Config = {
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+    apiToken: process.env.CLOUDFLARE_API_TOKEN,
+    databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID,
+  };
+  
+  d1Manager = getD1Manager(d1Config);
+  d1Manager.initialize()
+    .then(() => d1Manager!.initializeSchema())
+    .catch(console.error);
+}
 
 // Initialize on startup
 fidesManager.initialize().catch(console.error);
@@ -131,42 +148,64 @@ router.post('/consent', async (req, res) => {
 });
 
 /**
- * Log consent event for auditing with Probo
- * POST /api/consent/audit
+ * Log consent event for auditing (self-hosted in Cloudflare D1)
+ * POST /api/privacy/consent/audit
  */
 router.post('/consent/audit', async (req, res) => {
   try {
     const { event, preferences, timestamp } = req.body;
     
+    const userId = req.user?.id || 'anonymous';
+    const sessionId = req.sessionID || 'anonymous';
+    const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
+    const userAgent = req.get('User-Agent') || 'unknown';
+    
     const auditLog = {
       event: event || 'consent_updated',
       preferences: preferences || {},
       timestamp: timestamp || new Date().toISOString(),
-      userId: req.user?.id || 'anonymous',
-      sessionId: req.sessionID || 'anonymous',
-      ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
-      userAgent: req.get('User-Agent') || 'unknown',
+      userId,
+      sessionId,
+      ipAddress,
+      userAgent,
       source: 'termshub'
     };
 
-    // Log to Probo for consent auditing (will be implemented when Probo credentials are available)
-    if (process.env.PROBO_API_KEY) {
-      // TODO: Implement Probo API call
-      console.log('📊 Probo audit log:', auditLog);
-    }
+    let consentId: number | undefined;
 
     // Store in Cloudflare D1 database (EU region) for GDPR compliance
-    // This will be implemented once D1 credentials are configured
-    if (process.env.CLOUDFLARE_D1_DATABASE_ID) {
-      // TODO: Implement D1 storage
-      console.log('💾 D1 storage:', auditLog);
-    }
+    if (d1Manager) {
+      try {
+        const purposes = Object.keys(preferences || {}).join(', ') || 'general';
+        const consentText = JSON.stringify(preferences || {});
+        
+        const result = await d1Manager.logConsent({
+          userId,
+          userIp: ipAddress,
+          consentTimestamp: auditLog.timestamp,
+          consentVersion: 'v1.0',
+          consentText,
+          consentMethod: 'web_form',
+          purpose: purposes,
+          consentStatus: 'active',
+          event: auditLog.event,
+          sessionId,
+          userAgent,
+          source: auditLog.source,
+        });
 
-    // Log to console for now
-    console.log('✅ Consent audit logged:', auditLog);
+        consentId = result.consentId;
+        console.log('✅ Consent logged to D1:', { consentId });
+      } catch (d1Error) {
+        console.error('❌ Failed to log to D1:', d1Error);
+      }
+    } else {
+      console.log('⚠️ D1 not configured, consent logged to console only:', auditLog);
+    }
 
     res.json({
       success: true,
+      consentId,
       message: 'Consent event logged successfully'
     });
   } catch (error) {

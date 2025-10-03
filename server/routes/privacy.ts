@@ -131,6 +131,54 @@ router.post('/consent', async (req, res) => {
 });
 
 /**
+ * Log consent event for auditing with Probo
+ * POST /api/consent/audit
+ */
+router.post('/consent/audit', async (req, res) => {
+  try {
+    const { event, preferences, timestamp } = req.body;
+    
+    const auditLog = {
+      event: event || 'consent_updated',
+      preferences: preferences || {},
+      timestamp: timestamp || new Date().toISOString(),
+      userId: req.user?.id || 'anonymous',
+      sessionId: req.sessionID || 'anonymous',
+      ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
+      userAgent: req.get('User-Agent') || 'unknown',
+      source: 'termshub'
+    };
+
+    // Log to Probo for consent auditing (will be implemented when Probo credentials are available)
+    if (process.env.PROBO_API_KEY) {
+      // TODO: Implement Probo API call
+      console.log('📊 Probo audit log:', auditLog);
+    }
+
+    // Store in Cloudflare D1 database (EU region) for GDPR compliance
+    // This will be implemented once D1 credentials are configured
+    if (process.env.CLOUDFLARE_D1_DATABASE_ID) {
+      // TODO: Implement D1 storage
+      console.log('💾 D1 storage:', auditLog);
+    }
+
+    // Log to console for now
+    console.log('✅ Consent audit logged:', auditLog);
+
+    res.json({
+      success: true,
+      message: 'Consent event logged successfully'
+    });
+  } catch (error) {
+    console.error('Consent audit error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to log consent event'
+    });
+  }
+});
+
+/**
  * Handle "Do Not Sell" request (CCPA)
  * POST /api/privacy/do-not-sell
  */

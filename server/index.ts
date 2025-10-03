@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
@@ -8,6 +9,15 @@ import mcpRoutes from './mcp-routes';
 import notionMcpRoutes from './notion-mcp-routes';
 import autoSyncRoutes from './auto-sync-routes';
 import builderRoutes from './builder-integration';
+
+// Initialize Sentry for error tracking (v8 API - must be done before creating Express app)
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  });
+}
 
 const app = express();
 app.use(express.json());
@@ -66,6 +76,11 @@ app.use((req, res, next) => {
   app.use('/api/notion-mcp', notionMcpRoutes);
   app.use('/api/auto-sync', autoSyncRoutes);
   app.use('/api/builder', builderRoutes);
+
+  // Sentry error handler (must be after routes, before other error middleware)
+  if (process.env.SENTRY_DSN) {
+    Sentry.setupExpressErrorHandler(app);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

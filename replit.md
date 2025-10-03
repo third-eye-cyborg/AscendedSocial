@@ -20,9 +20,14 @@ The client uses React, TypeScript, and Vite with wouter for routing and TanStack
 - **Oracle System**: AI-powered daily readings, recommendations, and tarot-style guidance based on user behavior.
 - **Premium Subscriptions**: Managed by RevenueCat and Paddle, offering features like unlimited energy and enhanced oracle readings.
 - **Zero Trust Security**: Four-layer model using Cloudflare Zero Trust for user authentication, admin access, network protection, and API protection.
+- **Privacy Compliance**:
+  - DSAR form (`/dsar`) for GDPR data subject access requests (access, deletion, rectification, portability, restriction, objection)
+  - Do Not Sell form (`/do-not-sell-form`) for CCPA opt-out requests
+  - Consent audit logging with Probo integration (`POST /api/privacy/consent/audit`)
+  - Cloudflare Turnstile security verification on all privacy forms (enabled on production domains)
 
 ### System Design Choices
-The project enforces strict codebase standards for folder structure, file cleanup, documentation placement, and code structure. A sophisticated design-to-code workflow integrates Figma, Storybook, Cypress, Playwright, Browserless, and Chromatic for visual regression testing. Comprehensive GDPR compliance is achieved with Klaro for cookie consent and Fides for privacy orchestration.
+The project enforces strict codebase standards for folder structure, file cleanup, documentation placement, and code structure. A sophisticated design-to-code workflow integrates Figma, Storybook, Cypress, Playwright, Browserless, and Chromatic for visual regression testing. Comprehensive GDPR and CCPA compliance is achieved with TermsHub for cookie consent management, Fides for privacy orchestration, Probo (open-source) for consent auditing, and Cloudflare D1 EU database for secure consent storage. Dedicated DSAR (Data Subject Access Request) and Do Not Sell forms provide users with direct access to their privacy rights.
 
 ## External Dependencies
 
@@ -53,10 +58,14 @@ The project enforces strict codebase standards for folder structure, file cleanu
 
 ### Analytics and Monitoring
 - **PostHog**: Privacy-first user analytics.
+- **Sentry**: Error tracking and crash reporting for both frontend and backend.
 
 ### Privacy and Consent Management
-- **Klaro**: Open-source, GDPR-compliant cookie consent banner.
-- **Fides**: Privacy orchestration platform.
+- **TermsHub**: GDPR and CCPA-compliant cookie consent banner and legal document hosting.
+- **Fides**: Privacy orchestration platform for data subject requests and privacy workflows.
+- **Probo**: Open-source consent auditing and compliance logging.
+- **Cloudflare D1**: EU-based database for secure consent storage and GDPR compliance.
+- **Prighter**: EU representative services for GDPR compliance.
 
 ### Security and Infrastructure
 - **Cloudflare Zero Trust**: Enterprise security platform (Access, Gateway, WAF).

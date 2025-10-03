@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react';
-
 // Privacy consent management for TermsHub integration with Fides and Probo
 export interface ConsentPreferences {
   analytics: boolean;
@@ -289,27 +287,3 @@ export class ConsentManager {
 
 // Global consent manager instance
 export const consentManager = ConsentManager.getInstance();
-
-// Hook for React components
-export function useConsent() {
-  const [consentState, setConsentState] = useState<ConsentState | null>(
-    consentManager.getConsentState()
-  );
-
-  useEffect(() => {
-    const unsubscribe = consentManager.onConsentChange(setConsentState);
-    return unsubscribe;
-  }, []);
-
-  return {
-    consentState,
-    hasConsented: consentManager.hasUserConsented(),
-    hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
-    hasMarketingConsent: consentManager.hasMarketingConsent(),
-    hasFunctionalConsent: consentManager.hasFunctionalConsent(),
-    acceptAll: () => consentManager.acceptAll(),
-    rejectAll: () => consentManager.rejectAll(),
-    setPreferences: (prefs: ConsentPreferences) => consentManager.setConsentPreferences(prefs),
-    clearConsent: () => consentManager.clearConsent(),
-  };
-}

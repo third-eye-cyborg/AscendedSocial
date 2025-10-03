@@ -117,7 +117,7 @@ router.post('/consent', async (req, res) => {
     const consentUpdate = updateConsentSchema.parse(req.body);
     
     const consentData = {
-      userId: req.user?.id,
+      userId: (req.user as any)?.id || 'anonymous',
       sessionId: req.sessionID || 'anonymous',
       purposes: consentUpdate.purposes || {},
       ipAddress: req.ip || req.connection.remoteAddress || 'unknown',
@@ -155,7 +155,7 @@ router.post('/consent/audit', async (req, res) => {
   try {
     const { event, preferences, timestamp } = req.body;
     
-    const userId = req.user?.id || 'anonymous';
+    const userId = (req.user as any)?.id || 'anonymous';
     const sessionId = req.sessionID || 'anonymous';
     const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';

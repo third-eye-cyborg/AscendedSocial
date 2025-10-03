@@ -218,6 +218,147 @@ router.post('/consent/audit', async (req, res) => {
 });
 
 /**
+ * Get consent history for a user (GDPR access request)
+ * GET /api/privacy/consent/history/:userId
+ */
+router.get('/consent/history/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!d1Manager) {
+      return res.status(503).json({
+        success: false,
+        error: 'Consent storage not configured'
+      });
+    }
+
+    const history = await d1Manager.getConsentHistory(userId);
+
+    res.json({
+      success: true,
+      userId,
+      consents: history,
+      count: history.length
+    });
+  } catch (error) {
+    console.error('Consent history error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve consent history'
+    });
+  }
+});
+
+/**
+ * Withdraw all consents for a user
+ * POST /api/privacy/consent/withdraw
+ */
+router.post('/consent/withdraw', async (req, res) => {
+  try {
+    const { userId } = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        error: 'User ID is required'
+      });
+    }
+
+    if (!d1Manager) {
+      return res.status(503).json({
+        success: false,
+        error: 'Consent storage not configured'
+      });
+    }
+
+    const result = await d1Manager.withdrawConsent(userId);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'All consents withdrawn successfully'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to withdraw consents'
+      });
+    }
+  } catch (error) {
+    console.error('Consent withdrawal error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to withdraw consents'
+    });
+  }
+});
+
+/**
+ * Delete all consent data for a user (GDPR right to be forgotten)
+ * DELETE /api/privacy/consent/:userId
+ */
+router.delete('/consent/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!d1Manager) {
+      return res.status(503).json({
+        success: false,
+        error: 'Consent storage not configured'
+      });
+    }
+
+    const result = await d1Manager.deleteUserConsents(userId);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'User consent data deleted successfully'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to delete user consent data'
+      });
+    }
+  } catch (error) {
+    console.error('Consent deletion error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to delete user consent data'
+    });
+  }
+});
+
+/**
+ * Get consent statistics (admin only)
+ * GET /api/privacy/consent/statistics
+ */
+router.get('/consent/statistics', async (req, res) => {
+  try {
+    if (!d1Manager) {
+      return res.status(503).json({
+        success: false,
+        error: 'Consent storage not configured'
+      });
+    }
+
+    const statistics = await d1Manager.getConsentStatistics();
+
+    res.json({
+      success: true,
+      statistics
+    });
+  } catch (error) {
+    console.error('Consent statistics error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve consent statistics'
+    });
+  }
+});
+
+/**
  * Handle "Do Not Sell" request (CCPA)
  * POST /api/privacy/do-not-sell
  */

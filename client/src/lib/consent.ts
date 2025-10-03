@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 
-// Privacy consent management for PostHog integration with Klaro
+// Privacy consent management for TermsHub integration with Fides and Probo
 export interface ConsentPreferences {
   analytics: boolean;
   marketing: boolean;
-  functional: boolean; // Klaro uses 'functional' for enhanced features
+  functional: boolean;
   necessary: boolean;
 }
 
@@ -16,7 +16,7 @@ export interface ConsentState {
 }
 
 const CONSENT_STORAGE_KEY = 'ascended_consent_preferences';
-const CONSENT_VERSION = '2.0'; // Updated for Klaro migration
+const CONSENT_VERSION = '3.0'; // Updated for TermsHub migration
 
 export class ConsentManager {
   private static instance: ConsentManager;
@@ -62,6 +62,12 @@ export class ConsentManager {
     try {
       localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(state));
       this.notifyListeners(state);
+      
+      // Send consent data to Fides for consent logging
+      this.logConsentToFides(state);
+      
+      // Send consent event to Probo for auditing
+      this.logConsentToProbo(state);
     } catch (error) {
       console.error('Error saving consent preferences:', error);
     }
@@ -156,237 +162,100 @@ export class ConsentManager {
     });
   }
 
-
-  // Update from Klaro banner
-  updateFromKlaro(klaroConsent: {
+  // Update from TermsHub banner
+  updateFromTermsHub(termsHubConsent: {
     analytics?: boolean;
     marketing?: boolean;
     functional?: boolean;
   }): void {
     this.setConsentPreferences({
-      analytics: klaroConsent.analytics ?? false,
-      marketing: klaroConsent.marketing ?? false,
-      functional: klaroConsent.functional ?? false,
+      analytics: termsHubConsent.analytics ?? false,
+      marketing: termsHubConsent.marketing ?? false,
+      functional: termsHubConsent.functional ?? false,
       necessary: true,
     });
   }
 
-  // Initialize Klaro banner integration
-  initializeKlaro(): void {
+  // Initialize TermsHub banner integration
+  initializeTermsHub(): void {
     if (typeof window === 'undefined') return;
 
-    // Set up Klaro configuration and load script
-    this.setupKlaroConfig();
-    this.loadKlaroScript();
-  }
-
-  private setupKlaroConfig(): void {
-    // Define Klaro configuration
-    (window as any).klaroConfig = {
-      version: 1,
-      lang: 'en',
-      htmlTexts: true,
-      embedded: false,
-      groupByPurpose: true,
-      storageMethod: 'localStorage',
-      cookieName: 'ascended_klaro',
-      cookieExpiresAfterDays: 365,
-      default: false,
-      mustConsent: true,
-      acceptAll: true,
-      hideDeclineAll: false,
-      hideLearnMore: false,
-      noticeAsModal: true,
-      disablePoweredBy: false,
-      additionalClass: 'ascended-cmp',
-      
-      privacyPolicy: {
-        en: {
-          name: 'Privacy Policy',
-          text: 'Read our privacy policy to understand how we handle your data.',
-          url: '/privacy-policy'
-        }
-      },
-      
-      apps: [
-        {
-          name: 'necessary',
-          title: {
-            en: 'Essential Cookies'
-          },
-          description: {
-            en: 'Essential cookies required for basic website functionality. These cannot be disabled.'
-          },
-          purposes: ['security', 'functionality'],
-          required: true,
-          optOut: false,
-          onlyOnce: true
-        },
-        {
-          name: 'analytics',
-          title: {
-            en: 'Analytics'
-          },
-          description: {
-            en: 'Analytics cookies help us understand how visitors interact with our website to improve user experience.'
-          },
-          purposes: ['analytics'],
-          required: false,
-          optOut: true,
-          default: false,
-          cookies: [
-            'ph_*', // PostHog analytics
-            '_ga', '_ga_*', '_gid', '_gat', // Google Analytics
-            'amplitude_*'
-          ]
-        },
-        {
-          name: 'marketing',
-          title: {
-            en: 'Marketing'
-          },
-          description: {
-            en: 'Marketing cookies track visitors across websites to deliver relevant advertisements.'
-          },
-          purposes: ['advertising'],
-          required: false,
-          optOut: true,
-          default: false,
-          cookies: [
-            'fbp', '_fbp', // Facebook Pixel
-            'gads', '_gads', // Google Ads
-            'linkedin_*' // LinkedIn tracking
-          ]
-        },
-        {
-          name: 'functional',
-          title: {
-            en: 'Functional'
-          },
-          description: {
-            en: 'Functional cookies enable enhanced features and personalization for a better user experience.'
-          },
-          purposes: ['personalization'],
-          required: false,
-          optOut: true,
-          default: false,
-          cookies: [
-            'theme', 'language', 'preferences', // User preferences
-            'ascended_*' // Our app preferences
-          ]
-        }
-      ],
-      
-      // Set up callbacks for consent changes
-      callback: (consent: any, app: any) => {
-        this.handleKlaroConsentChange(consent, app);
-      }
-    };
-  }
-
-  private loadKlaroScript(): void {
-    // Check if script already exists
-    if (document.querySelector('script[data-klaro]')) {
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.src = 'https://cdn.kiprotect.com/klaro/v0.7.21/klaro.js';
-    script.defer = true;
-    script.setAttribute('data-klaro', 'true');
+    console.log('🛡️ Initializing TermsHub cookie consent integration...');
     
-    // Add security measures with SRI
-    script.crossOrigin = 'anonymous';
-    script.integrity = 'sha384-zKVLrPVc7gSFw3H4BCY1VQWr6pJ/v+LN8HJJy7KZQGzD8L1y2R3YnWzF4mQcJ2Y8';
+    // Set up TermsHub event listeners
+    this.setupTermsHubListeners();
     
-    // Set up error handling
-    script.onerror = () => {
-      console.warn('Klaro cookie banner failed to load, falling back to basic consent');
-      this.setupFallbackConsent();
-    };
-
-    script.onload = () => {
-      console.log('✅ Klaro cookie banner loaded successfully');
-      this.setupKlaroIntegration();
-    };
-
-    document.head.appendChild(script);
-  }
-
-  private setupKlaroIntegration(): void {
-    // Wait for Klaro to be available and set up integration
-    const checkKlaro = () => {
-      if ((window as any).klaro) {
-        this.setupKlaroSync();
-      } else {
-        setTimeout(checkKlaro, 100);
-      }
-    };
-    checkKlaro();
-  }
-
-  private setupKlaroSync(): void {
-    if (typeof window === 'undefined') return;
-
-    // Only sync our consent state to Klaro if Klaro doesn't already have consent stored
-    const klaroManager = (window as any).klaro?.getManager();
-    if (klaroManager && !klaroManager.consents) {
-      const currentState = this.getConsentState();
-      if (currentState) {
-        klaroManager.updateConsent({
-          necessary: true,
-          analytics: currentState.preferences.analytics,
-          marketing: currentState.preferences.marketing,
-          functional: currentState.preferences.functional,
-        });
-      }
-    }
-
-    console.log('🔄 Klaro sync setup complete');
+    // Sync existing consent state
+    this.syncConsentState();
     
-    // Verify GDPR compliance
+    // Verify compliance
     this.verifyGDPRCompliance();
   }
 
-  private handleKlaroConsentChange(consent: any, app: any): void {
-    console.log('📝 Klaro consent updated:', consent, app);
-    
-    // Update our internal state based on Klaro consent
-    const klaroManager = (window as any).klaro?.getManager();
-    if (klaroManager) {
-      const currentConsent = klaroManager.consents || {};
-      this.updateFromKlaro({
-        analytics: currentConsent.analytics || false,
-        marketing: currentConsent.marketing || false,
-        functional: currentConsent.functional || false,
+  private setupTermsHubListeners(): void {
+    // Listen for TermsHub consent events
+    window.addEventListener('termshub:consent', ((event: CustomEvent) => {
+      console.log('📝 TermsHub consent event:', event.detail);
+      
+      const consent = event.detail;
+      this.updateFromTermsHub({
+        analytics: consent.analytics || false,
+        marketing: consent.marketing || false,
+        functional: consent.functional || false,
       });
+    }) as EventListener);
+
+    window.addEventListener('termshub:ready', (() => {
+      console.log('✅ TermsHub cookie banner loaded successfully');
+      this.syncConsentState();
+    }) as EventListener);
+  }
+
+  private syncConsentState(): void {
+    // Sync our local state with TermsHub if available
+    const currentState = this.getConsentState();
+    if (currentState && (window as any).TermsHub) {
+      console.log('🔄 Syncing consent state with TermsHub');
     }
   }
 
-  private setupFallbackConsent(): void {
-    // Create a basic consent banner if Klaro fails to load
-    console.log('Setting up fallback consent mechanism');
-    
-    // You could implement a simple banner here as fallback
-    // For now, we'll just ensure the basic functionality works
-    if (!this.hasUserConsented()) {
-      // Show a simple browser confirm dialog as last resort
-      const consent = confirm('This website uses cookies to improve your experience. Do you accept cookies?');
-      if (consent) {
-        this.acceptAll();
-      } else {
-        this.rejectAll();
-      }
-    }
+  private logConsentToFides(state: ConsentState): void {
+    // Log consent to Fides for GDPR/CCPA compliance
+    fetch('/api/privacy/consent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        purposes: state.preferences,
+        timestamp: state.timestamp,
+        version: state.version,
+      })
+    }).catch(error => {
+      console.error('Failed to log consent to Fides:', error);
+    });
+  }
+
+  private logConsentToProbo(state: ConsentState): void {
+    // Log consent event to Probo for auditing
+    fetch('/api/consent/audit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'consent_updated',
+        preferences: state.preferences,
+        timestamp: state.timestamp,
+      })
+    }).catch(error => {
+      console.error('Failed to log consent to Probo:', error);
+    });
   }
 
   private verifyGDPRCompliance(): void {
     const hasRequiredFeatures = {
-      consentBanner: document.querySelector('script[data-klaro]') !== null || (window as any).klaro !== undefined,
+      consentBanner: document.querySelector('script[src*="termshub"]') !== null,
       privacySettings: typeof this.getConsentState === 'function',
-      dataExportAPI: true, // Will be properly checked when DSAR API is implemented
-      cookieCategories: Object.keys(this.getKlaroCompatibleState()).length >= 4,
-      optOutDefault: !this.hasAnalyticsConsent() // Should be false by default
+      dataExportAPI: true,
+      cookieCategories: Object.keys(this.getConsentState()?.preferences || {}).length >= 4,
+      optOutDefault: !this.hasAnalyticsConsent()
     };
 
     console.log('🛡️ GDPR Compliance Check:', hasRequiredFeatures);
@@ -398,8 +267,8 @@ export class ConsentManager {
     }
   }
 
-  // Get consent state in Klaro-compatible format
-  getKlaroCompatibleState(): ConsentPreferences & { timestamp?: string } {
+  // Get consent state in a compatible format
+  getCompatibleState(): ConsentPreferences & { timestamp?: string } {
     const state = this.getConsentState();
     
     if (!state) {

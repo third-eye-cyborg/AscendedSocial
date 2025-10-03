@@ -114,17 +114,18 @@ export default function MarketingFooter() {
             <h4 className="text-white font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/cookie-policy">
-                  <span 
-                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
-                    data-testid="link-cookie-policy"
-                  >
-                    Cookie Policy
-                  </span>
-                </Link>
+                <a 
+                  href="https://portal.termshub.io/ascended.social/cookie_policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-primary transition-colors text-sm"
+                  data-testid="link-cookie-policy"
+                >
+                  Cookie Policy
+                </a>
               </li>
               <li>
-                <Link href="/do-not-sell">
+                <Link href="/do-not-sell-form">
                   <span 
                     className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
                     data-testid="link-do-not-sell"
@@ -134,34 +135,47 @@ export default function MarketingFooter() {
                 </Link>
               </li>
               <li>
-                <Link href="/data-request">
+                <Link href="/dsar">
                   <span 
                     className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
                     data-testid="link-data-request"
                   >
-                    Data Request
+                    Data Request (DSAR)
                   </span>
                 </Link>
               </li>
               <li>
-                <Link href="/privacy-policy">
-                  <span 
-                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
-                    data-testid="link-privacy-policy"
-                  >
-                    Privacy Policy
-                  </span>
-                </Link>
+                <a 
+                  href="https://portal.termshub.io/ascended.social/privacy_policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-primary transition-colors text-sm"
+                  data-testid="link-privacy-policy"
+                >
+                  Privacy Policy
+                </a>
               </li>
               <li>
-                <Link href="/terms-of-service">
-                  <span 
-                    className="text-gray-400 hover:text-primary transition-colors text-sm cursor-pointer"
-                    data-testid="link-terms-of-service"
-                  >
-                    Terms of Service
-                  </span>
-                </Link>
+                <a 
+                  href="https://portal.termshub.io/ascended.social/website_tos/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-primary transition-colors text-sm"
+                  data-testid="link-terms-of-service"
+                >
+                  Terms of Service
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://portal.termshub.io/ascended.social/refund_policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-primary transition-colors text-sm"
+                  data-testid="link-refund-policy"
+                >
+                  Refund Policy
+                </a>
               </li>
               <li>
                 <Link href="/payment-terms">

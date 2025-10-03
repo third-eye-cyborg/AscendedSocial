@@ -53,6 +53,8 @@ const Compliance = lazy(() => import("@/pages/compliance"));
 const Unsubscribe = lazy(() => import("@/pages/unsubscribe"));
 const CookiePolicy = lazy(() => import("@/pages/cookie-policy"));
 const DoNotSell = lazy(() => import("@/pages/do-not-sell"));
+const DSARPage = lazy(() => import("@/pages/dsar"));
+const DoNotSellForm = lazy(() => import("@/pages/do-not-sell-form"));
 const PrivacyManagement = lazy(() => import("@/pages/privacy-management"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
@@ -105,8 +107,8 @@ const Router = React.memo(() => {
 
   // Initialize privacy banner when app loads
   useEffect(() => {
-    // Initialize Klaro cookie banner integration
-    consentManager.initializeKlaro();
+    // Initialize TermsHub cookie banner integration
+    consentManager.initializeTermsHub();
   }, []);
 
   // Initialize analytics and notifications only after consent is given
@@ -194,6 +196,8 @@ const Router = React.memo(() => {
         <Route path="/unsubscribe" component={Unsubscribe} />
         <Route path="/cookie-policy" component={CookiePolicy} />
         <Route path="/do-not-sell" component={DoNotSell} />
+        <Route path="/dsar" component={DSARPage} />
+        <Route path="/do-not-sell-form" component={DoNotSellForm} />
         <Route path="/privacy-management" component={PrivacyManagement} />
         <Route path="/privacy-policy" component={PrivacyPolicy} />
         <Route path="/terms-of-service" component={TermsOfService} />

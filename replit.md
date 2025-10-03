@@ -21,13 +21,23 @@ The client uses React, TypeScript, and Vite with wouter for routing and TanStack
 - **Premium Subscriptions**: Managed by RevenueCat and Paddle, offering features like unlimited energy and enhanced oracle readings.
 - **Zero Trust Security**: Four-layer model using Cloudflare Zero Trust for user authentication, admin access, network protection, and API protection.
 - **Privacy Compliance**:
-  - DSAR form (`/dsar`) for GDPR data subject access requests (access, deletion, rectification, portability, restriction, objection)
-  - Do Not Sell form (`/do-not-sell-form`) for CCPA opt-out requests
-  - Consent audit logging with Probo integration (`POST /api/privacy/consent/audit`)
-  - Cloudflare Turnstile security verification on all privacy forms (enabled on production domains)
+  - **TermsHub Integration**: GDPR/CCPA-compliant cookie consent banner replacing Klaro/Enzuzo
+  - **DSAR Form** (`/dsar`): GDPR data subject access requests (access, deletion, rectification, portability, restriction, objection)
+  - **Do Not Sell Form** (`/do-not-sell-form`): CCPA opt-out requests
+  - **Self-Hosted Consent Auditing**: Complete consent logging system using Cloudflare D1 EU database
+    - `POST /api/privacy/consent/audit`: Log consent events (accepted, updated, rejected)
+    - `GET /api/privacy/consent/history/:userId`: Retrieve user consent history
+    - `POST /api/privacy/consent/withdraw`: Withdraw all user consents
+    - `GET /api/privacy/consent/statistics`: Get consent statistics by status
+  - **Cloudflare Turnstile**: Security verification on all privacy forms (enabled on production domains)
+  - **Sentry SDK v8**: Error tracking and crash reporting for frontend (React) and backend (Node.js/Express)
 
 ### System Design Choices
-The project enforces strict codebase standards for folder structure, file cleanup, documentation placement, and code structure. A sophisticated design-to-code workflow integrates Figma, Storybook, Cypress, Playwright, Browserless, and Chromatic for visual regression testing. Comprehensive GDPR and CCPA compliance is achieved with TermsHub for cookie consent management, Fides for privacy orchestration, Probo (open-source) for consent auditing, and Cloudflare D1 EU database for secure consent storage. Dedicated DSAR (Data Subject Access Request) and Do Not Sell forms provide users with direct access to their privacy rights.
+The project enforces strict codebase standards for folder structure, file cleanup, documentation placement, and code structure. A sophisticated design-to-code workflow integrates Figma, Storybook, Cypress, Playwright, Browserless, and Chromatic for visual regression testing. 
+
+**Privacy Infrastructure**: Comprehensive GDPR and CCPA compliance featuring TermsHub for cookie consent management, self-hosted consent auditing using Cloudflare D1 EU database for GDPR-compliant consent storage, and dedicated DSAR (Data Subject Access Request) and Do Not Sell forms providing users with direct access to their privacy rights. The consent auditing system gracefully handles D1 unavailability with fallback console logging while maintaining full endpoint functionality.
+
+**Error Monitoring**: Sentry SDK v8 integrated on both frontend (React) and backend (Node.js/Express) for comprehensive error tracking and crash reporting with proper Express error handler setup.
 
 ## External Dependencies
 
@@ -61,10 +71,10 @@ The project enforces strict codebase standards for folder structure, file cleanu
 - **Sentry**: Error tracking and crash reporting for both frontend and backend.
 
 ### Privacy and Consent Management
-- **TermsHub**: GDPR and CCPA-compliant cookie consent banner and legal document hosting.
-- **Fides**: Privacy orchestration platform for data subject requests and privacy workflows.
-- **Probo**: Open-source consent auditing and compliance logging.
-- **Cloudflare D1**: EU-based database for secure consent storage and GDPR compliance.
+- **TermsHub**: GDPR and CCPA-compliant cookie consent banner and legal document hosting (replaces Klaro/Enzuzo).
+- **Self-Hosted Consent Auditing**: Custom implementation using Cloudflare D1 EU database for GDPR-compliant consent storage, with complete API endpoints for logging, retrieval, withdrawal, and statistics.
+- **Cloudflare D1**: EU-based serverless database for secure consent storage. Requires environment variables: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_D1_DATABASE_ID`.
+- **Cloudflare Turnstile**: CAPTCHA-free security verification on privacy forms (production domains only).
 - **Prighter**: EU representative services for GDPR compliance.
 
 ### Security and Infrastructure

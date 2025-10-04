@@ -79,6 +79,8 @@ The project enforces strict codebase standards for folder structure, file cleanu
 
 ### Security and Infrastructure
 - **Cloudflare Zero Trust**: Enterprise security platform (Access, Gateway, WAF).
+- **Bearer CLI**: Open-source SAST (Static Application Security Testing) tool v1.51.0 for security and privacy risk detection. Scans source code for OWASP Top 10, CWE Top 25 vulnerabilities, and sensitive data flows. Integrated with privacy stack for automated security scanning.
+- **Snyk**: Vulnerability scanning (enabled when API key configured).
 
 ### Browser Automation and Testing
 - **Browserless**: Cloud-based browser automation (Playwright/Puppeteer).

@@ -43,19 +43,31 @@ export function isMobileEnvironment(): boolean {
 }
 
 /**
+ * Checks if the app is running on a production domain
+ */
+function isProductionDomain(): boolean {
+  if (typeof window === 'undefined') return false;
+  const hostname = window.location.hostname;
+  return hostname === 'ascended.social' || hostname === 'dev.ascended.social';
+}
+
+/**
  * Gets the correct authentication URL based on environment
  */
 export function getAuthUrl(redirectUrl?: string): string {
   try {
     console.log('🔧 [AUTH-DEBUG] getAuthUrl() called with:', { redirectUrl });
     
-    const baseUrl = '/api/login';
-    console.log('🔧 [AUTH-DEBUG] Base URL:', baseUrl);
-    
     const isMobile = isMobileEnvironment();
+    const isProd = isProductionDomain();
+    
     console.log('🔧 [AUTH-DEBUG] Mobile environment check:', isMobile);
+    console.log('🔧 [AUTH-DEBUG] Production domain check:', isProd);
     
     if (isMobile) {
+      // Mobile always uses /api/login directly (bypasses Turnstile via state parameter)
+      const baseUrl = '/api/login';
+      
       console.log('🔍 [AUTH-DEBUG] Replit Auth mobile flow:', {
         platform: 'mobile',
         environment: window.location.hostname.includes('app.ascended.social') ? 'Production' : 'Development',
@@ -74,14 +86,18 @@ export function getAuthUrl(redirectUrl?: string): string {
       console.log('🔧 [AUTH-DEBUG] Generated mobile auth URL:', finalUrl);
       return finalUrl;
     } else {
+      // Web authentication - use /login with Turnstile on production
+      const baseUrl = isProd ? '/login' : '/api/login';
+      
       console.log('🔍 [AUTH-DEBUG] Replit Auth web flow:', {
         platform: 'web', 
         environment: window.location.hostname.includes('ascended.social') ? 'Production' : 'Development',
         redirectUrl: redirectUrl || window.location.origin,
-        authEndpoint: baseUrl
+        authEndpoint: baseUrl,
+        usesTurnstile: isProd
       });
       
-      // Web authentication - simple redirect to Replit Auth
+      // Web authentication
       const finalUrl = redirectUrl ? `${baseUrl}?redirectUrl=${encodeURIComponent(redirectUrl)}` : baseUrl;
       console.log('🔧 [AUTH-DEBUG] Generated web auth URL:', finalUrl);
       return finalUrl;

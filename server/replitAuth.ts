@@ -9,6 +9,9 @@ import jwt from 'jsonwebtoken';
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { TurnstileService } from "./turnstileService";
+
+const turnstileService = new TurnstileService();
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -132,9 +135,34 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
-  app.get("/api/login", (req, res, next) => {
+  app.get("/api/login", async (req, res, next) => {
     // Extract state parameter for mobile authentication
     const state = req.query.state as string;
+    const turnstileToken = req.query.turnstile as string;
+    
+    // Check if this is a production domain that requires Turnstile
+    const hostname = req.get('host') || '';
+    const isProductionDomain = hostname.includes('ascended.social');
+    
+    // Verify Turnstile token for bot protection (only on production domains)
+    if (isProductionDomain && !state) { // Skip Turnstile for mobile auth (has state)
+      if (!turnstileToken) {
+        console.warn('Login attempt on production domain without Turnstile token');
+        return res.redirect('/login');
+      }
+      
+      const clientIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress;
+      const verification = await turnstileService.verifyToken(turnstileToken, clientIp);
+      
+      if (!verification.success) {
+        console.warn('Login blocked - Turnstile verification failed:', verification.errorCodes);
+        return res.redirect('/login?error=verification_failed');
+      }
+      
+      console.log('✅ Login - Turnstile verification successful for production domain');
+    } else if (!isProductionDomain) {
+      console.log('🧪 Login on testing domain or mobile - Turnstile bypassed');
+    }
     
     const authOptions: any = {
       prompt: "login consent",

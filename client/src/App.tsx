@@ -16,6 +16,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import AuthCallback from "@/pages/auth-callback";
 import NotFound from "@/pages/not-found";
+import Login from "@/pages/login";
 
 // Non-critical pages - lazy loaded
 const Subscribe = lazy(() => import("@/pages/subscribe"));
@@ -153,6 +154,7 @@ const Router = React.memo(() => {
       <Switch>
         <Route path="/">{isAuthenticated ? <Home /> : <Landing />}</Route>
         <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
+        <Route path="/login" component={Login} />
         <Route path="/auth/callback" component={AuthCallback} />
         <Route path="/auth/mobile-callback" component={AuthCallback} />
         <Route path="/auth" component={AuthCallback} />

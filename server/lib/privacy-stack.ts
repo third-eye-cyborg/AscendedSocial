@@ -140,9 +140,23 @@ export class PrivacyStackManager extends EventEmitter {
   private async initializeBearer(): Promise<void> {
     console.log('🛡️ Initializing Bearer security scanning...');
     
-    // Bearer CLI integration logic will go here
-    
-    this.emit('bearer:initialized');
+    try {
+      const { execSync } = await import('child_process');
+      
+      // Verify Bearer CLI is installed
+      try {
+        execSync('bearer version', { stdio: 'pipe' });
+        console.log('✅ Bearer CLI found');
+      } catch {
+        console.warn('⚠️ Bearer CLI not found. Install with: curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh');
+        return;
+      }
+      
+      console.log('✅ Bearer security scanning initialized');
+      this.emit('bearer:initialized');
+    } catch (error) {
+      console.error('❌ Failed to initialize Bearer:', error);
+    }
   }
 
   /**
@@ -325,6 +339,69 @@ export class PrivacyStackManager extends EventEmitter {
     });
     
     return recommendations;
+  }
+
+  /**
+   * Run Bearer security scan
+   */
+  async runBearerScan(options: {
+    path?: string;
+    format?: 'text' | 'json' | 'sarif';
+    severity?: 'critical' | 'high' | 'medium' | 'low';
+  } = {}): Promise<any> {
+    if (!this.config.bearer.enabled) {
+      throw new Error('Bearer is not enabled');
+    }
+
+    const { execSync } = await import('child_process');
+    const path = options.path || '.';
+    const format = options.format || 'json';
+    const severity = options.severity || 'medium';
+
+    console.log(`🔍 Running Bearer scan on ${path}...`);
+
+    try {
+      const command = `bearer scan ${path} --format ${format} --severity ${severity} --quiet`;
+      const output = execSync(command, { 
+        encoding: 'utf-8',
+        maxBuffer: 10 * 1024 * 1024 // 10MB buffer
+      });
+
+      if (format === 'json') {
+        return JSON.parse(output);
+      }
+
+      return output;
+    } catch (error: any) {
+      // Bearer returns non-zero exit code when vulnerabilities are found
+      if (error.stdout) {
+        const output = error.stdout.toString();
+        if (format === 'json' && output) {
+          return JSON.parse(output);
+        }
+        return output;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Run Snyk vulnerability scan
+   */
+  async runSnykScan(options: {
+    path?: string;
+  } = {}): Promise<any> {
+    if (!this.config.snyk.enabled) {
+      throw new Error('Snyk is not enabled');
+    }
+
+    console.log('🔍 Running Snyk vulnerability scan...');
+    
+    // Snyk scanning implementation would go here
+    // For now, return a placeholder
+    return {
+      status: 'Snyk scanning requires API key configuration'
+    };
   }
 }
 

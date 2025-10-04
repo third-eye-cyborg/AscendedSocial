@@ -153,9 +153,9 @@ router.post('/consent', async (req, res) => {
  */
 router.post('/consent/audit', async (req, res) => {
   try {
-    const { event, preferences, timestamp } = req.body;
+    const { event, preferences, timestamp, userId: bodyUserId } = req.body;
     
-    const userId = (req.user as any)?.id || 'anonymous';
+    const userId = bodyUserId || (req.user as any)?.id || 'anonymous';
     const sessionId = req.sessionID || 'anonymous';
     const ipAddress = req.ip || req.connection.remoteAddress || 'unknown';
     const userAgent = req.get('User-Agent') || 'unknown';

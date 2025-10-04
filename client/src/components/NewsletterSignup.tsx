@@ -20,7 +20,9 @@ export function NewsletterSignup() {
   const isProductionDomain = () => {
     if (typeof window === 'undefined') return false;
     const hostname = window.location.hostname;
-    return hostname === 'ascended.social' || hostname === 'dev.ascended.social';
+    return hostname === 'ascended.social' || 
+           hostname === 'dev.ascended.social' || 
+           hostname === 'app.ascended.social';
   };
 
   const shouldUseTurnstile = isProductionDomain();

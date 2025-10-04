@@ -14,10 +14,25 @@ export default function Login() {
   const isProductionDomain = () => {
     if (typeof window === 'undefined') return false;
     const hostname = window.location.hostname;
-    return hostname === 'ascended.social' || hostname === 'dev.ascended.social';
+    return hostname === 'ascended.social' || 
+           hostname === 'dev.ascended.social' || 
+           hostname === 'app.ascended.social';
   };
 
   const shouldUseTurnstile = isProductionDomain();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    
+    if (error === 'verification_failed') {
+      toast({
+        title: "Security verification failed",
+        description: "The security verification could not be completed. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (!shouldUseTurnstile) {
@@ -36,7 +51,17 @@ export default function Login() {
     }
 
     setIsVerifying(true);
-    window.location.href = `/api/login?turnstile=${encodeURIComponent(turnstileToken)}`;
+    
+    // Preserve state parameter for mobile authentication
+    const urlParams = new URLSearchParams(window.location.search);
+    const state = urlParams.get('state');
+    
+    let loginUrl = `/api/login?turnstile=${encodeURIComponent(turnstileToken)}`;
+    if (state) {
+      loginUrl += `&state=${encodeURIComponent(state)}`;
+    }
+    
+    window.location.href = loginUrl;
   };
 
   if (!shouldUseTurnstile) {

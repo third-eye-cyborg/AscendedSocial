@@ -142,12 +142,15 @@ export async function setupAuth(app: Express) {
     
     // Check if this is a production domain that requires Turnstile
     const hostname = req.get('host') || '';
-    const isProductionDomain = hostname.includes('ascended.social');
+    const isProductionDomain = hostname === 'ascended.social' || 
+                                hostname === 'dev.ascended.social' || 
+                                hostname === 'app.ascended.social';
     
-    // Verify Turnstile token for bot protection (only on production domains)
-    if (isProductionDomain && !state) { // Skip Turnstile for mobile auth (has state)
+    // Verify Turnstile token for bot protection on ALL production requests
+    // No exceptions - this prevents any bypass attacks
+    if (isProductionDomain) {
       if (!turnstileToken) {
-        console.warn('Login attempt on production domain without Turnstile token');
+        console.warn('⚠️ Login attempt on production domain without Turnstile token - redirecting to /login');
         return res.redirect('/login');
       }
       
@@ -155,13 +158,13 @@ export async function setupAuth(app: Express) {
       const verification = await turnstileService.verifyToken(turnstileToken, clientIp);
       
       if (!verification.success) {
-        console.warn('Login blocked - Turnstile verification failed:', verification.errorCodes);
+        console.warn('🚫 Login blocked - Turnstile verification failed:', verification.errorCodes);
         return res.redirect('/login?error=verification_failed');
       }
       
       console.log('✅ Login - Turnstile verification successful for production domain');
-    } else if (!isProductionDomain) {
-      console.log('🧪 Login on testing domain or mobile - Turnstile bypassed');
+    } else {
+      console.log('🧪 Login on development/testing domain - Turnstile bypassed');
     }
     
     const authOptions: any = {

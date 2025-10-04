@@ -48,7 +48,9 @@ export function isMobileEnvironment(): boolean {
 function isProductionDomain(): boolean {
   if (typeof window === 'undefined') return false;
   const hostname = window.location.hostname;
-  return hostname === 'ascended.social' || hostname === 'dev.ascended.social';
+  return hostname === 'ascended.social' || 
+         hostname === 'dev.ascended.social' || 
+         hostname === 'app.ascended.social';
 }
 
 /**
@@ -65,14 +67,15 @@ export function getAuthUrl(redirectUrl?: string): string {
     console.log('🔧 [AUTH-DEBUG] Production domain check:', isProd);
     
     if (isMobile) {
-      // Mobile always uses /api/login directly (bypasses Turnstile via state parameter)
-      const baseUrl = '/api/login';
+      // Mobile authentication - use /login with Turnstile on production (mobile webviews support Turnstile)
+      const baseUrl = isProd ? '/login' : '/api/login';
       
       console.log('🔍 [AUTH-DEBUG] Replit Auth mobile flow:', {
         platform: 'mobile',
         environment: window.location.hostname.includes('app.ascended.social') ? 'Production' : 'Development',
         redirectUrl: redirectUrl || window.location.origin,
-        authEndpoint: baseUrl
+        authEndpoint: baseUrl,
+        usesTurnstile: isProd
       });
       
       // Mobile authentication with state parameter for callback

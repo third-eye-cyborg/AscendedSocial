@@ -6,6 +6,10 @@
 import { execSync } from 'child_process';
 import { writeFileSync } from 'fs';
 
+function escapeShellArg(arg: string): string {
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
+
 interface BearerScanOptions {
   path?: string;
   format?: 'text' | 'json' | 'sarif' | 'html';
@@ -35,15 +39,15 @@ async function runBearerScan(options: BearerScanOptions = {}) {
   }
 
   try {
-    // Build Bearer command
-    let command = `bearer scan ${path} --format ${format} --severity ${severity}`;
+    // Build Bearer command with properly escaped arguments
+    let command = `bearer scan ${escapeShellArg(path)} --format ${escapeShellArg(format)} --severity ${escapeShellArg(severity)}`;
     
     if (report) {
-      command += ` --report ${report}`;
+      command += ` --report ${escapeShellArg(report)}`;
     }
     
     if (output && format !== 'text') {
-      command += ` --output ${output}`;
+      command += ` --output ${escapeShellArg(output)}`;
     }
 
     console.log(`🔍 Running: ${command}\n`);

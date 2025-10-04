@@ -19,7 +19,7 @@ const fidesConfig = {
 const privacyStackConfig = {
   fides: { enabled: true, endpoint: fidesConfig.apiUrl, apiKey: fidesConfig.apiKey },
   snyk: { enabled: !!process.env.SNYK_API_KEY, apiKey: process.env.SNYK_API_KEY },
-  bearer: { enabled: !!process.env.BEARER_API_KEY, apiKey: process.env.BEARER_API_KEY },
+  bearer: { enabled: true, apiKey: process.env.BEARER_API_KEY }, // Bearer CLI is open source, no API key required
   semgrep: { enabled: true }, // Replit Semgrep
   revenuecat: { enabled: !!process.env.REVENUECAT_PUBLIC_KEY, publicKey: process.env.REVENUECAT_PUBLIC_KEY },
   paddle: { enabled: !!process.env.PADDLE_VENDOR_ID, vendorId: process.env.PADDLE_VENDOR_ID }

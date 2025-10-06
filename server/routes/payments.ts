@@ -102,10 +102,24 @@ router.post('/checkout', async (req, res) => {
     }
 
     // Map product IDs to Paddle price IDs
-    // Note: These should be configured in your Paddle dashboard and linked to RevenueCat
-    const productMapping: Record<string, { name: string, priceId: string, price: string }> = {
-      'mystic_monthly': { name: 'Mystic Plan', priceId: 'pri_mystic_monthly', price: '$12/month' },
-      'ascended_monthly': { name: 'Ascended Plan', priceId: 'pri_ascended_monthly', price: '$24/month' },
+    // IMPORTANT: Set these environment variables to match your Paddle product configuration:
+    // - PADDLE_PRICE_ID_MYSTIC: Price ID for Mystic plan ($12/month)
+    // - PADDLE_PRICE_ID_ASCENDED: Price ID for Ascended plan ($24/month)
+    // To find your Paddle price IDs:
+    // 1. Log into your Paddle dashboard
+    // 2. Go to Catalog > Products
+    // 3. Copy the price IDs for each subscription tier
+    const productMapping: Record<string, { name: string, priceId: string | undefined, price: string }> = {
+      'mystic_monthly': { 
+        name: 'Mystic Plan', 
+        priceId: process.env.PADDLE_PRICE_ID_MYSTIC,
+        price: '$12/month' 
+      },
+      'ascended_monthly': { 
+        name: 'Ascended Plan', 
+        priceId: process.env.PADDLE_PRICE_ID_ASCENDED,
+        price: '$24/month' 
+      },
     };
 
     const product = productMapping[productId];
@@ -113,6 +127,15 @@ router.post('/checkout', async (req, res) => {
       return res.status(400).json({
         success: false,
         error: 'Invalid product ID'
+      });
+    }
+
+    // Check if Paddle price ID is configured
+    if (!product.priceId) {
+      console.error(`Paddle price ID not configured for product: ${productId}`);
+      return res.status(500).json({
+        success: false,
+        error: 'Payment system is not fully configured. Please contact support.'
       });
     }
 
@@ -124,7 +147,7 @@ router.post('/checkout', async (req, res) => {
         priceId: product.priceId,
         productName: product.name,
         price: product.price,
-        vendorId: process.env.REVENUECAT_PUBLIC_KEY || '',
+        clientToken: process.env.REVENUECAT_PUBLIC_KEY || '',
         environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
       }
     });

@@ -80,7 +80,7 @@ const SubscribeForm = ({
           priceId: string;
           productName: string;
           price: string;
-          vendorId: string;
+          clientToken: string;
           environment: string;
         };
       }>('/api/payments/checkout', {
@@ -94,11 +94,16 @@ const SubscribeForm = ({
 
       const { checkout } = response;
 
-      // Initialize Paddle with the vendor/client token
+      // Validate that we have a valid client token
+      if (!checkout.clientToken) {
+        throw new Error('Payment system is not configured. Please contact support.');
+      }
+
+      // Initialize Paddle with the client token
       if (window.Paddle) {
         window.Paddle.Environment.set(checkout.environment === 'production' ? 'production' : 'sandbox');
         window.Paddle.Initialize({
-          token: checkout.vendorId,
+          token: checkout.clientToken,
           eventCallback: (event: any) => {
             if (event.name === 'checkout.completed') {
               toast({

@@ -1,32 +1,140 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from 'lucide-react';
+import { apiRequest } from '@/lib/queryClient';
 
-const SubscribeForm = ({ plan, price, features }: { plan: string; price: string; features: string[] }) => {
+// Product IDs mapping to RevenueCat/Paddle products
+const PRODUCT_IDS = {
+  MYSTIC: 'mystic_monthly',
+  ASCENDED: 'ascended_monthly',
+} as const;
+
+// Initialize Paddle
+declare global {
+  interface Window {
+    Paddle?: any;
+  }
+}
+
+const SubscribeForm = ({ 
+  plan, 
+  price, 
+  features,
+  productId,
+}: { 
+  plan: string; 
+  price: string; 
+  features: string[];
+  productId: string;
+}) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [isPaddleReady, setIsPaddleReady] = useState(false);
+
+  useEffect(() => {
+    // Load Paddle.js script
+    const loadPaddle = () => {
+      if (window.Paddle) {
+        setIsPaddleReady(true);
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
+      script.async = true;
+      script.onload = () => {
+        setIsPaddleReady(true);
+      };
+      script.onerror = () => {
+        console.error('Failed to load Paddle.js');
+        toast({
+          title: "Loading Error",
+          description: "Failed to load payment system. Please refresh the page.",
+          variant: "destructive",
+        });
+      };
+      document.head.appendChild(script);
+    };
+
+    loadPaddle();
+  }, [toast]);
   
-  const handlePaddleCheckout = async () => {
+  const handleCheckout = async () => {
+    if (!isPaddleReady) {
+      toast({
+        title: "Please wait",
+        description: "Payment system is still loading...",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      // TODO: Implement Paddle checkout integration
-      // This will redirect to Paddle's hosted checkout page
-      toast({
-        title: "Redirecting to Checkout",
-        description: "You'll be redirected to our secure payment page...",
+      // Get checkout configuration from backend
+      const response = await apiRequest<{
+        success: boolean;
+        checkout: {
+          productId: string;
+          priceId: string;
+          productName: string;
+          price: string;
+          vendorId: string;
+          environment: string;
+        };
+      }>('/api/payments/checkout', {
+        method: 'POST',
+        body: JSON.stringify({ productId, plan })
       });
-      
-      // Placeholder for Paddle checkout URL
-      console.log(`Starting ${plan} subscription checkout with Paddle`);
+
+      if (!response.success || !response.checkout) {
+        throw new Error('Failed to get checkout configuration');
+      }
+
+      const { checkout } = response;
+
+      // Initialize Paddle with the vendor/client token
+      if (window.Paddle) {
+        window.Paddle.Environment.set(checkout.environment === 'production' ? 'production' : 'sandbox');
+        window.Paddle.Initialize({
+          token: checkout.vendorId,
+          eventCallback: (event: any) => {
+            if (event.name === 'checkout.completed') {
+              toast({
+                title: "Success!",
+                description: "Your subscription is now active.",
+              });
+              // Redirect to success page
+              window.location.href = '/subscription-success';
+            } else if (event.name === 'checkout.closed') {
+              setIsLoading(false);
+            }
+          }
+        });
+
+        // Open checkout
+        window.Paddle.Checkout.open({
+          items: [{ priceId: checkout.priceId, quantity: 1 }],
+          customData: {
+            productId: checkout.productId,
+            plan: plan
+          }
+        });
+
+        toast({
+          title: "Checkout Opened",
+          description: "Complete your payment to activate your subscription.",
+        });
+      }
       
     } catch (error) {
+      console.error('Checkout error:', error);
       toast({
         title: "Checkout Error",
-        description: "Failed to start checkout process. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to open checkout. Please try again.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
@@ -49,12 +157,21 @@ const SubscribeForm = ({ plan, price, features }: { plan: string; price: string;
           ))}
         </div>
         <Button 
-          onClick={handlePaddleCheckout}
-          disabled={isLoading}
+          onClick={handleCheckout}
+          disabled={isLoading || !isPaddleReady}
           className="w-full bg-primary hover:bg-accent transition-colors"
           data-testid={`button-subscribe-${plan.toLowerCase()}`}
         >
-          {isLoading ? 'Loading...' : `Choose ${plan}`}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Opening Checkout...
+            </>
+          ) : !isPaddleReady ? (
+            'Initializing...'
+          ) : (
+            `Choose ${plan}`
+          )}
         </Button>
       </CardContent>
     </Card>
@@ -104,24 +221,28 @@ export default function Subscribe() {
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           <SubscribeForm 
             plan="Mystic"
-            price="$9.99/month"
+            price="$12/month"
+            productId={PRODUCT_IDS.MYSTIC}
             features={[
-              "Unlimited energy allocation",
-              "Enhanced oracle readings", 
-              "Custom sigil generation",
-              "Priority community support"
+              "Personal AI sigil generation",
+              "Daily oracle readings", 
+              "Chakra intelligence system",
+              "Advanced aura tracking",
+              "Sacred circles access"
             ]}
           />
           
           <SubscribeForm 
-            plan="Enlightened"
-            price="$19.99/month"
+            plan="Ascended"
+            price="$24/month"
+            productId={PRODUCT_IDS.ASCENDED}
             features={[
-              "All Mystic features",
-              "Live streaming capabilities",
-              "Premium content creation tools",
-              "Advanced starmap features",
-              "Personal spiritual advisor"
+              "Everything in Mystic",
+              "AI tarot readings",
+              "Create sacred circles",
+              "Advanced energy analytics",
+              "Priority community support",
+              "Unlimited visions & sparks"
             ]}
           />
         </div>

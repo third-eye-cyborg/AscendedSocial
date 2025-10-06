@@ -20,6 +20,25 @@ const revenueCatManager = getRevenueCatManager(revenueCatConfig);
 revenueCatManager.initialize().catch(console.error);
 
 /**
+ * Get RevenueCat configuration (public key)
+ * GET /api/payments/config
+ */
+router.get('/config', async (req, res) => {
+  try {
+    res.json({
+      publicKey: process.env.REVENUECAT_PUBLIC_KEY || '',
+      environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+    });
+  } catch (error) {
+    console.error('Config fetch error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch config'
+    });
+  }
+});
+
+/**
  * Get available subscription products
  * GET /api/payments/products
  */
@@ -63,6 +82,57 @@ router.post('/customer', async (req, res) => {
     res.status(500).json({
       success: false,
       error: 'Failed to create customer'
+    });
+  }
+});
+
+/**
+ * Create checkout session (Paddle via RevenueCat)
+ * POST /api/payments/checkout
+ */
+router.post('/checkout', async (req, res) => {
+  try {
+    const { productId, plan } = req.body;
+    
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Product ID is required'
+      });
+    }
+
+    // Map product IDs to Paddle price IDs
+    // Note: These should be configured in your Paddle dashboard and linked to RevenueCat
+    const productMapping: Record<string, { name: string, priceId: string, price: string }> = {
+      'mystic_monthly': { name: 'Mystic Plan', priceId: 'pri_mystic_monthly', price: '$12/month' },
+      'ascended_monthly': { name: 'Ascended Plan', priceId: 'pri_ascended_monthly', price: '$24/month' },
+    };
+
+    const product = productMapping[productId];
+    if (!product) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid product ID'
+      });
+    }
+
+    // Return checkout configuration for Paddle
+    res.json({
+      success: true,
+      checkout: {
+        productId,
+        priceId: product.priceId,
+        productName: product.name,
+        price: product.price,
+        vendorId: process.env.REVENUECAT_PUBLIC_KEY || '',
+        environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+      }
+    });
+  } catch (error) {
+    console.error('Checkout creation error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create checkout session'
     });
   }
 });

@@ -4,20 +4,29 @@ import { getRevenueCatManager } from '../lib/revenuecat-integration';
 
 const router = Router();
 
-// Initialize RevenueCat manager
-const revenueCatConfig = {
-  publicKey: process.env.REVENUECAT_PUBLIC_KEY || '',
-  secretKey: process.env.REVENUECAT_SECRET_KEY || '',
-  paddleVendorId: process.env.PADDLE_VENDOR_ID || '',
-  paddleApiKey: process.env.PADDLE_API_KEY || '',
-  webhookSecret: process.env.PAYMENT_WEBHOOK_SECRET || '',
-  enableTestMode: process.env.NODE_ENV !== 'production'
-};
+// Initialize RevenueCat manager (optional - only if credentials are fully configured)
+let revenueCatManager: any = null;
 
-const revenueCatManager = getRevenueCatManager(revenueCatConfig);
+try {
+  const revenueCatConfig = {
+    publicKey: process.env.REVENUECAT_PUBLIC_KEY || '',
+    secretKey: process.env.REVENUECAT_SECRET_KEY || '',
+    paddleVendorId: process.env.PADDLE_VENDOR_ID || '',
+    paddleApiKey: process.env.PADDLE_API_KEY || '',
+    webhookSecret: process.env.PAYMENT_WEBHOOK_SECRET || '',
+    enableTestMode: process.env.NODE_ENV !== 'production'
+  };
 
-// Initialize on startup
-revenueCatManager.initialize().catch(console.error);
+  // Only initialize if we have the required credentials
+  if (revenueCatConfig.publicKey && revenueCatConfig.secretKey) {
+    revenueCatManager = getRevenueCatManager(revenueCatConfig);
+    revenueCatManager.initialize().catch(console.error);
+  } else {
+    console.log('ℹ️ RevenueCat manager not initialized - using direct Paddle integration');
+  }
+} catch (error) {
+  console.error('Failed to initialize RevenueCat manager:', error);
+}
 
 /**
  * Get RevenueCat configuration (public key)
@@ -44,6 +53,13 @@ router.get('/config', async (req, res) => {
  */
 router.get('/products', async (req, res) => {
   try {
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
+      });
+    }
+    
     const products = await revenueCatManager.getProducts();
     res.json({ products });
   } catch (error) {
@@ -68,6 +84,13 @@ router.post('/customer', async (req, res) => {
       });
     }
 
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
+      });
+    }
+
     const customerId = await revenueCatManager.createCustomer(
       (req.user as any).id,
       (req.user as any).email
@@ -86,20 +109,30 @@ router.post('/customer', async (req, res) => {
   }
 });
 
+// Validation schema for checkout request
+const checkoutSchema = z.object({
+  productId: z.enum(['mystic_monthly', 'ascended_monthly'], {
+    errorMap: () => ({ message: 'Product ID must be either mystic_monthly or ascended_monthly' })
+  }),
+  plan: z.string().min(1, 'Plan name is required')
+});
+
 /**
  * Create checkout session (Paddle via RevenueCat)
  * POST /api/payments/checkout
  */
 router.post('/checkout', async (req, res) => {
   try {
-    const { productId, plan } = req.body;
-    
-    if (!productId) {
+    // Validate request body
+    const validation = checkoutSchema.safeParse(req.body);
+    if (!validation.success) {
       return res.status(400).json({
         success: false,
-        error: 'Product ID is required'
+        error: validation.error.errors[0].message
       });
     }
+
+    const { productId, plan } = validation.data;
 
     // Map product IDs to Paddle price IDs
     // IMPORTANT: Set these environment variables to match your Paddle product configuration:
@@ -173,6 +206,13 @@ router.post('/subscribe', async (req, res) => {
       });
     }
 
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
+      });
+    }
+
     const { productId, paymentData } = req.body;
     
     if (!productId) {
@@ -211,6 +251,13 @@ router.get('/subscription', async (req, res) => {
       });
     }
 
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
+      });
+    }
+
     const subscription = await revenueCatManager.getSubscriptionStatus((req.user as any).id);
     res.json({ subscription });
   } catch (error) {
@@ -232,6 +279,13 @@ router.post('/cancel', async (req, res) => {
       return res.status(401).json({
         success: false,
         error: 'Authentication required'
+      });
+    }
+
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
       });
     }
 
@@ -283,6 +337,13 @@ router.get('/analytics', async (req, res) => {
       });
     }
 
+    if (!revenueCatManager) {
+      return res.status(503).json({
+        success: false,
+        error: 'RevenueCat service not available'
+      });
+    }
+
     const analytics = await revenueCatManager.getSubscriptionAnalytics();
     res.json(analytics);
   } catch (error) {
@@ -300,6 +361,11 @@ router.get('/analytics', async (req, res) => {
  */
 router.post('/webhooks/revenuecat', async (req, res) => {
   try {
+    if (!revenueCatManager) {
+      console.error('RevenueCat webhook received but RevenueCat manager not initialized');
+      return res.status(503).json({ error: 'RevenueCat service not available' });
+    }
+
     const signature = req.get('X-RevenueCat-Signature');
     const payload = JSON.stringify(req.body);
     
@@ -323,6 +389,11 @@ router.post('/webhooks/revenuecat', async (req, res) => {
  */
 router.post('/webhooks/paddle', async (req, res) => {
   try {
+    if (!revenueCatManager) {
+      console.error('Paddle webhook received but RevenueCat manager not initialized');
+      return res.status(503).json({ error: 'RevenueCat service not available' });
+    }
+
     const signature = req.get('X-Paddle-Signature');
     const payload = JSON.stringify(req.body);
     

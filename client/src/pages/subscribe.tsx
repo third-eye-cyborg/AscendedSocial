@@ -18,26 +18,50 @@ declare global {
   }
 }
 
+interface PaddleConfig {
+  publicKey: string;
+  environment: string;
+}
+
 const SubscribeForm = ({ 
   plan, 
   price, 
   features,
   productId,
+  paddleConfig,
+  onPaddleReady,
 }: { 
   plan: string; 
   price: string; 
   features: string[];
   productId: string;
+  paddleConfig: PaddleConfig | null;
+  onPaddleReady: (ready: boolean) => void;
 }) => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isPaddleReady, setIsPaddleReady] = useState(false);
 
   useEffect(() => {
-    // Load Paddle.js script
-    const loadPaddle = () => {
+    // Load Paddle.js script and initialize with config
+    const initializePaddle = async () => {
+      if (!paddleConfig || !paddleConfig.publicKey) {
+        console.error('No Paddle configuration available');
+        return;
+      }
+
       if (window.Paddle) {
-        setIsPaddleReady(true);
+        // Paddle already loaded, just initialize
+        try {
+          window.Paddle.Environment.set(paddleConfig.environment === 'production' ? 'production' : 'sandbox');
+          window.Paddle.Initialize({
+            token: paddleConfig.publicKey
+          });
+          setIsPaddleReady(true);
+          onPaddleReady(true);
+        } catch (error) {
+          console.error('Failed to initialize Paddle:', error);
+        }
         return;
       }
 
@@ -45,7 +69,23 @@ const SubscribeForm = ({
       script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
       script.async = true;
       script.onload = () => {
-        setIsPaddleReady(true);
+        try {
+          if (window.Paddle) {
+            window.Paddle.Environment.set(paddleConfig.environment === 'production' ? 'production' : 'sandbox');
+            window.Paddle.Initialize({
+              token: paddleConfig.publicKey
+            });
+            setIsPaddleReady(true);
+            onPaddleReady(true);
+          }
+        } catch (error) {
+          console.error('Failed to initialize Paddle:', error);
+          toast({
+            title: "Initialization Error",
+            description: "Failed to initialize payment system. Please refresh the page.",
+            variant: "destructive",
+          });
+        }
       };
       script.onerror = () => {
         console.error('Failed to load Paddle.js');
@@ -58,8 +98,8 @@ const SubscribeForm = ({
       document.head.appendChild(script);
     };
 
-    loadPaddle();
-  }, [toast]);
+    initializePaddle();
+  }, [paddleConfig, toast, onPaddleReady]);
   
   const handleCheckout = async () => {
     if (!isPaddleReady) {
@@ -73,58 +113,41 @@ const SubscribeForm = ({
     setIsLoading(true);
     try {
       // Get checkout configuration from backend
-      const response = await apiRequest<{
-        success: boolean;
-        checkout: {
-          productId: string;
-          priceId: string;
-          productName: string;
-          price: string;
-          clientToken: string;
-          environment: string;
-        };
-      }>('/api/payments/checkout', {
-        method: 'POST',
-        body: JSON.stringify({ productId, plan })
-      });
+      const response = await apiRequest('POST', '/api/payments/checkout', { productId, plan });
+      const data = await response.json();
 
-      if (!response.success || !response.checkout) {
-        throw new Error('Failed to get checkout configuration');
+      if (!data.success || !data.checkout) {
+        throw new Error(data.error || 'Failed to get checkout configuration');
       }
 
-      const { checkout } = response;
+      const { checkout } = data;
 
-      // Validate that we have a valid client token
-      if (!checkout.clientToken) {
-        throw new Error('Payment system is not configured. Please contact support.');
-      }
-
-      // Initialize Paddle with the client token
+      // Open checkout (Paddle is already initialized)
       if (window.Paddle) {
-        window.Paddle.Environment.set(checkout.environment === 'production' ? 'production' : 'sandbox');
-        window.Paddle.Initialize({
-          token: checkout.clientToken,
-          eventCallback: (event: any) => {
-            if (event.name === 'checkout.completed') {
-              toast({
-                title: "Success!",
-                description: "Your subscription is now active.",
-              });
-              // Redirect to success page
-              window.location.href = '/subscription-success';
-            } else if (event.name === 'checkout.closed') {
-              setIsLoading(false);
-            }
-          }
-        });
-
-        // Open checkout
         window.Paddle.Checkout.open({
           items: [{ priceId: checkout.priceId, quantity: 1 }],
           customData: {
             productId: checkout.productId,
             plan: plan
+          },
+          settings: {
+            successUrl: window.location.origin + '/subscription-success',
+            theme: 'dark'
           }
+        });
+
+        // Set up event handlers
+        window.Paddle.on('checkout.completed', () => {
+          toast({
+            title: "Success!",
+            description: "Your subscription is now active.",
+          });
+          setIsLoading(false);
+          window.location.href = '/subscription-success';
+        });
+
+        window.Paddle.on('checkout.closed', () => {
+          setIsLoading(false);
         });
 
         toast({
@@ -184,6 +207,33 @@ const SubscribeForm = ({
 };
 
 export default function Subscribe() {
+  const { toast } = useToast();
+  const [paddleConfig, setPaddleConfig] = useState<PaddleConfig | null>(null);
+  const [isPaddleReady, setIsPaddleReady] = useState(false);
+
+  useEffect(() => {
+    // Fetch Paddle configuration on page load
+    const fetchConfig = async () => {
+      try {
+        const response = await apiRequest('GET', '/api/payments/config');
+        const data = await response.json();
+        setPaddleConfig({
+          publicKey: data.publicKey,
+          environment: data.environment
+        });
+      } catch (error) {
+        console.error('Failed to fetch Paddle config:', error);
+        toast({
+          title: "Configuration Error",
+          description: "Failed to load payment system configuration. Please refresh the page.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchConfig();
+  }, [toast]);
+
   return (
     <div className="min-h-screen bg-cosmic text-white">
       {/* Header */}
@@ -228,6 +278,8 @@ export default function Subscribe() {
             plan="Mystic"
             price="$12/month"
             productId={PRODUCT_IDS.MYSTIC}
+            paddleConfig={paddleConfig}
+            onPaddleReady={setIsPaddleReady}
             features={[
               "Personal AI sigil generation",
               "Daily oracle readings", 
@@ -241,6 +293,8 @@ export default function Subscribe() {
             plan="Ascended"
             price="$24/month"
             productId={PRODUCT_IDS.ASCENDED}
+            paddleConfig={paddleConfig}
+            onPaddleReady={setIsPaddleReady}
             features={[
               "Everything in Mystic",
               "AI tarot readings",

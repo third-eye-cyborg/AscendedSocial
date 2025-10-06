@@ -53,8 +53,12 @@ The project enforces strict codebase standards for folder structure, file cleanu
 - **OpenAI API**: GPT-4 for content analysis and oracle readings.
 
 ### Payment Processing
-- **RevenueCat**: Cross-platform subscription management.
-- **Paddle**: Web-based checkout and payment processing.
+- **Paddle**: Primary payment processor for web-based checkout and subscription management (sandbox and production).
+  - Sandbox products configured: Mystic Plan ($12/month - `pri_01k6xvp9gq8h3t8xytb6c2gfpw`), Ascended Plan ($24/month - `pri_01k6xvpb23e23k9vwth9xvj29e`)
+  - Client token managed via `REVENUECAT_PUBLIC_KEY` environment variable (Paddle client token)
+  - Direct Paddle.js integration on frontend with one-time initialization
+  - Backend validation using Zod schemas for product IDs
+- **RevenueCat**: Optional cross-platform subscription management (not required for core checkout flow).
 
 ### Media and Storage
 - **Google Cloud Storage**: File and media storage.

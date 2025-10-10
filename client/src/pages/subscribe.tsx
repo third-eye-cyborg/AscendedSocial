@@ -22,38 +22,11 @@ const SubscribeForm = ({
   features: string[];
   productId: string;
 }) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  
-  const handleCheckout = async () => {
-    setIsLoading(true);
-    try {
-      // Get checkout configuration from backend
-      const response = await apiRequest('POST', '/api/payments/checkout', { productId, plan });
-      const data = await response.json();
-
-      if (!data.success || !data.checkout) {
-        throw new Error(data.error || 'Failed to get checkout configuration');
-      }
-
-      const { checkout } = data;
-
-      // Redirect to Lemon Squeezy checkout
-      window.location.href = checkout.checkoutUrl;
-      
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast({
-        title: "Checkout Error",
-        description: error instanceof Error ? error.message : "Failed to open checkout. Please try again.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <Card className="w-full max-w-md mx-auto bg-cosmic-light border-primary/30">
+    <Card className="w-full max-w-md mx-auto bg-cosmic-light border-primary/30 relative">
+      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-cosmic text-sm font-bold px-4 py-1.5 rounded-full shadow-lg z-10">
+        Coming Soon
+      </div>
       <CardHeader>
         <CardTitle className="text-accent-light text-center">{plan} Plan</CardTitle>
       </CardHeader>
@@ -69,20 +42,18 @@ const SubscribeForm = ({
             </div>
           ))}
         </div>
+        <div className="bg-cosmic/50 border border-primary/30 rounded-xl p-4 mb-4">
+          <p className="text-white/90 text-sm">
+            <i className="fas fa-info-circle text-primary mr-2"></i>
+            Payment processing is currently being set up. Check back soon!
+          </p>
+        </div>
         <Button 
-          onClick={handleCheckout}
-          disabled={isLoading}
-          className="w-full bg-primary hover:bg-accent transition-colors"
+          disabled
+          className="w-full bg-primary/50 cursor-not-allowed opacity-60"
           data-testid={`button-subscribe-${plan.toLowerCase()}`}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Opening Checkout...
-            </>
-          ) : (
-            `Choose ${plan}`
-          )}
+          Coming Soon
         </Button>
       </CardContent>
     </Card>

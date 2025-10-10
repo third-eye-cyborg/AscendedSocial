@@ -260,13 +260,18 @@ export default function Pricing() {
                   </li>
                 </ul>
                 
-                <Button 
-                  className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg"
-                  onClick={() => window.location.href = '/subscribe'}
-                  data-testid="button-mystic"
-                >
-                  Choose Mystic
-                </Button>
+                <div className="relative">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-3 rounded-xl transition-all duration-300 shadow-lg opacity-60 cursor-not-allowed"
+                    disabled
+                    data-testid="button-mystic"
+                  >
+                    Coming Soon
+                  </Button>
+                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-cosmic text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    Soon
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -312,13 +317,18 @@ export default function Pricing() {
                   </li>
                 </ul>
                 
-                <Button 
-                  className="w-full bg-gradient-to-r from-chakra-crown to-chakra-crown/80 hover:from-chakra-crown/90 hover:to-chakra-crown/70 text-white font-semibold py-3 rounded-xl transition-all duration-300"
-                  onClick={() => window.location.href = '/subscribe'}
-                  data-testid="button-ascended"
-                >
-                  Choose Ascended
-                </Button>
+                <div className="relative">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-chakra-crown to-chakra-crown/80 hover:from-chakra-crown/90 hover:to-chakra-crown/70 text-white font-semibold py-3 rounded-xl transition-all duration-300 opacity-60 cursor-not-allowed"
+                    disabled
+                    data-testid="button-ascended"
+                  >
+                    Coming Soon
+                  </Button>
+                  <div className="absolute -top-2 -right-2 bg-yellow-500 text-cosmic text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    Soon
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -402,13 +412,13 @@ export default function Pricing() {
                   <Button 
                     size="lg"
                     variant="outline"
-                    onClick={() => window.location.href = '/subscribe'}
-                    className="group border-2 border-white/50 text-white bg-cosmic/70 hover:border-primary hover:text-white hover:bg-primary transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold"
+                    disabled
+                    className="group border-2 border-white/50 text-white bg-cosmic/70 opacity-60 cursor-not-allowed transition-all duration-300 backdrop-blur-sm px-12 py-4 rounded-2xl text-lg font-semibold"
                     data-testid="button-subscribe"
                   >
                     <span className="flex items-center gap-3">
                       <i className="fas fa-credit-card"></i>
-                      Choose Premium
+                      Premium Coming Soon
                     </span>
                   </Button>
                 </div>

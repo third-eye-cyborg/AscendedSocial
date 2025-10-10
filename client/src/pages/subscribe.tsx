@@ -1,26 +1,14 @@
-import { useState } from 'react';
-import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
-
-// Product IDs mapping to Lemon Squeezy products
-const PRODUCT_IDS = {
-  MYSTIC: 'mystic_monthly',
-  ASCENDED: 'ascended_monthly',
-} as const;
 
 const SubscribeForm = ({ 
   plan, 
   price, 
   features,
-  productId,
 }: { 
   plan: string; 
   price: string; 
   features: string[];
-  productId: string;
 }) => {
   return (
     <Card className="w-full max-w-md mx-auto bg-cosmic-light border-primary/30 relative">
@@ -89,14 +77,12 @@ export default function Subscribe() {
             plan="Mystic"
             price="$12/month"
             features={mysticFeatures}
-            productId={PRODUCT_IDS.MYSTIC}
           />
           
           <SubscribeForm 
             plan="Ascended"
             price="$24/month"
             features={ascendedFeatures}
-            productId={PRODUCT_IDS.ASCENDED}
           />
         </div>
       </div>

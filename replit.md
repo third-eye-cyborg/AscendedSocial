@@ -18,7 +18,7 @@ The client uses React, TypeScript, and Vite with wouter for routing and TanStack
 - **Chakra-based Content**: Automatic categorization of posts into seven chakra types with spiritual frequency scores using OpenAI's GPT-4.
 - **Engagement System**: Spiritual-themed upvotes, downvotes, likes, and energy sharing with monthly refreshing energy points.
 - **Oracle System**: AI-powered daily readings, recommendations, and tarot-style guidance based on user behavior.
-- **Premium Subscriptions**: Managed by RevenueCat and Paddle, offering features like unlimited energy and enhanced oracle readings.
+- **Premium Subscriptions**: Managed by Lemon Squeezy, offering features like unlimited energy and enhanced oracle readings.
 - **Zero Trust Security**: Four-layer model using Cloudflare Zero Trust for user authentication, admin access, network protection, and API protection.
 - **Privacy Compliance**:
   - **TermsHub Integration**: GDPR/CCPA-compliant cookie consent banner replacing Klaro/Enzuzo
@@ -53,12 +53,18 @@ The project enforces strict codebase standards for folder structure, file cleanu
 - **OpenAI API**: GPT-4 for content analysis and oracle readings.
 
 ### Payment Processing
-- **Paddle**: Primary payment processor for web-based checkout and subscription management (sandbox and production).
-  - Sandbox products configured: Mystic Plan ($12/month - `pri_01k6xvp9gq8h3t8xytb6c2gfpw`), Ascended Plan ($24/month - `pri_01k6xvpb23e23k9vwth9xvj29e`)
-  - Client token managed via `REVENUECAT_PUBLIC_KEY` environment variable (Paddle client token)
-  - Direct Paddle.js integration on frontend with one-time initialization
+- **Lemon Squeezy**: Primary payment processor for web-based checkout and subscription management.
+  - Official SDK: `@lemonsqueezy/lemonsqueezy.js`
+  - Direct checkout URL redirect flow (no overlay SDK)
   - Backend validation using Zod schemas for product IDs
-- **RevenueCat**: Optional cross-platform subscription management (not required for core checkout flow).
+  - Environment variables required:
+    - `LEMONSQUEEZY_API_KEY`: API key for backend operations
+    - `LEMONSQUEEZY_STORE_ID`: Your Lemon Squeezy store ID
+    - `LEMONSQUEEZY_VARIANT_ID_MYSTIC`: Variant ID for Mystic plan ($12/month)
+    - `LEMONSQUEEZY_VARIANT_ID_ASCENDED`: Variant ID for Ascended plan ($24/month)
+    - `LEMONSQUEEZY_WEBHOOK_SECRET`: Secret for webhook signature validation
+  - Webhook endpoint: `/api/webhooks/lemon-squeezy`
+  - Service module: `server/lib/lemon-squeezy.ts`
 
 ### Media and Storage
 - **Google Cloud Storage**: File and media storage.

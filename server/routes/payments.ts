@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { getPolarService } from '../lib/polar';
+import { getLemonSqueezyService } from '../lib/lemon-squeezy';
 
 const router = Router();
 
-// Initialize Polar service
-const polar = getPolarService();
+// Initialize Lemon Squeezy service
+const lemonSqueezy = getLemonSqueezyService();
 
 // Validation schema for checkout request
 const checkoutSchema = z.object({
@@ -16,13 +16,13 @@ const checkoutSchema = z.object({
 });
 
 /**
- * Get Polar configuration  
+ * Get Lemon Squeezy configuration  
  * GET /api/payments/config
  */
 router.get('/config', async (req, res) => {
   try {
     res.json({
-      provider: 'polar',
+      storeId: process.env.LEMONSQUEEZY_STORE_ID || '',
       environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
     });
   } catch (error) {
@@ -35,7 +35,7 @@ router.get('/config', async (req, res) => {
 });
 
 /**
- * Create checkout session (Polar)
+ * Create checkout session (Lemon Squeezy)
  * POST /api/payments/checkout
  */
 router.post('/checkout', async (req, res) => {
@@ -51,20 +51,23 @@ router.post('/checkout', async (req, res) => {
 
     const { productId, plan } = validation.data;
 
-    // Map product IDs to Polar price IDs
-    // IMPORTANT: Set these environment variables to match your Polar product configuration:
-    // - POLAR_PRICE_ID_MYSTIC: Price ID for Mystic plan ($12/month)
-    // - POLAR_PRICE_ID_ASCENDED: Price ID for Ascended plan ($24/month)
-    // You can find these in your Polar dashboard under Products
-    const productMapping: Record<string, { name: string, priceId: string | undefined, price: string }> = {
+    // Map product IDs to Lemon Squeezy variant IDs
+    // IMPORTANT: Set these environment variables to match your Lemon Squeezy product configuration:
+    // - LEMONSQUEEZY_VARIANT_ID_MYSTIC: Variant ID for Mystic plan ($12/month)
+    // - LEMONSQUEEZY_VARIANT_ID_ASCENDED: Variant ID for Ascended plan ($24/month)
+    // To find your Lemon Squeezy variant IDs:
+    // 1. Log into your Lemon Squeezy dashboard
+    // 2. Go to Products
+    // 3. Copy the variant IDs for each subscription tier
+    const productMapping: Record<string, { name: string, variantId: string | undefined, price: string }> = {
       'mystic_monthly': { 
         name: 'Mystic Plan', 
-        priceId: process.env.POLAR_PRICE_ID_MYSTIC,
+        variantId: process.env.LEMONSQUEEZY_VARIANT_ID_MYSTIC,
         price: '$12/month' 
       },
       'ascended_monthly': { 
         name: 'Ascended Plan', 
-        priceId: process.env.POLAR_PRICE_ID_ASCENDED,
+        variantId: process.env.LEMONSQUEEZY_VARIANT_ID_ASCENDED,
         price: '$24/month' 
       },
     };
@@ -77,16 +80,16 @@ router.post('/checkout', async (req, res) => {
       });
     }
 
-    // Check if Polar price ID is configured
-    if (!product.priceId) {
-      console.error(`Polar price ID not configured for product: ${productId}`);
+    // Check if Lemon Squeezy variant ID is configured
+    if (!product.variantId) {
+      console.error(`Lemon Squeezy variant ID not configured for product: ${productId}`);
       return res.status(500).json({
         success: false,
         error: 'Payment system is not fully configured. Please contact support.'
       });
     }
 
-    if (!polar) {
+    if (!lemonSqueezy) {
       return res.status(503).json({
         success: false,
         error: 'Payment service is not available. Please contact support.'
@@ -94,14 +97,13 @@ router.post('/checkout', async (req, res) => {
     }
 
     // Create checkout session
-    const checkout = await polar.createCheckout({
-      productPriceId: product.priceId,
+    const checkout = await lemonSqueezy.createCheckoutSession({
+      variantId: product.variantId,
       email: (req.user as any)?.email,
       customData: {
         userId: (req.user as any)?.id,
         plan: plan
-      },
-      successUrl: `${process.env.REPLIT_DEV_DOMAIN || 'http://localhost:5000'}/subscription-success`
+      }
     });
 
     // Return checkout URL for redirect
@@ -137,7 +139,7 @@ router.get('/subscription', async (req, res) => {
       });
     }
 
-    if (!polar) {
+    if (!lemonSqueezy) {
       return res.status(503).json({
         success: false,
         error: 'Payment service not available'
@@ -172,7 +174,7 @@ router.post('/cancel', async (req, res) => {
       });
     }
 
-    if (!polar) {
+    if (!lemonSqueezy) {
       return res.status(503).json({
         success: false,
         error: 'Payment service not available'
@@ -188,7 +190,7 @@ router.post('/cancel', async (req, res) => {
       });
     }
 
-    await polar.cancelSubscription(subscriptionId);
+    await lemonSqueezy.cancelSubscription(subscriptionId);
     
     res.json({
       success: true,
@@ -204,29 +206,29 @@ router.post('/cancel', async (req, res) => {
 });
 
 /**
- * Polar webhook endpoint
- * POST /api/webhooks/polar
+ * Lemon Squeezy webhook endpoint
+ * POST /api/webhooks/lemon-squeezy
  */
-router.post('/webhooks/polar', async (req, res) => {
+router.post('/webhooks/lemon-squeezy', async (req, res) => {
   try {
-    if (!polar) {
-      console.error('Polar webhook received but service not initialized');
+    if (!lemonSqueezy) {
+      console.error('Lemon Squeezy webhook received but service not initialized');
       return res.status(503).json({ error: 'Payment service not available' });
     }
 
-    const signature = req.get('Polar-Signature') || req.get('X-Polar-Signature') || '';
+    const signature = req.get('X-Signature');
     const payload = JSON.stringify(req.body);
     
     // Verify webhook signature
-    if (!polar.validateWebhookSignature(payload, signature)) {
+    if (!lemonSqueezy.validateWebhookSignature(payload, signature || '')) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
     
-    await polar.processWebhookEvent(req.body);
-    res.status(202).json({ received: true });
+    await lemonSqueezy.processWebhookEvent(req.body);
+    res.json({ received: true });
     
   } catch (error) {
-    console.error('Polar webhook error:', error);
+    console.error('Lemon Squeezy webhook error:', error);
     res.status(500).json({ error: 'Webhook processing failed' });
   }
 });

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PostCard from "@/components/PostCard";
 import ChakraLegend from "@/components/ChakraLegend";
 import Layout from "@/components/Layout";
+import DisclaimerBanner from "@/components/DisclaimerBanner";
 import { TrendingUp, TrendingDown, Heart, Users, Sparkles, Filter, Info, Flame, Star, Clock, Eye } from "lucide-react";
 
 interface Post {
@@ -169,6 +170,9 @@ export default function Explore() {
             </div>
           </div>
         </div>
+
+        {/* Disclaimer Banner */}
+        <DisclaimerBanner />
 
         {/* Filter Controls */}
         <Card className="bg-cosmic-light/50 border-primary/30 mb-6">

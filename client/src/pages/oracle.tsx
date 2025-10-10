@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Layout from "@/components/Layout";
+import DisclaimerBanner from "@/components/DisclaimerBanner";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { formatDistanceToNow } from "date-fns";
@@ -146,6 +147,9 @@ export default function Oracle() {
             The digital spirits whisper insights from the cosmic data streams.
           </p>
         </div>
+
+        {/* Disclaimer Banner */}
+        <DisclaimerBanner />
 
         {/* Main Oracle Cards - Responsive Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-8">

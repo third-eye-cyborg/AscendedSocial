@@ -1145,108 +1145,128 @@ iframe + small {
   }
 }
 
-/* TermsHub Cookie Consent Mobile Responsiveness */
-/* Target only the banner container that TermsHub injects at body > div level */
-/* Avoid wildcards to prevent breaking modal/preference dialogs */
+/* TermsHub Cookie Consent - Aggressive Mobile Positioning Fix */
+/* Force cookie elements to stay at bottom with maximum z-index */
 
-/* Cookie banner - fixed at bottom (use :not to exclude modals/dialogs) */
-body > div[id*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-body > div[class*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-body > div[id*="cookie-banner"]:not([role="dialog"]):not([aria-modal]),
-body > div[class*="cookie-banner"]:not([role="dialog"]):not([aria-modal]),
-#termshub-cookie-banner:not([role="dialog"]),
-.termshub-cookie-banner:not([role="dialog"]) {
+/* All TermsHub/cookie consent elements - ensure they're above everything */
+/* Using very high z-index to override any page elements */
+div[id*="termshub"]:not([role="dialog"]):not([aria-modal="true"]),
+div[class*="termshub"]:not([role="dialog"]):not([aria-modal="true"]),
+div[id*="cookie"]:not([role="dialog"]):not([aria-modal="true"]),
+div[class*="cookie"]:not([role="dialog"]):not([aria-modal="true"]),
+[data-termshub]:not([role="dialog"]):not([aria-modal="true"]) {
+  z-index: 999999 !important;
+}
+
+/* Cookie banner/consent bar - fixed at absolute bottom */
+div[id*="termshub"][id*="banner"]:not([role="dialog"]),
+div[class*="termshub"][class*="banner"]:not([role="dialog"]),
+div[id*="cookie"][id*="banner"]:not([role="dialog"]),
+div[class*="cookie"][class*="banner"]:not([role="dialog"]),
+div[id*="consent"]:not([role="dialog"]),
+div[class*="consent"]:not([role="dialog"]),
+[data-termshub-banner]:not([role="dialog"]) {
   position: fixed !important;
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  z-index: 10000 !important;
-  transform: translateZ(0) !important;
-  -webkit-transform: translateZ(0) !important;
+  width: 100% !important;
+  z-index: 999999 !important;
+  transform: translateZ(0) translateY(0) !important;
+  -webkit-transform: translateZ(0) translateY(0) !important;
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
+  margin: 0 !important;
 }
 
-/* Cookie settings icon/button - floating button, not dialogs */
-body > div[id*="termshub-icon"]:not([role="dialog"]),
-body > div[class*="termshub-icon"]:not([role="dialog"]),
-body > button[id*="cookie-settings"]:not([role="dialog"]),
-body > button[class*="cookie-settings"]:not([role="dialog"]),
-body > div[id*="cookie-icon"]:not([role="dialog"]),
-body > div[class*="cookie-icon"]:not([role="dialog"]) {
+/* Cookie settings icon/button - fixed floating button */
+div[id*="termshub"][id*="widget"]:not([role="dialog"]),
+div[class*="termshub"][class*="widget"]:not([role="dialog"]),
+div[id*="cookie"][id*="widget"]:not([role="dialog"]),
+div[class*="cookie"][class*="widget"]:not([role="dialog"]),
+div[id*="termshub"][id*="icon"]:not([role="dialog"]),
+div[class*="termshub"][class*="icon"]:not([role="dialog"]),
+button[id*="cookie"][id*="settings"]:not([role="dialog"]),
+button[class*="cookie"][class*="settings"]:not([role="dialog"]),
+[data-termshub-widget]:not([role="dialog"]) {
   position: fixed !important;
-  z-index: 10000 !important;
+  bottom: 20px !important;
+  z-index: 999999 !important;
   transform: translateZ(0) !important;
   -webkit-transform: translateZ(0) !important;
 }
 
-/* Mobile-specific adjustments */
+/* Mobile-specific adjustments - tablets and phones */
 @media (max-width: 768px) {
-  /* Cookie banner positioning on mobile - above bottom nav */
-  body > div[id*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[class*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[id*="cookie-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[class*="cookie-banner"]:not([role="dialog"]):not([aria-modal]) {
+  /* Cookie banner - absolute bottom on mobile */
+  div[id*="termshub"][id*="banner"]:not([role="dialog"]),
+  div[class*="termshub"][class*="banner"]:not([role="dialog"]),
+  div[id*="cookie"][id*="banner"]:not([role="dialog"]),
+  div[class*="cookie"][class*="banner"]:not([role="dialog"]),
+  div[id*="consent"]:not([role="dialog"]),
+  div[class*="consent"]:not([role="dialog"]) {
     bottom: 0 !important;
-    padding-bottom: max(12px, env(safe-area-inset-bottom, 0)) !important;
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 0)) !important;
   }
   
-  /* Cookie icon positioning on mobile - above bottom navigation */
-  body > div[id*="termshub-icon"]:not([role="dialog"]),
-  body > div[class*="termshub-icon"]:not([role="dialog"]),
-  body > button[id*="cookie-settings"]:not([role="dialog"]),
-  body > button[class*="cookie-settings"]:not([role="dialog"]),
-  body > div[id*="cookie-icon"]:not([role="dialog"]),
-  body > div[class*="cookie-icon"]:not([role="dialog"]) {
-    bottom: 80px !important; /* Above mobile bottom nav */
+  /* Cookie icon/widget - above mobile bottom nav */
+  div[id*="termshub"][id*="widget"]:not([role="dialog"]),
+  div[class*="termshub"][class*="widget"]:not([role="dialog"]),
+  div[id*="cookie"][id*="widget"]:not([role="dialog"]),
+  div[class*="cookie"][class*="widget"]:not([role="dialog"]),
+  div[id*="termshub"][id*="icon"]:not([role="dialog"]),
+  div[class*="termshub"][class*="icon"]:not([role="dialog"]),
+  button[id*="cookie"][id*="settings"]:not([role="dialog"]),
+  button[class*="cookie"][class*="settings"]:not([role="dialog"]) {
+    bottom: 80px !important; /* Above mobile nav (60px + spacing) */
     left: 16px !important;
+    right: auto !important;
     width: 48px !important;
     height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
     border-radius: 50% !important;
-  }
-  
-  /* Only style banner buttons, not modal buttons */
-  body > div[id*="termshub-banner"] button,
-  body > div[class*="termshub-banner"] button,
-  body > div[id*="cookie-banner"] button,
-  body > div[class*="cookie-banner"] button {
-    min-height: 44px !important; /* Touch-friendly target */
-    padding: 12px 16px !important;
   }
 }
 
-/* Extra small devices */
+/* Extra small devices - phones */
 @media (max-width: 480px) {
-  /* Cookie icon on very small screens */
-  body > div[id*="termshub-icon"]:not([role="dialog"]),
-  body > div[class*="termshub-icon"]:not([role="dialog"]),
-  body > button[id*="cookie-settings"]:not([role="dialog"]),
-  body > button[class*="cookie-settings"]:not([role="dialog"]),
-  body > div[id*="cookie-icon"]:not([role="dialog"]),
-  body > div[class*="cookie-icon"]:not([role="dialog"]) {
+  /* Cookie icon on small screens */
+  div[id*="termshub"][id*="widget"]:not([role="dialog"]),
+  div[class*="termshub"][class*="widget"]:not([role="dialog"]),
+  div[id*="cookie"][id*="widget"]:not([role="dialog"]),
+  div[class*="cookie"][class*="widget"]:not([role="dialog"]),
+  div[id*="termshub"][id*="icon"]:not([role="dialog"]),
+  div[class*="termshub"][class*="icon"]:not([role="dialog"]),
+  button[id*="cookie"][id*="settings"]:not([role="dialog"]),
+  button[class*="cookie"][class*="settings"]:not([role="dialog"]) {
     bottom: 70px !important;
     left: 12px !important;
     width: 44px !important;
     height: 44px !important;
-  }
-  
-  /* Banner text sizing on small screens */
-  body > div[id*="termshub-banner"],
-  body > div[class*="termshub-banner"],
-  body > div[id*="cookie-banner"],
-  body > div[class*="cookie-banner"] {
-    font-size: 14px !important;
-    padding: 12px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
   }
 }
 
-/* iOS Safari specific fixes for cookie banner */
+/* iOS Safari specific fixes */
 @supports (-webkit-touch-callout: none) {
-  body > div[id*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[class*="termshub-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[id*="cookie-banner"]:not([role="dialog"]):not([aria-modal]),
-  body > div[class*="cookie-banner"]:not([role="dialog"]):not([aria-modal]) {
+  div[id*="termshub"][id*="banner"]:not([role="dialog"]),
+  div[class*="termshub"][class*="banner"]:not([role="dialog"]),
+  div[id*="cookie"][id*="banner"]:not([role="dialog"]),
+  div[class*="cookie"][class*="banner"]:not([role="dialog"]),
+  div[id*="consent"]:not([role="dialog"]),
+  div[class*="consent"]:not([role="dialog"]) {
     bottom: env(safe-area-inset-bottom, 0) !important;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0)) !important;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0)) !important;
+  }
+}
+
+/* Ensure mobile bottom nav doesn't overlap cookie elements */
+@media (max-width: 768px) {
+  .mobile-nav,
+  [class*="mobile"][class*="nav"],
+  [class*="bottom"][class*="nav"] {
+    z-index: 50 !important; /* Keep below cookie consent (999999) */
   }
 }

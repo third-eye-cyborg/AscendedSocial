@@ -22,6 +22,10 @@ The client uses React, TypeScript, and Vite with wouter for routing and TanStack
 - **Zero Trust Security**: Four-layer model using Cloudflare Zero Trust for user authentication, admin access, network protection, and API protection.
 - **Privacy Compliance**:
   - **TermsHub Integration**: GDPR/CCPA-compliant cookie consent banner replacing Klaro/Enzuzo
+    - **Mobile Responsiveness**: Custom CSS ensures cookie icon/banner stays fixed at bottom on all devices
+    - Cookie icon positioned at 80px from bottom on mobile (above bottom navigation)
+    - Touch-friendly targets (44-48px) for mobile devices
+    - iOS Safari safe area inset support for notched devices
   - **DSAR Form** (`/dsar`): GDPR data subject access requests (access, deletion, rectification, portability, restriction, objection)
   - **Do Not Sell Form** (`/do-not-sell-form`): CCPA opt-out requests
   - **Self-Hosted Consent Auditing**: Complete consent logging system using Cloudflare D1 EU database
@@ -82,6 +86,10 @@ The project enforces strict codebase standards for folder structure, file cleanu
 
 ### Privacy and Consent Management
 - **TermsHub**: GDPR and CCPA-compliant cookie consent banner and legal document hosting (replaces Klaro/Enzuzo).
+  - **Mobile Responsiveness**: Custom CSS ensures cookie icon/banner stays fixed at bottom on all devices
+  - Cookie icon positioned at 80px from bottom on mobile (above bottom navigation)
+  - Touch-friendly targets (44-48px) for mobile devices
+  - iOS Safari safe area inset support for notched devices
 - **Self-Hosted Consent Auditing**: Custom implementation using Cloudflare D1 EU database for GDPR-compliant consent storage, with complete API endpoints for logging, retrieval, withdrawal, and statistics.
 - **Cloudflare D1**: EU-based serverless database for secure consent storage. Requires environment variables: `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_D1_DATABASE_ID`.
 - **Cloudflare Turnstile**: CAPTCHA-free security verification on privacy forms (production domains only).

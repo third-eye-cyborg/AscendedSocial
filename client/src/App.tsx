@@ -7,8 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { ClientAnalytics } from "@/lib/analytics";
 import { NotificationService } from "@/lib/notifications";
 import { consentManager } from "@/lib/consent";
-import { useEffect, useMemo, Suspense, lazy } from "react";
-import React from 'react';
+import { useEffect, useMemo, Suspense, lazy, memo } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 // Critical pages - loaded immediately
@@ -72,7 +71,7 @@ const VideoPage = lazy(() => import('./pages/video'));
 const MobileLogin = lazy(() => import('./pages/mobile-login'));
 
 // Loading fallback component
-const LoadingSpinner = React.memo(({ text = "Connecting to the cosmic realm..." }: { text?: string }) => (
+const LoadingSpinner = memo(({ text = "Connecting to the cosmic realm..." }: { text?: string }) => (
   <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
     <div className="text-center space-y-4">
       <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
@@ -82,7 +81,7 @@ const LoadingSpinner = React.memo(({ text = "Connecting to the cosmic realm..." 
 ));
 LoadingSpinner.displayName = 'LoadingSpinner';
 
-const Router = React.memo(() => {
+const Router = memo(() => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   // Memoize user analytics data to prevent re-computation

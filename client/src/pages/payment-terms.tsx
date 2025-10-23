@@ -53,7 +53,7 @@ export default function PaymentTerms() {
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-primary/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8 mb-8">
             <h3 className="text-3xl font-display font-bold mb-4 text-primary">Executive Summary</h3>
             <p className="text-white/90 text-lg leading-relaxed">
-              This document outlines the payment, billing, refund, and cancellation policies for Ascended Social, a spiritual community and wellness platform operated by Third Eye Cyborg, LLC. It covers subscription terms, refund eligibility, billing procedures, cancellation rights, dispute resolution, and compliance with U.S. and international regulations. All payments are processed via Stripe, and these policies are designed to protect both users and the company while ensuring transparency and fairness.
+              This document outlines the payment, billing, refund, and cancellation policies for Ascended Social, a spiritual community and wellness platform operated by Third Eye Cyborg, LLC. It covers subscription terms, refund eligibility, billing procedures, cancellation rights, dispute resolution, and compliance with U.S. and international regulations. All payments are processed via Polar, and these policies are designed to protect both users and the company while ensuring transparency and fairness.
             </p>
           </div>
 
@@ -74,7 +74,7 @@ export default function PaymentTerms() {
                 <p className="text-white/90"><strong className="text-chakra-throat">"Digital Services":</strong> Intangible services including AI Oracle readings, tarot features, unlimited energy, premium community access, and custom sigil generation.</p>
               </div>
               <div className="border-l-4 border-chakra-solar pl-4">
-                <p className="text-white/90"><strong className="text-chakra-solar">"Stripe":</strong> The exclusive payment processor for all transactions.</p>
+                <p className="text-white/90"><strong className="text-chakra-solar">"Polar":</strong> The exclusive payment processor for all transactions.</p>
               </div>
               <div className="border-l-4 border-chakra-sacral pl-4">
                 <p className="text-white/90"><strong className="text-chakra-sacral">"Free Trial":</strong> 7-day period with full refund eligibility if canceled during trial.</p>
@@ -94,7 +94,7 @@ export default function PaymentTerms() {
                 1. Subscription Billing
               </h3>
               <ul className="space-y-3 text-white/90 leading-relaxed">
-                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Subscriptions are billed automatically on a recurring monthly or annual basis via Stripe.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Subscriptions are billed automatically on a recurring monthly or annual basis via Polar.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>The signup date establishes the billing anniversary.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Users must provide and maintain a valid credit/debit card. Accepted cards: Visa, MasterCard, American Express, Discover.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>All charges are in USD. International users may incur currency conversion fees; Ascended Social is not responsible for exchange rate fluctuations.</li>
@@ -110,8 +110,8 @@ export default function PaymentTerms() {
                 2. Payment Processing
               </h3>
               <ul className="space-y-3 text-white/90 leading-relaxed">
-                <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Stripe is the exclusive payment processor; all transactions are PCI DSS compliant.</li>
-                <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Payment authorization and capture are managed by Stripe. Stored payment methods are secured per Stripe's standards.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Polar is the exclusive payment processor; all transactions are PCI DSS compliant.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Payment authorization and capture are managed by Polar. Stored payment methods are secured per Polar's standards.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Failed payments trigger automatic retries (immediate, 3 days, 7 days, final attempt at 10 days). Users have a 7-day grace period to resolve issues.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-secondary text-xs mt-2 mr-3"></i>Accounts are suspended after 7 days of non-payment and terminated after 30 days. Outstanding balances may be pursued for collection.</li>
               </ul>
@@ -148,7 +148,7 @@ export default function PaymentTerms() {
                 4. Subscription Cancellation Policy
               </h3>
               <ul className="space-y-3 text-white/90 leading-relaxed">
-                <li className="flex items-start"><i className="fas fa-circle text-chakra-throat text-xs mt-2 mr-3"></i>Users can cancel via account settings, Stripe customer portal, or by contacting support.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-chakra-throat text-xs mt-2 mr-3"></i>Users can cancel via account settings, Polar customer portal, or by contacting support.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-chakra-throat text-xs mt-2 mr-3"></i>Cancellations take effect immediately, but users retain access until the end of the paid period unless otherwise specified.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-chakra-throat text-xs mt-2 mr-3"></i>Free trial cancellations incur no charges.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-chakra-throat text-xs mt-2 mr-3"></i>Accounts terminated for non-payment or violations lose premium access immediately; data is retained for 90 days for potential reactivation.</li>
@@ -169,7 +169,7 @@ export default function PaymentTerms() {
                   <ol className="space-y-2 text-white/90 leading-relaxed ml-4">
                     <li className="flex items-start"><span className="text-chakra-solar font-bold mr-2">1.</span>Log in and use the self-service cancellation option.</li>
                     <li className="flex items-start"><span className="text-chakra-solar font-bold mr-2">2.</span>Contact support via email or chat.</li>
-                    <li className="flex items-start"><span className="text-chakra-solar font-bold mr-2">3.</span>Use the Stripe customer portal.</li>
+                    <li className="flex items-start"><span className="text-chakra-solar font-bold mr-2">3.</span>Use the Polar customer portal.</li>
                   </ol>
                 </div>
                 <ul className="space-y-3 text-white/90 leading-relaxed">
@@ -189,7 +189,7 @@ export default function PaymentTerms() {
                 </h3>
                 <ul className="space-y-3 text-white/90 leading-relaxed">
                   <li className="flex items-start"><i className="fas fa-check text-chakra-sacral text-sm mt-1 mr-3"></i>Right to clear billing, refund, and cancellation information.</li>
-                  <li className="flex items-start"><i className="fas fa-check text-chakra-sacral text-sm mt-1 mr-3"></i>Right to dispute unauthorized charges via Stripe's dispute process.</li>
+                  <li className="flex items-start"><i className="fas fa-check text-chakra-sacral text-sm mt-1 mr-3"></i>Right to dispute unauthorized charges via Polar's dispute process.</li>
                   <li className="flex items-start"><i className="fas fa-check text-chakra-sacral text-sm mt-1 mr-3"></i>Right to data export and deletion (GDPR/CCPA compliance).</li>
                   <li className="flex items-start"><i className="fas fa-check text-chakra-sacral text-sm mt-1 mr-3"></i>Right to receive timely notifications of policy changes.</li>
                 </ul>
@@ -217,9 +217,9 @@ export default function PaymentTerms() {
                 8. Dispute Resolution
               </h3>
               <ul className="space-y-3 text-white/90 leading-relaxed">
-                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Users may dispute charges through Stripe or by contacting Ascended Social support.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Users may dispute charges through Polar or by contacting Ascended Social support.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Disputes are addressed within 10 business days.</li>
-                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Stripe's chargeback and dispute procedures apply.</li>
+                <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Polar's chargeback and dispute procedures apply.</li>
                 <li className="flex items-start"><i className="fas fa-circle text-primary text-xs mt-2 mr-3"></i>Unresolved disputes may be escalated to binding arbitration under U.S. law.</li>
               </ul>
             </div>
@@ -231,7 +231,7 @@ export default function PaymentTerms() {
             <div className="grid gap-6">
               <div className="bg-cosmic/50 rounded-xl p-4 border border-secondary/20">
                 <h4 className="text-lg font-semibold text-secondary mb-2">Q: How do I cancel my subscription?</h4>
-                <p className="text-white/90">A: Use your account settings, the Stripe portal, or contact support.</p>
+                <p className="text-white/90">A: Use your account settings, the Polar portal, or contact support.</p>
               </div>
               <div className="bg-cosmic/50 rounded-xl p-4 border border-primary/20">
                 <h4 className="text-lg font-semibold text-primary mb-2">Q: When will I receive my refund?</h4>
@@ -300,7 +300,7 @@ export default function PaymentTerms() {
           <div className="bg-gradient-to-br from-cosmic/95 to-cosmic/85 border border-chakra-crown/40 glass-effect shadow-xl rounded-3xl overflow-hidden p-8 mt-8">
             <h3 className="text-2xl font-display font-bold mb-4 text-chakra-crown">Compliance and Legal Framework</h3>
             <p className="text-white/90 leading-relaxed mb-4">
-              This policy complies with U.S. federal and state laws, the EU General Data Protection Regulation (GDPR), UK Consumer Rights Act, Canadian PIPEDA, Australian Consumer Law, and Stripe's terms of service. PCI DSS, anti-money laundering, and KYC requirements are met through Stripe. Dispute and chargeback procedures follow Stripe's protocols. International payment acceptance is subject to Stripe's limitations.
+              This policy complies with U.S. federal and state laws, the EU General Data Protection Regulation (GDPR), UK Consumer Rights Act, Canadian PIPEDA, Australian Consumer Law, and Polar's terms of service. PCI DSS, anti-money laundering, and KYC requirements are met through Polar. Dispute and chargeback procedures follow Polar's protocols. International payment acceptance is subject to Polar's limitations.
             </p>
             <p className="text-white/80 text-center font-medium">
               By subscribing to Ascended Social, you acknowledge and accept these payment, billing, refund, and cancellation policies.

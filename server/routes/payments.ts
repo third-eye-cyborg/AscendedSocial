@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { getLemonSqueezyService } from '../lib/lemon-squeezy';
+import { getPolarService } from '../lib/polar';
 
 const router = Router();
 
-// Initialize Lemon Squeezy service
-const lemonSqueezy = getLemonSqueezyService();
+// Initialize Polar service
+const polar = getPolarService();
 
 // Validation schema for checkout request
 const checkoutSchema = z.object({
@@ -16,14 +16,16 @@ const checkoutSchema = z.object({
 });
 
 /**
- * Get Lemon Squeezy configuration  
+ * Get Polar configuration  
  * GET /api/payments/config
  */
 router.get('/config', async (req, res) => {
   try {
     res.json({
-      storeId: process.env.LEMONSQUEEZY_STORE_ID || '',
-      environment: process.env.NODE_ENV === 'production' ? 'production' : 'sandbox'
+      provider: 'polar',
+      status: 'coming_soon',
+      message: 'Payment processing is coming soon',
+      environment: process.env.NODE_ENV === 'production' ? 'production' : 'development'
     });
   } catch (error) {
     console.error('Config fetch error:', error);
@@ -35,12 +37,19 @@ router.get('/config', async (req, res) => {
 });
 
 /**
- * Create checkout session (Lemon Squeezy)
+ * Create checkout session (Polar)
  * POST /api/payments/checkout
  */
 router.post('/checkout', async (req, res) => {
   try {
-    // Validate request body
+    // Payment processing is currently unavailable
+    return res.status(503).json({
+      success: false,
+      error: 'Payment processing is coming soon. Premium subscriptions are not yet available.'
+    });
+
+    // The code below will be used once Polar integration is complete:
+    /*
     const validation = checkoutSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
@@ -51,23 +60,15 @@ router.post('/checkout', async (req, res) => {
 
     const { productId, plan } = validation.data;
 
-    // Map product IDs to Lemon Squeezy variant IDs
-    // IMPORTANT: Set these environment variables to match your Lemon Squeezy product configuration:
-    // - LEMONSQUEEZY_VARIANT_ID_MYSTIC: Variant ID for Mystic plan ($12/month)
-    // - LEMONSQUEEZY_VARIANT_ID_ASCENDED: Variant ID for Ascended plan ($24/month)
-    // To find your Lemon Squeezy variant IDs:
-    // 1. Log into your Lemon Squeezy dashboard
-    // 2. Go to Products
-    // 3. Copy the variant IDs for each subscription tier
-    const productMapping: Record<string, { name: string, variantId: string | undefined, price: string }> = {
+    const productMapping: Record<string, { name: string, polarProductId: string | undefined, price: string }> = {
       'mystic_monthly': { 
         name: 'Mystic Plan', 
-        variantId: process.env.LEMONSQUEEZY_VARIANT_ID_MYSTIC,
+        polarProductId: process.env.POLAR_PRODUCT_ID_MYSTIC,
         price: '$12/month' 
       },
       'ascended_monthly': { 
         name: 'Ascended Plan', 
-        variantId: process.env.LEMONSQUEEZY_VARIANT_ID_ASCENDED,
+        polarProductId: process.env.POLAR_PRODUCT_ID_ASCENDED,
         price: '$24/month' 
       },
     };
@@ -80,25 +81,23 @@ router.post('/checkout', async (req, res) => {
       });
     }
 
-    // Check if Lemon Squeezy variant ID is configured
-    if (!product.variantId) {
-      console.error(`Lemon Squeezy variant ID not configured for product: ${productId}`);
+    if (!product.polarProductId) {
+      console.error(`Polar product ID not configured for: ${productId}`);
       return res.status(500).json({
         success: false,
-        error: 'Payment system is not fully configured. Please contact support.'
+        error: 'Payment system is not fully configured.'
       });
     }
 
-    if (!lemonSqueezy) {
+    if (!polar) {
       return res.status(503).json({
         success: false,
-        error: 'Payment service is not available. Please contact support.'
+        error: 'Payment service is not available.'
       });
     }
 
-    // Create checkout session
-    const checkout = await lemonSqueezy.createCheckoutSession({
-      variantId: product.variantId,
+    const checkout = await polar.createCheckoutSession({
+      productId: product.polarProductId,
       email: (req.user as any)?.email,
       customData: {
         userId: (req.user as any)?.id,
@@ -106,7 +105,6 @@ router.post('/checkout', async (req, res) => {
       }
     });
 
-    // Return checkout URL for redirect
     res.json({
       success: true,
       checkout: {
@@ -117,6 +115,7 @@ router.post('/checkout', async (req, res) => {
         checkoutId: checkout.id
       }
     });
+    */
   } catch (error) {
     console.error('Checkout creation error:', error);
     res.status(500).json({
@@ -139,18 +138,10 @@ router.get('/subscription', async (req, res) => {
       });
     }
 
-    if (!lemonSqueezy) {
-      return res.status(503).json({
-        success: false,
-        error: 'Payment service not available'
-      });
-    }
-
-    // In a real app, you'd store the subscription ID in your database
-    // For now, return a placeholder response
     res.json({ 
       subscription: null,
-      message: 'No active subscription found'
+      status: 'coming_soon',
+      message: 'Premium subscriptions are coming soon'
     });
   } catch (error) {
     console.error('Subscription status error:', error);
@@ -174,27 +165,9 @@ router.post('/cancel', async (req, res) => {
       });
     }
 
-    if (!lemonSqueezy) {
-      return res.status(503).json({
-        success: false,
-        error: 'Payment service not available'
-      });
-    }
-
-    const { subscriptionId } = req.body;
-    
-    if (!subscriptionId) {
-      return res.status(400).json({
-        success: false,
-        error: 'Subscription ID is required'
-      });
-    }
-
-    await lemonSqueezy.cancelSubscription(subscriptionId);
-    
-    res.json({
-      success: true,
-      message: 'Subscription cancelled successfully'
+    return res.status(503).json({
+      success: false,
+      error: 'Subscription management is coming soon'
     });
   } catch (error) {
     console.error('Subscription cancellation error:', error);
@@ -206,29 +179,29 @@ router.post('/cancel', async (req, res) => {
 });
 
 /**
- * Lemon Squeezy webhook endpoint
- * POST /api/webhooks/lemon-squeezy
+ * Polar webhook endpoint
+ * POST /api/webhooks/polar
  */
-router.post('/webhooks/lemon-squeezy', async (req, res) => {
+router.post('/webhooks/polar', async (req, res) => {
   try {
-    if (!lemonSqueezy) {
-      console.error('Lemon Squeezy webhook received but service not initialized');
+    if (!polar) {
+      console.error('Polar webhook received but service not initialized');
       return res.status(503).json({ error: 'Payment service not available' });
     }
 
-    const signature = req.get('X-Signature');
+    const signature = req.get('X-Polar-Signature');
     const payload = JSON.stringify(req.body);
     
     // Verify webhook signature
-    if (!lemonSqueezy.validateWebhookSignature(payload, signature || '')) {
+    if (!polar.validateWebhookSignature(payload, signature || '')) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
     
-    await lemonSqueezy.processWebhookEvent(req.body);
+    await polar.processWebhookEvent(req.body);
     res.json({ received: true });
     
   } catch (error) {
-    console.error('Lemon Squeezy webhook error:', error);
+    console.error('Polar webhook error:', error);
     res.status(500).json({ error: 'Webhook processing failed' });
   }
 });

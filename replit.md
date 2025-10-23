@@ -18,7 +18,7 @@ The client uses React, TypeScript, and Vite with wouter for routing and TanStack
 - **Chakra-based Content**: Automatic categorization of posts into seven chakra types with spiritual frequency scores using OpenAI's GPT-4.
 - **Engagement System**: Spiritual-themed upvotes, downvotes, likes, and energy sharing with monthly refreshing energy points.
 - **Oracle System**: AI-powered daily readings, recommendations, and tarot-style guidance based on user behavior.
-- **Premium Subscriptions**: Managed by Lemon Squeezy, offering features like unlimited energy and enhanced oracle readings.
+- **Premium Subscriptions**: Managed by Polar (Coming Soon), offering features like unlimited energy and enhanced oracle readings.
 - **Zero Trust Security**: Four-layer model using Cloudflare Zero Trust for user authentication, admin access, network protection, and API protection.
 - **Privacy Compliance**:
   - **TermsHub Integration**: GDPR/CCPA-compliant cookie consent banner replacing Klaro/Enzuzo
@@ -57,18 +57,17 @@ The project enforces strict codebase standards for folder structure, file cleanu
 - **OpenAI API**: GPT-4 for content analysis and oracle readings.
 
 ### Payment Processing
-- **Lemon Squeezy**: Primary payment processor for web-based checkout and subscription management.
-  - Official SDK: `@lemonsqueezy/lemonsqueezy.js`
-  - Direct checkout URL redirect flow (no overlay SDK)
+- **Polar**: Payment processor for web-based checkout and subscription management.
+  - Status: **Coming Soon** - Payment processing is currently being set up
   - Backend validation using Zod schemas for product IDs
   - Environment variables required:
-    - `LEMONSQUEEZY_API_KEY`: API key for backend operations
-    - `LEMONSQUEEZY_STORE_ID`: Your Lemon Squeezy store ID
-    - `LEMONSQUEEZY_VARIANT_ID_MYSTIC`: Variant ID for Mystic plan ($12/month)
-    - `LEMONSQUEEZY_VARIANT_ID_ASCENDED`: Variant ID for Ascended plan ($24/month)
-    - `LEMONSQUEEZY_WEBHOOK_SECRET`: Secret for webhook signature validation
-  - Webhook endpoint: `/api/webhooks/lemon-squeezy`
-  - Service module: `server/lib/lemon-squeezy.ts`
+    - `POLAR_API_KEY`: API key for backend operations
+    - `POLAR_ORGANIZATION_ID`: Your Polar organization ID
+    - `POLAR_PRODUCT_ID_MYSTIC`: Product ID for Mystic plan ($12/month)
+    - `POLAR_PRODUCT_ID_ASCENDED`: Product ID for Ascended plan ($24/month)
+    - `POLAR_WEBHOOK_SECRET`: Secret for webhook signature validation
+  - Webhook endpoint: `/api/webhooks/polar`
+  - Service module: `server/lib/polar.ts`
 
 ### Media and Storage
 - **Google Cloud Storage**: File and media storage.

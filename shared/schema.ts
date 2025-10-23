@@ -49,8 +49,8 @@ export const users = pgTable("users", {
   energy: integer("energy").default(1000), // Monthly energy allocation
   energyLastReset: timestamp("energy_last_reset").defaultNow(),
   isPremium: boolean("is_premium").default(false),
-  revenueCatCustomerId: varchar("revenuecat_customer_id"),
-  paddleSubscriptionId: varchar("paddle_subscription_id"),
+  polarCustomerId: varchar("polar_customer_id"),
+  polarSubscriptionId: varchar("polar_subscription_id"),
   hasCompletedOnboarding: boolean("has_completed_onboarding").default(false),
   astrologySign: varchar("astrology_sign"),
   birthDate: timestamp("birth_date"),
@@ -542,16 +542,14 @@ export const entitlementStatusEnum = pgEnum("entitlement_status", [
 export const platformEnum = pgEnum("platform", [
   "web",
   "ios", 
-  "android",
-  "paddle"  // Paddle subscriptions
+  "android"
 ]);
 
-// RevenueCat entitlements - central source of truth for premium features
+// Entitlements - central source of truth for premium features
 export const entitlements = pgTable("entitlements", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  revenuecatUserId: varchar("revenuecat_user_id").notNull(), // RevenueCat customer ID
-  entitlementId: varchar("entitlement_id").notNull(), // RevenueCat entitlement identifier
+  polarCustomerId: varchar("polar_customer_id"), // Polar customer ID
   productId: varchar("product_id").notNull(), // Product identifier (premium, pro, etc)
   status: entitlementStatusEnum("status").notNull(),
   platform: platformEnum("platform").notNull(),
@@ -562,7 +560,7 @@ export const entitlements = pgTable("entitlements", {
   trialExpirationDate: timestamp("trial_expiration_date"),
   originalTransactionId: varchar("original_transaction_id"), // Platform transaction ID
   latestTransactionId: varchar("latest_transaction_id"), // Most recent transaction
-  subscriptionId: varchar("subscription_id"), // Subscription identifier from platform
+  subscriptionId: varchar("subscription_id"), // Subscription identifier from Polar
   priceInCents: integer("price_in_cents"), // Price in cents
   currency: varchar("currency").default("USD"),
   metadata: jsonb("metadata"), // Platform-specific data
@@ -572,15 +570,14 @@ export const entitlements = pgTable("entitlements", {
 
 // Webhook event types enum
 export const webhookTypeEnum = pgEnum("webhook_type", [
-  "paddle.subscription.created",
-  "paddle.subscription.updated", 
-  "paddle.subscription.cancelled",
-  "paddle.payment.succeeded",
-  "paddle.payment.failed",
-  "revenuecat.purchase.made",
-  "revenuecat.renewal.succeeded",
-  "revenuecat.cancellation",
-  "revenuecat.expiration",
+  "polar.checkout.created",
+  "polar.checkout.updated",
+  "polar.subscription.created",
+  "polar.subscription.updated", 
+  "polar.subscription.canceled",
+  "polar.subscription.revoked",
+  "polar.payment.succeeded",
+  "polar.payment.failed",
   "fides.consent.updated",
   "fides.dsar.completed"
 ]);
@@ -600,7 +597,7 @@ export const webhookEvents = pgTable("webhook_events", {
   eventId: varchar("event_id").unique(), // External system event ID for idempotency
   type: webhookTypeEnum("type").notNull(),
   status: webhookStatusEnum("status").default("pending"),
-  source: varchar("source").notNull(), // paddle, revenuecat, fides
+  source: varchar("source").notNull(), // polar, fides
   payload: jsonb("payload").notNull(), // Full webhook payload
   signature: varchar("signature"), // Webhook signature for verification
   processingAttempts: integer("processing_attempts").default(0),
@@ -682,11 +679,11 @@ export type DSARStatus = "submitted" | "verified" | "processing" | "completed" |
 export type Entitlement = typeof entitlements.$inferSelect;
 export type InsertEntitlement = z.infer<typeof insertEntitlementSchema>;
 export type EntitlementStatus = "active" | "inactive" | "expired" | "cancelled" | "paused";
-export type Platform = "web" | "ios" | "android" | "paddle";
+export type Platform = "web" | "ios" | "android";
 
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type InsertWebhookEvent = z.infer<typeof insertWebhookEventSchema>;
-export type WebhookType = "paddle.subscription.created" | "paddle.subscription.updated" | "paddle.subscription.cancelled" | "paddle.payment.succeeded" | "paddle.payment.failed" | "revenuecat.purchase.made" | "revenuecat.renewal.succeeded" | "revenuecat.cancellation" | "revenuecat.expiration" | "fides.consent.updated" | "fides.dsar.completed";
+export type WebhookType = "polar.checkout.created" | "polar.checkout.updated" | "polar.subscription.created" | "polar.subscription.updated" | "polar.subscription.canceled" | "polar.subscription.revoked" | "polar.payment.succeeded" | "polar.payment.failed" | "fides.consent.updated" | "fides.dsar.completed";
 export type WebhookStatus = "pending" | "processing" | "succeeded" | "failed" | "retry";
 
 export type FeatureFlag = typeof featureFlags.$inferSelect;

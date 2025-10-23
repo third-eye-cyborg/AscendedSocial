@@ -114,15 +114,14 @@ export const securityScanResultSchema = z.object({
   createdAt: z.date(),
 });
 
-// Payment & Subscription schemas (RevenueCat integration)
+// Payment & Subscription schemas (Polar integration)
 export const subscriptionSchema = z.object({
   id: z.string().uuid(),
   userId: z.string(),
-  revenueCatCustomerId: z.string(),
+  polarCustomerId: z.string(),
   productId: z.string(),
-  packageId: z.string().optional(),
   status: z.enum(['active', 'cancelled', 'expired', 'in_trial', 'paused']),
-  platform: z.enum(['web', 'ios', 'android', 'paddle']),
+  platform: z.enum(['web', 'ios', 'android']),
   originalPurchaseDate: z.date(),
   expirationDate: z.date().optional(),
   autoRenewStatus: z.boolean(),
@@ -131,7 +130,7 @@ export const subscriptionSchema = z.object({
   priceUSD: z.number(),
   currency: z.string().default('USD'),
   billingCycle: z.enum(['monthly', 'yearly', 'weekly', 'lifetime']),
-  paddleTransactionId: z.string().optional(),
+  polarTransactionId: z.string().optional(),
   metadata: z.record(z.any()).optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -146,8 +145,7 @@ export const paymentEventSchema = z.object({
   ]),
   amount: z.number(),
   currency: z.string().default('USD'),
-  paddleEventId: z.string().optional(),
-  revenueCatEventId: z.string().optional(),
+  polarEventId: z.string().optional(),
   metadata: z.record(z.any()).optional(),
   processedAt: z.date().optional(),
   createdAt: z.date(),

@@ -1,137 +1,57 @@
 {
-  "revenuecat": {
-    "apiKey": "{{ REVENUECAT_API_KEY }}",
-    "publicKey": "{{ REVENUECAT_PUBLIC_KEY }}", 
+  "polar": {
+    "apiKey": "{{ POLAR_API_KEY }}",
+    "organizationId": "{{ POLAR_ORGANIZATION_ID }}",
     "environment": "development",
-    "webhookUrl": "/api/webhooks/revenuecat",
+    "webhookUrl": "/api/webhooks/polar",
+    "webhookSecret": "{{ POLAR_WEBHOOK_SECRET }}",
+    "status": "coming_soon",
     "products": [
       {
-        "id": "premium_monthly",
+        "id": "mystic_monthly",
         "type": "subscription",
-        "name": "Premium Monthly",
+        "name": "Mystic Plan",
         "description": "Premium features with monthly billing",
-        "price": 999,
+        "price": 1200,
         "currency": "USD",
         "interval": "month",
-        "entitlements": ["premium", "unlimited_energy", "advanced_spiritual_tools"]
+        "features": [
+          "Unlimited spiritual energy",
+          "Enhanced oracle readings",
+          "Priority support",
+          "Advanced spiritual tools"
+        ]
       },
       {
-        "id": "premium_yearly", 
+        "id": "ascended_monthly", 
         "type": "subscription",
-        "name": "Premium Yearly",
-        "description": "Premium features with yearly billing (save 20%)",
-        "price": 9599,
+        "name": "Ascended Plan",
+        "description": "Premium features with enhanced benefits",
+        "price": 2400,
         "currency": "USD", 
-        "interval": "year",
-        "entitlements": ["premium", "unlimited_energy", "advanced_spiritual_tools"]
-      },
-      {
-        "id": "energy_boost",
-        "type": "consumable",
-        "name": "Energy Boost",
-        "description": "Additional spiritual energy for premium interactions",
-        "price": 299,
-        "currency": "USD",
-        "quantity": 500
-      }
-    ],
-    "entitlements": {
-      "premium": {
-        "name": "Premium Access",
-        "description": "Access to all premium features and content"
-      },
-      "unlimited_energy": {
-        "name": "Unlimited Energy",
-        "description": "Unlimited spiritual energy for interactions"
-      },
-      "advanced_spiritual_tools": {
-        "name": "Advanced Spiritual Tools",
-        "description": "Access to advanced spiritual reading and tools"
-      }
-    }
-  },
-  "paddle": {
-    "vendorId": "{{ PADDLE_VENDOR_ID }}",
-    "publicKey": "{{ PADDLE_PUBLIC_KEY }}",
-    "environment": "sandbox",
-    "webhookUrl": "/api/webhooks/paddle",
-    "products": [
-      {
-        "paddleProductId": "{{ PADDLE_PREMIUM_MONTHLY_ID }}",
-        "revenueCatProductId": "premium_monthly",
-        "name": "Premium Monthly",
-        "price": "$9.99",
-        "billingCycle": "monthly"
-      },
-      {
-        "paddleProductId": "{{ PADDLE_PREMIUM_YEARLY_ID }}",
-        "revenueCatProductId": "premium_yearly", 
-        "name": "Premium Yearly",
-        "price": "$95.99",
-        "billingCycle": "yearly"
-      },
-      {
-        "paddleProductId": "{{ PADDLE_ENERGY_BOOST_ID }}",
-        "revenueCatProductId": "energy_boost",
-        "name": "Energy Boost",
-        "price": "$2.99",
-        "billingCycle": "one-time"
-      }
-    ],
-    "checkout": {
-      "displayMode": "overlay",
-      "theme": "dark",
-      "locale": "en",
-      "allowQuantity": false,
-      "frameTarget": "self",
-      "frameStyle": "width: 100%; background-color: transparent; border: none;"
-    }
-  },
-  "stripe": {
-    "enabled": false,
-    "dualRun": false,
-    "deprecationDate": "2025-12-31",
-    "migrationStrategy": "grandfather_existing_users",
-    "products": [
-      {
-        "stripeProductId": "{{ STRIPE_PREMIUM_MONTHLY_ID }}",
-        "revenueCatMapping": "premium_monthly",
-        "status": "legacy_support"
-      },
-      {
-        "stripeProductId": "{{ STRIPE_PREMIUM_YEARLY_ID }}",
-        "revenueCatMapping": "premium_yearly",
-        "status": "legacy_support"
+        "interval": "month",
+        "features": [
+          "All Mystic Plan features",
+          "Exclusive oracle insights",
+          "Premium community access",
+          "Advanced 3D visualizations",
+          "Custom sigil creation"
+        ]
       }
     ]
   },
   "features": {
-    "dualRunMode": {
-      "enabled": false,
-      "percentage": 0,
-      "newUserDefault": "paddle"
-    },
     "webhookRetry": {
       "maxAttempts": 5,
       "backoffMultiplier": 2,
       "initialDelayMs": 1000
-    },
-    "entitlementSync": {
-      "enabled": true,
-      "syncIntervalMinutes": 15,
-      "fallbackToCache": true,
-      "cacheExpiryMinutes": 60
     }
   },
   "security": {
     "webhookVerification": {
-      "revenuecat": {
+      "polar": {
         "enabled": true,
-        "secret": "{{ REVENUECAT_WEBHOOK_SECRET }}"
-      },
-      "paddle": {
-        "enabled": true,
-        "publicKey": "{{ PADDLE_PUBLIC_KEY_WEBHOOK }}"
+        "secret": "{{ POLAR_WEBHOOK_SECRET }}"
       }
     },
     "rateLimiting": {
@@ -141,14 +61,6 @@
     }
   },
   "compliance": {
-    "taxCalculation": {
-      "enabled": true,
-      "provider": "paddle"
-    },
-    "invoicing": {
-      "enabled": true,
-      "provider": "paddle"
-    },
     "dataRetention": {
       "paymentDataDays": 2555,
       "failedPaymentDataDays": 90,

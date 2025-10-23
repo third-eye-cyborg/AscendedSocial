@@ -99,7 +99,7 @@ async function processPolarEvent(webhookData: any) {
     }
 
     // Find user by ID
-    const user = await storage.getUserById(userId);
+    const user = await storage.getUser(userId);
     if (!user) {
       console.error(`No user found for Polar webhook event ${event_id}`);
       return;
@@ -152,7 +152,7 @@ async function handlePolarSubscriptionCreated(userId: string, data: any) {
   console.log(`Processing subscription creation for user ${userId}`);
   
   // Update user to premium status
-  await storage.updateUserPremiumStatus(userId, {
+  await storage.updateUser(userId, {
     isPremium: true,
     polarSubscriptionId: data.id,
     polarCustomerId: data.customer_id
@@ -163,7 +163,7 @@ async function handlePolarSubscriptionUpdate(userId: string, data: any) {
   console.log(`Processing subscription update for user ${userId}`);
   
   // Update subscription details if needed
-  await storage.updateUserPremiumStatus(userId, {
+  await storage.updateUser(userId, {
     polarSubscriptionId: data.id
   });
 }
@@ -172,7 +172,7 @@ async function handlePolarSubscriptionCanceled(userId: string, data: any) {
   console.log(`Processing subscription cancellation for user ${userId}`);
   
   // Remove premium status
-  await storage.updateUserPremiumStatus(userId, {
+  await storage.updateUser(userId, {
     isPremium: false,
     polarSubscriptionId: null
   });

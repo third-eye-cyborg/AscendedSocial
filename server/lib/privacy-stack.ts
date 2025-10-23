@@ -26,15 +26,9 @@ export interface PrivacyStackConfig {
     projectId?: string;
     apiKey?: string;
   };
-  revenuecat: {
+  polar: {
     enabled: boolean;
-    publicKey?: string;
-    secretKey?: string;
-  };
-  paddle: {
-    enabled: boolean;
-    vendorId?: string;
-    apiKey?: string;
+    accessToken?: string;
   };
 }
 
@@ -98,8 +92,8 @@ export class PrivacyStackManager extends EventEmitter {
       promises.push(this.initializeSemgrep());
     }
 
-    if (this.config.revenuecat.enabled) {
-      promises.push(this.initializeRevenueCat());
+    if (this.config.polar.enabled) {
+      promises.push(this.initializePolar());
     }
 
     await Promise.allSettled(promises);
@@ -171,14 +165,14 @@ export class PrivacyStackManager extends EventEmitter {
   }
 
   /**
-   * Initialize RevenueCat with Paddle
+   * Initialize Polar payment processing
    */
-  private async initializeRevenueCat(): Promise<void> {
-    console.log('💳 Initializing RevenueCat with Paddle...');
+  private async initializePolar(): Promise<void> {
+    console.log('💳 Initializing Polar payment processing...');
     
-    // RevenueCat initialization logic will go here
+    // Polar initialization logic will go here
     
-    this.emit('revenuecat:initialized');
+    this.emit('polar:initialized');
   }
 
   /**

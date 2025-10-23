@@ -62,7 +62,7 @@ import webhookRouter from "./webhooks";
 import privacyRouter from "./routes/privacy";
 import paymentsRouter from "./routes/payments";
 
-// Privacy and Payment processing handled by Fides + RevenueCat + Paddle integration
+// Privacy and Payment processing handled by Fides + Polar integration
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
@@ -1588,8 +1588,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Payment processing handled by RevenueCat + Paddle integration
-  // See documentation for RevenueCat and Paddle setup instructions
+  // Payment processing handled by Polar integration
+  // See documentation for Polar setup instructions
 
   // Starmap endpoints
   app.get('/api/starmap/users', isAuthenticated, async (req: any, res) => {
@@ -2474,8 +2474,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         thirdPartySharing: [
           { service: 'PostHog Analytics', purpose: 'Usage analytics', dataTypes: ['behavioral'] },
-          { service: 'RevenueCat', purpose: 'Cross-platform subscription management', dataTypes: ['subscription_status', 'customer_profile'] },
-          { service: 'Paddle', purpose: 'Web payment processing and checkout', dataTypes: ['billing', 'payment_methods'] },
+          { service: 'Polar', purpose: 'Payment processing and subscription management', dataTypes: ['subscription_status', 'customer_profile', 'billing', 'payment_methods'] },
           { service: 'OneSignal', purpose: 'Email delivery and newsletter management', dataTypes: ['email', 'name', 'communication_preferences'] },
           { service: 'Cloudflare Stream', purpose: 'Video hosting and streaming', dataTypes: ['media'] },
           { service: 'OneSignal', purpose: 'Push notifications for mobile app', dataTypes: ['notification', 'device_tokens'] },

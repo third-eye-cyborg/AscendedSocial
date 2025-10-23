@@ -21,8 +21,7 @@ const privacyStackConfig = {
   snyk: { enabled: !!process.env.SNYK_API_KEY, apiKey: process.env.SNYK_API_KEY },
   bearer: { enabled: true, apiKey: process.env.BEARER_API_KEY }, // Bearer CLI is open source, no API key required
   semgrep: { enabled: true }, // Replit Semgrep
-  revenuecat: { enabled: !!process.env.REVENUECAT_PUBLIC_KEY, publicKey: process.env.REVENUECAT_PUBLIC_KEY },
-  paddle: { enabled: !!process.env.PADDLE_VENDOR_ID, vendorId: process.env.PADDLE_VENDOR_ID }
+  polar: { enabled: !!process.env.POLAR_ACCESS_TOKEN, accessToken: process.env.POLAR_ACCESS_TOKEN }
 };
 
 // Initialize managers

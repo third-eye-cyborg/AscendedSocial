@@ -141,7 +141,7 @@ export default function CookiePolicy() {
                     <p><strong>Content:</strong> Posts, comments, visions, and other spiritual content you share on our platform.</p>
                     <p><strong>Usage Data:</strong> How you interact with our platform, including pages visited, features used, and engagement patterns.</p>
                     <p><strong>Analytics:</strong> Anonymous usage statistics to improve our platform and spiritual guidance algorithms.</p>
-                    <p><strong>Payment Information:</strong> Billing details processed securely through Stripe for premium subscriptions.</p>
+                    <p><strong>Payment Information:</strong> Billing details processed securely through Polar for premium subscriptions.</p>
                   </div>
                 </div>
 
@@ -167,7 +167,7 @@ export default function CookiePolicy() {
                     Information Sharing
                   </h4>
                   <div className="space-y-3 text-sm leading-relaxed">
-                    <p><strong>Third-Party Services:</strong> We work with trusted partners including Stripe (payments), PostHog (analytics), OneSignal (emails), and Cloudflare (content delivery).</p>
+                    <p><strong>Third-Party Services:</strong> We work with trusted partners including Polar (payments), PostHog (analytics), OneSignal (emails), and Cloudflare (content delivery).</p>
                     <p><strong>Legal Requirements:</strong> We may disclose information when required by law or to protect our users' safety.</p>
                     <p><strong>Community Content:</strong> Posts and comments you make public are visible to other users as intended.</p>
                     <p><strong>No Selling:</strong> We never sell your personal information to third parties.</p>

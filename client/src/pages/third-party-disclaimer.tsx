@@ -69,7 +69,7 @@ export default function ThirdPartyDisclaimer() {
                   </p>
                   <ul className="text-purple-200 space-y-1 ml-4">
                     <li>• OpenAI (AI-powered spiritual guidance)</li>
-                    <li>• Stripe (payment processing)</li>
+                    <li>• Polar (payment processing)</li>
                     <li>• PostHog (analytics)</li>
                     <li>• OneSignal (notifications)</li>
                     <li>• Cloudflare (security and delivery)</li>
@@ -126,7 +126,7 @@ export default function ThirdPartyDisclaimer() {
               <div className="grid md:grid-cols-3 gap-4">
                 <ul className="text-purple-200 space-y-1">
                   <li>• OpenAI</li>
-                  <li>• Stripe</li>
+                  <li>• Polar</li>
                   <li>• PostHog</li>
                 </ul>
                 <ul className="text-purple-200 space-y-1">
@@ -340,9 +340,9 @@ export default function ThirdPartyDisclaimer() {
             <div className="bg-purple-900/30 rounded-lg p-6 border border-purple-400/20">
               <h3 className="text-lg font-semibold text-white mb-3">(b) Payment Processing</h3>
               <p className="text-purple-200">
-                Payment processing is handled by Stripe, Inc. and is subject to Stripe's terms of service and privacy policy. 
+                Payment processing is handled by Polar and is subject to Polar's terms of service and privacy policy. 
                 We do not store your payment information and disclaim liability for any payment processing errors, delays, 
-                or disputes arising from Stripe's systems. You are responsible for maintaining accurate payment details and 
+                or disputes arising from Polar's systems. You are responsible for maintaining accurate payment details and 
                 monitoring your subscription charges.
               </p>
             </div>
@@ -527,7 +527,7 @@ export default function ThirdPartyDisclaimer() {
               </p>
               <ul className="text-purple-200 space-y-1">
                 <li>• AI Services: OpenAI</li>
-                <li>• Payment Processing: Stripe, Inc.</li>
+                <li>• Payment Processing: Polar</li>
                 <li>• Analytics: PostHog</li>
                 <li>• Notifications: OneSignal</li>
                 <li>• Infrastructure: Cloudflare</li>

@@ -12,4 +12,4 @@ For the Builder Bridge integration, set your API key as a Replit secret named `B
 2. Add a new secret with the key `BUILDER_API_KEY` and your API key as the value.
 3. The `.builder-bridge.json` file will reference this secret at runtime.
 
-**Never commit API keys to version control.**
+**Never commit API keys to version control.** See the fuller guidance in [Security & Secrets](./docs/developer/security-and-secrets.md).

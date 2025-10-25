@@ -23,6 +23,7 @@ Technical documentation for developers working on the platform.
 - [Database Schema](./developer/database-schema.md)
 - [Frontend Components](./developer/frontend-components.md)
 - [Testing Guide](./developer/testing.md)
+ - [Security & Secrets](./developer/security-and-secrets.md)
 
 ### ⚙️ [Admin Documentation](./admin/)
 Administrative guides for platform management and operations.

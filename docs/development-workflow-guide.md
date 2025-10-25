@@ -279,3 +279,26 @@ This document provides comprehensive guidelines for implementing the sophisticat
 - MCP integration documentation
 - Browserless support for authentication issues
 - Chromatic support for visual testing
+
+## Automation Script (Design-to-Code)
+
+We provide an orchestration script `scripts/design-workflow.js` to run the end-to-end design-to-code pipeline:
+
+### Usage
+
+```bash
+# Full workflow
+node scripts/design-workflow.js
+
+# Only sync from Figma
+node scripts/design-workflow.js --sync-only
+
+# Only run tests (requires Storybook at http://localhost:6006)
+node scripts/design-workflow.js --test-only
+```
+
+### Runtime Notes
+
+- The repo uses ESM (`"type": "module"`), so the script uses ESM imports and a dynamic import for `node-fetch` v3.
+- The script maintains a strict allowlist of external commands to prevent command injection.
+- Ensure `CHROMATIC_PROJECT_TOKEN` is present in the environment to enable Chromatic deployment steps.

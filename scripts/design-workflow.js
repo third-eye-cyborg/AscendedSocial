@@ -5,8 +5,8 @@
  * Orchestrates the complete Figma → Storybook → Testing → Chromatic pipeline
  */
 
-const { execSync } = require('child_process');
-const fetch = require('node-fetch');
+import { execSync } from 'child_process';
+const fetch = (await import('node-fetch')).default;
 
 const STORYBOOK_URL = 'http://localhost:6006';
 const API_BASE = 'http://localhost:5000/api';

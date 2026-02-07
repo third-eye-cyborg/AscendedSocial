@@ -6,3 +6,7 @@ vite.config.ts.*
 *.tar.gz
 *storybook.log
 storybook-static
+logs/
+server.log
+*cookies.txt
+.builder-bridge.json

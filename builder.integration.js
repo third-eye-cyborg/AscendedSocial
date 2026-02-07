@@ -9,6 +9,7 @@ import path from 'path';
 
 // Configuration
 const BUILDER_API_KEY = process.env.BUILDER_API_KEY;
+const WRITE_BUILDER_SECRET = process.env.BUILDER_WRITE_SECRET === 'true';
 const LOCAL_PORT = 5000;
 const BUILDER_PORT = 3001;
 
@@ -23,7 +24,7 @@ console.log(`🎨 Builder fusion: http://localhost:${BUILDER_PORT}`);
 
 // Create a simple Builder bridge configuration
 const builderBridge = {
-  apiKey: BUILDER_API_KEY,
+  apiKey: WRITE_BUILDER_SECRET ? BUILDER_API_KEY : '${BUILDER_API_KEY}',
   localUrl: `http://localhost:${LOCAL_PORT}`,
   previewUrl: `http://localhost:${BUILDER_PORT}`,
   models: [
@@ -47,9 +48,17 @@ const builderBridge = {
 };
 
 // Write builder bridge config
-fs.writeFileSync('.builder-bridge.json', JSON.stringify(builderBridge, null, 2));
+fs.writeFileSync('.builder-bridge.json', JSON.stringify(builderBridge, null, 2), { mode: 0o600 });
+try {
+  fs.chmodSync('.builder-bridge.json', 0o600);
+} catch (error) {
+  console.warn('⚠️ Unable to set strict permissions on .builder-bridge.json:', error.message);
+}
 
 console.log('✅ Builder bridge configuration created');
+if (!WRITE_BUILDER_SECRET) {
+  console.log('🔐 API key was not written to .builder-bridge.json (set BUILDER_WRITE_SECRET=true to include it).');
+}
 console.log('🔗 Project configured for Builder.io Fusion access');
 console.log('');
 console.log('🎯 Next steps:');

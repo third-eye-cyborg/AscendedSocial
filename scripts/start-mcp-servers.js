@@ -1,6 +1,31 @@
 const { spawn } = require('child_process');
 const ReplitMCPLogger = require('./replit-logging-setup');
 
+const MCP_SERVER_CONFIG = Object.freeze({
+  'chromatic-storybook': () => ({
+    executable: 'npx',
+    args: ['@chromatic-com/storybook-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--storybook-url', 'http://localhost:6006']
+  }),
+  'storybook': () => ({
+    executable: 'npx',
+    args: ['@storybook/mcp-server', '--port', '6006', '--config-dir', '.storybook']
+  }),
+  'chromatic-cypress': () => ({
+    executable: 'npx',
+    args: ['@chromatic-com/cypress-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--cypress-config', 'cypress.config.js']
+  }),
+  'playwright-chromatic': () => ({
+    executable: 'npx',
+    args: ['@chromatic-com/playwright-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--headless', '--no-sandbox']
+  }),
+  'bytebot': () => ({
+    executable: 'npx',
+    args: ['@bytebot/mcp-server', '--config', '.bytebot/replit-config.json']
+  })
+});
+
+const ALLOWED_EXECUTABLES = new Set(['npx', 'npm']);
+
 class ReplitMCPManager {
   constructor() {
     this.logger = new ReplitMCPLogger();
@@ -21,11 +46,19 @@ class ReplitMCPManager {
     await this.sleep(5000);
     
     // Start all MCP servers
-    await this.startServer('chromatic-storybook', 'npx', ['@chromatic-com/storybook-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--storybook-url', 'http://localhost:6006']);
-    await this.startServer('storybook', 'npx', ['@storybook/mcp-server', '--port', '6006', '--config-dir', '.storybook']);
-    await this.startServer('chromatic-cypress', 'npx', ['@chromatic-com/cypress-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--cypress-config', 'cypress.config.js']);
-    await this.startServer('playwright-chromatic', 'npx', ['@chromatic-com/playwright-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--headless', '--no-sandbox']);
-    await this.startServer('bytebot', 'npx', ['@bytebot/mcp-server', '--config', '.bytebot/replit-config.json']);
+    const chromaticToken = process.env.CHROMATIC_PROJECT_TOKEN;
+    const serverNames = Object.keys(MCP_SERVER_CONFIG).filter((name) => {
+      if (name.startsWith('chromatic') && !chromaticToken) {
+        console.warn(`⚠️  Skipping ${name} (CHROMATIC_PROJECT_TOKEN is missing)`);
+        this.logger.log('replit', 'warn', `Skipping ${name} - missing CHROMATIC_PROJECT_TOKEN`);
+        return false;
+      }
+      return true;
+    });
+
+    for (const name of serverNames) {
+      await this.startServer(name);
+    }
     
     console.log('✅ All MCP servers started successfully!');
     
@@ -91,26 +124,36 @@ class ReplitMCPManager {
    * SECURITY: Only whitelisted commands are allowed. Args must be an array of strings.
    * Never pass user input directly to this function.
    */
-  async startServer(name, command, args) {
-    // Whitelist allowed commands for extra safety
-    const allowedCommands = ['npx', 'npm'];
-    if (!allowedCommands.includes(command)) {
-      throw new Error(`Blocked attempt to run disallowed command: ${command}`);
+  async startServer(name) {
+    const configFactory = MCP_SERVER_CONFIG[name];
+    if (!configFactory) {
+      throw new Error(`Blocked attempt to start unknown server: ${name}`);
     }
-    // Validate args is an array of strings and does not contain dangerous characters
-    if (!Array.isArray(args) || !args.every(arg => typeof arg === 'string')) {
-      throw new Error('Arguments to startServer must be an array of strings');
+
+    const { executable, args } = configFactory();
+
+    if (args.includes(undefined) || args.includes(null)) {
+      throw new Error(`Arguments for ${name} include missing environment variables`);
     }
-    // Optionally, check for shell metacharacters (paranoia)
-    const forbiddenPattern = /[;&|$><`\\]/;
-    if (args.some(arg => forbiddenPattern.test(arg))) {
-      throw new Error('Arguments to startServer contain forbidden shell metacharacters');
+
+    if (!ALLOWED_EXECUTABLES.has(executable)) {
+      throw new Error(`Blocked attempt to run disallowed command: ${executable}`);
+    }
+
+    if (!Array.isArray(args) || !args.every(arg => typeof arg === 'string' && arg.length > 0)) {
+      throw new Error(`Arguments for ${name} must be a non-empty array of strings`);
+    }
+
+    if (args.some(arg => arg.includes('\n') || arg.includes('\r'))) {
+      throw new Error(`Arguments for ${name} contain newline characters`);
     }
     try {
       console.log(`🔧 Starting ${name}...`);
-      const process = spawn(command, args, {
+      const process = spawn(executable, args, {
         stdio: 'pipe',
-        env: { ...process.env }
+        env: { ...process.env },
+        shell: false,
+        windowsHide: true
       });
       this.servers.set(name, process);
       process.stdout.on('data', (data) => {

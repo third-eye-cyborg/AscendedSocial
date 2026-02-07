@@ -5,31 +5,53 @@
  * Orchestrates the complete Figma → Storybook → Testing → Chromatic pipeline
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 const fetch = (await import('node-fetch')).default;
 
 const STORYBOOK_URL = 'http://localhost:6006';
 const API_BASE = 'http://localhost:5000/api';
 
-async function runCommand(command, description) {
-  // Validate command against allowlist to prevent injection
-  const allowedCommands = [
-    'npx cypress run --component --config-file .storybook/cypress.config.js',
-    'npx playwright test --config playwright.config.ts',
-    'npx test-storybook --url http://localhost:6006',
-    'npm run build-storybook',
-    'npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes --auto-accept-changes',
-    'npx playwright test --project=chromatic --reporter=html',
-    'npm run storybook'
-  ];
-  
-  if (!allowedCommands.includes(command)) {
-    throw new Error(`Command not allowed: ${command}`);
+const ALLOWED_COMMANDS = {
+  cypress: { executable: 'npx', args: ['cypress', 'run', '--component', '--config-file', '.storybook/cypress.config.js'] },
+  playwright: { executable: 'npx', args: ['playwright', 'test', '--config', 'playwright.config.ts'] },
+  testStorybook: { executable: 'npx', args: ['test-storybook', '--url', STORYBOOK_URL] },
+  buildStorybook: { executable: 'npm', args: ['run', 'build-storybook'] },
+  chromaticDeploy: () => ({
+    executable: 'npx',
+    args: ['chromatic', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--exit-zero-on-changes', '--auto-accept-changes']
+  }),
+  chromaticPlaywright: { executable: 'npx', args: ['playwright', 'test', '--project=chromatic', '--reporter=html'] },
+  storybook: { executable: 'npm', args: ['run', 'storybook'] }
+};
+
+const ALLOWED_COMMAND_KEYS = new Set(Object.keys(ALLOWED_COMMANDS));
+
+function resolveAllowedCommand(commandKey) {
+  if (typeof commandKey !== 'string' || !ALLOWED_COMMAND_KEYS.has(commandKey)) {
+    throw new Error(`Command not allowed: ${String(commandKey)}`);
   }
-  
+
+  const commandEntry = ALLOWED_COMMANDS[commandKey];
+  const resolvedCommand = typeof commandEntry === 'function' ? commandEntry() : commandEntry;
+  const { executable, args } = resolvedCommand;
+
+  if (!executable || !Array.isArray(args)) {
+    throw new Error(`Invalid command config for: ${commandKey}`);
+  }
+
+  if (!args.every(arg => typeof arg === 'string' && arg.length > 0)) {
+    throw new Error(`Invalid command args for: ${commandKey}`);
+  }
+
+  return { executable, args };
+}
+
+async function runCommand(commandKey, description) {
+  const { executable, args } = resolveAllowedCommand(commandKey);
+
   console.log(`🔄 ${description}...`);
   try {
-    const output = execSync(command, { encoding: 'utf8', stdio: 'pipe' });
+    const output = execFileSync(executable, args, { encoding: 'utf8', stdio: 'pipe' });
     console.log(`✅ ${description} completed`);
     return output;
   } catch (error) {
@@ -79,19 +101,19 @@ async function runTests() {
   
   // Run Cypress component tests
   await runCommand(
-    'npx cypress run --component --config-file .storybook/cypress.config.js',
+    'cypress',
     'Cypress component tests'
   );
   
   // Run Playwright visual regression tests
   await runCommand(
-    'npx playwright test --config playwright.config.ts',
+    'playwright',
     'Playwright visual regression tests'
   );
   
   // Run Storybook test runner
   await runCommand(
-    'npx test-storybook --url http://localhost:6006',
+    'testStorybook',
     'Storybook test runner'
   );
 }
@@ -100,12 +122,12 @@ async function buildAndDeploy() {
   console.log('🚀 Building and deploying Storybook...');
   
   // Build Storybook
-  await runCommand('npm run build-storybook', 'Building Storybook');
+  await runCommand('buildStorybook', 'Building Storybook');
   
   // Deploy to Chromatic (if configured)
   if (process.env.CHROMATIC_PROJECT_TOKEN) {
     await runCommand(
-      'npx chromatic --project-token $CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes --auto-accept-changes',
+      'chromaticDeploy',
       'Deploying to Chromatic'
     );
   }
@@ -113,7 +135,7 @@ async function buildAndDeploy() {
   // Run Chromatic Playwright tests (if token available)
   if (process.env.PLAYWRIGHT_PROJECT_TOKEN) {
     await runCommand(
-      'npx playwright test --project=chromatic --reporter=html',
+      'chromaticPlaywright',
       'Chromatic Playwright visual tests'
     );
   }
@@ -152,7 +174,7 @@ async function runDesignWorkflow() {
     
     // Step 2: Start Storybook for testing
     console.log('🔄 Starting Storybook server...');
-    const storybookProcess = await runCommand('npm run storybook', 'Starting Storybook server');
+    const storybookProcess = await runCommand('storybook', 'Starting Storybook server');
     
     // Wait for Storybook to be ready
     await new Promise(resolve => setTimeout(resolve, 10000));

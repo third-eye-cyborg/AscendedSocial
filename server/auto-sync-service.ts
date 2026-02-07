@@ -293,13 +293,8 @@ class AutoSyncService {
    * Get files matching a glob pattern
    */
   private async getFilesMatchingPattern(pattern: string): Promise<string[]> {
-    const glob = require('glob');
-    return new Promise((resolve, reject) => {
-      glob(pattern, (err: any, files: string[]) => {
-        if (err) reject(err);
-        else resolve(files);
-      });
-    });
+    const { glob } = require('glob');
+    return await glob(pattern);
   }
 
   /**

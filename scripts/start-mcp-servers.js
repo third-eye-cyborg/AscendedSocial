@@ -149,20 +149,20 @@ class ReplitMCPManager {
     }
     try {
       console.log(`🔧 Starting ${name}...`);
-      const process = spawn(executable, args, {
+      const childProcess = spawn(executable, args, {
         stdio: 'pipe',
         env: { ...process.env },
         shell: false,
         windowsHide: true
       });
-      this.servers.set(name, process);
-      process.stdout.on('data', (data) => {
+      this.servers.set(name, childProcess);
+      childProcess.stdout.on('data', (data) => {
         this.logger.log(name, 'info', data.toString().trim());
       });
-      process.stderr.on('data', (data) => {
+      childProcess.stderr.on('data', (data) => {
         this.logger.log(name, 'error', data.toString().trim());
       });
-      process.on('exit', (code) => {
+      childProcess.on('exit', (code) => {
         this.logger.log('replit', 'warn', `MCP server ${name} exited with code ${code}`);
         this.servers.delete(name);
       });

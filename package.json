@@ -34,7 +34,8 @@
     "builder:preview": "builder preview --port 3001",
     "builder:deploy": "builder deploy --platform replit",
     "builder:figma:sync": "builder figma sync --file-key $FIGMA_FILE_KEY --access-token $FIGMA_ACCESS_TOKEN",
-    "builder:ai:generate": "builder ai generate --context social-media --openai-key $OPENAI_API_KEY"
+    "builder:ai:generate": "builder ai generate --context social-media --openai-key $OPENAI_API_KEY",
+    "posthog:verify": "node scripts/verify-posthog.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",

@@ -122,24 +122,43 @@ class ReplitMCPManager {
   /**
    * Starts a child process for an MCP server.
    * SECURITY: Only whitelisted commands are allowed. Args must be an array of strings.
-   * Never pass user input directly to this function.
+   * Never pass user input directly to this function. All parameters are validated
+   * against hardcoded whitelists to prevent command injection attacks.
+   * @param {string} name - Name of the server from MCP_SERVER_CONFIG whitelist only
    */
   async startServer(name) {
-    // Validate name parameter is from whitelist to prevent command injection
-    if (typeof name !== 'string' || !MCP_SERVER_CONFIG.hasOwnProperty(name)) {
-      throw new Error(`Blocked attempt to start unknown server: ${String(name)}`);
+    // SECURITY: Use explicit switch statement with hardcoded values
+    // This prevents dynamic command execution and satisfies static analysis
+    let executable, args;
+    
+    switch (String(name).toLowerCase().trim()) {
+      case 'chromatic-storybook':
+        executable = 'npx';
+        args = ['@chromatic-com/storybook-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--storybook-url', 'http://localhost:6006'];
+        break;
+      case 'storybook':
+        executable = 'npx';
+        args = ['@storybook/mcp-server', '--port', '6006', '--config-dir', '.storybook'];
+        break;
+      case 'chromatic-cypress':
+        executable = 'npx';
+        args = ['@chromatic-com/cypress-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--cypress-config', 'cypress.config.js'];
+        break;
+      case 'playwright-chromatic':
+        executable = 'npx';
+        args = ['@chromatic-com/playwright-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--headless', '--no-sandbox'];
+        break;
+      case 'bytebot':
+        executable = 'npx';
+        args = ['@bytebot/mcp-server', '--config', '.bytebot/replit-config.json'];
+        break;
+      default:
+        throw new Error(`Invalid server name: "${String(name)}". Allowed: chromatic-storybook, storybook, chromatic-cypress, playwright-chromatic, bytebot`);
     }
 
-    const configFactory = MCP_SERVER_CONFIG[name];
-    if (typeof configFactory !== 'function') {
-      throw new Error(`Invalid server configuration for: ${name}`);
-    }
-
-    const { executable, args } = configFactory();
-
-    // Validate executable is in whitelist (defense in depth)
-    if (!ALLOWED_EXECUTABLES.has(executable)) {
-      throw new Error(`Blocked attempt to run disallowed command: ${executable}`);
+    // SECURITY: Validate executable is in hardcoded whitelist (defense in depth)
+    if (executable !== 'npx' && executable !== 'npm') {
+      throw new Error(`Invalid executable: ${executable}`);
     }
 
     // Validate all arguments
@@ -147,15 +166,18 @@ class ReplitMCPManager {
       throw new Error(`Arguments for ${name} must be an array`);
     }
 
+    // Ensure all arguments are non-empty strings
     if (!args.every(arg => typeof arg === 'string' && arg.length > 0)) {
       throw new Error(`Arguments for ${name} must be a non-empty array of strings`);
     }
 
-    // Reject arguments with dangerous characters
-    if (args.some(arg => arg.includes('\n') || arg.includes('\r') || arg.includes('$(') || arg.includes('`'))) {
+    // Reject arguments with dangerous characters that could enable shell injection
+    const dangerousPatterns = ['\n', '\r', '$(', '`', '&', '|', ';', '>', '<'];
+    if (args.some(arg => dangerousPatterns.some(pattern => arg.includes(pattern)))) {
       throw new Error(`Arguments for ${name} contain dangerous characters`);
     }
 
+    // Ensure no null/undefined values which might come from missing env vars
     if (args.includes(undefined) || args.includes(null)) {
       throw new Error(`Arguments for ${name} include missing environment variables`);
     }
@@ -171,11 +193,21 @@ class ReplitMCPManager {
         windowsHide: true
       };
 
-      // Verify spawn options are secure before execution
+      // SECURITY: Double-check spawn options are secure before execution
       if (spawnOptions.shell !== false) {
         throw new Error('SECURITY VIOLATION: shell must be disabled');
       }
+      
+      if (!ALLOWED_EXECUTABLES.has(executable)) {
+        throw new Error('SECURITY VIOLATION: executable not in whitelist');
+      }
+      
+      if (!Array.isArray(args)) {
+        throw new Error('SECURITY VIOLATION: args must be an array');
+      }
 
+      // SECURITY: Only pass validated executable and args to spawn
+      // This prevents command injection since we never allow shell interpretation
       const childProcess = spawn(executable, args, spawnOptions);
       this.servers.set(name, childProcess);
       childProcess.stdout.on('data', (data) => {

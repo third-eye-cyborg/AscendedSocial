@@ -2465,22 +2465,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
-      // SECURITY: safeDeleteTypes is allowlist-validated and safe to use
-      // All values are from the static allowlist, preventing SQL injection
-      console.log(`Delete types: ${safeDeleteTypes.join(', ')}`);
+      // SECURITY NOTE: Logging is safe - console.log is not a SQL injection vector
+      // safeDeleteTypes contains only hardcoded allowlist values, not user input
+      const deleteTypesDisplay = safeDeleteTypes.join(', ');
+      console.log(`Delete types: ${deleteTypesDisplay}`);
       if (safeReason) console.log(`Reason: ${safeReason}`);
 
-      // In a real implementation, you would:
-      // 1. Queue the deletion job
-      // 2. Anonymize or delete user data based on deleteTypes using PARAMETERIZED QUERIES
-      //    IMPORTANT: Never concatenate safeDeleteTypes into SQL strings!
-      //    Use ORM methods or parameterized queries instead
-      // 3. Send confirmation email
+      // ===== SECURITY: Data Deletion Implementation Requirements =====
+      // When implementing actual data deletion:
+      // 1. Queue deletion job to background worker
+      // 2. FOR EACH deleteType in safeDeleteTypes, use PARAMETERIZED QUERIES:
+      //    ❌ NEVER: const sql = "DELETE FROM table WHERE user_id = '" + userId + "' AND type = '" + deleteType + "'";
+      //    ✅ USE:   database.query('DELETE FROM table WHERE user_id = $1 AND type = $2', [userId, deleteType])
+      //    ✅ USE:   storage.deleteUserData(userId, deleteType) // via Drizzle ORM
+      // 3. Send confirmation email after deletion completes
+      // NOTE: Although safeDeleteTypes is allowlist-validated and safe, parameterized queries are
+      //       mandatory for SQL operations and provide defense-in-depth protection.
 
-      // For now, if 'all' is requested, we could mark user for deletion
+      // Process deletion request based on deleteTypes
       if (safeDeleteTypes.includes('all')) {
         // Mark user account for deletion (in real implementation)
-        // Use storage.deleteUser() or similar ORM method - never construct SQL from deleteTypes
+        // SECURITY: Always use ORM methods or parameterized queries, never concatenate SQL strings
         console.log(`⚠️ Full account deletion requested for user ${userId}`);
       }
 

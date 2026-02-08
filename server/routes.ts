@@ -2411,7 +2411,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and deleteTypes array are required' });
       }
 
-      const allowedDeleteTypes = new Set([
+      // SECURITY: Strict allowlist of permitted deletion types
+      // Using a static Set prevents SQL injection and ensures type safety
+      // Never construct SQL queries from deleteTypes - always use ORM methods instead
+      const allowedDeleteTypes = new Set<string>([
         'profile',
         'posts',
         'comments',
@@ -2425,16 +2428,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         'all'
       ]);
 
+      // Normalize and validate all input
       const normalizedDeleteTypes = deleteTypes
         .map((type: any) => (typeof type === 'string' ? type.trim().toLowerCase() : ''))
         .filter((type: string) => type.length > 0);
 
+      // SECURITY CHECK: Reject any deleteTypes not in the allowlist
+      // This prevents SQL injection even if validation logic changes
       const invalidDeleteTypes = normalizedDeleteTypes.filter(type => !allowedDeleteTypes.has(type));
       if (invalidDeleteTypes.length > 0) {
         return res.status(400).json({ error: 'Invalid deleteTypes provided', invalid: invalidDeleteTypes });
       }
 
+      // Deduplicate and create final safe list
       const safeDeleteTypes = Array.from(new Set(normalizedDeleteTypes));
+      
+      // Validate that all items in safeDeleteTypes are in the allowlist (defense in depth)
+      for (const type of safeDeleteTypes) {
+        if (!allowedDeleteTypes.has(type)) {
+          throw new Error(`SECURITY VIOLATION: deleteType "${type}" not in allowlist`);
+        }
+      }
+      
       const safeReason = typeof reason === 'string' ? reason.trim().slice(0, 500) : undefined;
 
       // Log the data deletion request  
@@ -2450,19 +2465,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
+      // SECURITY: safeDeleteTypes is allowlist-validated and safe to use
+      // All values are from the static allowlist, preventing SQL injection
       console.log(`Delete types: ${safeDeleteTypes.join(', ')}`);
       if (safeReason) console.log(`Reason: ${safeReason}`);
 
       // In a real implementation, you would:
       // 1. Queue the deletion job
-      // 2. Anonymize or delete user data based on deleteTypes
+      // 2. Anonymize or delete user data based on deleteTypes using PARAMETERIZED QUERIES
+      //    IMPORTANT: Never concatenate safeDeleteTypes into SQL strings!
+      //    Use ORM methods or parameterized queries instead
       // 3. Send confirmation email
 
       // For now, if 'all' is requested, we could mark user for deletion
       if (safeDeleteTypes.includes('all')) {
         // Mark user account for deletion (in real implementation)
+        // Use storage.deleteUser() or similar ORM method - never construct SQL from deleteTypes
         console.log(`⚠️ Full account deletion requested for user ${userId}`);
       }
+
+      // Helper function to safely escape HTML content
+      const escapeHtml = (text: string): string => {
+        const map: { [key: string]: string } = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, (char: string) => map[char]);
+      };
+
+      // HTML escape the data types and reason for safe email template usage
+      const escapedDeleteTypes = safeDeleteTypes.map(escapeHtml).join(', ');
+      const escapedReason = safeReason ? escapeHtml(safeReason) : '';
 
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
@@ -2472,8 +2508,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h2>Data Deletion Request Received</h2>
             <p>Your data deletion request has been received and will be processed within 30 days as required by GDPR.</p>
-            <p><strong>Data types to be deleted:</strong> ${safeDeleteTypes.join(', ')}</p>
-            ${safeReason ? `<p><strong>Reason:</strong> ${safeReason}</p>` : ''}
+            <p><strong>Data types to be deleted:</strong> ${escapedDeleteTypes}</p>
+            ${escapedReason ? `<p><strong>Reason:</strong> ${escapedReason}</p>` : ''}
             <p>You will receive a confirmation email once the deletion is complete.</p>
             <hr>
             <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>

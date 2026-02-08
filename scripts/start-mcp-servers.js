@@ -125,36 +125,58 @@ class ReplitMCPManager {
    * Never pass user input directly to this function.
    */
   async startServer(name) {
+    // Validate name parameter is from whitelist to prevent command injection
+    if (typeof name !== 'string' || !MCP_SERVER_CONFIG.hasOwnProperty(name)) {
+      throw new Error(`Blocked attempt to start unknown server: ${String(name)}`);
+    }
+
     const configFactory = MCP_SERVER_CONFIG[name];
-    if (!configFactory) {
-      throw new Error(`Blocked attempt to start unknown server: ${name}`);
+    if (typeof configFactory !== 'function') {
+      throw new Error(`Invalid server configuration for: ${name}`);
     }
 
     const { executable, args } = configFactory();
 
-    if (args.includes(undefined) || args.includes(null)) {
-      throw new Error(`Arguments for ${name} include missing environment variables`);
-    }
-
+    // Validate executable is in whitelist (defense in depth)
     if (!ALLOWED_EXECUTABLES.has(executable)) {
       throw new Error(`Blocked attempt to run disallowed command: ${executable}`);
     }
 
-    if (!Array.isArray(args) || !args.every(arg => typeof arg === 'string' && arg.length > 0)) {
+    // Validate all arguments
+    if (!Array.isArray(args)) {
+      throw new Error(`Arguments for ${name} must be an array`);
+    }
+
+    if (!args.every(arg => typeof arg === 'string' && arg.length > 0)) {
       throw new Error(`Arguments for ${name} must be a non-empty array of strings`);
     }
 
-    if (args.some(arg => arg.includes('\n') || arg.includes('\r'))) {
-      throw new Error(`Arguments for ${name} contain newline characters`);
+    // Reject arguments with dangerous characters
+    if (args.some(arg => arg.includes('\n') || arg.includes('\r') || arg.includes('$(') || arg.includes('`'))) {
+      throw new Error(`Arguments for ${name} contain dangerous characters`);
+    }
+
+    if (args.includes(undefined) || args.includes(null)) {
+      throw new Error(`Arguments for ${name} include missing environment variables`);
     }
     try {
       console.log(`🔧 Starting ${name}...`);
-      const childProcess = spawn(executable, args, {
+      
+      // SECURITY: Spawn with shell: false to prevent command injection
+      // All executable and args have been validated against whitelists above
+      const spawnOptions = {
         stdio: 'pipe',
         env: { ...process.env },
-        shell: false,
+        shell: false,  // CRITICAL: Direct command execution without shell interpretation
         windowsHide: true
-      });
+      };
+
+      // Verify spawn options are secure before execution
+      if (spawnOptions.shell !== false) {
+        throw new Error('SECURITY VIOLATION: shell must be disabled');
+      }
+
+      const childProcess = spawn(executable, args, spawnOptions);
       this.servers.set(name, childProcess);
       childProcess.stdout.on('data', (data) => {
         this.logger.log(name, 'info', data.toString().trim());

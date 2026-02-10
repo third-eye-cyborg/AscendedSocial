@@ -6,7 +6,9 @@ let posthogServer: PostHog | null = null;
 if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
   try {
     // Validate that the API key is not a placeholder
-    if (process.env.POSTHOG_API_KEY === 'personal_api_key' || process.env.POSTHOG_API_KEY.length < 10) {
+    const apiKey = process.env.POSTHOG_API_KEY;
+    const isPlaceholder = apiKey === 'personal_api_key' || apiKey.startsWith('personal_') || apiKey.length < 10 || apiKey === 'phc_placeholder';
+    if (isPlaceholder) {
       console.warn('⚠️ PostHog API key appears to be invalid or placeholder - analytics disabled');
       posthogServer = null;
     } else {
@@ -14,17 +16,23 @@ if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
         host: process.env.POSTHOG_HOST,
         flushAt: 20,
         flushInterval: 30000,
-        // Disable geo-location in development to prevent issues
         disableGeoip: process.env.NODE_ENV === 'development',
-        // Add error handling for auth issues
-        errorHandler: (error: any) => {
-          // Only log auth errors once in development
-          if (error.response?.status === 401 && process.env.NODE_ENV === 'development') {
-            console.warn('⚠️ PostHog authentication failed - disabling analytics');
+        requestTimeout: 10000,
+      });
+
+      const origFlush = posthogServer.flush.bind(posthogServer);
+      posthogServer.flush = async function() {
+        try {
+          return await origFlush();
+        } catch (err: any) {
+          if (err?.response?.status === 401) {
+            console.warn('⚠️ PostHog API key unauthorized - disabling analytics silently');
+            posthogServer?.shutdown().catch(() => {});
             posthogServer = null;
           }
-        },
-      });
+        }
+      } as any;
+
       console.log('✅ PostHog server analytics initialized');
     }
   } catch (error) {

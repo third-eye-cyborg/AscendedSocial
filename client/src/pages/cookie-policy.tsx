@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function CookiePolicy() {
   const [activeTab, setActiveTab] = useState('overview');

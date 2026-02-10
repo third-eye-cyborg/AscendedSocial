@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { consentManager } from "@/lib/consent";
-import { useEffect, useMemo, Suspense, lazy, memo, Component } from "react";
+import { useEffect, useMemo, Suspense, lazy, Component } from "react";
 import type { ReactNode } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
@@ -93,18 +93,18 @@ const ThirdPartyDisclaimer = lazy(() => import('./pages/third-party-disclaimer')
 const VideoPage = lazy(() => import('./pages/video'));
 const MobileLogin = lazy(() => import('./pages/mobile-login'));
 
-// Loading fallback component
-const LoadingSpinner = memo(({ text = "Connecting to the cosmic realm..." }: { text?: string }) => (
-  <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
-    <div className="text-center space-y-4">
-      <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
-      <p className="text-purple-200 font-medium">{text}</p>
+function LoadingSpinner({ text = "Connecting to the cosmic realm..." }: { text?: string }) {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
+      <div className="text-center space-y-4">
+        <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-purple-200 font-medium">{text}</p>
+      </div>
     </div>
-  </div>
-));
-LoadingSpinner.displayName = 'LoadingSpinner';
+  );
+}
 
-const Router = memo(() => {
+function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   // Memoize user analytics data to prevent re-computation
@@ -245,8 +245,7 @@ const Router = memo(() => {
       </Switch>
     </Suspense>
   );
-});
-Router.displayName = 'Router';
+}
 
 function App() {
   return (

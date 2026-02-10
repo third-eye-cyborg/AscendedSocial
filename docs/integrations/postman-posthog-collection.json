@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "PostHog Analytics - Ascended Social",
-    "description": "API endpoints for testing PostHog analytics integration with Ascended Social spiritual platform. Includes tracking for spiritual events, chakra alignments, oracle readings, and user engagement.",
+    "description": "API endpoints for testing PostHog analytics integration with Ascended Social spiritual platform. Includes tracking for spiritual events, chakra alignments, oracle readings, and user engagement. IMPORTANT: Import postman-environment.json and fill in your secrets before using this collection.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -17,27 +17,27 @@
   "variable": [
     {
       "key": "POSTHOG_API_TOKEN",
-      "value": "phc_69GDi6zFcLWK7zOrZ3kf4uBSKYLvB5ZVChi1advEFIB",
+      "value": "{{POSTHOG_API_TOKEN}}",
       "type": "string",
-      "description": "PostHog Project API Key for Ascended Social"
+      "description": "PostHog Project API Key - Set this in your environment file"
     },
     {
       "key": "POSTHOG_HOST",
-      "value": "https://app.posthog.com",
+      "value": "{{POSTHOG_HOST}}",
       "type": "string",
-      "description": "PostHog instance URL"
+      "description": "PostHog instance URL - Set in environment (default: https://app.posthog.com)"
     },
     {
       "key": "PROJECT_ID",
-      "value": "122488",
+      "value": "{{POSTHOG_PROJECT_ID}}",
       "type": "string",
-      "description": "Ascended Social PostHog Project ID"
+      "description": "Ascended Social PostHog Project ID - Set in environment"
     },
     {
       "key": "TEST_USER_ID",
-      "value": "test_user_{{$timestamp}}",
+      "value": "{{TEST_USER_ID}}",
       "type": "string",
-      "description": "Generated test user ID"
+      "description": "Generated test user ID - Auto-generated in environment"
     }
   ],
   "item": [

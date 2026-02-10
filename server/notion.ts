@@ -1,27 +1,38 @@
 import { Client } from "@notionhq/client";
 
-// Initialize Notion client
+// Initialize Notion client (safe even without auth - operations will fail gracefully)
 export const notion = new Client({
-    auth: process.env.NOTION_INTEGRATION_SECRET!,
+    auth: process.env.NOTION_INTEGRATION_SECRET || "",
 });
 
 // Extract the page ID from the Notion page URL
-function extractPageIdFromUrl(pageUrl: string): string {
+function extractPageIdFromUrl(pageUrl: string | undefined): string | null {
+    if (!pageUrl) {
+        return null;
+    }
     const match = pageUrl.match(/([a-f0-9]{32})(?:[?#]|$)/i);
     if (match && match[1]) {
         return match[1];
     }
-
-    throw Error("Failed to extract page ID");
+    console.warn("⚠️ Could not extract Notion page ID from URL:", pageUrl);
+    return null;
 }
 
-export const NOTION_PAGE_ID = extractPageIdFromUrl(process.env.NOTION_PAGE_URL!);
+export const NOTION_PAGE_ID = extractPageIdFromUrl(process.env.NOTION_PAGE_URL) || "";
+
+if (!NOTION_PAGE_ID) {
+    console.warn("⚠️ NOTION_PAGE_URL not configured - Notion integration features will be unavailable");
+}
 
 /**
  * Lists all child databases contained within NOTION_PAGE_ID
  * @returns {Promise<Array<{id: string, title: string}>>} - Array of database objects with id and title
  */
 export async function getNotionDatabases() {
+    if (!NOTION_PAGE_ID) {
+        console.warn("⚠️ Notion not configured - skipping getNotionDatabases");
+        return [];
+    }
 
     // Array to store the child databases
     const childDatabases = [];
@@ -87,6 +98,10 @@ export async function findDatabaseByTitle(title: string) {
 
 // Create a new database if one with a matching title does not exist
 export async function createDatabaseIfNotExists(title: string, properties: any) {
+    if (!NOTION_PAGE_ID) {
+        throw new Error("Notion not configured - NOTION_PAGE_URL is required");
+    }
+
     const existingDb = await findDatabaseByTitle(title);
     if (existingDb) {
         return existingDb;
@@ -110,6 +125,10 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
 
 // Create or update documentation page
 export async function createOrUpdateDocumentationPage(content: string) {
+    if (!NOTION_PAGE_ID) {
+        throw new Error("Notion not configured - NOTION_PAGE_URL is required");
+    }
+
     try {
         // First, check if there's already a documentation page
         const existingPages = await notion.blocks.children.list({

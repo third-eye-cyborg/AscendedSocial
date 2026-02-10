@@ -1,6 +1,16 @@
 {
-  "id": "ascended-social-env",
-  "name": "Ascended Social - Development",
+  "_comment": "Ascended Social Workspace - Development Environment | Team: third-eye-cyborg | Project: AscendedSocial | IMPORTANT: Fill secrets in CURRENT VALUE only, never INITIAL VALUE",
+  "id": "ascended-social-dev",
+  "name": "Ascended Social - DEV (localhost)",
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-02-10T00:00:00.000Z",
+  "_postman_exported_using": "Postman/10.0.0",
+  "_workspace": {
+    "team": "third-eye-cyborg",
+    "project": "AscendedSocial",
+    "repository": "https://github.com/third-eye-cyborg/AscendedSocial",
+    "description": "Privacy-first spiritual social media platform - Development Environment"
+  },
   "values": [
     {
       "key": "BASE_URL",
@@ -219,8 +229,5 @@
       "enabled": true,
       "description": "Node environment (development, staging, production)"
     }
-  ],
-  "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2026-02-10T00:00:00.000Z",
-  "_postman_exported_using": "Postman/10.0.0"
+  ]
 }

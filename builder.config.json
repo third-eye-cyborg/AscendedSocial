@@ -148,11 +148,6 @@
     }
   },
   "integrations": {
-    "notion": {
-      "enabled": true,
-      "integrationSecret": "${NOTION_INTEGRATION_SECRET}",
-      "pageUrl": "${NOTION_PAGE_URL}"
-    },
     "workos": {
       "enabled": true,
       "clientId": "${WORKOS_CLIENT_ID}",

@@ -2,6 +2,18 @@
 
 This is a detailed, step-by-step visual guide for importing Ascended Social's Postman environments and injecting your secrets through Postman's GUI.
 
+## ⚡ How This Works
+
+**You DO NOT need to create variables one-by-one!** 
+
+When you import the JSON files:
+- ✅ Postman automatically creates ALL 31 variables (DEV) or 16 variables (PROD)
+- ✅ All variable names, types, and descriptions are imported
+- ✅ Default values (like URLs) are already filled in
+- ⏭️ You only need to fill in the **empty secret fields** afterward
+
+**TL;DR**: Import → Fill secrets → Done! Much faster than manual entry.
+
 ## 📋 What You'll Need
 
 Before starting, gather these secrets from your Replit workspace:

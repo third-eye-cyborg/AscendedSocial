@@ -139,20 +139,6 @@
       "description": "Figma personal access token for design integration"
     },
     {
-      "key": "NOTION_INTEGRATION_SECRET",
-      "value": "",
-      "type": "secret",
-      "enabled": true,
-      "description": "Notion integration token for content synchronization"
-    },
-    {
-      "key": "NOTION_PAGE_ID",
-      "value": "",
-      "type": "default",
-      "enabled": true,
-      "description": "Notion page ID for auto-sync service"
-    },
-    {
       "key": "POLAR_WEBHOOK_SECRET",
       "value": "",
       "type": "secret",

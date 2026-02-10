@@ -1,5 +1,10 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const config: StorybookConfig = {
   "stories": [
@@ -11,8 +16,8 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-onboarding",
     "@storybook/addon-a11y",
-    "@storybook/addon-vitest",
-    "@storybook/addon-coverage"
+    "@storybook/addon-vitest"
+    // "@storybook/addon-coverage" - Temporarily disabled due to Node.js compatibility issue with test-exclude
   ],
   "framework": {
     "name": "@storybook/react-vite",

@@ -122,8 +122,6 @@ export const routeSegregationMiddleware: RequestHandler = async (req: Request, r
     isUserAuthenticated
   };
   
-  console.log('🔍 Route segregation check:', logContext);
-  
   // Handle admin routes
   if (requiredAuthType === AuthType.ADMIN) {
     if (!isAdminAuthenticated) {
@@ -145,7 +143,6 @@ export const routeSegregationMiddleware: RequestHandler = async (req: Request, r
       });
     }
     
-    console.log('✅ Admin route access granted:', req.path);
     return next();
   }
   
@@ -161,13 +158,9 @@ export const routeSegregationMiddleware: RequestHandler = async (req: Request, r
       });
     }
     
-    // User routes will be handled by their specific authentication middleware
-    console.log('📊 User route - proceeding to authentication middleware:', req.path);
     return next();
   }
   
-  // Public routes - proceed without authentication
-  console.log('🌐 Public route access:', req.path);
   return next();
 };
 

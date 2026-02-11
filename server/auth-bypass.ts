@@ -17,22 +17,7 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
   // Never allow bypass in development or production - this prevents security bypass attacks
   const isSafeEnvironment = process.env.NODE_ENV === 'test';
   
-  console.log(`🧪 [AUTH-BYPASS-DEBUG] Middleware called:`, {
-    path: req.path,
-    userAgent: req.headers['user-agent'],
-    nodeEnv: process.env.NODE_ENV,
-    replitEnv: process.env.REPLIT_ENV,
-    isSafeEnvironment,
-    headers: {
-      'x-testing-mode': req.headers['x-testing-mode'],
-      'x-test-auth-bypass': req.headers['x-test-auth-bypass'],
-      'x-spiritual-tester': req.headers['x-spiritual-tester']
-    }
-  });
-  
   if (!isSafeEnvironment) {
-    // In production, this middleware is completely disabled for security
-    console.log(`🧪 [AUTH-BYPASS-DEBUG] Not safe environment, skipping`);
     return next();
   }
 

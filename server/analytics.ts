@@ -59,9 +59,6 @@ export class AnalyticsService {
   // Track events on the server side
   static async track(event: AnalyticsEvent): Promise<void> {
     if (!posthogServer) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('📊 Analytics event (offline):', event.event);
-      }
       return;
     }
 

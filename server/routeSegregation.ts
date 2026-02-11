@@ -174,7 +174,6 @@ export const sessionIsolationMiddleware: RequestHandler = (req: Request, res: Re
   if (requiredAuthType === AuthType.ADMIN) {
     // Clear any user session data that might interfere
     if ((req.session as any)?.user && !(req.user as any)?.isAdmin) {
-      console.log('🧹 Clearing user session data for admin route:', req.path);
       delete (req.session as any).user;
     }
   }
@@ -183,7 +182,6 @@ export const sessionIsolationMiddleware: RequestHandler = (req: Request, res: Re
   if (requiredAuthType === AuthType.USER) {
     // Don't clear admin session, but ensure it doesn't interfere with user auth
     if ((req.user as any)?.isAdmin && !(req.session as any)?.user) {
-      console.log('🔄 Admin authenticated - user route requires separate user auth:', req.path);
     }
   }
   

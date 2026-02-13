@@ -171,14 +171,37 @@ async function adminIPWhitelist(req: any, res: any, next: any) {
   }
 }
 
+const AUDIT_ACTIONS = new Set([
+  "user_banned",
+  "user_unbanned",
+  "user_suspended",
+  "user_unsuspended",
+  "user_warned",
+  "user_role_changed",
+  "post_removed",
+  "post_restored",
+  "comment_removed",
+  "comment_restored",
+  "report_reviewed",
+  "community_banned",
+  "community_created",
+  "community_deleted",
+  "other_action",
+]);
+
+function normalizeAuditAction(action: string) {
+  return AUDIT_ACTIONS.has(action) ? action : "other_action";
+}
+
 // Audit logging for admin actions
 async function logAdminAction(req: any, action: string, details?: any) {
   try {
     const user = req.user;
     if (!user) return;
-    
+    const normalizedAction = normalizeAuditAction(action);
+
     await storage.createAuditLog({
-      action: action as any,
+      action: normalizedAction as any,
       performedBy: user.id,
       reason: `Admin action: ${action}`,
       details: details ? JSON.stringify(details) : null,

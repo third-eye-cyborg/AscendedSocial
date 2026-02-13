@@ -188,6 +188,7 @@ function Router() {
         <Route path="/home">{isAuthenticated ? <Home /> : <LoginScreen />}</Route>
         <Route path="/login" component={Login} />
         <Route path="/auth/callback" component={AuthCallback} />
+        <Route path="/auth-callback" component={AuthCallback} />
         <Route path="/auth/mobile-callback" component={AuthCallback} />
         <Route path="/auth" component={AuthCallback} />
         <Route path="/mobile-login" component={MobileLogin} />

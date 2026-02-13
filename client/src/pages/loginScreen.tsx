@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import logoImage from "@assets/ASLogo.png";
+const logoImage = "/images/ASLogo.png";
 import { ArrowRight, Sparkles, Stars, Users } from "lucide-react";
 
 export default function LoginScreen() {

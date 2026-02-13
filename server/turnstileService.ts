@@ -28,7 +28,6 @@ export class TurnstileService {
   async verifyToken(token: string, remoteIp?: string): Promise<TurnstileVerificationResult> {
     // Skip verification in development if secret key is not configured
     if (!this.secretKey && process.env.NODE_ENV === 'development') {
-      console.log('🔧 Development mode: Bypassing Turnstile verification');
       return {
         success: true,
         hostname: 'localhost',
@@ -92,7 +91,6 @@ export class TurnstileService {
 
       // Log verification result (without sensitive data)
       if (verificationResult.success) {
-        console.log(`✅ Turnstile verification successful for hostname: ${verificationResult.hostname}`);
       } else {
         console.warn(`❌ Turnstile verification failed:`, verificationResult.errorCodes);
       }

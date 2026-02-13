@@ -4,47 +4,56 @@
     "**/node_modules": true,
     "**/dist": true,
     "**/.git": true,
-    "**/generated-icon.png": true
+    "**/.local": true,
+    "**/.config": true,
+    "**/.cache": true,
+    "**/storybook-static": true,
+    "**/test-results": true,
+    "**/playwright-report": true,
+    "**/logs": true,
+    "**/.mcp": true,
+    "**/package-lock.json": true,
+    "**/cypress/videos": true,
+    "**/cypress/screenshots": true
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/dist": true,
-    "**/migrations": true
+    "**/migrations": true,
+    "**/.local": true,
+    "**/.config": true,
+    "**/.cache": true,
+    "**/.mcp": true,
+    "**/docs": true,
+    "**/stories": true,
+    "**/package-lock.json": true,
+    "**/cypress": true,
+    "**/tests": true
   },
-  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/.git/**": true,
+    "**/dist/**": true,
+    "**/.local/**": true,
+    "**/.config/**": true,
+    "**/.cache/**": true,
+    "**/.mcp/**": true,
+    "**/storybook-static/**": true,
+    "**/test-results/**": true,
+    "**/playwright-report/**": true,
+    "**/logs/**": true,
+    "**/cypress/videos/**": true,
+    "**/cypress/screenshots/**": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "off",
   "typescript.suggest.autoImports": true,
-  "typescript.preferences.includeCompletionsWithSnippetText": true,
+  "typescript.tsserver.maxTsServerMemory": 2048,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
   "editor.quickSuggestions": {
     "other": true,
     "comments": false,
     "strings": true
   },
-  "editor.acceptSuggestionOnCommitCharacter": false,
-  "builder.apiKey": null,
-  "builder.models": [
-    {
-      "name": "page",
-      "type": "page",
-      "urlPath": "/",
-      "schema": [
-        {
-          "name": "title",
-          "type": "string",
-          "required": true
-        },
-        {
-          "name": "description", 
-          "type": "text",
-          "required": false
-        }
-      ]
-    }
-  ],
-  "builder.env": "development",
-  "builder.useLocalProxy": true,
-  "builder.localProxyUrl": "http://localhost:5000",
-  "builder.contentApiUrl": "https://cdn.builder.io/api/v1/",
-  "builder.previewUrl": "https://preview.builder.io/",
   "github.copilot.enable": {
     "*": true,
     "yaml": false,

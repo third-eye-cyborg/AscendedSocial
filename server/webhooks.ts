@@ -59,7 +59,6 @@ router.post('/webhooks/polar', verifyPolarWebhook, async (req, res) => {
     const validatedData = polarEventSchema.parse(req.body);
     const { id: event_id, type: event_type, data } = validatedData;
 
-    console.log(`Polar webhook: ${event_type} for event ${event_id}`);
 
     // Store webhook event for processing
     const webhookEvent: InsertWebhookEvent = {
@@ -108,7 +107,6 @@ async function processPolarEvent(webhookData: any) {
     // Handle different event types
     switch (event_type) {
       case 'checkout.created':
-        console.log(`Checkout created for user ${userId}`);
         break;
 
       case 'subscription.created':
@@ -132,7 +130,6 @@ async function processPolarEvent(webhookData: any) {
         break;
 
       default:
-        console.log(`Unhandled Polar event type: ${event_type}`);
     }
 
     // Update webhook event status to succeeded
@@ -149,7 +146,6 @@ async function processPolarEvent(webhookData: any) {
 
 // Handler functions for Polar events
 async function handlePolarSubscriptionCreated(userId: string, data: any) {
-  console.log(`Processing subscription creation for user ${userId}`);
   
   // Update user to premium status
   await storage.updateUser(userId, {
@@ -160,7 +156,6 @@ async function handlePolarSubscriptionCreated(userId: string, data: any) {
 }
 
 async function handlePolarSubscriptionUpdate(userId: string, data: any) {
-  console.log(`Processing subscription update for user ${userId}`);
   
   // Update subscription details if needed
   await storage.updateUser(userId, {
@@ -169,7 +164,6 @@ async function handlePolarSubscriptionUpdate(userId: string, data: any) {
 }
 
 async function handlePolarSubscriptionCanceled(userId: string, data: any) {
-  console.log(`Processing subscription cancellation for user ${userId}`);
   
   // Remove premium status
   await storage.updateUser(userId, {
@@ -179,13 +173,11 @@ async function handlePolarSubscriptionCanceled(userId: string, data: any) {
 }
 
 async function handlePolarPaymentSuccess(userId: string, data: any) {
-  console.log(`Processing successful payment for user ${userId}`);
   
   // Payment succeeded - subscription should already be active
 }
 
 async function handlePolarPaymentFailed(userId: string, data: any) {
-  console.log(`Processing failed payment for user ${userId}`);
   
   // Handle failed payment - might need to notify user or downgrade
 }

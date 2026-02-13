@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import DisclaimerBanner from "@/components/DisclaimerBanner";
 
-import ASLogo from "@assets/ASLogo.png";
+const ASLogo = "/images/ASLogo.png";
 
 export default function MarketingFooter() {
   return (

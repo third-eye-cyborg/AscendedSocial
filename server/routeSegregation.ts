@@ -298,7 +298,6 @@ async function logSecurityViolation(req: Request, violationType: string, details
  * Comprehensive route protection setup
  */
 export function setupRouteSegregation(app: Express) {
-  console.log('🔐 Setting up comprehensive route segregation...');
   
   // Apply route segregation middleware to all routes
   app.use(sessionIsolationMiddleware);
@@ -307,7 +306,6 @@ export function setupRouteSegregation(app: Express) {
   app.use(adminSecurityHeaders);
   app.use(userSecurityHeaders);
   
-  console.log('✅ Route segregation security middleware applied');
 }
 
 /**

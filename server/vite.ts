@@ -20,10 +20,24 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
+  const workspaceRoot = path.resolve(import.meta.dirname, "..");
+  const viteServerConfig = viteConfig.server ?? {};
   const serverOptions = {
+    ...viteServerConfig,
     middlewareMode: true,
     hmr: { server },
     allowedHosts: true as const,
+    fs: {
+      strict: true,
+      deny: ["**/.*"],
+      ...viteServerConfig.fs,
+      allow: Array.from(
+        new Set([
+          ...(viteServerConfig.fs?.allow ?? []),
+          workspaceRoot,
+        ]),
+      ),
+    },
   };
 
   const vite = await createViteServer({

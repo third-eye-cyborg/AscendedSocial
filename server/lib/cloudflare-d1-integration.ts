@@ -53,7 +53,6 @@ export class CloudflareD1Manager {
    * Initialize D1 connection and verify database
    */
   async initialize(): Promise<void> {
-    console.log('💾 Initializing Cloudflare D1 consent storage...');
 
     try {
       if (!this.config.accountId || !this.config.apiToken || !this.config.databaseId) {
@@ -62,7 +61,6 @@ export class CloudflareD1Manager {
 
       await this.testConnection();
       this.isInitialized = true;
-      console.log('✅ Cloudflare D1 consent storage initialized');
     } catch (error) {
       console.error('❌ Failed to initialize D1:', error);
       throw error;
@@ -88,7 +86,6 @@ export class CloudflareD1Manager {
       throw new Error(`D1 API connection failed: ${response.status} ${response.statusText}`);
     }
 
-    console.log('✅ D1 API connection successful');
   }
 
   /**
@@ -127,7 +124,6 @@ export class CloudflareD1Manager {
    * Initialize database schema
    */
   async initializeSchema(): Promise<void> {
-    console.log('📊 Initializing D1 consent schema...');
 
     const createTableSQL = `
       CREATE TABLE IF NOT EXISTS consent_log (
@@ -157,7 +153,6 @@ export class CloudflareD1Manager {
       for (const indexSQL of createIndexes) {
         await this.executeQuery(indexSQL);
       }
-      console.log('✅ D1 consent schema initialized');
     } catch (error) {
       console.error('❌ Failed to initialize schema:', error);
       throw error;
@@ -172,7 +167,6 @@ export class CloudflareD1Manager {
       throw new Error('D1 not initialized');
     }
 
-    console.log('📝 Logging consent to D1:', { userId: log.userId, purpose: log.purpose });
 
     try {
       const sql = `
@@ -205,7 +199,6 @@ export class CloudflareD1Manager {
       
       const consentId = result[0]?.meta?.last_row_id;
       
-      console.log('✅ Consent logged to D1:', { consentId });
       
       return { success: true, consentId };
     } catch (error) {
@@ -222,7 +215,6 @@ export class CloudflareD1Manager {
       throw new Error('D1 not initialized');
     }
 
-    console.log('🚫 Withdrawing consent for:', userId);
 
     try {
       const sql = `
@@ -235,7 +227,6 @@ export class CloudflareD1Manager {
       const params = [new Date().toISOString(), userId];
       await this.executeQuery(sql, params);
 
-      console.log('✅ Consent withdrawn successfully');
       return { success: true };
     } catch (error) {
       console.error('❌ Failed to withdraw consent:', error);
@@ -251,7 +242,6 @@ export class CloudflareD1Manager {
       throw new Error('D1 not initialized');
     }
 
-    console.log('📜 Retrieving consent history for:', userId);
 
     try {
       const sql = `
@@ -265,7 +255,6 @@ export class CloudflareD1Manager {
 
       const consents = result[0]?.results || [];
       
-      console.log(`✅ Retrieved ${consents.length} consent records`);
       
       return consents;
     } catch (error) {
@@ -282,14 +271,12 @@ export class CloudflareD1Manager {
       throw new Error('D1 not initialized');
     }
 
-    console.log('🗑️ Deleting all consents for:', userId);
 
     try {
       const sql = 'DELETE FROM consent_log WHERE user_id = ?';
       const params = [userId];
       await this.executeQuery(sql, params);
 
-      console.log('✅ User consents deleted successfully');
       return { success: true };
     } catch (error) {
       console.error('❌ Failed to delete user consents:', error);

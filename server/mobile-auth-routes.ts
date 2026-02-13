@@ -28,12 +28,6 @@ router.get('/mobile-config', (req, res) => {
       }
     };
     
-    console.log('📱 Mobile config requested:', {
-      host: req.get('host'),
-      userAgent: req.get('User-Agent'),
-      config: { ...config, replitClientId: '***' }
-    });
-    
     res.json(config);
   } catch (error) {
     console.error('❌ Mobile config error:', error);
@@ -62,7 +56,6 @@ router.get('/mobile-login', (req, res) => {
   let callbackUrl;
   const redirectUriStr = redirect_uri?.toString() || '';
   
-  console.log('🔍 Debugging mobile auth redirect logic:', {
     platform,
     redirectUriStr,
     referer,
@@ -73,23 +66,18 @@ router.get('/mobile-login', (req, res) => {
   if (platform === 'native' || redirectUriStr.includes('ascended://')) {
     // Native iOS/Android app - use deep link
     callbackUrl = 'ascended://auth/callback';
-    console.log('📱 Using native app deep link');
   } else if (redirectUriStr.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
     // Mobile dev environment - redirect back after auth
     callbackUrl = redirectUriStr; // Use mobile domain directly
-    console.log('🎯 Mobile dev: Direct callback to mobile domain');
   } else if (redirectUriStr.includes('app.ascended.social')) {
     // Mobile production environment - redirect back after auth  
     callbackUrl = redirectUriStr; // Use mobile domain directly
-    console.log('🎯 Mobile prod: Direct callback to mobile domain');
   } else if (referer.includes('f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev')) {
     // Referer-based detection for mobile dev app
     callbackUrl = 'https://f9f72fa6-d1fb-425c-b9c8-6acf959c3a51-00-2v7zngs8czufl.riker.replit.dev/auth/callback';
-    console.log('🎯 Referer-based mobile dev callback');
   } else if (referer.includes('app.ascended.social')) {
     // Referer-based detection for mobile prod app
     callbackUrl = 'https://app.ascended.social/auth/callback';
-    console.log('🎯 Referer-based mobile prod callback');
   } else if (referer.includes('ascended.social') || redirectUriStr.includes('ascended.social')) {
     // Production web app (catch general ascended.social AFTER checking app.ascended.social)
     callbackUrl = 'https://ascended.social/auth/callback';
@@ -97,19 +85,10 @@ router.get('/mobile-login', (req, res) => {
     // Use provided redirect URI with auth/callback path (for non-mobile apps)
     const redirectBase = redirectUriStr.replace(/\/$/, '');
     callbackUrl = `${redirectBase}/auth/callback`;
-    console.log('⚠️ Using fallback redirect with /auth/callback');
   } else {
     // Default fallback - use deep link
     callbackUrl = 'ascended://auth/callback';
   }
-  
-  console.log('🔗 Mobile login redirect:', {
-    platform,
-    originalRedirect: redirect_uri,
-    referer,
-    userAgent: userAgent.substring(0, 50) + '...',
-    finalCallback: callbackUrl
-  });
   
   // Store mobile referrer data in session for the web app to detect after auth
   (req.session as any).mobileReferrer = referer || 'mobile';
@@ -117,7 +96,6 @@ router.get('/mobile-login', (req, res) => {
   
   // Redirect directly to AuthKit login with mobile parameters
   const loginUrl = `/api/login?mobile_bounce=true&platform=${platform}&redirectUrl=${encodeURIComponent(callbackUrl)}`;
-  console.log('🚀 Redirecting to AuthKit login:', loginUrl);
   res.redirect(loginUrl);
 });
 
@@ -146,7 +124,6 @@ router.post('/mobile-verify', async (req, res) => {
       });
     }
 
-    console.log('✅ Token verified for user:', user.email);
     
     res.json({
       success: true,

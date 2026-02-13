@@ -9,7 +9,6 @@ const router = Router();
 router.post('/api/figma/extract-tokens', async (req, res) => {
   const startTime = Date.now();
   
-  console.log(`🎨 [FIGMA-TOKENS] Starting design token extraction at ${new Date().toISOString()}`);
   
   if (!figmaMCPServer) {
     console.error('❌ [FIGMA-TOKENS] Server not available - missing credentials');
@@ -28,7 +27,6 @@ router.post('/api/figma/extract-tokens', async (req, res) => {
       throw new Error(`Figma server health check failed: ${healthCheck.error}`);
     }
     
-    console.log('✅ [FIGMA-TOKENS] Server health check passed, extracting tokens...');
     
     const tokens = await figmaMCPServer.extractDesignTokens();
     
@@ -50,7 +48,6 @@ router.post('/api/figma/extract-tokens', async (req, res) => {
     try {
       const existingTokens = await fs.readFile(tokensPath, 'utf8');
       await fs.writeFile(`${tokensPath}.backup`, existingTokens);
-      console.log('📋 [FIGMA-TOKENS] Created backup of existing tokens');
     } catch (e) {
       // File doesn't exist yet, which is fine
     }
@@ -60,7 +57,6 @@ router.post('/api/figma/extract-tokens', async (req, res) => {
     const tokenCount = Object.keys(tokens).length;
     const duration = Date.now() - startTime;
     
-    console.log(`✅ [FIGMA-TOKENS] Successfully extracted ${tokenCount} tokens in ${duration}ms`);
     
     res.json({
       success: true,
@@ -89,7 +85,6 @@ router.post('/api/figma/sync-components', async (req, res) => {
   const startTime = Date.now();
   const syncId = `sync-${Date.now()}`;
   
-  console.log(`🔄 [FIGMA-SYNC] Starting component sync ${syncId} at ${new Date().toISOString()}`);
   
   if (!figmaMCPServer) {
     console.error(`❌ [FIGMA-SYNC] ${syncId} - Server not available`);
@@ -108,7 +103,6 @@ router.post('/api/figma/sync-components', async (req, res) => {
       throw new Error(`Server health check failed: ${healthCheck.error}`);
     }
     
-    console.log(`✅ [FIGMA-SYNC] ${syncId} - Health check passed, syncing components...`);
     
     const components = await figmaMCPServer.syncComponentsFromFigma();
     
@@ -123,7 +117,6 @@ router.post('/api/figma/sync-components', async (req, res) => {
       });
     }
     
-    console.log(`📦 [FIGMA-SYNC] ${syncId} - Found ${components.length} components, generating stories...`);
     
     // Generate updated story files with error handling
     let storiesGenerated = 0;
@@ -135,7 +128,6 @@ router.post('/api/figma/sync-components', async (req, res) => {
     }
     
     const duration = Date.now() - startTime;
-    console.log(`✅ [FIGMA-SYNC] ${syncId} - Completed in ${duration}ms: ${components.length} components, ${storiesGenerated} stories`);
     
     res.json({
       success: true,
@@ -313,5 +305,4 @@ export const ${variant.name.replace(/\s+/g, '')}: Story = {
 
 export function registerFigmaMCPRoutes(app: any) {
   app.use(router);
-  console.log('🎨 Figma MCP routes registered');
 }

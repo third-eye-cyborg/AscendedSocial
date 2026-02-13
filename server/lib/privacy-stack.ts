@@ -72,7 +72,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize all enabled privacy and security tools
    */
   async initialize(): Promise<void> {
-    console.log('🔒 Initializing Privacy & Security Stack...');
     
     const promises: Promise<any>[] = [];
 
@@ -101,7 +100,6 @@ export class PrivacyStackManager extends EventEmitter {
     // Run initial compliance check
     await this.runComplianceCheck();
     
-    console.log('✅ Privacy & Security Stack initialized');
     this.emit('initialized', this.status);
   }
 
@@ -109,7 +107,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize Fides privacy infrastructure
    */
   private async initializeFides(): Promise<void> {
-    console.log('🛡️ Initializing Fides privacy infrastructure...');
     
     // Fides initialization logic will go here
     // This is a placeholder for the open-source Fides setup
@@ -121,7 +118,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize Snyk vulnerability scanning
    */
   private async initializeSnyk(): Promise<void> {
-    console.log('🔍 Initializing Snyk vulnerability scanning...');
     
     // Snyk initialization logic will go here
     
@@ -132,7 +128,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize Bearer security scanning
    */
   private async initializeBearer(): Promise<void> {
-    console.log('🛡️ Initializing Bearer security scanning...');
     
     try {
       const { execFileSync } = await import('child_process');
@@ -140,13 +135,11 @@ export class PrivacyStackManager extends EventEmitter {
       // Verify Bearer CLI is installed
       try {
         execFileSync('bearer', ['version'], { stdio: 'pipe' });
-        console.log('✅ Bearer CLI found');
       } catch {
         console.warn('⚠️ Bearer CLI not found. Install with: curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh');
         return;
       }
       
-      console.log('✅ Bearer security scanning initialized');
       this.emit('bearer:initialized');
     } catch (error) {
       console.error('❌ Failed to initialize Bearer:', error);
@@ -157,7 +150,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize Semgrep code scanning
    */
   private async initializeSemgrep(): Promise<void> {
-    console.log('🔬 Initializing Semgrep code scanning...');
     
     // Semgrep integration logic will go here
     
@@ -168,7 +160,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Initialize Polar payment processing
    */
   private async initializePolar(): Promise<void> {
-    console.log('💳 Initializing Polar payment processing...');
     
     // Polar initialization logic will go here
     
@@ -179,7 +170,6 @@ export class PrivacyStackManager extends EventEmitter {
    * Run comprehensive compliance check
    */
   async runComplianceCheck(): Promise<ComplianceStatus> {
-    console.log('📋 Running comprehensive compliance check...');
     
     const issues: ComplianceIssue[] = [];
     
@@ -352,7 +342,6 @@ export class PrivacyStackManager extends EventEmitter {
     const format = options.format || 'json';
     const severity = options.severity || 'medium';
 
-    console.log(`🔍 Running Bearer scan on ${path}...`);
 
     try {
       const output = execFileSync('bearer', ['scan', path, '--format', format, '--severity', severity, '--quiet'], { 
@@ -388,7 +377,6 @@ export class PrivacyStackManager extends EventEmitter {
       throw new Error('Snyk is not enabled');
     }
 
-    console.log('🔍 Running Snyk vulnerability scan...');
     
     // Snyk scanning implementation would go here
     // For now, return a placeholder

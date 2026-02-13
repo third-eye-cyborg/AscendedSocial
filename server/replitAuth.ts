@@ -162,9 +162,7 @@ export async function setupAuth(app: Express) {
         return res.redirect('/login?error=verification_failed');
       }
       
-      console.log('✅ Login - Turnstile verification successful for production domain');
     } else {
-      console.log('🧪 Login on development/testing domain - Turnstile bypassed');
     }
     
     const authOptions: any = {
@@ -210,12 +208,6 @@ export async function setupAuth(app: Express) {
           
           const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
           
-          console.log('🔐 Generated JWT token for mobile auth:', {
-            userId: user.id,
-            email: user.email,
-            state: state.substring(0, 50) + '...'
-          });
-          
           // Redirect to auth-callback with token and state
           const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
           return res.redirect(callbackUrl);
@@ -232,10 +224,20 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
+      // Get the post-logout redirect URI from environment or construct it dynamically
+      // Priority: LOGOUT_REDIRECT_URI env var > POST_LOGOUT_URI > dynamic construction
+      let postLogoutUri = process.env.LOGOUT_REDIRECT_URI || process.env.POST_LOGOUT_URI;
+      
+      if (!postLogoutUri) {
+        // If no explicit redirect is configured, use the current request's domain
+        const hostname = req.get('host') || req.hostname;
+        postLogoutUri = `${req.protocol}://${hostname}`;
+      }
+      
       res.redirect(
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+          post_logout_redirect_uri: postLogoutUri,
         }).href
       );
     });

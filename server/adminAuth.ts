@@ -159,7 +159,6 @@ async function adminIPWhitelist(req: any, res: any, next: any) {
       return res.status(403).json({ message: 'Access denied from this IP address' });
     }
     
-    console.log(`✅ Admin IP whitelist passed for: ${parsedClientIP.toString()}`);
     return next();
     
   } catch (error) {
@@ -187,7 +186,6 @@ async function logAdminAction(req: any, action: string, details?: any) {
       userAgent: req.get('User-Agent') || 'Unknown',
     });
     
-    console.log(`📋 Admin audit log: ${user.email} performed ${action} from ${req.ip}`);
   } catch (error) {
     console.error('Failed to log admin action:', error);
   }
@@ -248,7 +246,6 @@ export async function setupAdminAuth(app: Express) {
       } as any : null;
       
       if (user) {
-        console.log(`✅ Admin authentication successful: ${user.email}`);
         verified(null, user);
       } else {
         verified(new Error("Failed to create admin user"), null);
@@ -281,12 +278,10 @@ export async function setupAdminAuth(app: Express) {
     );
     passport.use(strategy);
     
-    console.log(`✅ Admin auth strategy registered: replit-admin:${domain}`);
   }
 
   // Admin login endpoint
   app.get("/api/admin/login", (req, res, next) => {
-    console.log('🔐 Admin login attempt from:', req.ip);
     
     passport.authenticate(`replit-admin:${req.hostname}`, {
       prompt: "login consent",
@@ -312,7 +307,6 @@ export async function setupAdminAuth(app: Express) {
           return res.redirect("/api/admin/login?error=login_failed");
         }
         
-        console.log(`✅ Admin authentication successful: ${user.email}`);
         res.redirect("/admin/dashboard"); // Redirect to admin dashboard
       });
     })(req, res, next);
@@ -321,10 +315,20 @@ export async function setupAdminAuth(app: Express) {
   // Admin logout endpoint
   app.get("/api/admin/logout", (req, res) => {
     req.logout(() => {
+      // Get the post-logout redirect URI from environment or construct it dynamically
+      // Priority: LOGOUT_REDIRECT_URI env var > POST_LOGOUT_URI > dynamic construction
+      let postLogoutUri = process.env.LOGOUT_REDIRECT_URI || process.env.POST_LOGOUT_URI;
+      
+      if (!postLogoutUri) {
+        // If no explicit redirect is configured, use the current request's domain
+        const hostname = req.get('host') || req.hostname;
+        postLogoutUri = `${req.protocol}://${hostname}`;
+      }
+      
       res.redirect(
         client.buildEndSessionUrl(config, {
           client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+          post_logout_redirect_uri: postLogoutUri,
         }).href
       );
     });
@@ -382,7 +386,6 @@ export const isAdminAuthenticated: RequestHandler = async (req, res, next) => {
       });
     }
     
-    console.log(`🔐 Admin ${user.email} accessed ${req.method} ${req.path} from ${req.ip}`);
     return next();
   }
 
@@ -404,7 +407,6 @@ export const isAdminAuthenticated: RequestHandler = async (req, res, next) => {
     user.expires_at = user.claims?.exp;
     
     await logAdminAction(req, 'session_refreshed', { path: req.path });
-    console.log(`🔄 Admin session refreshed for ${user.email}`);
     
     return next();
   } catch (error) {

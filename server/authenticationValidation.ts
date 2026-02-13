@@ -99,7 +99,6 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
           authMethod: 'jwt'
         };
         
-        console.log(`✅ JWT authentication successful for user: ${user.email} on ${req.path}`);
         return next();
         
       } catch (jwtError: any) {
@@ -155,7 +154,6 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
               // Update user session with new tokens
               updateUserSession(passportUser, tokenResponse);
               
-              console.log(`✅ Refreshed passport token for user: ${passportUser.email}`);
             } catch (refreshError) {
               console.error('❌ Failed to refresh passport token:', refreshError);
               return res.status(401).json({
@@ -197,7 +195,6 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
         authMethod: 'passport'
       };
       
-      console.log(`✅ Passport authentication successful for user: ${passportUser.email} on ${req.path}`);
       return next();
     }
     
@@ -206,7 +203,6 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
     if (req.path === '/api/auth/user' && req.user && !(req as any).authMethodOverride) {
       const user = req.user as any;
       if (user.id && user.email) {
-        console.log(`🔄 Allowing user info request for ${user.email} (authentication transition)`);
         return next();
       }
     }
@@ -284,7 +280,6 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
       authMethod: 'session'
     };
     
-    console.log(`✅ Session authentication successful for user: ${dbUser.email} on ${req.path}`);
     return next();
     
   } catch (error: any) {
@@ -405,7 +400,6 @@ export const enhancedAdminAuthentication: RequestHandler = async (req: Request, 
       });
     }
     
-    console.log(`🔐 Admin authentication successful: ${adminUser.email} accessing ${req.method} ${req.path}`);
     return next();
     
   } catch (error: any) {

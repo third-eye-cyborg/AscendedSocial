@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Shield, Heart, Users, Scale, Eye } from "lucide-react";
-import ASLogo from "@assets/ASLogo.png";
+const ASLogo = "/images/ASLogo.png";
 
 export default function CommunityProtection() {
   return (

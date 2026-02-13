@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ObjectUploader } from "./ObjectUploader";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import type { UploadResult } from '@uppy/core';
-import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
+const logoPath = "/images/logo-transparent.png";
 
 export default function CreatePost() {
   const { user } = useAuth();

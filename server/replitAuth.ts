@@ -415,14 +415,18 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/logout", (req, res) => {
     req.logout(() => {
-      // Get the post-logout redirect URI from environment or construct it dynamically
-      // Priority: LOGOUT_REDIRECT_URI env var > POST_LOGOUT_URI > dynamic construction
-      let postLogoutUri = process.env.LOGOUT_REDIRECT_URI || process.env.POST_LOGOUT_URI;
+      // Determine redirect URI based on current domain
+      // For localhost/dev, always redirect to current domain
+      // For production, use environment variable if set
+      const hostname = req.get('host') || req.hostname;
+      let postLogoutUri: string;
       
-      if (!postLogoutUri) {
-        // If no explicit redirect is configured, use the current request's domain
-        const hostname = req.get('host') || req.hostname;
+      // If running on localhost or dev domain, redirect to current domain
+      if (hostname.includes('localhost') || hostname.includes('127.0.0.1') || hostname.includes('replit.dev')) {
         postLogoutUri = `${req.protocol}://${hostname}`;
+      } else {
+        // For production domains, check environment variables
+        postLogoutUri = process.env.LOGOUT_REDIRECT_URI || process.env.POST_LOGOUT_URI || `${req.protocol}://${hostname}`;
       }
       
       res.redirect(

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
 
 interface AdminUser {
   id: string;
@@ -25,7 +24,7 @@ export function useAdminAuth(): AdminAuthState & {
   const queryClient = useQueryClient();
   const [error, setError] = useState<string | null>(null);
 
-  // Query to get current admin user
+  // Query to get current admin user with custom queryFn that handles 401 gracefully
   const {
     data: adminData,
     isLoading,
@@ -36,6 +35,35 @@ export function useAdminAuth(): AdminAuthState & {
     retry: false,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    queryFn: async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      try {
+        const response = await fetch("/api/admin/user", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            // User not authenticated as admin, return null instead of throwing
+            return null;
+          }
+          throw new Error(`Admin auth check failed: ${response.status}`);
+        }
+        
+        return response.json();
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (err instanceof Error && err.name === 'AbortError') {
+          console.warn('⚠️ Admin auth check timed out');
+          return null;
+        }
+        throw err;
+      }
+    },
   });
 
   // Type guard to ensure we have valid admin data

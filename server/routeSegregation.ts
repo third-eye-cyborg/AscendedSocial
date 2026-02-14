@@ -15,8 +15,7 @@ import { logAdminAction } from "./adminAuth";
 // Define route patterns for strict segregation
 const ADMIN_ROUTE_PATTERNS = [
   /^\/api\/admin\//,
-  /^\/admin\//,
-  /^\/api\/debug\// // Debug endpoints are admin-only for security
+  /^\/admin\//
 ];
 
 const USER_ROUTE_PATTERNS = [
@@ -47,6 +46,7 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/api\/login$/,
   /^\/api\/callback$/,
   /^\/api\/logout$/,
+  /^\/api\/debug\// , // Debug endpoints are public for development troubleshooting
   /^\/$/, // Root
   /^\/landing/,
   /^\/about/,

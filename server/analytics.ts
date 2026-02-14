@@ -7,7 +7,7 @@ if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
   try {
     // Validate that the API key is not a placeholder
     const apiKey = process.env.POSTHOG_API_KEY;
-    const isPlaceholder = apiKey === 'personal_api_key' || apiKey.startsWith('personal_') || apiKey.length < 10 || apiKey === 'phc_placeholder';
+    const isPlaceholder = apiKey === 'personal_api_key' || apiKey.startsWith('personal_') || apiKey.length < 10 || apiKey === 'phc_placeholder' || !apiKey.startsWith('phc_');
     if (isPlaceholder) {
       console.warn('⚠️ PostHog API key appears to be invalid or placeholder - analytics disabled');
       posthogServer = null;

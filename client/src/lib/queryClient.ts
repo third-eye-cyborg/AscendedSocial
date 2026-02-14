@@ -1,5 +1,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+console.log("📦 Initializing Query Client module...");
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -58,20 +60,39 @@ export const getQueryFn: <T>(options: {
     return await res.json();
   };
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      queryFn: getQueryFn({ on401: "throw" }),
-      refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes instead of Infinity for fresher data
-      gcTime: 10 * 60 * 1000, // 10 minutes garbage collection time
-      retry: 1, // Retry once for failed requests
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
-    },
-    mutations: {
-      retry: 1,
-      retryDelay: 1000, // 1 second retry delay for mutations
-    },
-  },
-});
+let queryClientInstance: QueryClient | null = null;
+
+function createQueryClient(): QueryClient {
+  if (queryClientInstance) {
+    return queryClientInstance;
+  }
+
+  try {
+    queryClientInstance = new QueryClient({
+      defaultOptions: {
+        queries: {
+          queryFn: getQueryFn({ on401: "throw" }),
+          refetchInterval: false,
+          refetchOnWindowFocus: false,
+          staleTime: 5 * 60 * 1000,
+          gcTime: 10 * 60 * 1000,
+          retry: 1,
+          retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+        },
+        mutations: {
+          retry: 1,
+          retryDelay: 1000,
+        },
+      },
+    });
+    console.log("✅ Query Client created successfully");
+    return queryClientInstance;
+  } catch (e) {
+    console.error("❌ Failed to create Query Client:", e);
+    const fallbackClient = new QueryClient();
+    queryClientInstance = fallbackClient;
+    return fallbackClient;
+  }
+}
+
+export const queryClient = createQueryClient();

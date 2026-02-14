@@ -25,6 +25,7 @@ import { ObjectPermission } from "./objectAcl";
 import { randomUUID } from "crypto";
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
+import { authDebugEndpoint, sessionDebugEndpoint, createAuthLoggingMiddleware, authFlowDebugEndpoint } from "./authDebug";
 
 // Multer setup for file uploads
 const upload = multer({ 
@@ -93,14 +94,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Debug endpoint to check route authentication requirements
   app.get('/api/debug/route-info', routeInfoEndpoint);
+  
+  // Debug endpoints for authentication troubleshooting
+  // These endpoints show detailed auth state information
+  app.get('/api/debug/auth', authDebugEndpoint);
+  app.get('/api/debug/session', sessionDebugEndpoint);
+  app.get('/api/debug/auth-flow', authFlowDebugEndpoint);
+  
+  // Enable verbose auth logging if DEBUG_AUTH is set or in development
+  const enableVerboseLogging = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+  if (enableVerboseLogging) {
+    console.log('🔐 Enabling verbose authentication logging');
+    app.use(createAuthLoggingMiddleware());
+  }
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user?.id;
+      
+      if (!userId) {
+        console.error('❌ /api/auth/user - No user ID found in request');
+        return res.status(401).json({ 
+          message: "Unauthorized",
+          debug: {
+            hasUser: !!req.user,
+            userId: req.user?.id,
+            email: req.user?.email
+          }
+        });
+      }
+      
       const user = await storage.getUser(userId);
 
       if (!user) {
+        console.warn(`⚠️ /api/auth/user - User ${userId} not found in database`);
         return res.status(404).json({ message: "User not found" });
       }
 
@@ -114,10 +142,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user.sigilImageUrl = sigilImageUrl;
       }
 
+      console.log(`✅ /api/auth/user - Successfully fetched user ${userId}`);
       res.json(user);
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("❌ Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

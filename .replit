@@ -33,30 +33,13 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev:server"
-waitForPort = 3000
 
 [[ports]]
 localPort = 3000
-externalPort = 3000
-
-[[ports]]
-localPort = 3001
-externalPort = 4200
-
-[[ports]]
-localPort = 3002
 externalPort = 80
 
 [[ports]]
-localPort = 3003
-externalPort = 3003
-
-[[ports]]
-localPort = 6006
-externalPort = 3002
-
-[[ports]]
-localPort = 6007
+localPort = 3001
 externalPort = 3001
 
 [objectStorage]

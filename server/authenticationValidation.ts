@@ -29,10 +29,16 @@ const SECURITY_CONSTANTS = {
  */
 export const enhancedUserAuthentication: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
   const requiredAuthType = getRequiredAuthType(req.path);
+  const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+  const timestamp = new Date().toISOString();
   
   // Only apply to user routes
   if (requiredAuthType !== AuthType.USER) {
     return next();
+  }
+  
+  if (DEBUG) {
+    console.log(`\n🔐 [ENHANCED AUTH ${timestamp}] Enhanced user authentication middleware for ${req.path}`);
   }
   
   const clientIP = req.ip;
@@ -61,12 +67,24 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
     
     // Check for JWT Bearer token authentication (mobile apps)
     const authHeader = req.headers.authorization;
+    if (DEBUG) {
+      console.log(`   Authorization header: ${authHeader ? 'present' : 'missing'}`);
+    }
+    
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
+      
+      if (DEBUG) {
+        console.log(`   JWT token found, verifying...`);
+      }
       
       try {
         // Verify JWT token
         const decoded = jwt.verify(token, process.env.SESSION_SECRET!) as any;
+        
+        if (DEBUG) {
+          console.log(`   ✅ JWT token valid for user: ${decoded.userId}`);
+        }
         
         // Additional token validation
         if (!decoded.userId || !decoded.email) {
@@ -78,13 +96,25 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
         const maxAge = 7 * 24 * 60 * 60; // 7 days
         if (tokenAge > maxAge + (SECURITY_CONSTANTS.TOKEN_GRACE_PERIOD / 1000)) {
           throw new Error('Token expired beyond grace period');
+
         }
         
         // Validate user still exists and is active
+        if (DEBUG) {
+          console.log(`   Checking if user exists in database...`);
+        }
+        
         const user = await storage.getUser(decoded.userId);
         if (!user) {
+          if (DEBUG) {
+            console.log(`   ❌ User not found in database: ${decoded.userId}`);
+          }
           await logSecurityViolation(req, 'invalid_user_token', { userId: decoded.userId, email: decoded.email });
           throw new Error('User no longer exists');
+        }
+        
+        if (DEBUG) {
+          console.log(`   ✅ User found in database: ${user.id}`);
         }
         
         // Removed admin check since we're using Replit Auth for all users now
@@ -102,6 +132,11 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
         return next();
         
       } catch (jwtError: any) {
+        if (DEBUG) {
+          console.log(`   ❌ JWT token verification failed: ${jwtError.message}`);
+          console.log(`   Error name: ${jwtError.name}`);
+          console.log(`   Error code: ${jwtError.code}`);
+        }
         console.error(`❌ JWT token verification failed: ${jwtError.message}`);
         await trackFailedAuthAttempt(attemptKey);
         await logSecurityViolation(req, 'invalid_jwt_token', { 
@@ -112,7 +147,8 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
         return res.status(401).json({
           error: 'Invalid authentication token',
           message: 'Please login again',
-          authMethod: 'jwt'
+          authMethod: 'jwt',
+          debug: DEBUG ? { reason: jwtError.message } : undefined
         });
       }
     }
@@ -121,14 +157,28 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
     if (req.isAuthenticated && req.isAuthenticated() && req.user) {
       const passportUser = req.user as any;
       
+      if (DEBUG) {
+        console.log(`   Passport authentication found for: ${passportUser.email}`);
+        console.log(`   User ID: ${passportUser.id}`);
+        console.log(`   Has expires_at: ${!!passportUser.expires_at}`);
+        if (passportUser.expires_at) {
+          const now = Math.floor(Date.now() / 1000);
+          console.log(`   Token expires in: ${passportUser.expires_at - now} seconds`);
+        }
+      }
+      
       // Validate passport user has required fields
       if (!passportUser.id || !passportUser.email) {
         console.error('❌ Invalid passport user structure:', passportUser);
+        if (DEBUG) {
+          console.log(`   Missing required fields: id=${passportUser.id}, email=${passportUser.email}`);
+        }
         await logSecurityViolation(req, 'corrupted_passport_user', { user: passportUser });
         return res.status(401).json({
           error: 'Session corrupted',
           message: 'Please login again',
-          authMethod: 'passport'
+          authMethod: 'passport',
+          debug: DEBUG ? { reason: 'Missing required passport fields' } : undefined
         });
       }
       
@@ -136,6 +186,9 @@ export const enhancedUserAuthentication: RequestHandler = async (req: Request, r
       if (passportUser.expires_at) {
         const now = Math.floor(Date.now() / 1000);
         if (now > passportUser.expires_at) {
+          if (DEBUG) {
+            console.log(`   ⏳ Token expired by ${now - passportUser.expires_at} seconds`);
+          }
           console.warn(`🚫 Expired passport session: ${passportUser.email}`);
           await logSecurityViolation(req, 'expired_passport_session', { 
             userId: passportUser.id,

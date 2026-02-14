@@ -58,7 +58,7 @@ export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
+    conString: (process.env.DATABASE_URL || '').replace(/sslmode=(require|prefer|verify-ca)\b/, 'sslmode=verify-full'),
     createTableIfMissing: false,
     ttl: sessionTtl,
     tableName: "sessions",
@@ -103,16 +103,43 @@ export function updateUserSession(
 async function upsertUser(
   claims: any,
 ) {
-  return await storage.upsertUser({
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-    // Note: For now using email-based lookup. Will add replitUserId field later
-  });
+  const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+  const timestamp = new Date().toISOString();
+  
+  if (DEBUG) {
+    console.log(`👤 [UPSERT USER ${timestamp}] Upserting user from claims:`);
+    console.log(`   Email: ${claims["email"]}`);
+    console.log(`   Name: ${claims["first_name"]} ${claims["last_name"]}`);
+    console.log(`   Profile image: ${!!claims["profile_image_url"]}`);
+  }
+  
+  try {
+    const user = await storage.upsertUser({
+      email: claims["email"],
+      firstName: claims["first_name"],
+      lastName: claims["last_name"],
+      profileImageUrl: claims["profile_image_url"],
+      // Note: For now using email-based lookup. Will add replitUserId field later
+    });
+    
+    if (DEBUG) {
+      console.log(`✅ [UPSERT USER ${timestamp}] User upserted successfully: ${user.id}`);
+    }
+    
+    return user;
+  } catch (error) {
+    console.error(`❌ [UPSERT USER ${timestamp}] Error upserting user:`, error);
+    throw error;
+  }
 }
 
 export async function setupAuth(app: Express) {
+  const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+  
+  if (DEBUG) {
+    console.log('🔐 [AUTH SETUP] Initializing Replit Auth with DEBUG mode enabled');
+  }
+  
   app.set("trust proxy", 1);
   app.use(getSession());
   app.use(passport.initialize());
@@ -124,8 +151,16 @@ export async function setupAuth(app: Express) {
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
   ) => {
+    const timestamp = new Date().toISOString();
     try {
       const claims = tokens.claims();
+      
+      if (DEBUG) {
+        console.log(`\n🔐 [VERIFY CALLBACK ${timestamp}] Passport verify function called`);
+        console.log(`   Email from token: ${claims["email"]}`);
+        console.log(`   Token expiry: ${claims.exp}`);
+      }
+      
       const dbUser = await upsertUser(claims);
       
       // Create proper user session object with database user + tokens
@@ -137,16 +172,25 @@ export async function setupAuth(app: Express) {
         profileImageUrl: dbUser.profileImageUrl,
       } as any;
       
+      if (DEBUG) {
+        console.log(`✅ [VERIFY CALLBACK ${timestamp}] User session created: ${user.id}`);
+      }
+      
       updateUserSession(user, tokens);
       verified(null, user);
     } catch (error) {
-      console.error("Error in Replit Auth verify:", error);
+      console.error(`❌ [VERIFY CALLBACK ${timestamp}] Error in Replit Auth verify:`, error);
+      if (DEBUG) {
+        console.error('   Full error:', error);
+      }
       verified(error, null);
     }
   };
 
   const ensureStrategyForRequest = (req: any) => {
-    const hostHeader = req.get('host');
+    const forwardedHost = req.get('x-forwarded-host');
+    const forwardedProto = req.get('x-forwarded-proto');
+    const hostHeader = forwardedHost || req.get('host');
     const hostname = req.hostname;
     const strategyKey = getHostStrategyKey(hostHeader, hostname);
     const strategyName = `replitauth:${strategyKey}`;
@@ -156,7 +200,7 @@ export async function setupAuth(app: Express) {
       return strategyName;
     }
 
-    const protocol = resolveCallbackProtocol(hostHeader, req.protocol);
+    const protocol = resolveCallbackProtocol(hostHeader, forwardedProto || req.protocol);
     const callbackHost = hostHeader || hostname;
     const callbackURL = `${protocol}://${callbackHost}/api/callback`;
 
@@ -261,25 +305,66 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
+    const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+    const timestamp = new Date().toISOString();
+    
+    if (DEBUG) {
+      console.log(`\n🔐 [AUTH CALLBACK ${timestamp}] Received OAuth callback`);
+      console.log(`   Query params: code=${!!req.query.code}, state=${req.query.state}`);
+      console.log(`   From: ${req.get('referer')}`);
+      console.log(`   Host: ${req.get('host')}`);
+      console.log(`   X-Forwarded-Host: ${req.get('x-forwarded-host')}`);
+      console.log(`   X-Forwarded-Proto: ${req.get('x-forwarded-proto')}`);
+    }
+    
     const strategyName = ensureStrategyForRequest(req);
+    if (DEBUG) {
+      console.log(`   Using strategy: ${strategyName}`);
+    }
+    
     passport.authenticate(strategyName, (err: any, user: any, info: any) => {
+      if (DEBUG) {
+        console.log(`🔐 [AUTH CALLBACK ${timestamp}] Passport authenticate callback:`);
+        console.log(`   Error: ${err ? err.message : 'none'}`);
+        console.log(`   User returned: ${!!user}`);
+        console.log(`   Info: ${JSON.stringify(info)}`);
+      }
+      
       if (err) {
-        console.error('Authentication callback error:', err);
-        return res.redirect('/api/login');
+        console.error(`❌ [AUTH CALLBACK ${timestamp}] Authentication error:`, err);
+        if (DEBUG) {
+          console.error(`   Full error:`, err);
+          console.error(`   Callback URL expected: ${req.protocol}://${req.get('host')}/api/callback`);
+          console.error(`   Make sure this URL is registered in your Replit OAuth app settings!`);
+        }
+        return res.redirect('/login?error=auth_error');
       }
 
       if (!user) {
         if (info) {
-          console.error('Authentication callback failed:', info);
+          console.error(`❌ [AUTH CALLBACK ${timestamp}] Authentication failed:`, info);
         }
-        console.error('No user returned from authentication callback');
-        return res.redirect('/api/login');
+        console.error(`❌ [AUTH CALLBACK ${timestamp}] No user returned from authentication`);
+        if (DEBUG) {
+          console.error(`   This might indicate a mismatch between the callback URL and registered URLs`);
+          console.error(`   Current callback: ${req.protocol}://${req.get('host')}/api/callback`);
+        }
+        return res.redirect('/login?error=no_user');
+      }
+
+      if (DEBUG) {
+        console.log(`✅ [AUTH CALLBACK ${timestamp}] User authenticated: ${user.id} (${user.email})`);
+        console.log(`   Calling req.logIn...`);
       }
 
       req.logIn(user, (loginErr) => {
         if (loginErr) {
-          console.error('Login session error:', loginErr);
-          return res.redirect('/api/login');
+          console.error(`❌ [AUTH CALLBACK ${timestamp}] Login session error:`, loginErr);
+          return res.redirect('/login?error=session_error');
+        }
+
+        if (DEBUG) {
+          console.log(`✅ [AUTH CALLBACK ${timestamp}] Session created, user logged in`);
         }
 
         try {
@@ -287,6 +372,10 @@ export async function setupAuth(app: Express) {
           
           // Check if this is a mobile authentication request
           const isMobileAuth = state && state !== 'default';
+          
+          if (DEBUG) {
+            console.log(`   Mobile auth: ${isMobileAuth}, state: ${state}`);
+          }
           
           if (isMobileAuth) {
             // Generate JWT token for mobile authentication
@@ -302,16 +391,23 @@ export async function setupAuth(app: Express) {
             
             const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
             
+            if (DEBUG) {
+              console.log(`📱 [AUTH CALLBACK ${timestamp}] Generated mobile token, redirecting to /auth-callback`);
+            }
+            
             // Redirect to auth-callback with token and state
             const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
             return res.redirect(callbackUrl);
           }
 
           // Web authentication - redirect to home
+          if (DEBUG) {
+            console.log(`🏠 [AUTH CALLBACK ${timestamp}] Web auth complete, redirecting to /`);
+          }
           return res.redirect('/');
         } catch (error) {
-          console.error('Error processing authentication callback:', error);
-          return res.redirect('/api/login');
+          console.error(`❌ [AUTH CALLBACK ${timestamp}] Error processing authentication callback:`, error);
+          return res.redirect('/login?error=processing_error');
         }
       });
     })(req, res, next);
@@ -341,29 +437,128 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
+  const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
+  const clientIP = req.ip;
+  const userAgent = req.get('User-Agent')?.substring(0, 80) || 'unknown';
+  const timestamp = new Date().toISOString();
+  
+  if (DEBUG) {
+    console.log(`\n🔐 [AUTH DEBUG ${timestamp}] Checking authentication for ${req.path}`);
+    console.log(`   Client IP: ${clientIP}`);
+    console.log(`   User Agent: ${userAgent}`);
+    console.log(`   req.isAuthenticated(): ${req.isAuthenticated ? req.isAuthenticated() : 'function not available'}`);
+    console.log(`   req.user exists: ${!!user}`);
+    if (user) {
+      console.log(`   req.user.id: ${user.id}`);
+      console.log(`   req.user.email: ${user.email}`);
+      console.log(`   req.user.expires_at: ${user.expires_at}`);
+      console.log(`   req.user has access_token: ${!!user.access_token}`);
+      console.log(`   req.user has refresh_token: ${!!user.refresh_token}`);
+      console.log(`   req.user has claims: ${!!user.claims}`);
+    }
+  }
 
   if (!req.isAuthenticated() || !user?.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
+    if (DEBUG) {
+      console.log(`❌ [AUTH DEBUG ${timestamp}] Authentication check failed:`);
+      console.log(`   - req.isAuthenticated(): ${req.isAuthenticated ? req.isAuthenticated() : false}`);
+      console.log(`   - user object: ${user ? 'exists' : 'missing'}`);
+      console.log(`   - expires_at: ${user?.expires_at || 'missing'}`);
+      console.log(`   - Session ID: ${(req.session as any)?.id || 'none'}`);
+      console.log(`   - Has session passport: ${!!(req.session as any)?.passport}`);
+      console.log(`   - Cookie header: ${req.get('cookie') ? 'present' : 'none'}`);
+    }
+    
+    // Provide more detailed error messages
+    let errorReason = 'Not logged in';
+    if (req.isAuthenticated && req.isAuthenticated() && !user?.expires_at) {
+      errorReason = 'Token expiration missing';
+    } else if (!req.isAuthenticated || !req.isAuthenticated()) {
+      errorReason = 'No active session';
+    }
+    
+    return res.status(401).json({ 
+      message: "Unauthorized",
+      reason: errorReason,
+      nextAction: "Please visit /api/login to authenticate",
+      debug: DEBUG ? {
+        isAuthenticated: req.isAuthenticated ? req.isAuthenticated() : false,
+        hasUser: !!user,
+        hasExpiration: !!user?.expires_at,
+        sessionExists: !!req.session,
+        cookiePresent: !!req.get('cookie')
+      } : undefined
+    });
   }
 
   const now = Math.floor(Date.now() / 1000);
+  if (DEBUG) {
+    const timeUntilExpiry = user.expires_at - now;
+    console.log(`🕐 [AUTH DEBUG ${timestamp}] Token expiry check:`);
+    console.log(`   - Current time: ${now}`);
+    console.log(`   - Expires at: ${user.expires_at}`);
+    console.log(`   - Seconds until expiry: ${timeUntilExpiry}`);
+  }
+  
   if (now <= user.expires_at) {
+    if (DEBUG) {
+      console.log(`✅ [AUTH DEBUG ${timestamp}] Token is valid, allowing request`);
+    }
     return next();
+  }
+
+  // Token is expired, try to refresh
+  if (DEBUG) {
+    console.log(`⏳ [AUTH DEBUG ${timestamp}] Token expired, attempting refresh...`);
   }
 
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+    if (DEBUG) {
+      console.log(`❌ [AUTH DEBUG ${timestamp}] No refresh token available`);
+      console.log(`   - Token cannot be refreshed automatically`);
+      console.log(`   - User must log in again`);
+    }
+    return res.status(401).json({ 
+      message: "Unauthorized",
+      reason: 'Token expired and cannot be refreshed',
+      nextAction: "Please visit /api/login to authenticate again",
+      debug: DEBUG ? { reason: 'No refresh token available' } : undefined
+    });
   }
 
   try {
+    if (DEBUG) {
+      console.log(`🔄 [AUTH DEBUG ${timestamp}] Calling OIDC token refresh endpoint...`);
+    }
     const config = await getOidcConfig();
     const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
+    
+    if (DEBUG) {
+      console.log(`✅ [AUTH DEBUG ${timestamp}] Token refresh successful`);
+      console.log(`   - New expiry: ${tokenResponse.claims().exp}`);
+    }
+    
     updateUserSession(user, tokenResponse);
     return next();
-  } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+  } catch (error: any) {
+    if (DEBUG) {
+      console.log(`❌ [AUTH DEBUG ${timestamp}] Token refresh failed:`);
+      console.log(`   - Error type: ${error.name}`);
+      console.log(`   - Error message: ${error.message}`);
+      console.log(`   - Error code: ${error.code}`);
+      console.log(`   - Full error:`, error);
+    }
+    return res.status(401).json({ 
+      message: "Unauthorized",
+      reason: 'Token refresh failed',
+      nextAction: "Please visit /api/login to authenticate again",
+      debug: DEBUG ? { 
+        reason: 'Token refresh failed',
+        error: error.message,
+        errorType: error.name,
+        errorCode: error.code
+      } : undefined
+    });
   }
 };

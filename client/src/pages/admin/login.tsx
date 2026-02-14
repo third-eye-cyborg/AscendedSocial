@@ -40,6 +40,22 @@ export default function AdminLogin() {
     }
   }, [isAuthenticated, admin, setLocation]);
 
+  // Auto-redirect to home if accessed directly without being on admin login path
+  useEffect(() => {
+    // Only enforce redirect if NOT loading and NOT authenticated as admin
+    if (!isLoading && !isAuthenticated && !error) {
+      console.log("🔄 Non-admin user accessing /admin/login, redirecting to /");
+      // Check if we actually came from a deliberate /admin/login link
+      // by looking at referrer or just redirect after a short delay
+      const timer = setTimeout(() => {
+        if (window.location.pathname === '/admin/login') {
+          setLocation("/");
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, isAuthenticated, error, setLocation]);
+
   const handleLogin = () => {
     // Clear any previous errors
     setError(null);

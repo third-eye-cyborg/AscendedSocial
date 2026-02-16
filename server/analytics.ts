@@ -1,38 +1,26 @@
 import { PostHog } from 'posthog-node';
 
-// Server-side PostHog client
 let posthogServer: PostHog | null = null;
 
-if (process.env.POSTHOG_API_KEY && process.env.POSTHOG_HOST) {
+const phKey = process.env.POSTHOG_API_KEY || '';
+const phHost = process.env.POSTHOG_HOST || '';
+const isValidKey = phKey.length >= 10
+  && !phKey.includes('personal_api_key')
+  && !phKey.includes('placeholder')
+  && phKey.startsWith('phc_');
+
+if (isValidKey && phHost) {
   try {
-    // Validate that the API key is not a placeholder
-    if (process.env.POSTHOG_API_KEY === 'personal_api_key' || process.env.POSTHOG_API_KEY.length < 10) {
-      console.warn('⚠️ PostHog API key appears to be invalid or placeholder - analytics disabled');
-      posthogServer = null;
-    } else {
-      posthogServer = new PostHog(process.env.POSTHOG_API_KEY, {
-        host: process.env.POSTHOG_HOST,
-        flushAt: 20,
-        flushInterval: 30000,
-        // Disable geo-location in development to prevent issues
-        disableGeoip: process.env.NODE_ENV === 'development',
-        // Add error handling for auth issues
-        errorHandler: (error: any) => {
-          // Only log auth errors once in development
-          if (error.response?.status === 401 && process.env.NODE_ENV === 'development') {
-            console.warn('⚠️ PostHog authentication failed - disabling analytics');
-            posthogServer = null;
-          }
-        },
-      });
-      console.log('✅ PostHog server analytics initialized');
-    }
-  } catch (error) {
-    console.warn('⚠️ PostHog initialization failed:', error);
+    posthogServer = new PostHog(phKey, {
+      host: phHost,
+      flushAt: 20,
+      flushInterval: 30000,
+      disableGeoip: process.env.NODE_ENV === 'development',
+    });
+    console.log('✅ PostHog server analytics initialized');
+  } catch {
     posthogServer = null;
   }
-} else {
-  console.warn('⚠️ PostHog not configured - analytics disabled');
 }
 
 export interface AnalyticsEvent {

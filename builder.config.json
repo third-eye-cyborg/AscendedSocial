@@ -36,6 +36,8 @@
       "PGUSER": "${PGUSER}",
       "PGPASSWORD": "${PGPASSWORD}",
       "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+      "NOTION_INTEGRATION_SECRET": "${NOTION_INTEGRATION_SECRET}",
+      "NOTION_PAGE_URL": "${NOTION_PAGE_URL}",
       "WORKOS_CLIENT_ID": "${WORKOS_CLIENT_ID}",
       "WORKOS_API_KEY": "${WORKOS_API_KEY}"
     }
@@ -146,6 +148,11 @@
     }
   },
   "integrations": {
+    "notion": {
+      "enabled": true,
+      "integrationSecret": "${NOTION_INTEGRATION_SECRET}",
+      "pageUrl": "${NOTION_PAGE_URL}"
+    },
     "workos": {
       "enabled": true,
       "clientId": "${WORKOS_CLIENT_ID}",

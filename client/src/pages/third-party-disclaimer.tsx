@@ -73,6 +73,7 @@ export default function ThirdPartyDisclaimer() {
                     <li>• PostHog (analytics)</li>
                     <li>• OneSignal (notifications)</li>
                     <li>• Cloudflare (security and delivery)</li>
+                    <li>• Notion (documentation)</li>
                   </ul>
                 </div>
                 <div>
@@ -131,6 +132,7 @@ export default function ThirdPartyDisclaimer() {
                 <ul className="text-purple-200 space-y-1">
                   <li>• OneSignal</li>
                   <li>• Cloudflare</li>
+                  <li>• Notion</li>
                 </ul>
                 <ul className="text-purple-200 space-y-1">
                   <li>• Other external providers</li>
@@ -529,6 +531,7 @@ export default function ThirdPartyDisclaimer() {
                 <li>• Analytics: PostHog</li>
                 <li>• Notifications: OneSignal</li>
                 <li>• Infrastructure: Cloudflare</li>
+                <li>• Documentation: Notion</li>
               </ul>
             </div>
           </div>

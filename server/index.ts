@@ -5,6 +5,9 @@ import { setupVite, serveStatic, log } from "./vite";
 import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
+// Mobile auth routes handled by Replit Auth
+import notionMcpRoutes from './notion-mcp-routes';
+import autoSyncRoutes from './auto-sync-routes';
 import builderRoutes from './builder-integration';
 
 // Initialize Sentry for error tracking (v8 API - must be done before creating Express app)
@@ -70,6 +73,8 @@ app.use((req, res, next) => {
   app.use('/api/zero-trust', zeroTrustRoutes);
   app.use('/api/compliance', complianceRoutes);
   app.use('/api/mcp', mcpRoutes);
+  app.use('/api/notion-mcp', notionMcpRoutes);
+  app.use('/api/auto-sync', autoSyncRoutes);
   app.use('/api/builder', builderRoutes);
 
   // Sentry error handler (must be after routes, before other error middleware)

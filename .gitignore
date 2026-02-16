@@ -10,9 +10,3 @@ logs/
 server.log
 *cookies.txt
 .builder-bridge.json
-
-# Postman environment files with secrets (keep templates)
-postman-environment-*.local.json
-*-secrets.postman_environment.json
-# Keep workspace config (no secrets)
-!.postman-workspace.json

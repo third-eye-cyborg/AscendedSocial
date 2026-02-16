@@ -4,37 +4,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import { ClientAnalytics } from "@/lib/analytics";
+import { NotificationService } from "@/lib/notifications";
 import { consentManager } from "@/lib/consent";
-import { useEffect, useMemo, Suspense, lazy, Component } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useMemo, Suspense, lazy, memo } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
-
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
-  constructor(props: { children: ReactNode }) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
-  componentDidCatch(error: Error, info: any) {
-    console.error("App crashed:", error, info);
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0f0a1a", color: "#e2d5f0", fontFamily: "sans-serif", padding: 20, textAlign: "center" }}>
-          <div>
-            <h1 style={{ fontSize: 24, marginBottom: 12 }}>Something went wrong</h1>
-            <p style={{ opacity: 0.7, marginBottom: 16 }}>{this.state.error?.message || "An unexpected error occurred"}</p>
-            <button onClick={() => window.location.reload()} style={{ padding: "10px 24px", background: "#7c3aed", color: "white", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 16 }}>Refresh</button>
-          </div>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
 
 // Critical pages - loaded immediately
 import LoginScreen from "@/pages/loginScreen";
@@ -93,18 +67,18 @@ const ThirdPartyDisclaimer = lazy(() => import('./pages/third-party-disclaimer')
 const VideoPage = lazy(() => import('./pages/video'));
 const MobileLogin = lazy(() => import('./pages/mobile-login'));
 
-function LoadingSpinner({ text = "Connecting to the cosmic realm..." }: { text?: string }) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
-      <div className="text-center space-y-4">
-        <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-purple-200 font-medium">{text}</p>
-      </div>
+// Loading fallback component
+const LoadingSpinner = memo(({ text = "Connecting to the cosmic realm..." }: { text?: string }) => (
+  <div className="min-h-screen bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950 flex items-center justify-center">
+    <div className="text-center space-y-4">
+      <div className="w-16 h-16 border-4 border-purple-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
+      <p className="text-purple-200 font-medium">{text}</p>
     </div>
-  );
-}
+  </div>
+));
+LoadingSpinner.displayName = 'LoadingSpinner';
 
-function Router() {
+const Router = memo(() => {
   const { isAuthenticated, isLoading, user } = useAuth();
 
   // Memoize user analytics data to prevent re-computation
@@ -128,52 +102,42 @@ function Router() {
     };
   }, [user]);
 
+  // Initialize privacy banner when app loads
   useEffect(() => {
-    try {
-      consentManager.initializeTermsHub();
-    } catch (e) {
-      console.warn('TermsHub init failed:', e);
-    }
+    // Initialize TermsHub cookie banner integration
+    consentManager.initializeTermsHub();
   }, []);
 
+  // Initialize analytics and notifications only after consent is given
   useEffect(() => {
-    let unsubscribe: (() => void) | undefined;
-    try {
-      unsubscribe = consentManager.onConsentChange((consentState) => {
-        if (consentState.hasConsented && analyticsData) {
-          if (consentState.preferences.analytics) {
-            import("@/lib/analytics").then(({ ClientAnalytics }) => {
-              ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
-            }).catch(() => {});
-          }
-          if (consentState.preferences.marketing) {
-            import("@/lib/notifications").then(({ NotificationService }) => {
-              NotificationService.initialize().catch(() => {});
-              NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
-            }).catch(() => {});
-          }
+    const unsubscribe = consentManager.onConsentChange((consentState) => {
+      if (consentState.hasConsented) {
+        // Initialize analytics if analytics consent is given
+        if (consentState.preferences.analytics && analyticsData) {
+          ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
         }
-      });
-
-      const existingConsent = consentManager.getConsentState();
-      if (existingConsent?.hasConsented && analyticsData) {
-        if (existingConsent.preferences.analytics) {
-          import("@/lib/analytics").then(({ ClientAnalytics }) => {
-            ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
-          }).catch(() => {});
-        }
-        if (existingConsent.preferences.marketing) {
-          import("@/lib/notifications").then(({ NotificationService }) => {
-            NotificationService.initialize().catch(() => {});
-            NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
-          }).catch(() => {});
+        
+        // Initialize push notifications if marketing consent is given
+        if (consentState.preferences.marketing && analyticsData) {
+          NotificationService.initialize().catch(console.error);
+          NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
         }
       }
-    } catch (e) {
-      console.warn('Consent/analytics init failed:', e);
+    });
+
+    // Check if consent already exists and initialize accordingly
+    const existingConsent = consentManager.getConsentState();
+    if (existingConsent?.hasConsented && analyticsData) {
+      if (existingConsent.preferences.analytics) {
+        ClientAnalytics.identify(analyticsData.userId, analyticsData.data);
+      }
+      if (existingConsent.preferences.marketing) {
+        NotificationService.initialize().catch(console.error);
+        NotificationService.setSpiritualProfile(analyticsData.userId, analyticsData.profile);
+      }
     }
 
-    return () => { if (unsubscribe) unsubscribe(); };
+    return unsubscribe;
   }, [analyticsData]);
 
   // Show loading state while checking authentication
@@ -245,19 +209,18 @@ function Router() {
       </Switch>
     </Suspense>
   );
-}
+});
+Router.displayName = 'Router';
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <Router />
-          <AuthenticatedMarker />
-          <Toaster />
-        </TooltipProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Router />
+        <AuthenticatedMarker />
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 }
 

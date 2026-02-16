@@ -472,16 +472,14 @@ export const securityErrorHandler: RequestHandler = async (req: Request, res: Re
   const originalSend = res.send;
   
   res.send = function(data: any) {
+    // Log any 401 or 403 responses for security monitoring
     if (res.statusCode === 401 || res.statusCode === 403) {
-      const isExpectedAuthCheck = req.path === '/api/auth/user' && res.statusCode === 401;
-      if (!isExpectedAuthCheck) {
-        logSecurityViolation(req, 'security_error_response', {
-          statusCode: res.statusCode,
-          path: req.path,
-          method: req.method,
-          response: typeof data === 'string' ? data.substring(0, 200) : 'non-string-response'
-        }).catch(console.error);
-      }
+      logSecurityViolation(req, 'security_error_response', {
+        statusCode: res.statusCode,
+        path: req.path,
+        method: req.method,
+        response: typeof data === 'string' ? data.substring(0, 200) : 'non-string-response'
+      }).catch(console.error);
     }
     
     return originalSend.call(this, data);

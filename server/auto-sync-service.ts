@@ -44,9 +44,10 @@ class AutoSyncService {
     try {
       console.log('🚀 Starting Auto-Sync Service...');
       
-      // Initialize Notion connection
+      // Check if Notion integration is configured
       if (!process.env.NOTION_INTEGRATION_SECRET) {
-        throw new Error('NOTION_INTEGRATION_SECRET not found in environment variables');
+        console.warn('⚠️ Notion integration not configured (missing NOTION_INTEGRATION_SECRET). Auto-sync service will be disabled.');
+        return;
       }
 
       // Start file watcher

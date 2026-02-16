@@ -7,7 +7,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { notion, NOTION_PAGE_ID, createOrUpdateDocumentationPage, findDatabaseByTitle } from './notion.js';
+import { NOTION_PAGE_ID, createOrUpdateDocumentationPage, findDatabaseByTitle } from './notion.js';
 import chokidar from 'chokidar';
 
 interface NotionMCPServerConfig {

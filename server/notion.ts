@@ -1,9 +1,37 @@
-import { Client } from "@notionhq/client";
+type NotionClient = any;
 
-// Initialize Notion client
-export const notion = new Client({
-    auth: process.env.NOTION_INTEGRATION_SECRET!,
-});
+let notionClient: NotionClient | null = null;
+let notionClientInitAttempted = false;
+
+// Legacy export for older scripts; use getNotionClient() for actual access.
+export const notion: NotionClient | null = null;
+
+async function getNotionClient(): Promise<NotionClient | null> {
+    if (notionClientInitAttempted) {
+        return notionClient;
+    }
+
+    notionClientInitAttempted = true;
+
+    if (!process.env.NOTION_INTEGRATION_SECRET) {
+        return null;
+    }
+
+    try {
+        const { Client } = await import("@notionhq/client");
+        notionClient = new Client({
+            auth: process.env.NOTION_INTEGRATION_SECRET,
+        });
+        return notionClient;
+    } catch (error: any) {
+        if (error?.code === "ERR_MODULE_NOT_FOUND") {
+            console.warn("⚠️ Notion SDK not installed. Notion integration disabled.");
+            return null;
+        }
+        console.error("❌ Failed to initialize Notion client:", error);
+        return null;
+    }
+}
 
 // Extract the page ID from the Notion page URL
 function extractPageIdFromUrl(pageUrl: string): string {
@@ -15,13 +43,21 @@ function extractPageIdFromUrl(pageUrl: string): string {
     throw Error("Failed to extract page ID");
 }
 
-export const NOTION_PAGE_ID = extractPageIdFromUrl(process.env.NOTION_PAGE_URL!);
+export const NOTION_PAGE_ID = process.env.NOTION_PAGE_URL 
+  ? extractPageIdFromUrl(process.env.NOTION_PAGE_URL)
+  : null;
 
 /**
  * Lists all child databases contained within NOTION_PAGE_ID
  * @returns {Promise<Array<{id: string, title: string}>>} - Array of database objects with id and title
  */
 export async function getNotionDatabases() {
+    const notion = await getNotionClient();
+    // Return empty array if Notion is not configured
+    if (!notion || !NOTION_PAGE_ID) {
+        console.log('⚠️ Notion integration not configured (missing NOTION_INTEGRATION_SECRET, NOTION_PAGE_URL, or SDK)');
+        return [];
+    }
 
     // Array to store the child databases
     const childDatabases = [];
@@ -91,6 +127,11 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
     if (existingDb) {
         return existingDb;
     }
+    const notion = await getNotionClient();
+    if (!notion || !NOTION_PAGE_ID) {
+        console.warn('⚠️ Notion integration not configured. Skipping database creation.');
+        return null;
+    }
     return await notion.databases.create({
         parent: {
             type: "page_id",
@@ -111,6 +152,11 @@ export async function createDatabaseIfNotExists(title: string, properties: any) 
 // Create or update documentation page
 export async function createOrUpdateDocumentationPage(content: string) {
     try {
+        const notion = await getNotionClient();
+        if (!notion || !NOTION_PAGE_ID) {
+            console.warn('⚠️ Notion integration not configured. Skipping documentation sync.');
+            return null;
+        }
         // First, check if there's already a documentation page
         const existingPages = await notion.blocks.children.list({
             block_id: NOTION_PAGE_ID

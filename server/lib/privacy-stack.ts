@@ -142,7 +142,11 @@ export class PrivacyStackManager extends EventEmitter {
         execFileSync('bearer', ['version'], { stdio: 'pipe' });
         console.log('✅ Bearer CLI found');
       } catch {
-        console.warn('⚠️ Bearer CLI not found. Install with: curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh');
+        if (process.env.NODE_ENV === 'development') {
+          console.log('ℹ️ Bearer CLI not installed (optional in development)');
+        } else {
+          console.warn('⚠️ Bearer CLI not found. Install with: curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh');
+        }
         return;
       }
       

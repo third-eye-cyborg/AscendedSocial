@@ -10,21 +10,22 @@ const preview: Preview = {
       },
     },
     backgrounds: {
-      default: 'spiritual-dark',
-      values: [
-        {
+      options: {
+        "spiritual-dark": {
           name: 'spiritual-dark',
           value: 'hsl(222.2, 84%, 4.9%)',
         },
-        {
+
+        "spiritual-light": {
           name: 'spiritual-light',
           value: 'hsl(210, 40%, 98%)',
         },
-        {
+
+        "cosmic-purple": {
           name: 'cosmic-purple',
           value: 'hsl(263, 70%, 10%)',
-        },
-      ],
+        }
+      }
     },
     docs: {
       story: {
@@ -32,6 +33,7 @@ const preview: Preview = {
       },
     },
   },
+
   globalTypes: {
     theme: {
       description: 'Global theme for components',
@@ -43,6 +45,12 @@ const preview: Preview = {
       },
     },
   },
+
+  initialGlobals: {
+    backgrounds: {
+      value: 'spiritual-dark'
+    }
+  }
 };
 
 export default preview;

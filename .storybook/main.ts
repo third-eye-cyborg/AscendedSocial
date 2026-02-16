@@ -1,5 +1,6 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import type { StorybookConfig } from '@storybook/react-vite';
-import path from 'path';
+import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,8 +16,7 @@ const config: StorybookConfig = {
     "@storybook/addon-docs",
     "@storybook/addon-onboarding",
     "@storybook/addon-a11y",
-    "@storybook/addon-vitest",
-    "@storybook/addon-coverage"
+    "@storybook/addon-vitest"
   ],
   "framework": {
     "name": "@storybook/react-vite",
@@ -71,6 +71,9 @@ const config: StorybookConfig = {
           '@radix-ui/react-avatar',
           '@radix-ui/react-tabs',
           'lucide-react'
+        ],
+        exclude: [
+          '@anthropic-ai/sdk'
         ]
       },
       esbuild: {

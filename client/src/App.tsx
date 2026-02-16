@@ -1,54 +1,33 @@
-import { Switch, Route, Redirect } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { consentManager } from "@/lib/consent";
-import React, { useEffect, useMemo, Suspense, lazy, Component, ReactNode } from "react";
+import { useEffect, useMemo, Suspense, lazy, Component } from "react";
+import type { ReactNode } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
-console.log("🚀 App.tsx loading...");
-
-class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null; stack?: string }> {
+class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
   constructor(props: { children: ReactNode }) {
     super(props);
-    this.state = { hasError: false, error: null, stack: "" };
+    this.state = { hasError: false, error: null };
   }
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
   componentDidCatch(error: Error, info: any) {
-    console.error("❌ App crashed:", {
-      message: error.message,
-      stack: error.stack,
-      componentStack: info.componentStack,
-    });
-    this.setState({ stack: info.componentStack });
+    console.error("App crashed:", error, info);
   }
   render() {
     if (this.state.hasError) {
-      const errorMsg = this.state.error?.message || "An unexpected error occurred";
-      const isNetworkError = errorMsg.includes("401") || errorMsg.includes("404") || errorMsg.includes("5");
-      
       return (
         <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0f0a1a", color: "#e2d5f0", fontFamily: "sans-serif", padding: 20, textAlign: "center" }}>
-          <div style={{ maxWidth: 600 }}>
-            <h1 style={{ fontSize: 24, marginBottom: 12 }}>⚠️ Something went wrong</h1>
-            <div style={{ background: "#1a1527", border: "1px solid #7c3aed", borderRadius: 8, padding: 12, marginBottom: 16, textAlign: "left" }}>
-              <p style={{ fontSize: 12, fontFamily: "monospace", margin: 0, marginBottom: 8, opacity: 0.8 }}>Error Message:</p>
-              <p style={{ fontSize: 14, fontFamily: "monospace", margin: 0, marginBottom: 12, color: "#fbbf24", wordBreak: "break-all" }}>{errorMsg}</p>
-              {this.state.stack && (
-                <>
-                  <p style={{ fontSize: 12, fontFamily: "monospace", margin: 0, marginBottom: 8, opacity: 0.8 }}>Component Stack:</p>
-                  <pre style={{ fontSize: 11, fontFamily: "monospace", margin: 0, maxHeight: 200, overflow: "auto", opacity: 0.7, whiteSpace: "pre-wrap", wordBreak: "break-word", lineHeight: 1.4 }}>{this.state.stack}</pre>
-                </>
-              )}
-            </div>
-            {isNetworkError && (
-              <p style={{ fontSize: 12, marginBottom: 16, opacity: 0.6 }}>💡 This appears to be a network error. Your connection to the server may be unstable.</p>
-            )}
-            <button onClick={() => window.location.reload()} style={{ padding: "10px 24px", background: "#7c3aed", color: "white", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 16 }}>🔄 Refresh</button>
+          <div>
+            <h1 style={{ fontSize: 24, marginBottom: 12 }}>Something went wrong</h1>
+            <p style={{ opacity: 0.7, marginBottom: 16 }}>{this.state.error?.message || "An unexpected error occurred"}</p>
+            <button onClick={() => window.location.reload()} style={{ padding: "10px 24px", background: "#7c3aed", color: "white", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 16 }}>Refresh</button>
           </div>
         </div>
       );
@@ -58,11 +37,11 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boole
 }
 
 // Critical pages - loaded immediately
-const LoginScreen = lazy(() => import("@/pages/loginScreen"));
-const Home = lazy(() => import("@/pages/home"));
-const AuthCallback = lazy(() => import("@/pages/auth-callback"));
-const NotFound = lazy(() => import("@/pages/not-found"));
-const Login = lazy(() => import("@/pages/login"));
+import LoginScreen from "@/pages/loginScreen";
+import Home from "@/pages/home";
+import AuthCallback from "@/pages/auth-callback";
+import NotFound from "@/pages/not-found";
+import Login from "@/pages/login";
 
 // Non-critical pages - lazy loaded
 const Subscribe = lazy(() => import("@/pages/subscribe"));
@@ -209,7 +188,6 @@ function Router() {
         <Route path="/home">{isAuthenticated ? <Home /> : <LoginScreen />}</Route>
         <Route path="/login" component={Login} />
         <Route path="/auth/callback" component={AuthCallback} />
-        <Route path="/auth-callback" component={AuthCallback} />
         <Route path="/auth/mobile-callback" component={AuthCallback} />
         <Route path="/auth" component={AuthCallback} />
         <Route path="/mobile-login" component={MobileLogin} />
@@ -237,9 +215,6 @@ function Router() {
           </Suspense>
         </Route>
         <Route path="/admin/login" component={AdminLogin} />
-        <Route path="/dashboard">
-          <Redirect to="/admin/dashboard" />
-        </Route>
         <Route path="/admin/dashboard" component={AdminDashboardNew} />
         <Route path="/admin/users" component={AdminUsers} />
         <Route path="/admin/moderation" component={AdminModeration} />
@@ -274,15 +249,15 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Router />
           <AuthenticatedMarker />
           <Toaster />
         </TooltipProvider>
-      </ErrorBoundary>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

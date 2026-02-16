@@ -55,6 +55,7 @@ export const validateZeroTrustToken = async (
     req.zeroTrustUser = zeroTrustUser;
     
     // Log access for security monitoring
+    console.log(`✅ Zero Trust access: ${zeroTrustUser.email} from ${zeroTrustUser.identity_provider}`);
     
     next();
   } catch (error) {
@@ -140,6 +141,7 @@ export const validateServiceToken = async (
     }
 
     // Log service token access
+    console.log(`🔑 Service token access: ${clientId}`);
     
     next();
   } catch (error) {

@@ -40,7 +40,6 @@ export default function AuthCallback() {
             console.log('📱 Simple state parameter, storing token for mobile app');
             
             // Store token in localStorage for mobile apps to pick up
-            localStorage.setItem('auth_token', token);
             localStorage.setItem('replit_auth_token', token);
             
             // Try to communicate with mobile app via postMessage
@@ -52,12 +51,6 @@ export default function AuthCallback() {
               }, '*');
             }
           }
-        }
-
-        if (token && (!state || state === 'default')) {
-          // Web fallback: persist token for iframe contexts where cookies may be blocked
-          localStorage.setItem('auth_token', token);
-          localStorage.setItem('replit_auth_token', token);
         }
 
         // Regular web app authentication - go to dashboard

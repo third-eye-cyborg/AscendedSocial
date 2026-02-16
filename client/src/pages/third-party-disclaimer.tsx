@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Shield, AlertCircle, Users, Scale, FileCheck, Cloud, Zap, Database } from "lucide-react";
-const ASLogo = "/images/ASLogo.png";
+import ASLogo from "@assets/ASLogo.png";
 
 export default function ThirdPartyDisclaimer() {
   return (

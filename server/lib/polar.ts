@@ -19,6 +19,7 @@ export class PolarService {
     if (this.initialized) return;
 
     // Polar SDK initialization will go here once available
+    console.log('ℹ️ Polar payment service - Coming Soon');
     this.initialized = true;
   }
 
@@ -93,21 +94,29 @@ export class PolarService {
   async processWebhookEvent(event: any): Promise<void> {
     const eventType = event.type;
     
+    console.log(`Processing Polar webhook: ${eventType}`);
 
     switch (eventType) {
       case 'checkout.created':
+        console.log('Checkout created:', event.data);
         break;
       case 'checkout.updated':
+        console.log('Checkout updated:', event.data);
         break;
       case 'subscription.created':
+        console.log('Subscription created:', event.data);
         break;
       case 'subscription.updated':
+        console.log('Subscription updated:', event.data);
         break;
       case 'subscription.canceled':
+        console.log('Subscription canceled:', event.data);
         break;
       case 'subscription.revoked':
+        console.log('Subscription revoked:', event.data);
         break;
       default:
+        console.log('Unhandled webhook event:', eventType);
     }
   }
 }
@@ -124,6 +133,7 @@ export function getPolarService(): PolarService | null {
   const webhookSecret = process.env.POLAR_WEBHOOK_SECRET;
 
   if (!apiKey || !organizationId) {
+    console.log('ℹ️ Polar payment service not configured - Coming Soon');
     return null;
   }
 

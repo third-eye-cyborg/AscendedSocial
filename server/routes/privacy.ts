@@ -194,10 +194,12 @@ router.post('/consent/audit', async (req, res) => {
         });
 
         consentId = result.consentId;
+        console.log('✅ Consent logged to D1:', { consentId });
       } catch (d1Error) {
         console.error('❌ Failed to log to D1:', d1Error);
       }
     } else {
+      console.log('⚠️ D1 not configured, consent logged to console only:', auditLog);
     }
 
     res.json({
@@ -502,6 +504,7 @@ router.post('/webhooks/fides', async (req, res) => {
     // Verify webhook signature in real implementation
     const event = req.body;
     
+    console.log('Received Fides webhook:', event.type);
     
     // Process webhook event
     switch (event.type) {
@@ -515,6 +518,7 @@ router.post('/webhooks/fides', async (req, res) => {
         // Handle consent change
         break;
       default:
+        console.log('Unhandled Fides webhook:', event.type);
     }
     
     res.json({ received: true });

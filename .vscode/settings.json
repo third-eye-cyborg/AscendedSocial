@@ -1,92 +1,72 @@
 {
-    "files.autoSave": "afterDelay",
-    "files.exclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/.git": true,
-        "**/.local": true,
-        "**/.config": true,
-        "**/.cache": true,
-        "**/storybook-static": true,
-        "**/test-results": true,
-        "**/playwright-report": true,
-        "**/logs": true,
-        "**/.mcp": true,
-        "**/package-lock.json": true,
-        "**/cypress/videos": true,
-        "**/cypress/screenshots": true
-    },
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/dist": true,
-        "**/migrations": true,
-        "**/.local": true,
-        "**/.config": true,
-        "**/.cache": true,
-        "**/.mcp": true,
-        "**/docs": true,
-        "**/stories": true,
-        "**/package-lock.json": true,
-        "**/cypress": true,
-        "**/tests": true
-    },
-    "files.watcherExclude": {
-        "**/node_modules/**": true,
-        "**/.git/**": true,
-        "**/dist/**": true,
-        "**/.local/**": true,
-        "**/.config/**": true,
-        "**/.cache/**": true,
-        "**/.mcp/**": true,
-        "**/storybook-static/**": true,
-        "**/test-results/**": true,
-        "**/playwright-report/**": true,
-        "**/logs/**": true,
-        "**/cypress/videos/**": true,
-        "**/cypress/screenshots/**": true
-    },
-    "typescript.preferences.includePackageJsonAutoImports": "off",
-    "typescript.suggest.autoImports": true,
-    "typescript.tsserver.maxTsServerMemory": 2048,
-    "typescript.tsserver.experimental.enableProjectDiagnostics": false,
-    "editor.quickSuggestions": {
-        "other": true,
-        "comments": false,
-        "strings": true
-    },
-    "github.copilot.enable": {
-        "*": true,
-        "yaml": false,
-        "plaintext": false,
-        "markdown": false
-    },
-    "github.copilot.inlineSuggest.enable": true,
-    "github.copilot.advanced": {
-        "debug.overrideEngine": "",
-        "debug.testOverrideProxyUrl": "",
-        "debug.filterLogCategories": ""
-    },
-    "remote.SSH.remotePlatform": {
-        "*.replit.dev": "linux"
-    },
-    "remote.SSH.configFile": "~/.ssh/config",
-    "remote.SSH.showLoginTerminal": true,
-    "builder.serverUrl": "http://localhost:3001/",
-    "builder.setupScript": "npm install && npm run db:push",
-    "builder.command": "npm run dev",
-    "builder.openInBrowser": true,
-    "builder.runDevServer": true,
-    "builder.autoDetectDevServer": true,
-    "builder.launchType": "editor",
-    "chat.promptFilesRecommendations": {
-        "speckit.constitution": true,
-        "speckit.specify": true,
-        "speckit.plan": true,
-        "speckit.tasks": true,
-        "speckit.implement": true
-    },
-    "chat.tools.terminal.autoApprove": {
-        ".specify/scripts/bash/": true,
-        ".specify/scripts/powershell/": true
+  "files.autoSave": "afterDelay",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.git": true,
+    "**/generated-icon.png": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/migrations": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.preferences.includeCompletionsWithSnippetText": true,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "builder.apiKey": null,
+  "builder.models": [
+    {
+      "name": "page",
+      "type": "page",
+      "urlPath": "/",
+      "schema": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "description", 
+          "type": "text",
+          "required": false
+        }
+      ]
     }
+  ],
+  "builder.env": "development",
+  "builder.useLocalProxy": true,
+  "builder.localProxyUrl": "http://localhost:5000",
+  "builder.contentApiUrl": "https://cdn.builder.io/api/v1/",
+  "builder.previewUrl": "https://preview.builder.io/",
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": false,
+    "plaintext": false,
+    "markdown": false
+  },
+  "github.copilot.inlineSuggest.enable": true,
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "",
+    "debug.testOverrideProxyUrl": "",
+    "debug.filterLogCategories": ""
+  },
+  "remote.SSH.remotePlatform": {
+    "*.replit.dev": "linux"
+  },
+  "remote.SSH.configFile": "~/.ssh/config",
+  "remote.SSH.showLoginTerminal": true,
+  "builder.serverUrl": "http://localhost:3001/",
+  "builder.setupScript": "npm install && npm run db:push",
+  "builder.command": "npm run dev",
+  "builder.openInBrowser": true,
+  "builder.runDevServer": true,
+  "builder.autoDetectDevServer": true,
+  "builder.launchType": "editor"
 }

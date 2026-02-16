@@ -1,0 +1,61 @@
+# Snyk (https://snyk.io) policy file
+version: v1.0.0
+
+# Language settings
+language-settings:
+  javascript: true
+  typescript: true
+
+# Test settings
+test:
+  # Exclude test files from security scanning
+  exclude:
+    - '**/*.test.js'
+    - '**/*.spec.js'
+    - '**/*.test.ts'
+    - '**/*.spec.ts'
+    - '**/test/**'
+    - '**/tests/**'
+    - '**/cypress/**'
+    - '**/playwright/**'
+    - '**/storybook-static/**'
+
+# Monitor settings for continuous security monitoring
+monitor:
+  # Include main source directories
+  include:
+    - 'client/src/**'
+    - 'server/**'
+    - 'shared/**'
+  
+  # Exclude development and build files
+  exclude:
+    - 'node_modules/**'
+    - 'dist/**'
+    - 'build/**'
+    - '.replit/**'
+    - 'tmp/**'
+
+# Patch settings
+patch:
+  # Auto-apply security patches when possible
+  auto: true
+  
+# Ignore specific vulnerabilities (use carefully)
+ignore:
+  # Example: ignore a specific vulnerability ID
+  # 'SNYK-JS-EXAMPLE-12345':
+  #   - '*':
+  #       reason: 'False positive - not exploitable in our context'
+  #       expires: '2024-12-31T23:59:59.999Z'
+
+# Security policy settings
+security:
+  # Monitor for new vulnerabilities
+  monitor: true
+  
+  # Fail builds on high/critical vulnerabilities
+  fail-on: high
+  
+  # Include dev dependencies in scanning
+  dev: true

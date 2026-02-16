@@ -42,6 +42,18 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
     req.session = req.session || {};
     (req.session as any).passport = { user: TEST_USER };
     
+    // Enhanced logging with context (only in test env)
+    const context = {
+      path: req.path,
+      method: req.method,
+      userAgent: userAgent.substring(0, 50),
+      headers: testHeaders,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV
+    };
+    
+    console.log(`🧪 [AUTH-BYPASS] Authentication bypassed for testing:`, context);
+    
     // Add bypass indicator to response headers for debugging
     res.setHeader('X-Auth-Bypass-Active', 'true');
     res.setHeader('X-Test-User-ID', TEST_USER.id);
@@ -83,6 +95,7 @@ export function isAuthenticatedWithBypass(req: Request, res: Response, next: Nex
         environment: process.env.NODE_ENV
       };
       
+      console.log(`🔐 [AUTH-PROTECTED] Authentication bypassed for protected route:`, authContext);
       
       // Add security headers for testing
       res.setHeader('X-Auth-Method', 'testing-bypass');
@@ -95,10 +108,24 @@ export function isAuthenticatedWithBypass(req: Request, res: Response, next: Nex
 
   // Production authentication check - no bypass possible
   if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log(`✅ [AUTH-PROTECTED] User authenticated:`, {
+      userId: (req.user as any)?.id,
+      path: req.path,
+      timestamp: new Date().toISOString()
+    });
     return next();
   }
 
-  // Authentication failed
+  // Authentication failed - log security event
+  console.log(`❌ [AUTH-PROTECTED] Authentication required for:`, {
+    path: req.path,
+    method: req.method,
+    userAgent: (req.headers['user-agent'] || '').substring(0, 50),
+    ip: req.ip,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
+
   // Return 401 for API routes, redirect for web routes
   if (req.path.startsWith('/api/')) {
     return res.status(401).json({ message: 'Unauthorized' });

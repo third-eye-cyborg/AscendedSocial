@@ -20,7 +20,7 @@
         "cwd": "${workspaceFolder}"
       },
       "runOptions": {
-        "runOn": "default"
+        "runOn": "folderOpen"
       }
     },
     {

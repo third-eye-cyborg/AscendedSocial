@@ -1,0 +1,101 @@
+# Bearer CLI Configuration for Privacy & Security Scanning
+# https://docs.bearer.com/reference/config
+
+# Scan configuration
+scan:
+  # Target directories for scanning
+  path:
+    - "client/src"
+    - "server" 
+    - "shared"
+  
+  # File patterns to exclude
+  exclude:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - "tmp/**"
+    - "**/*.test.*"
+    - "**/*.spec.*"
+    - "**/test/**"
+    - "**/tests/**"
+    - ".replit/**"
+
+# Privacy & security rules
+rules:
+  # Enable all privacy data detection rules
+  enable:
+    - "privacy"
+    - "security"
+    - "secret"
+    - "dataflow"
+  
+  # Severity levels to report
+  severity:
+    - "critical"
+    - "high"
+    - "medium"
+    - "low"
+
+# Report configuration
+report:
+  # Output format
+  format: "json"
+  
+  # Report file location
+  output: "./security-reports/bearer-report.json"
+  
+  # Include privacy data flow analysis
+  privacy-data-flow: true
+  
+  # Include security vulnerabilities
+  security: true
+
+# Privacy data detection settings
+privacy:
+  # Data types to detect
+  data-types:
+    - "email"
+    - "phone"
+    - "credit-card"
+    - "ssn"
+    - "passport"
+    - "address"
+    - "name"
+    - "ip"
+    - "location"
+    - "biometric"
+    - "financial"
+    - "health"
+  
+  # GDPR/CCPA compliance checking
+  compliance:
+    - "gdpr"
+    - "ccpa"
+    - "pipeda"
+
+# Security scanning settings  
+security:
+  # Types of security issues to detect
+  categories:
+    - "injection"
+    - "authentication"
+    - "authorization"
+    - "crypto"
+    - "logging"
+    - "xss"
+    - "csrf"
+    - "path-traversal"
+    - "code-injection"
+
+# Custom rules directory
+custom-rules-path: "./security-config/bearer-rules"
+
+# Ignore patterns for false positives
+ignore:
+  # Example patterns (customize as needed)
+  - pattern: "console.log"
+    reason: "Development logging acceptable in non-production"
+    files:
+      - "**/*.dev.*"
+      - "**/development/**"

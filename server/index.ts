@@ -95,63 +95,22 @@ app.use((req, res, next) => {
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports may be firewalled. Default to 5000 if not specified.
-  // This serves both the API and the client.
-  const port = Number(process.env.PORT) || 5000;
+  // Other ports are firewalled. Default to 5000 if not specified.
+  // this serves both the API and the client.
+  // It is the only port that is not firewalled.
+  // Force port 5000 since it's the only port that works in Replit
+  const port = 5000;
   
-  // Function to start server with port fallback
-  const startServer = (tryPort: number, maxRetries: number = 5): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const attempt = (currentPort: number, retriesLeft: number) => {
-        const listener = server.listen({
-          port: currentPort,
-          host: "0.0.0.0",
-          reusePort: true,
-        }, () => {
-          log(`serving on port ${currentPort}`);
-          
-          // Show debug endpoints information
-          const isDebugMode = process.env.NODE_ENV === 'development' || process.env.DEBUG_AUTH === 'true';
-          if (isDebugMode) {
-            console.log('\n' + '='.repeat(70));
-            console.log('🔐 AUTHENTICATION DEBUG MODE ENABLED');
-            console.log('='.repeat(70));
-            console.log('\n📍 Debug Endpoints Available:');
-            console.log(`   • Check auth status: http://localhost:${currentPort}/api/debug/auth`);
-            console.log(`   • View session info: http://localhost:${currentPort}/api/debug/session`);
-            console.log(`   • Auth flow guide:  http://localhost:${currentPort}/api/debug/auth-flow`);
-            console.log(`   • Route info:       http://localhost:${currentPort}/api/debug/route-info`);
-            console.log('\n📚 Full guide: See docs/AUTH_VERBOSE_DEBUGGING.md');
-            console.log('\n💡 Troubleshooting Tips:');
-            console.log('   1. Visit /api/debug/auth to check if you\'re logged in');
-            console.log('   2. If not logged in, click the login button in the app');
-            console.log('   3. Check /api/debug/session to verify session data');
-            console.log('   4. Look for 401 responses with "reason" field for details');
-            console.log('='.repeat(70) + '\n');
-          }
-          
-          resolve();
-        });
-
-        listener.once('error', (error: any) => {
-          if (error.code === 'EADDRINUSE' && retriesLeft > 0) {
-            console.warn(`⚠️ Port ${currentPort} is in use, trying port ${currentPort + 1}...`);
-            listener.close();
-            // Try the next port
-            attempt(currentPort + 1, retriesLeft - 1);
-          } else if (error.code === 'EADDRINUSE') {
-            console.error(`❌ Could not find an available port after ${maxRetries} attempts (tried ports ${tryPort}-${tryPort + maxRetries - 1})`);
-            reject(error);
-          } else {
-            console.error('❌ Server error:', error);
-            reject(error);
-          }
-        });
-      };
-
-      attempt(tryPort, maxRetries);
-    });
-  };
+  // Add error handling for port conflicts
+  server.on('error', (error: any) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${port} is already in use. Please free the port or use a different one.`);
+      process.exit(1);
+    } else {
+      console.error('❌ Server error:', error);
+      process.exit(1);
+    }
+  });
 
   // Graceful shutdown handling
   const shutdown = () => {
@@ -164,11 +123,12 @@ app.use((req, res, next) => {
 
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
-
-  try {
-    await startServer(port);
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  
+  server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
+    log(`serving on port ${port}`);
+  });
 })();

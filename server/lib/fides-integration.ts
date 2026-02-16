@@ -40,6 +40,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Initialize Fides connection and verify configuration
    */
   async initialize(): Promise<void> {
+    console.log('🛡️ Initializing Fides Privacy Manager...');
     
     try {
       // Test Fides API connection
@@ -49,6 +50,7 @@ export class FidesPrivacyManager extends EventEmitter {
       await this.setupWebhooks();
       
       this.isInitialized = true;
+      console.log('✅ Fides Privacy Manager initialized successfully');
       this.emit('initialized');
       
     } catch (error) {
@@ -64,6 +66,7 @@ export class FidesPrivacyManager extends EventEmitter {
   private async testConnection(): Promise<void> {
     // In a real implementation, this would make an actual API call to Fides
     // For now, we'll simulate the connection test
+    console.log('🔍 Testing Fides API connection...');
     
     if (!this.config.apiUrl) {
       throw new Error('Fides API URL not configured');
@@ -72,6 +75,7 @@ export class FidesPrivacyManager extends EventEmitter {
     // Simulate API health check
     return new Promise((resolve) => {
       setTimeout(() => {
+        console.log('✅ Fides API connection successful');
         resolve();
       }, 100);
     });
@@ -81,6 +85,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Set up webhook endpoints for Fides integration
    */
   private async setupWebhooks(): Promise<void> {
+    console.log('🔗 Setting up Fides webhooks...');
     
     // Webhook endpoints will be handled by Express routes
     // This is where we'd register webhook URLs with Fides
@@ -95,6 +100,7 @@ export class FidesPrivacyManager extends EventEmitter {
       throw new Error('Fides not initialized');
     }
 
+    console.log(`📋 Processing DSAR: ${request.requestType} for ${request.email}`);
 
     try {
       // Generate unique request ID
@@ -136,6 +142,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Process data deletion request
    */
   async processDataDeletion(email: string, requestId: string): Promise<boolean> {
+    console.log(`🗑️ Processing data deletion for ${email} (Request: ${requestId})`);
     
     try {
       // In real implementation, this would:
@@ -163,6 +170,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Export user data for portability request
    */
   async exportUserData(email: string, requestId: string): Promise<any> {
+    console.log(`📤 Exporting data for ${email} (Request: ${requestId})`);
     
     try {
       // In real implementation, this would:
@@ -193,6 +201,7 @@ export class FidesPrivacyManager extends EventEmitter {
     ipAddress: string;
     userAgent: string;
   }): Promise<ConsentUpdateResult> {
+    console.log('📝 Updating consent preferences...');
     
     try {
       // Generate consent record ID
@@ -237,6 +246,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Handle "Do Not Sell" requests (CCPA compliance)
    */
   async handleDoNotSellRequest(email: string): Promise<boolean> {
+    console.log(`🚫 Processing "Do Not Sell" request for ${email}`);
     
     try {
       // In real implementation, this would:
@@ -258,6 +268,7 @@ export class FidesPrivacyManager extends EventEmitter {
    * Generate privacy compliance report
    */
   async generateComplianceReport(): Promise<any> {
+    console.log('📊 Generating privacy compliance report...');
     
     return {
       timestamp: new Date(),
@@ -289,6 +300,7 @@ export class FidesPrivacyManager extends EventEmitter {
     const systems = ['database', 'analytics', 'backups', 'cdn'];
     
     for (const system of systems) {
+      console.log(`🗑️ Deleting from ${system}...`);
       await new Promise(resolve => setTimeout(resolve, 100));
     }
   }

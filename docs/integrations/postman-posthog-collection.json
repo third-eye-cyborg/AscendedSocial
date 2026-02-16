@@ -1,0 +1,226 @@
+{
+  "info": {
+    "name": "PostHog Analytics - Ascended Social",
+    "description": "API endpoints for testing PostHog analytics integration with Ascended Social spiritual platform. Includes tracking for spiritual events, chakra alignments, oracle readings, and user engagement. IMPORTANT: Import postman-environment.json and fill in your secrets before using this collection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{POSTHOG_API_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "POSTHOG_API_TOKEN",
+      "value": "{{POSTHOG_API_TOKEN}}",
+      "type": "string",
+      "description": "PostHog Project API Key - Set this in your environment file"
+    },
+    {
+      "key": "POSTHOG_HOST",
+      "value": "{{POSTHOG_HOST}}",
+      "type": "string",
+      "description": "PostHog instance URL - Set in environment (default: https://app.posthog.com)"
+    },
+    {
+      "key": "PROJECT_ID",
+      "value": "{{POSTHOG_PROJECT_ID}}",
+      "type": "string",
+      "description": "Ascended Social PostHog Project ID - Set in environment"
+    },
+    {
+      "key": "TEST_USER_ID",
+      "value": "{{TEST_USER_ID}}",
+      "type": "string",
+      "description": "Generated test user ID - Auto-generated in environment"
+    }
+  ],
+  "item": [
+    {
+      "name": "Event Tracking",
+      "description": "Endpoints for tracking PostHog events",
+      "item": [
+        {
+          "name": "Track Spiritual Post Created",
+          "description": "Track when a user creates a spiritual post with chakra categorization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{POSTHOG_HOST}}/capture/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{POSTHOG_API_TOKEN}}\",\n  \"event\": \"spiritual_post_created\",\n  \"properties\": {\n    \"distinct_id\": \"{{TEST_USER_ID}}\",\n    \"chakra_type\": \"heart\",\n    \"energy_spent\": 5,\n    \"has_image\": true,\n    \"word_count\": 150,\n    \"spiritual_frequency\": 8.5,\n    \"$lib\": \"postman-test\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Generate unique test user ID",
+                  "pm.collectionVariables.set('TEST_USER_ID', 'test_user_' + Date.now());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Event captured successfully\", function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Track Oracle Reading Generated",
+          "description": "Track AI-generated oracle readings for spiritual guidance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{POSTHOG_HOST}}/capture/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{POSTHOG_API_TOKEN}}\",\n  \"event\": \"oracle_reading_generated\",\n  \"properties\": {\n    \"distinct_id\": \"{{TEST_USER_ID}}\",\n    \"reading_type\": \"daily\",\n    \"chakra_focus\": \"third_eye\",\n    \"cards_drawn\": 3,\n    \"reading_length\": \"detailed\",\n    \"ai_model\": \"gpt-4\",\n    \"$lib\": \"postman-test\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Track Energy Shared",
+          "description": "Track when users share energy with posts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{POSTHOG_HOST}}/capture/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{POSTHOG_API_TOKEN}}\",\n  \"event\": \"energy_shared\",\n  \"properties\": {\n    \"distinct_id\": \"{{TEST_USER_ID}}\",\n    \"to_post_id\": \"post_123\",\n    \"energy_amount\": 10,\n    \"user_energy_remaining\": 35,\n    \"post_chakra\": \"crown\",\n    \"$lib\": \"postman-test\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Track Chakra Alignment Changed",
+          "description": "Track shifts in user's primary chakra alignment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{POSTHOG_HOST}}/capture/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{POSTHOG_API_TOKEN}}\",\n  \"event\": \"chakra_alignment_changed\",\n  \"properties\": {\n    \"distinct_id\": \"{{TEST_USER_ID}}\",\n    \"previous_chakra\": \"solar\",\n    \"new_chakra\": \"heart\",\n    \"trigger\": \"content_interaction\",\n    \"confidence\": 0.85,\n    \"$lib\": \"postman-test\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Queries",
+      "description": "Query PostHog API for data and insights",
+      "item": [
+        {
+          "name": "Get Project Events",
+          "description": "Retrieve recent events from PostHog",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{POSTHOG_HOST}}/api/projects/{{PROJECT_ID}}/events/?limit=10",
+              "host": ["{{POSTHOG_HOST}}"],
+              "path": ["api", "projects", "{{PROJECT_ID}}", "events", ""],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Project Insights",
+          "description": "Get saved insights and dashboards",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{POSTHOG_HOST}}/api/projects/{{PROJECT_ID}}/insights/",
+              "host": ["{{POSTHOG_HOST}}"],
+              "path": ["api", "projects", "{{PROJECT_ID}}", "insights", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Feature Flags",
+          "description": "List all feature flags for the project",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{POSTHOG_HOST}}/api/projects/{{PROJECT_ID}}/feature_flags/",
+              "host": ["{{POSTHOG_HOST}}"],
+              "path": ["api", "projects", "{{PROJECT_ID}}", "feature_flags", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "User Identification",
+      "description": "Endpoints for identifying and updating user properties",
+      "item": [
+        {
+          "name": "Identify User with Spiritual Properties",
+          "description": "Identify user and set spiritual profile properties",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{POSTHOG_HOST}}/capture/",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"api_key\": \"{{POSTHOG_API_TOKEN}}\",\n  \"event\": \"$identify\",\n  \"properties\": {\n    \"distinct_id\": \"{{TEST_USER_ID}}\",\n    \"$set\": {\n      \"email\": \"test@example.com\",\n      \"primary_chakra\": \"heart\",\n      \"aura_level\": 5,\n      \"energy_points\": 50,\n      \"spiritual_frequency\": 8.5,\n      \"meditation_streak\": 7,\n      \"oracle_readings_count\": 15\n    }\n  }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

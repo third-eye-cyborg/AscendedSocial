@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Shield, Copyright, FileText, Users, AlertTriangle, BookOpen } from "lucide-react";
-const ASLogo = "/images/ASLogo.png";
+import ASLogo from "@assets/ASLogo.png";
 
 export default function CopyrightPolicy() {
   return (

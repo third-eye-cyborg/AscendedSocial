@@ -1149,47 +1149,6 @@ iframe + small {
 /* Aggressive selectors to ensure TermsHub elements stay fixed at bottom with proper z-index */
 /* Use :not() to exclude modal/preference dialogs */
 
-/* TermsHub modal/dialog - center it properly */
-div[role="dialog"][id*="termshub"],
-div[aria-modal="true"]:has([id*="termshub"]),
-div[id*="termshub"][role="dialog"],
-div[id*="termshub"][aria-modal],
-div[class*="termshub"][role="dialog"],
-div[class*="termshub"][aria-modal],
-div[id*="cookie"][role="dialog"],
-div[id*="cookie"][aria-modal],
-div[class*="cookie"][role="dialog"],
-div[class*="cookie"][aria-modal] {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) !important;
-  -webkit-transform: translate(-50%, -50%) !important;
-  max-height: 90vh !important;
-  max-width: min(90vw, 600px) !important;
-  z-index: 9999999 !important;
-  overflow-y: auto !important;
-  pointer-events: auto !important;
-}
-
-/* Overlay for modals */
-[id*="termshub-overlay"],
-[class*="termshub-overlay"],
-[id*="cookie-overlay"],
-[class*="cookie-overlay"],
-div[role="dialog"] ~ div[class*="backdrop"],
-div[aria-modal="true"] ~ div {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  z-index: 9999998 !important;
-  pointer-events: auto !important;
-}
-
 /* Universal TermsHub element targeting - very high z-index to appear above everything */
 div[id*="termshub"]:not([role="dialog"]):not([aria-modal]):not([class*="modal"]):not([class*="dialog"]),
 div[class*="termshub"]:not([role="dialog"]):not([aria-modal]):not([class*="modal"]),

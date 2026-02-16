@@ -14,7 +14,9 @@ import { logAdminAction } from "./adminAuth";
 
 // Define route patterns for strict segregation
 const ADMIN_ROUTE_PATTERNS = [
-  /^\/api\/admin\//
+  /^\/api\/admin\//,
+  /^\/admin\//,
+  /^\/api\/debug\// // Debug endpoints are admin-only for security
 ];
 
 const USER_ROUTE_PATTERNS = [
@@ -45,7 +47,6 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/api\/login$/,
   /^\/api\/callback$/,
   /^\/api\/logout$/,
-  /^\/api\/debug\// , // Debug endpoints are public for development troubleshooting
   /^\/$/, // Root
   /^\/landing/,
   /^\/about/,
@@ -297,6 +298,7 @@ async function logSecurityViolation(req: Request, violationType: string, details
  * Comprehensive route protection setup
  */
 export function setupRouteSegregation(app: Express) {
+  console.log('🔐 Setting up comprehensive route segregation...');
   
   // Apply route segregation middleware to all routes
   app.use(sessionIsolationMiddleware);
@@ -305,6 +307,7 @@ export function setupRouteSegregation(app: Express) {
   app.use(adminSecurityHeaders);
   app.use(userSecurityHeaders);
   
+  console.log('✅ Route segregation security middleware applied');
 }
 
 /**

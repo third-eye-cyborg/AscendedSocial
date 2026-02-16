@@ -1,0 +1,65 @@
+{
+  "workspace": {
+    "name": "Ascended Social",
+    "type": "team",
+    "description": "Privacy-first spiritual social media platform built with React, Express, and PostgreSQL. Features AI-powered chakra analysis, oracle readings, and 3D starmap visualization."
+  },
+  "team": {
+    "name": "third-eye-cyborg",
+    "license": "Third Eye Cyborg LLC"
+  },
+  "project": {
+    "name": "AscendedSocial",
+    "repository": "https://github.com/third-eye-cyborg/AscendedSocial",
+    "branch": "main",
+    "url": "https://ascended.social"
+  },
+  "environments": [
+    {
+      "file": "./postman-environment-dev.json",
+      "name": "Ascended Social - DEV (localhost)",
+      "id": "ascended-social-dev",
+      "baseUrl": "http://localhost:5000",
+      "description": "Local development environment for testing on localhost"
+    },
+    {
+      "file": "./postman-environment-prod.json",
+      "name": "Ascended Social - PROD (live)",
+      "id": "ascended-social-prod",
+      "baseUrl": "https://ascended.social",
+      "description": "Production environment - handle with extreme care"
+    }
+  ],
+  "collections": [
+    {
+      "file": "./docs/integrations/postman-posthog-collection.json",
+      "name": "PostHog Analytics - Ascended Social",
+      "description": "API endpoints for testing PostHog analytics integration"
+    }
+  ],
+  "documentation": {
+    "setup": "./POSTMAN_SETUP.md",
+    "gui_walkthrough": "./POSTMAN_GUI_WALKTHROUGH.md",
+    "mcp_guide": "./POSTMAN_MCP_GUIDE.md"
+  },
+  "integrations": {
+    "analytics": "PostHog",
+    "database": "Neon PostgreSQL",
+    "ai": "OpenAI",
+    "cms": "Builder.io",
+    "monitoring": "Sentry",
+    "cdn": "Cloudflare"
+  },
+  "security": {
+    "secrets_storage": "Replit Secrets",
+    "environment_variables": "CURRENT VALUE only (never INITIAL VALUE)",
+    "production_access": "Restricted - admin approval required"
+  },
+  "notes": [
+    "Always use CURRENT VALUE for secrets in Postman (local only)",
+    "Never commit environment files with filled secrets to git",
+    "Use separate API keys for DEV vs PROD environments",
+    "Rotate all secrets regularly and after any potential exposure",
+    "See POSTMAN_GUI_WALKTHROUGH.md for detailed setup instructions"
+  ]
+}

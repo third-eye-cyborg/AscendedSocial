@@ -48,6 +48,7 @@ export class EmailService {
         html: welcomeContent,
       });
 
+      console.log(`Welcome email sent to ${data.email}`);
       return true;
     } catch (error) {
       console.error('Failed to send welcome email:', error);
@@ -70,6 +71,7 @@ export class EmailService {
         html: newsletterContent,
       });
 
+      console.log(`Newsletter email sent to ${data.email}`);
       return true;
     } catch (error) {
       console.error('Failed to send newsletter email:', error);
@@ -92,6 +94,7 @@ export class EmailService {
         html: transactionalContent,
       });
 
+      console.log(`Transactional email (${data.type}) sent to ${data.email}`);
       return true;
     } catch (error) {
       console.error('Failed to send transactional email:', error);
@@ -268,6 +271,7 @@ export class EmailService {
       email_from_address: 'noreply@ascended.social',
     };
 
+    console.log(`📧 Sending OneSignal email to ${data.email} with subject: ${data.subject}`);
 
     try {
       const response = await fetch('https://onesignal.com/api/v1/notifications', {
@@ -294,6 +298,7 @@ export class EmailService {
         responseData = responseText;
       }
 
+      console.log(`✅ OneSignal email sent successfully:`, responseData);
     } catch (error) {
       console.error(`❌ Failed to send OneSignal email to ${data.email}:`, error);
       throw error;

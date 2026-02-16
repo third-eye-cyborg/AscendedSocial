@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { FileText, Users, Shield, Scale, AlertTriangle, Handshake, DollarSign, Clock } from "lucide-react";
-const ASLogo = "/images/ASLogo.png";
+import ASLogo from "@assets/ASLogo.png";
 
 export default function ServiceAgreement() {
   return (

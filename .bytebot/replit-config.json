@@ -1,0 +1,43 @@
+{
+  "project": "ascended-social",
+  "environment": "replit",
+  "integration": {
+    "replit": {
+      "database": {
+        "type": "postgresql",
+        "url": "${DATABASE_URL}",
+        "orm": "drizzle"
+      },
+      "storage": {
+        "type": "replit-storage",
+        "bucket": "ascended-social-assets"
+      },
+      "secrets": {
+        "source": "replit-secrets"
+      }
+    }
+  },
+  "browser": {
+    "type": "chromium",
+    "headless": true,
+    "viewport": { "width": 1920, "height": 1080 }
+  },
+  "testing": {
+    "storybook": {
+      "url": "http://localhost:6006",
+      "build_command": "npm run build-storybook"
+    },
+    "app": {
+      "url": "http://localhost:3000",
+      "build_command": "npm run build"
+    }
+  },
+  "automation": {
+    "workflows": [
+      "component-testing",
+      "e2e-testing",
+      "visual-regression",
+      "accessibility-testing"
+    ]
+  }
+}

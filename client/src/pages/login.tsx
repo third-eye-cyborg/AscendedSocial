@@ -31,36 +31,6 @@ export default function Login() {
         description: "The security verification could not be completed. Please try again.",
         variant: "destructive",
       });
-    } else if (error === 'auth_error') {
-      toast({
-        title: "Authentication error",
-        description: "There was an error during authentication. Please try again or contact support.",
-        variant: "destructive",
-      });
-    } else if (error === 'no_user') {
-      toast({
-        title: "Authentication failed",
-        description: "Unable to retrieve user information. Please try again.",
-        variant: "destructive",
-      });
-    } else if (error === 'session_error') {
-      toast({
-        title: "Session error",
-        description: "Failed to create your session. Please clear your browser cookies and try again.",
-        variant: "destructive",
-      });
-    } else if (error === 'processing_error') {
-      toast({
-        title: "Processing error",
-        description: "There was an error processing your authentication. Please try again.",
-        variant: "destructive",
-      });
-    } else if (error) {
-      toast({
-        title: "Login error",
-        description: `An error occurred: ${error}. Please try again.`,
-        variant: "destructive",
-      });
     }
   }, [toast]);
 

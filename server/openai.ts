@@ -15,6 +15,7 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
       throw new Error("No image URL provided");
     }
 
+    console.log(`Starting image download for ${filename} from ${imageUrl.substring(0, 50)}...`);
 
     // Download the image from OpenAI's temporary URL
     const response = await fetch(imageUrl);
@@ -23,6 +24,7 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
     }
 
     const imageBuffer = Buffer.from(await response.arrayBuffer());
+    console.log(`Downloaded image buffer: ${imageBuffer.length} bytes`);
     
     try {
       // Try to save to object storage using the existing service method
@@ -54,6 +56,7 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
         }
       });
       
+      console.log(`Successfully saved image to cloud storage: ${bucketName}/${objectName}`);
       
       // Return the path that can be served via our API
       return `/objects/ai-images/${filename}`;
@@ -65,6 +68,7 @@ export async function downloadAndSaveImage(imageUrl: string, filename: string): 
       const base64Data = imageBuffer.toString('base64');
       const dataUrl = `data:image/png;base64,${base64Data}`;
       
+      console.log(`Created base64 fallback for ${filename} (${base64Data.length} chars)`);
       return dataUrl;
     }
   } catch (error) {
@@ -120,6 +124,7 @@ export async function generateSpiritImage(spiritData: { name: string; descriptio
     const filename = `spirit-${spiritData.name.toLowerCase().replace(/\s+/g, '-')}-${randomUUID()}.png`;
     const persistentUrl = await downloadAndSaveImage(imageUrl, filename);
     
+    console.log(`Spirit image saved: ${filename} -> ${persistentUrl}`);
     return persistentUrl;
   } catch (error) {
     console.error("Error generating spirit image:", error);
@@ -152,6 +157,7 @@ export async function generateSigilImage(userData?: { beliefs?: string; astrolog
     const filename = `sigil-${sign}-${randomUUID()}.png`;
     const persistentUrl = await downloadAndSaveImage(imageUrl, filename);
     
+    console.log(`Sigil image saved: ${filename} -> ${persistentUrl}`);
     return persistentUrl;
   } catch (error) {
     console.error("Error generating sigil image:", error);

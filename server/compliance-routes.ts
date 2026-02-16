@@ -14,6 +14,7 @@ const browserAutomation = new BrowserAutomationService(bytebotService);
 // Privacy compliance scanning
 router.get('/privacy', isAuthenticated, async (req, res) => {
     try {
+      console.log('🔍 Running privacy compliance scan...');
       const results = await complianceScanner.runPrivacyCompliance();
       
       res.json({
@@ -34,6 +35,7 @@ router.get('/privacy', isAuthenticated, async (req, res) => {
 // Security vulnerability scanning
 router.get('/security', isAuthenticated, async (req, res) => {
     try {
+      console.log('🛡️ Running security vulnerability scan...');
       const results = await complianceScanner.runSecurityScan();
       
       res.json({
@@ -55,6 +57,7 @@ router.get('/security', isAuthenticated, async (req, res) => {
 router.get('/report', isAuthenticated, async (req, res) => {
     try {
       const format = req.query.format as 'json' | 'html' || 'json';
+      console.log(`📋 Generating compliance report in ${format} format...`);
       
       const report = await complianceScanner.generateComplianceReport(format);
       
@@ -90,6 +93,7 @@ router.post('/automation/execute', isAuthenticated, async (req, res) => {
         });
       }
 
+      console.log(`🤖 Executing automation with Bytebot: ${instructions}`);
       const results = await browserAutomation.executeAutomationTask(instructions, url);
       
       res.json({
@@ -111,6 +115,7 @@ router.post('/automation/execute', isAuthenticated, async (req, res) => {
 // Generate spiritual platform test suites - ENABLED (using Bytebot OS)
 router.get('/automation/tests/spiritual', isAuthenticated, async (req, res) => {
     try {
+      console.log('🕉️ Generating spiritual platform test suites with Bytebot...');
       const testSuites = await browserAutomation.generateSpiritualTests();
       
       res.json({
@@ -132,6 +137,7 @@ router.get('/automation/tests/spiritual', isAuthenticated, async (req, res) => {
 // Monitor platform health with spiritual metrics - ENABLED (using Bytebot OS)
 router.get('/automation/monitor', isAuthenticated, async (req, res) => {
     try {
+      console.log('📊 Monitoring spiritual platform health with Bytebot...');
       const healthStatus = await browserAutomation.monitorPlatformHealth();
       
       res.json({
@@ -156,6 +162,7 @@ router.post('/automation/test/:feature', isAuthenticated, async (req, res) => {
       const { feature } = req.params;
       const baseUrl = req.body.baseUrl || 'http://localhost:5000';
       
+      console.log(`🧪 Testing ${feature} functionality...`);
       
       // Generate test instructions based on feature
       let instructions = '';
@@ -200,5 +207,6 @@ router.post('/automation/test/:feature', isAuthenticated, async (req, res) => {
   });
 
 
+console.log('✅ Compliance and automation routes registered');
 
 export default router;

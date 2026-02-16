@@ -69,16 +69,16 @@ export default function AdminLogin() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-white">Admin Portal</h1>
-          <p className="text-white font-semibold">Ascended Social Administration</p>
+          <p className="text-purple-200">Ascended Social Administration</p>
         </div>
 
         {/* Login Card */}
         <Card className="bg-slate-900/50 border-purple-500/20 backdrop-blur-sm">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-white font-bold">
+            <CardTitle className="text-2xl text-center text-white">
               Admin Sign In
             </CardTitle>
-            <CardDescription className="text-center text-white font-bold text-base">
+            <CardDescription className="text-center text-purple-200">
               Authorized administrators only
             </CardDescription>
           </CardHeader>
@@ -95,7 +95,7 @@ export default function AdminLogin() {
             <div className="space-y-4">
               <div className="text-center space-y-2 py-4">
                 <Lock className="w-12 h-12 text-purple-400 mx-auto" />
-                <p className="text-sm text-white font-semibold">
+                <p className="text-sm text-purple-200">
                   Access is restricted to authorized administrators. You'll be redirected to Replit for secure authentication.
                 </p>
               </div>

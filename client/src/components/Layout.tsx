@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useQuery } from "@tanstack/react-query";
 import { useIsMobile } from "@/hooks/use-mobile";
-const logoPath = "/images/logo-transparent.png";
+import logoPath from "@assets/ascended-social-high-resolution-logo-transparent (2)_1755904812375.png";
 import { ProfileIcon } from "@/components/ProfileIcon";
 import { Settings } from "lucide-react";
 

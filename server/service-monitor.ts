@@ -34,6 +34,7 @@ class ServiceMonitor {
   // Get comprehensive system health
   public async getSystemHealth(): Promise<SystemHealth> {
     const startTime = Date.now();
+    console.log('🔍 [SERVICE-MONITOR] Starting comprehensive system health check');
 
     const services: ServiceHealth[] = [];
 
@@ -176,6 +177,7 @@ class ServiceMonitor {
     this.lastHealthCheck = systemHealth;
     
     const totalTime = Date.now() - startTime;
+    console.log(`📊 [SERVICE-MONITOR] System health check completed in ${totalTime}ms - Overall: ${overall}`);
     
     return systemHealth;
   }
@@ -185,6 +187,7 @@ class ServiceMonitor {
     if (this.lastHealthCheck) {
       const age = Date.now() - new Date(this.lastHealthCheck.timestamp).getTime();
       if (age < maxAge) {
+        console.log(`⚡ [SERVICE-MONITOR] Returning cached health (${age}ms old)`);
         return this.lastHealthCheck;
       }
     }
@@ -194,6 +197,7 @@ class ServiceMonitor {
 
   // Start periodic health checks
   private startPeriodicHealthChecks(interval: number = 60000): void {
+    console.log(`🔄 [SERVICE-MONITOR] Starting periodic health checks every ${interval}ms`);
     
     this.healthCheckInterval = setInterval(async () => {
       try {
@@ -209,6 +213,7 @@ class ServiceMonitor {
     if (this.healthCheckInterval) {
       clearInterval(this.healthCheckInterval);
       this.healthCheckInterval = null;
+      console.log('🛑 [SERVICE-MONITOR] Stopped periodic health checks');
     }
   }
 

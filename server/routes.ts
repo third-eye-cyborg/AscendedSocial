@@ -25,7 +25,6 @@ import { ObjectPermission } from "./objectAcl";
 import { randomUUID } from "crypto";
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-import { authDebugEndpoint, sessionDebugEndpoint, createAuthLoggingMiddleware, authFlowDebugEndpoint } from "./authDebug";
 
 // Multer setup for file uploads
 const upload = multer({ 
@@ -69,6 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Analytics middleware (before auth to track all requests)
   app.use(analyticsMiddleware());
 
+  // 🔐 COMPREHENSIVE ROUTE SEGREGATION AND SECURITY SETUP
+  console.log('🔐 Implementing comprehensive route segregation and security...');
+  
   // Apply enhanced security headers to all routes
   app.use(enhancedSecurityHeaders);
   
@@ -95,40 +97,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Debug endpoint to check route authentication requirements
   app.get('/api/debug/route-info', routeInfoEndpoint);
   
-  // Debug endpoints for authentication troubleshooting
-  // These endpoints show detailed auth state information
-  app.get('/api/debug/auth', authDebugEndpoint);
-  app.get('/api/debug/session', sessionDebugEndpoint);
-  app.get('/api/debug/auth-flow', authFlowDebugEndpoint);
-  
-  // Enable verbose auth logging if DEBUG_AUTH is set or in development
-  const enableVerboseLogging = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
-  if (enableVerboseLogging) {
-    console.log('🔐 Enabling verbose authentication logging');
-    app.use(createAuthLoggingMiddleware());
-  }
+  console.log('✅ Comprehensive route segregation and security middleware applied');
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user?.id;
-      
-      if (!userId) {
-        console.error('❌ /api/auth/user - No user ID found in request');
-        return res.status(401).json({ 
-          message: "Unauthorized",
-          debug: {
-            hasUser: !!req.user,
-            userId: req.user?.id,
-            email: req.user?.email
-          }
-        });
-      }
-      
+      const userId = req.user.id;
       const user = await storage.getUser(userId);
 
       if (!user) {
-        console.warn(`⚠️ /api/auth/user - User ${userId} not found in database`);
         return res.status(404).json({ message: "User not found" });
       }
 
@@ -142,11 +119,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user.sigilImageUrl = sigilImageUrl;
       }
 
-      console.log(`✅ /api/auth/user - Successfully fetched user ${userId}`);
       res.json(user);
     } catch (error) {
-      console.error("❌ Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user", error: error instanceof Error ? error.message : 'Unknown error' });
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
     }
   });
 
@@ -452,6 +428,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // TODO: Implement moderatePost method in storage
+      console.log('Post moderation requested:', { postId, action, reason });
       // await storage.moderatePost(postId, action, {
       //   reason,
       //   moderatedBy: adminUser.id,
@@ -489,6 +466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUser = (req as any).user;
       
       // TODO: Implement updateSupportTicket method in storage
+      console.log('Support ticket update requested:', { ticketId, status, response });
       // await storage.updateSupportTicket(ticketId, {
       //   status,
       //   response,
@@ -528,6 +506,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUser = (req as any).user;
       
       // TODO: Implement updateCommunityFeedback method in storage
+      console.log('Community feedback update requested:', { feedbackId, status, adminResponse });
       // await storage.updateCommunityFeedback(feedbackId, {
       //   status,
       //   adminResponse,
@@ -568,6 +547,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUser = (req as any).user;
       
       // Use existing updateReport method for bug reports
+      console.log('Bug report update requested:', { bugId, status, severity, resolution });
       // TODO: Implement proper bug tracking system
       // await storage.updateBugReport(bugId, {
       //   status,
@@ -2180,6 +2160,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             code: 'TURNSTILE_VERIFICATION_FAILED'
           });
         }
+
+        console.log('✅ Newsletter subscription - Turnstile verification successful for production domain');
+      } else {
+        console.log('🧪 Newsletter subscription on testing domain - Turnstile bypassed');
       }
 
       // Track newsletter subscription analytics
@@ -2386,6 +2370,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // 3. Send an email with the download link
 
       // For now, we'll simulate the request being processed
+      console.log(`📤 Data export requested for user ${userId} (${email})`);
+      console.log(`Requested data types: ${safeDataTypes.join(', ')}`);
 
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
@@ -2478,7 +2464,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
       });
 
-      // Data deletion request logged via analytics above
+      console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
+      
+      console.log('Delete types:', safeDeleteTypes.join(', '));
+      if (safeReason) console.log(`Reason: ${safeReason}`);
 
       // ===== SECURITY: Data Deletion Implementation Requirements =====
       // When implementing actual data deletion:
@@ -2498,6 +2487,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (safeDeleteTypes.includes('all')) {
         // Mark user account for deletion (in real implementation)
         // SECURITY: Always use Drizzle ORM methods which automatically parameterize queries
+        // nosemgrep: sql-injection-risk
+        console.log(`⚠️ Full account deletion requested for user ${userId}`);
       }
 
       // Helper function to safely escape HTML content
@@ -2708,12 +2699,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Privacy management routes (Fides integration)
   app.use('/api/privacy', privacyRouter); // DSAR, consent management, compliance
+  console.log('🛡️ Privacy management routes registered');
 
   // Payment routes (RevenueCat + Paddle integration)  
   app.use('/api/payments', paymentsRouter); // Subscriptions, billing, webhooks
+  console.log('💳 Payment routes registered');
 
   // Webhook routes for payment and privacy integrations
   app.use('/', webhookRouter); // Public webhooks for external services
+  console.log('🔗 Webhook routes registered');
 
   // System health monitoring endpoint with comprehensive service status
   app.get('/api/system/health', async (req, res) => {
@@ -2742,57 +2736,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  console.log('📊 System health monitoring endpoint enabled');
 
-  // Full account deletion endpoint - deletes user data and redirects after logout
-  app.post('/api/account/delete', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const userEmail = req.user.email;
-      const { reason } = req.body;
-
-      // Log deletion event
-      await AnalyticsService.track({
-        event: 'account_deletion_requested',
-        distinctId: userId,
-        properties: {
-          email: userEmail,
-          reason: reason || 'User-initiated deletion',
-          requestedAt: new Date().toISOString(),
-        },
-      });
-
-      // Queue account deletion (actual deletion would happen in background job)
-      // For now, just acknowledge the request
-      const safeReason = typeof reason === 'string' ? reason.trim().slice(0, 500) : 'User-initiated account deletion';
-
-      // Send confirmation email
-      if (emailService && emailService.sendTransactionalEmail) {
-        await emailService.sendTransactionalEmail({
-          email: userEmail,
-          subject: 'Your Account Deletion Request',
-          content: `
-            <h2>Account Deletion Initiated</h2>
-            <p>Your Ascended Social account has been scheduled for deletion.</p>
-            <p>All your data will be permanently removed within 30 days.</p>
-            <p><strong>Reason:</strong> ${safeReason}</p>
-            <p>Thank you for being part of our spiritual community.</p>
-            <hr>
-            <p><small>This is an automated message from Ascended Social.</small></p>
-          `,
-          type: 'account_notification'
-        });
-      }
-
-      res.json({ 
-        message: 'Account deletion initiated successfully',
-        requestId: randomUUID(),
-        estimatedCompletion: '30 days'
-      });
-    } catch (error) {
-      console.error('Error processing account deletion:', error);
-      res.status(500).json({ error: 'Failed to process account deletion' });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;

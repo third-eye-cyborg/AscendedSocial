@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run storybook\"",
-    "dev:server": "PORT=8080 NODE_ENV=development tsx server/index.ts",
+    "dev:server": "NODE_ENV=development PORT=8080 tsx --import ./server/sentry.init.ts server/index.ts",
     "dev:client": "vite --port 3000 --host",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
@@ -35,7 +35,8 @@
     "builder:deploy": "builder deploy --platform replit",
     "builder:figma:sync": "builder figma sync --file-key $FIGMA_FILE_KEY --access-token $FIGMA_ACCESS_TOKEN",
     "builder:ai:generate": "builder ai generate --context social-media --openai-key $OPENAI_API_KEY",
-    "posthog:verify": "node scripts/verify-posthog.mjs"
+    "posthog:verify": "node scripts/verify-posthog.mjs",
+    "clean:notion": "node scripts/remove-notion-files.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.37.0",
@@ -55,8 +56,6 @@
     "@modelcontextprotocol/sdk": "^1.26.0",
     "@neondatabase/serverless": "^0.10.4",
     "@notionhq/client": "^4.0.2",
-    "@paddle/paddle-js": "^1.4.2",
-    "@paddle/paddle-mcp": "^0.1.2",
     "@playwright/test": "^1.58.2",
     "@radix-ui/react-accordion": "^1.2.4",
     "@radix-ui/react-alert-dialog": "^1.1.7",
@@ -88,7 +87,6 @@
     "@radix-ui/react-tooltip": "^1.2.0",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
-    "@revenuecat/purchases-js": "^1.14.0",
     "@sentry/node": "^10.38.0",
     "@sentry/react": "^10.38.0",
     "@storybook/addon-coverage": "^3.0.0",

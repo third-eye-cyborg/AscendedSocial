@@ -2701,7 +2701,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use('/api/privacy', privacyRouter); // DSAR, consent management, compliance
   console.log('🛡️ Privacy management routes registered');
 
-  // Payment routes (RevenueCat + Paddle integration)  
+  // Payment routes (Polar integration)  
   app.use('/api/payments', paymentsRouter); // Subscriptions, billing, webhooks
   console.log('💳 Payment routes registered');
 

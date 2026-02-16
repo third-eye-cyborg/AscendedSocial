@@ -1,3 +1,6 @@
+// Import Sentry initialization first - before any other imports
+import "./sentry.init.js";
+
 import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
@@ -6,18 +9,7 @@ import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
 // Mobile auth routes handled by Replit Auth
-import notionMcpRoutes from './notion-mcp-routes';
-import autoSyncRoutes from './auto-sync-routes';
 import builderRoutes from './builder-integration';
-
-// Initialize Sentry for error tracking (v8 API - must be done before creating Express app)
-if (process.env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: process.env.NODE_ENV || 'development',
-    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
-  });
-}
 
 const app = express();
 app.use(express.json());
@@ -73,8 +65,6 @@ app.use((req, res, next) => {
   app.use('/api/zero-trust', zeroTrustRoutes);
   app.use('/api/compliance', complianceRoutes);
   app.use('/api/mcp', mcpRoutes);
-  app.use('/api/notion-mcp', notionMcpRoutes);
-  app.use('/api/auto-sync', autoSyncRoutes);
   app.use('/api/builder', builderRoutes);
 
   // Sentry error handler (must be after routes, before other error middleware)
@@ -99,12 +89,10 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  // Force port 5000 since it's the only port that works in Replit
-  const port = 5000;
+  // Serve on configurable port (default 5000 for Replit compatibility)
+  // In development, use PORT env var; in production, default to 5000
+  // This port serves both the API and the client frontend
+  const port = parseInt(process.env.PORT || '5000', 10);
   
   // Add error handling for port conflicts
   server.on('error', (error: any) => {

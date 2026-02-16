@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { consentManager } from "@/lib/consent";
-import { useEffect, useMemo, Suspense, lazy, Component, ReactNode } from "react";
+import React, { useEffect, useMemo, Suspense, lazy, Component, ReactNode } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 console.log("🚀 App.tsx loading...");
@@ -274,15 +274,15 @@ function Router() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
         <TooltipProvider>
           <Router />
           <AuthenticatedMarker />
           <Toaster />
         </TooltipProvider>
-      </QueryClientProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </QueryClientProvider>
   );
 }
 

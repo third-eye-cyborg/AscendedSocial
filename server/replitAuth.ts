@@ -7,7 +7,9 @@ import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import jwt from 'jsonwebtoken';
 import memoize from "memoizee";
+import crypto from "crypto";
 import connectPg from "connect-pg-simple";
+import memorystore from "memorystore";
 import { storage } from "./storage";
 import { TurnstileService } from "./turnstileService";
 
@@ -19,10 +21,27 @@ if (!process.env.REPLIT_DOMAINS) {
 
 export const getOidcConfig = memoize(
   async () => {
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID!
-    );
+    const issuerUrl = process.env.ISSUER_URL ?? "https://replit.com/oidc";
+    const replId = process.env.REPL_ID;
+    
+    if (!replId) {
+      throw new Error('REPL_ID environment variable is not set');
+    }
+    
+    console.log(`🔍 [OIDC DISCOVERY] Discovering OIDC config from: ${issuerUrl} with REPL_ID: ${replId.substring(0, 20)}...`);
+    
+    try {
+      const config = await client.discovery(
+        new URL(issuerUrl),
+        replId
+      );
+      
+      console.log(`✅ [OIDC DISCOVERY] Config received, type: ${typeof config}, keys: ${Object.keys(config || {}).slice(0, 5).join(', ')}`);
+      return config;
+    } catch (error) {
+      console.error('❌ [OIDC DISCOVERY] Failed to discover OIDC config:', error);
+      throw error;
+    }
   },
   { maxAge: 3600 * 1000 }
 );
@@ -56,18 +75,33 @@ function getReplitAuthStrategyName(hostname: string | undefined) {
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: (process.env.DATABASE_URL || '').replace(/sslmode=(require|prefer|verify-ca)\b/, 'sslmode=verify-full'),
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  const useMemoryStore = process.env.NODE_ENV === 'development' && process.env.USE_DB_SESSIONS !== 'true';
+  
+  const sessionStore = (() => {
+    if (useMemoryStore) {
+      const MemoryStore = memorystore(session);
+      console.log('⚠️ Using memory-based session store (development mode)');
+      return new MemoryStore({
+        checkPeriod: sessionTtl,
+      });
+    }
+
+    console.log('✅ Using PostgreSQL session store');
+    const pgStore = connectPg(session);
+    return new pgStore({
+      conString: (process.env.DATABASE_URL || '').replace(/sslmode=(require|prefer|verify-ca)\b/, 'sslmode=verify-full'),
+      createTableIfMissing: false,
+      ttl: sessionTtl,
+      tableName: "sessions",
+    });
+  })();
+  
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
+    resave: false,              // Don't save session if unmodified (passport best practice)
+    saveUninitialized: false,   // Don't create session until something stored (passport best practice)
+    rolling: true,              // Reset expiration on every request
     cookie: {
       httpOnly: true,
       secure: 'auto',
@@ -79,7 +113,8 @@ export function getSession() {
 
 function getHostStrategyKey(hostHeader: string | undefined, hostname: string | undefined) {
   const raw = (hostHeader || hostname || "").toLowerCase();
-  return raw || "localhost";
+  const normalized = raw.split(":")[0];
+  return normalized || "localhost";
 }
 
 function resolveCallbackProtocol(hostHeader: string | undefined, requestProtocol: string | undefined) {
@@ -88,6 +123,47 @@ function resolveCallbackProtocol(hostHeader: string | undefined, requestProtocol
     return "http";
   }
   return requestProtocol || "https";
+}
+
+function isReplitHostedDomain(hostname: string | undefined) {
+  const host = (hostname || "").toLowerCase();
+  return host.includes('.replit.dev') || host.includes('.replit.app') || host.includes('.repl.co');
+}
+
+function createSessionToken(user: any) {
+  const tokenPayload = {
+    userId: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    profileImageUrl: user.profileImageUrl,
+    iat: Math.floor(Date.now() / 1000),
+    exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+  };
+
+  return jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
+}
+
+function getBearerUser(req: any) {
+  const header = req.get('authorization') || '';
+  if (!header.toLowerCase().startsWith('bearer ')) return null;
+
+  const token = header.slice(7).trim();
+  if (!token) return null;
+
+  try {
+    const payload = jwt.verify(token, process.env.SESSION_SECRET!) as any;
+    return {
+      id: payload.userId || payload.id,
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      profileImageUrl: payload.profileImageUrl,
+      expires_at: payload.exp,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export function updateUserSession(
@@ -138,6 +214,9 @@ export async function setupAuth(app: Express) {
   
   if (DEBUG) {
     console.log('🔐 [AUTH SETUP] Initializing Replit Auth with DEBUG mode enabled');
+    if (process.env.REPL_ID) {
+      console.log(`   REPL_ID: ${process.env.REPL_ID.substring(0, 20)}...`);
+    }
   }
   
   app.set("trust proxy", 1);
@@ -145,7 +224,37 @@ export async function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  const config = await getOidcConfig();
+  // Ensure cookies work inside Replit iframe/browser contexts
+  app.use((req, _res, next) => {
+    const isReplitHosted = isReplitHostedDomain(req.get('host'));
+
+    if (isReplitHosted && req.session?.cookie) {
+      req.session.cookie.sameSite = 'none';
+      req.session.cookie.secure = true;
+    }
+
+    next();
+  });
+
+  let config;
+  try {
+    config = await getOidcConfig();
+    if (!config) {
+      throw new Error('OIDC config is null or undefined');
+    }
+    if (DEBUG) {
+      console.log('✅ [AUTH SETUP] OIDC config loaded successfully');
+    }
+  } catch (error) {
+    console.error('❌ [AUTH SETUP] Failed to load OIDC config:', error);
+    console.error('   This is CRITICAL - authentication cannot work without OIDC config');
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('   Error details:', errorMsg);
+    if (DEBUG) {
+      console.error('   Full error object:', error);
+    }
+    throw error;
+  }
 
   const verify: VerifyFunction = async (
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
@@ -218,33 +327,57 @@ export async function setupAuth(app: Express) {
     return strategyName;
   };
 
+  if (DEBUG) {
+    console.log(`\n🔐 [AUTH SETUP] Registering strategies for domains:`);
+    const domains = process.env.REPLIT_DOMAINS!.split(',').map(d => d.trim());
+    console.log(`   Total domains: ${domains.length}`);
+    domains.forEach(d => console.log(`     - ${d}`));
+  }
+
   for (const domain of process.env
     .REPLIT_DOMAINS!.split(",")) {
-    const strategy = new Strategy(
-      {
-        name: `replitauth:${domain}`,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: `https://${domain}/api/callback`,
-      },
-      verify,
-    );
-    passport.use(strategy);
+    const trimmedDomain = domain.trim();
+    const strategyName = `replitauth:${trimmedDomain}`;
+    try {
+      const strategy = new Strategy(
+        {
+          name: strategyName,
+          config,
+          scope: "openid email profile offline_access",
+          callbackURL: `https://${trimmedDomain}/api/callback`,
+        },
+        verify,
+      );
+      passport.use(strategy);
+      if (DEBUG) {
+        console.log(`   ✅ Registered strategy: ${strategyName}`);
+      }
+    } catch (error) {
+      console.error(`   ❌ Failed to register strategy ${strategyName}:`, (error as any).message || error);
+    }
   }
 
   // Add localhost strategy for development
   if (process.env.NODE_ENV === 'development') {
     const devPort = Number(process.env.PORT) || 5000;
-    const localhostStrategy = new Strategy(
-      {
-        name: `replitauth:localhost`,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: `http://localhost:${devPort}/api/callback`,
-      },
-      verify,
-    );
-    passport.use(localhostStrategy);
+    const localhostStrategyName = `replitauth:localhost`;
+    try {
+      const localhostStrategy = new Strategy(
+        {
+          name: localhostStrategyName,
+          config,
+          scope: "openid email profile offline_access",
+          callbackURL: `http://localhost:${devPort}/api/callback`,
+        },
+        verify,
+      );
+      passport.use(localhostStrategy);
+      if (DEBUG) {
+        console.log(`   ✅ Registered strategy: ${localhostStrategyName}`);
+      }
+    } catch (error) {
+      console.error(`   ❌ Failed to register localhost strategy:`, error);
+    }
   }
 
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
@@ -252,7 +385,8 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/login", async (req, res, next) => {
     // Extract state parameter for mobile authentication
-    const state = req.query.state as string;
+    const rawState = req.query.state as string | undefined;
+    const providedState = typeof rawState === 'string' && rawState.trim().length > 0 ? rawState : undefined;
     const turnstileToken = req.query.turnstile as string;
     
     // Check if this is a production domain that requires Turnstile
@@ -286,18 +420,31 @@ export async function setupAuth(app: Express) {
     };
 
     // Ensure session cookie survives replit.dev iframe contexts
-    const host = (req.get('host') || '').toLowerCase();
-    const isReplitHosted = host.includes('.replit.dev') || host.includes('.replit.app') || host.includes('.repl.co');
+    const isReplitHosted = isReplitHostedDomain(req.get('host'));
     if (req.session?.cookie) {
       if (isReplitHosted || req.secure) {
         req.session.cookie.sameSite = 'none';
         req.session.cookie.secure = true;
       }
     }
+
+    // Force session creation before redirecting to Replit Auth
+    if (req.session && !req.session.replitAuthInit) {
+      req.session.replitAuthInit = true;
+      await new Promise<void>((resolve, reject) => {
+        req.session!.save((err) => (err ? reject(err) : resolve()));
+      }).catch((error) => {
+        if (DEBUG) {
+          console.warn('⚠️ Failed to persist session before auth redirect:', error);
+        }
+      });
+    }
     
-    // Pass through state parameter if provided (for mobile authentication)
-    if (state) {
-      authOptions.state = state;
+    // Always set an explicit state (required for reliable verification in embedded browsers)
+    const authState = providedState || `state_${crypto.randomUUID()}`;
+    authOptions.state = authState;
+    if (req.session) {
+      (req.session as any).replitAuthState = authState;
     }
     
     const strategyName = ensureStrategyForRequest(req);
@@ -364,51 +511,70 @@ export async function setupAuth(app: Express) {
         }
 
         if (DEBUG) {
-          console.log(`✅ [AUTH CALLBACK ${timestamp}] Session created, user logged in`);
+          console.log(`✅ [AUTH CALLBACK ${timestamp}] req.logIn() completed successfully`);
+          console.log(`   User ID: ${(user as any)?.id || (user as any)?.sub}`);
+          console.log(`   About to call req.session.save()...`);
         }
 
-        try {
-          const state = req.query.state as string;
-          
-          // Check if this is a mobile authentication request
-          const isMobileAuth = state && state !== 'default';
-          
-          if (DEBUG) {
-            console.log(`   Mobile auth: ${isMobileAuth}, state: ${state}`);
+        // CRITICAL: Explicitly save session after logIn() with saveUninitialized: false
+        // This ensures passport user data is persisted to the session store
+        req.session.save((saveErr) => {
+          if (saveErr) {
+            console.error(`❌ [AUTH CALLBACK ${timestamp}] Failed to save session:`, saveErr);
+            return res.redirect('/login?error=session_save_error');
           }
-          
-          if (isMobileAuth) {
-            // Generate JWT token for mobile authentication
-            const tokenPayload = {
-              userId: user.id,
-              email: user.email,
-              firstName: user.firstName,
-              lastName: user.lastName,
-              profileImageUrl: user.profileImageUrl,
-              iat: Math.floor(Date.now() / 1000),
-              exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
-            };
+
+          if (DEBUG) {
+            console.log(`✅ [AUTH CALLBACK ${timestamp}] Session saved successfully`);
+            console.log(`   Session ID: ${(req.session as any).id}`);
+            console.log(`   Has passport data: ${!!(req.session as any).passport}`);
+            if ((req.session as any).passport) {
+              console.log(`   Passport user: ${JSON.stringify((req.session as any).passport.user)}`);
+            }
+          }
+
+          try {
+            const state = req.query.state as string;
             
-            const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
+            // Check if this is a mobile authentication request
+            const isMobileAuth = state && state !== 'default';
             
             if (DEBUG) {
-              console.log(`📱 [AUTH CALLBACK ${timestamp}] Generated mobile token, redirecting to /auth-callback`);
+              console.log(`   Mobile auth: ${isMobileAuth}, state: ${state}`);
             }
             
-            // Redirect to auth-callback with token and state
-            const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
-            return res.redirect(callbackUrl);
-          }
+            if (isMobileAuth) {
+              // Generate JWT token for mobile authentication
+              const token = createSessionToken(user);
+              
+              if (DEBUG) {
+                console.log(`📱 [AUTH CALLBACK ${timestamp}] Generated mobile token, redirecting to /auth-callback`);
+              }
+              
+              // Redirect to auth-callback with token and state
+              const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
+              return res.redirect(callbackUrl);
+            }
 
-          // Web authentication - redirect to home
-          if (DEBUG) {
-            console.log(`🏠 [AUTH CALLBACK ${timestamp}] Web auth complete, redirecting to /`);
+            // Web authentication - if Replit hosted, use token fallback for iframe sessions
+            if (isReplitHosted) {
+              const token = createSessionToken(user);
+              if (DEBUG) {
+                console.log(`🌐 [AUTH CALLBACK ${timestamp}] Replit hosted web auth, redirecting with token`);
+              }
+              return res.redirect(`/auth-callback?token=${encodeURIComponent(token)}&state=default`);
+            }
+
+            // Web authentication - redirect to home
+            if (DEBUG) {
+              console.log(`🏠 [AUTH CALLBACK ${timestamp}] Web auth complete, redirecting to /`);
+            }
+            return res.redirect('/');
+          } catch (error) {
+            console.error(`❌ [AUTH CALLBACK ${timestamp}] Error processing authentication callback:`, error);
+            return res.redirect('/login?error=processing_error');
           }
-          return res.redirect('/');
-        } catch (error) {
-          console.error(`❌ [AUTH CALLBACK ${timestamp}] Error processing authentication callback:`, error);
-          return res.redirect('/login?error=processing_error');
-        }
+        });
       });
     })(req, res, next);
   });
@@ -440,6 +606,12 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  const bearerUser = getBearerUser(req);
+  if (bearerUser) {
+    req.user = bearerUser;
+    return next();
+  }
+
   const user = req.user as any;
   const DEBUG = process.env.DEBUG_AUTH === 'true' || process.env.NODE_ENV === 'development';
   const clientIP = req.ip;

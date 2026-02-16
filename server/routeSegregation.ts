@@ -14,8 +14,7 @@ import { logAdminAction } from "./adminAuth";
 
 // Define route patterns for strict segregation
 const ADMIN_ROUTE_PATTERNS = [
-  /^\/api\/admin\//,
-  /^\/admin\//
+  /^\/api\/admin\//
 ];
 
 const USER_ROUTE_PATTERNS = [

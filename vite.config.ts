@@ -36,5 +36,23 @@ export default defineConfig({
       strict: true,
       deny: ["**/.*"],
     },
+    watch: {
+      ignored: [
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/dist/**',
+        '**/test-results/**',
+        '**/playwright-report/**',
+        '**/cypress/**',
+        '**/stories/**',
+        '**/migrations/**',
+        '**/logs/**',
+        '**/.storybook/**',
+        '**/.config/**',
+        '**/attached_assets/**',
+        '**/scripts/**',
+      ],
+      usePolling: false,
+    },
   },
 });

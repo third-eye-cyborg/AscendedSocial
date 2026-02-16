@@ -93,12 +93,92 @@ app.use((req, res, next) => {
   // In development, use PORT env var; in production, default to 5000
   // This port serves both the API and the client frontend
   const port = parseInt(process.env.PORT || '5000', 10);
-  
+
+  // Auto-kill any process occupying the port before binding (uses /proc, no system commands needed)
+  const killPortProcess = async (targetPort: number): Promise<void> => {
+    const { readFileSync, readdirSync, readlinkSync } = await import('fs');
+    const targetPortHex = targetPort.toString(16).toUpperCase().padStart(4, '0');
+    
+    try {
+      // Read /proc/net/tcp to find connections on our port
+      const tcpData = readFileSync('/proc/net/tcp', 'utf8');
+      const listeningInodes = new Set<string>();
+      
+      for (const line of tcpData.split('\n').slice(1)) {
+        const parts = line.trim().split(/\s+/);
+        if (parts.length < 10) continue;
+        const [, portHex] = (parts[1] || '').split(':');
+        const state = parts[3]; // 0A = LISTEN
+        if (portHex === targetPortHex && state === '0A') {
+          listeningInodes.add(parts[9]);
+        }
+      }
+
+      if (listeningInodes.size === 0) return;
+
+      // Map inodes to PIDs by scanning /proc/[pid]/fd/
+      const procDirs = readdirSync('/proc').filter(f => /^\d+$/.test(f));
+      for (const pidStr of procDirs) {
+        const pid = parseInt(pidStr);
+        if (pid === process.pid || pid <= 1) continue;
+        try {
+          const fds = readdirSync(`/proc/${pidStr}/fd`);
+          for (const fd of fds) {
+            try {
+              const link = readlinkSync(`/proc/${pidStr}/fd/${fd}`);
+              if (link.startsWith('socket:[')) {
+                const inode = link.slice(8, -1);
+                if (listeningInodes.has(inode)) {
+                  log(`🔄 Killing previous process (PID ${pid}) on port ${targetPort}`);
+                  try { process.kill(pid, 'SIGKILL'); } catch {}
+                  listeningInodes.delete(inode);
+                  if (listeningInodes.size === 0) break;
+                }
+              }
+            } catch {}
+          }
+        } catch {}
+        if (listeningInodes.size === 0) break;
+      }
+    } catch (e) {
+      // /proc not available, try ss as fallback
+      try {
+        const { execSync } = await import('child_process');
+        const result = execSync(`ss -tlnp 'sport = :${targetPort}' 2>/dev/null`, { encoding: 'utf8' });
+        const match = result.match(/pid=(\d+)/);
+        if (match) {
+          const pid = parseInt(match[1]);
+          if (pid !== process.pid) {
+            log(`🔄 Killing previous process (PID ${pid}) on port ${targetPort}`);
+            try { process.kill(pid, 'SIGKILL'); } catch {}
+          }
+        }
+      } catch {}
+    }
+    
+    // Wait for port to be released
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+
+  // Try to kill existing port holder before first listen attempt (dev mode only)
+  if (app.get("env") === "development") {
+    await killPortProcess(port);
+  }
+
   // Add error handling for port conflicts
-  server.on('error', (error: any) => {
+  server.on('error', async (error: any) => {
     if (error.code === 'EADDRINUSE') {
-      console.error(`❌ Port ${port} is already in use. Please free the port or use a different one.`);
-      process.exit(1);
+      log(`⚠️ Port ${port} in use, attempting to reclaim...`);
+      await killPortProcess(port);
+      // Retry listen after killing
+      try {
+        server.listen({ port, host: "0.0.0.0", reusePort: true }, () => {
+          log(`serving on port ${port} (reclaimed)`);
+        });
+      } catch {
+        console.error(`❌ Could not reclaim port ${port}. Please restart manually.`);
+        process.exit(1);
+      }
     } else {
       console.error('❌ Server error:', error);
       process.exit(1);

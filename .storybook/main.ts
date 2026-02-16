@@ -62,6 +62,23 @@ const config: StorybookConfig = {
         fs: {
           allow: ['..'],
         },
+        watch: {
+          ignored: [
+            '**/node_modules/**',
+            '**/.git/**',
+            '**/dist/**',
+            '**/test-results/**',
+            '**/playwright-report/**',
+            '**/cypress/**',
+            '**/migrations/**',
+            '**/logs/**',
+            '**/.config/**',
+            '**/attached_assets/**',
+            '**/server/**',
+            '**/scripts/**',
+          ],
+          usePolling: false,
+        },
       },
       optimizeDeps: {
         include: [

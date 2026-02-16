@@ -43,7 +43,8 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' || process.env.REPL_SLUG !== undefined,
+      sameSite: 'lax',
       maxAge: sessionTtl,
     },
   });
@@ -181,12 +182,19 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      failureRedirect: "/api/login",
+    const strategyName = `replitauth:${req.hostname}`;
+    
+    passport.authenticate(strategyName, {
+      failureRedirect: "/login",
     })(req, res, (err: any) => {
       if (err) {
         console.error('Authentication callback error:', err);
-        return res.redirect('/api/login');
+        return res.redirect('/login');
+      }
+      
+      if (!req.user) {
+        console.error('Authentication callback: no user after authenticate');
+        return res.redirect('/login');
       }
       
       try {
@@ -197,7 +205,6 @@ export async function setupAuth(app: Express) {
         const isMobileAuth = state && state !== 'default';
         
         if (isMobileAuth) {
-          // Generate JWT token for mobile authentication
           const tokenPayload = {
             userId: user.id,
             email: user.email,
@@ -205,27 +212,27 @@ export async function setupAuth(app: Express) {
             lastName: user.lastName,
             profileImageUrl: user.profileImageUrl,
             iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
           };
           
           const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
-          
-          console.log('🔐 Generated JWT token for mobile auth:', {
-            userId: user.id,
-            email: user.email,
-            state: state.substring(0, 50) + '...'
-          });
-          
-          // Redirect to auth-callback with token and state
           const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
-          return res.redirect(callbackUrl);
+          
+          // Save session before redirect
+          req.session.save((saveErr) => {
+            if (saveErr) console.error('Session save error:', saveErr);
+            return res.redirect(callbackUrl);
+          });
         } else {
-          // Web authentication - redirect to home
-          return res.redirect('/');
+          // Web authentication - save session explicitly before redirect
+          req.session.save((saveErr) => {
+            if (saveErr) console.error('Session save error:', saveErr);
+            return res.redirect('/');
+          });
         }
       } catch (error) {
         console.error('Error processing authentication callback:', error);
-        return res.redirect('/api/login');
+        return res.redirect('/login');
       }
     });
   });

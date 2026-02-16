@@ -39,9 +39,6 @@ export class AnalyticsService {
   // Track events on the server side
   static async track(event: AnalyticsEvent): Promise<void> {
     if (!posthogServer) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('📊 Analytics event (offline):', event.event);
-      }
       return;
     }
 
@@ -74,7 +71,6 @@ export class AnalyticsService {
   // Update user properties
   static async identify(profile: UserProfile): Promise<void> {
     if (!posthogServer) {
-      console.log('👤 User identification (offline):', profile.distinctId);
       return;
     }
 

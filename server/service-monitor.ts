@@ -25,16 +25,14 @@ class ServiceMonitor {
   private healthCheckInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    // Start periodic health checks with a delay to allow app startup
-    setTimeout(() => {
-      this.startPeriodicHealthChecks();
-    }, 10000); // Wait 10 seconds before starting health checks
+    // Periodic health checks disabled to reduce memory/CPU overhead
+    // Health is checked on-demand via getCachedOrFreshHealth()
   }
 
   // Get comprehensive system health
   public async getSystemHealth(): Promise<SystemHealth> {
     const startTime = Date.now();
-    console.log('🔍 [SERVICE-MONITOR] Starting comprehensive system health check');
+    // Silent health check - only log errors
 
     const services: ServiceHealth[] = [];
 
@@ -176,8 +174,11 @@ class ServiceMonitor {
 
     this.lastHealthCheck = systemHealth;
     
-    const totalTime = Date.now() - startTime;
-    console.log(`📊 [SERVICE-MONITOR] System health check completed in ${totalTime}ms - Overall: ${overall}`);
+    // Only log if unhealthy
+    if (overall !== 'healthy') {
+      const totalTime = Date.now() - startTime;
+      console.log(`📊 [SERVICE-MONITOR] System health: ${overall} (${totalTime}ms)`);
+    }
     
     return systemHealth;
   }
@@ -187,7 +188,7 @@ class ServiceMonitor {
     if (this.lastHealthCheck) {
       const age = Date.now() - new Date(this.lastHealthCheck.timestamp).getTime();
       if (age < maxAge) {
-        console.log(`⚡ [SERVICE-MONITOR] Returning cached health (${age}ms old)`);
+        // Return cached health silently
         return this.lastHealthCheck;
       }
     }
@@ -197,7 +198,6 @@ class ServiceMonitor {
 
   // Start periodic health checks
   private startPeriodicHealthChecks(interval: number = 60000): void {
-    console.log(`🔄 [SERVICE-MONITOR] Starting periodic health checks every ${interval}ms`);
     
     this.healthCheckInterval = setInterval(async () => {
       try {

@@ -1,5 +1,5 @@
 // Import Sentry initialization first - before any other imports
-import "./sentry.init.js";
+import "./sentry.init.ts";
 
 import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";

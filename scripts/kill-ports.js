@@ -6,7 +6,7 @@
 import { readFileSync, readdirSync, readlinkSync } from 'fs';
 import { execSync } from 'child_process';
 
-const PORTS = [8080, 3000, 3001, 6006];
+const PORTS = [8080, 3000, 3001];
 const myPid = process.pid;
 
 const portHexes = PORTS.map(p => p.toString(16).toUpperCase().padStart(4, '0'));

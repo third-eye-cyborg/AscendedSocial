@@ -17,8 +17,7 @@
       "**/node_modules": true,
       "**/dist": true,
       "**/migrations": true,
-      "**/.builder": true,
-      "**/storybook-static": true
+      "**/.builder": true
     },
     "typescript.preferences.includePackageJsonAutoImports": "on",
     "typescript.suggest.autoImports": true,
@@ -35,7 +34,6 @@
     "builder.useLocalProxy": true,
     "builder.localProxyUrl": "http://localhost:3000",
     "builder.devServerPort": 3000,
-    "builder.storybookPort": 6006,
     "builder.enableHotReload": true,
     "builder.autoSave": true,
     "builder.framework": "react",
@@ -43,7 +41,6 @@
     "builder.tailwindcss": true,
     "builder.designTokensPath": "./shared/design-tokens",
     "builder.componentsPath": "./client/components",
-    "builder.storiesPath": "./stories",
     "builder.figmaIntegration": true,
     "builder.figmaFileKey": "${FIGMA_FILE_KEY}",
     "builder.aiAssistant": true,
@@ -53,8 +50,7 @@
       "domain": "6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
       "ports": {
         "client": 3000,
-        "server": 8080,
-        "storybook": 6006
+        "server": 8080
       }
     },
     
@@ -75,10 +71,6 @@
     },
     "remote.SSH.enableDynamicForwarding": true,
     "remote.SSH.showLoginTerminal": true,
-    
-    // Storybook Integration
-    "storybook.chromatic.projectToken": "${CHROMATIC_PROJECT_TOKEN}",
-    "storybook.defaultStory": "Introduction",
     
     // Visual Testing
     "playwright.projectToken": "${PLAYWRIGHT_PROJECT_TOKEN}",
@@ -137,17 +129,6 @@
         "env": {
           "NODE_ENV": "development",
           "BUILDER_CONFIG_PATH": "${workspaceFolder}/builder.config.json"
-        },
-        "console": "integratedTerminal"
-      },
-      {
-        "name": "Debug Storybook",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/node_modules/.bin/storybook",
-        "args": ["dev", "-p", "6006"],
-        "env": {
-          "NODE_ENV": "development"
         },
         "console": "integratedTerminal"
       }
@@ -212,18 +193,6 @@
         "type": "shell",
         "command": "npm",
         "args": ["run", "builder:figma:sync"],
-        "group": "build",
-        "presentation": {
-          "echo": true,
-          "reveal": "always",
-          "panel": "new"
-        }
-      },
-      {
-        "label": "Start Storybook",
-        "type": "shell",
-        "command": "npm",
-        "args": ["run", "storybook"],
         "group": "build",
         "presentation": {
           "echo": true,

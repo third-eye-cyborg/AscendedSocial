@@ -2,26 +2,22 @@
 
 /**
  * Automated Design-to-Code Workflow Script
- * Orchestrates the complete Figma → Storybook → Testing → Chromatic pipeline
+ * Orchestrates the complete Figma → Testing → Chromatic pipeline
  */
 
 import { execFileSync } from 'child_process';
 const fetch = (await import('node-fetch')).default;
 
-const STORYBOOK_URL = 'http://localhost:6006';
 const API_BASE = 'http://localhost:5000/api';
 
 const ALLOWED_COMMANDS = {
-  cypress: { executable: 'npx', args: ['cypress', 'run', '--component', '--config-file', '.storybook/cypress.config.js'] },
+  cypress: { executable: 'npx', args: ['cypress', 'run', '--component'] },
   playwright: { executable: 'npx', args: ['playwright', 'test', '--config', 'playwright.config.ts'] },
-  testStorybook: { executable: 'npx', args: ['test-storybook', '--url', STORYBOOK_URL] },
-  buildStorybook: { executable: 'npm', args: ['run', 'build-storybook'] },
   chromaticDeploy: () => ({
     executable: 'npx',
     args: ['chromatic', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--exit-zero-on-changes', '--auto-accept-changes']
   }),
-  chromaticPlaywright: { executable: 'npx', args: ['playwright', 'test', '--project=chromatic', '--reporter=html'] },
-  storybook: { executable: 'npm', args: ['run', 'storybook'] }
+  chromaticPlaywright: { executable: 'npx', args: ['playwright', 'test', '--project=chromatic', '--reporter=html'] }
 };
 
 const ALLOWED_COMMAND_KEYS = new Set(Object.keys(ALLOWED_COMMANDS));
@@ -110,19 +106,10 @@ async function runTests() {
     'playwright',
     'Playwright visual regression tests'
   );
-  
-  // Run Storybook test runner
-  await runCommand(
-    'testStorybook',
-    'Storybook test runner'
-  );
 }
 
 async function buildAndDeploy() {
-  console.log('🚀 Building and deploying Storybook...');
-  
-  // Build Storybook
-  await runCommand('buildStorybook', 'Building Storybook');
+  console.log('🚀 Building and deploying to Chromatic...');
   
   // Deploy to Chromatic (if configured)
   if (process.env.CHROMATIC_PROJECT_TOKEN) {
@@ -150,7 +137,7 @@ async function generateReport() {
       'Design tokens extracted',
       'Components synchronized', 
       'Tests executed successfully',
-      'Storybook deployed to Chromatic'
+      'Deployed to Chromatic'
     ],
     status: 'success'
   };
@@ -172,20 +159,13 @@ async function runDesignWorkflow() {
     // Step 1: Sync from Figma
     await syncFromFigma();
     
-    // Step 2: Start Storybook for testing
-    console.log('🔄 Starting Storybook server...');
-    const storybookProcess = await runCommand('storybook', 'Starting Storybook server');
-    
-    // Wait for Storybook to be ready
-    await new Promise(resolve => setTimeout(resolve, 10000));
-    
-    // Step 3: Run tests
+    // Step 2: Run tests
     await runTests();
     
-    // Step 4: Build and deploy
+    // Step 3: Build and deploy
     await buildAndDeploy();
     
-    // Step 5: Generate report
+    // Step 4: Generate report
     const report = await generateReport();
     
     const duration = (Date.now() - startTime) / 1000;

@@ -20,7 +20,6 @@ tests/
 __tests__/
 cypress/
 playwright/
-storybook-static/
 
 # Development and configuration files
 .env.example

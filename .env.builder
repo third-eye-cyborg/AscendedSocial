@@ -64,7 +64,6 @@ BUILDER_IO_PRIVATE_KEY=${BUILDER_IO_PRIVATE_KEY}
 # Development Server URLs
 VITE_DEV_SERVER_URL=http://localhost:3000
 VITE_BACKEND_URL=http://localhost:8080
-VITE_STORYBOOK_URL=http://localhost:6006
 
 # Replit Integration
 REPLIT_DB_URL=${REPLIT_DB_URL}

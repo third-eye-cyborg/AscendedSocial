@@ -32,7 +32,7 @@ export function getSession() {
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
+    createTableIfMissing: true,
     ttl: sessionTtl,
     tableName: "sessions",
   });
@@ -98,6 +98,7 @@ export async function setupAuth(app: Express) {
       } as any;
       
       updateUserSession(user, tokens);
+      console.log(`✅ Auth verify successful: userId=${dbUser.id}, email=${dbUser.email}, expires_at=${user.expires_at}`);
       verified(null, user);
     } catch (error) {
       console.error("Error in Replit Auth verify:", error);
@@ -133,8 +134,15 @@ export async function setupAuth(app: Express) {
     passport.use(localhostStrategy);
   }
 
-  passport.serializeUser((user: Express.User, cb) => cb(null, user));
-  passport.deserializeUser((user: Express.User, cb) => cb(null, user));
+  passport.serializeUser((user: Express.User, cb) => {
+    console.log(`📦 Serializing user session: id=${(user as any)?.id}`);
+    cb(null, user);
+  });
+  passport.deserializeUser((user: Express.User, cb) => {
+    const u = user as any;
+    console.log(`📦 Deserializing user session: id=${u?.id}, expires_at=${u?.expires_at}`);
+    cb(null, user);
+  });
 
   app.get("/api/login", async (req, res, next) => {
     // Extract state parameter for mobile authentication
@@ -253,6 +261,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
 
   if (!req.isAuthenticated() || !user?.expires_at) {
+    console.warn(`🔒 Auth check failed: isAuthenticated=${req.isAuthenticated()}, hasUser=${!!user}, expires_at=${user?.expires_at}, path=${req.path}`);
     return res.status(401).json({ message: "Unauthorized" });
   }
 

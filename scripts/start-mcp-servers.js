@@ -2,14 +2,6 @@ const { spawn } = require('child_process');
 const ReplitMCPLogger = require('./replit-logging-setup');
 
 const MCP_SERVER_CONFIG = Object.freeze({
-  'chromatic-storybook': () => ({
-    executable: 'npx',
-    args: ['@chromatic-com/storybook-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--storybook-url', 'http://localhost:6006']
-  }),
-  'storybook': () => ({
-    executable: 'npx',
-    args: ['@storybook/mcp-server', '--port', '6006', '--config-dir', '.storybook']
-  }),
   'chromatic-cypress': () => ({
     executable: 'npx',
     args: ['@chromatic-com/cypress-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--cypress-config', 'cypress.config.js']
@@ -30,7 +22,6 @@ class ReplitMCPManager {
   constructor() {
     this.logger = new ReplitMCPLogger();
     this.servers = new Map();
-    this.storybookStarted = false;
   }
 
   async startAll() {
@@ -38,12 +29,6 @@ class ReplitMCPManager {
     
     // Check for required environment variables
     this.checkEnvironment();
-    
-    // Start Storybook first (required for other servers)
-    await this.startStorybook();
-    
-    // Wait a moment for Storybook to be fully ready
-    await this.sleep(5000);
     
     // Start all MCP servers
     const chromaticToken = process.env.CHROMATIC_PROJECT_TOKEN;
@@ -83,42 +68,6 @@ class ReplitMCPManager {
     }
   }
 
-  async startStorybook() {
-    if (this.storybookStarted) return;
-    
-    return new Promise((resolve) => {
-      console.log('📚 Starting Storybook on port 6006...');
-      const storybook = spawn('npm', ['run', 'storybook'], {
-        stdio: 'pipe',
-        env: { ...process.env }
-      });
-      
-      storybook.stdout.on('data', (data) => {
-        const output = data.toString();
-        this.logger.log('storybook', 'info', output.trim());
-        
-        if (output.includes('Local:') || output.includes('6006')) {
-          this.logger.log('storybook', 'info', 'Storybook started successfully');
-          this.storybookStarted = true;
-          resolve();
-        }
-      });
-
-      storybook.stderr.on('data', (data) => {
-        this.logger.log('storybook', 'error', data.toString().trim());
-      });
-
-      // Fallback resolve after 10 seconds
-      setTimeout(() => {
-        if (!this.storybookStarted) {
-          console.log('📚 Storybook startup timeout - continuing anyway...');
-          this.storybookStarted = true;
-          resolve();
-        }
-      }, 10000);
-    });
-  }
-
   /**
    * Starts a child process for an MCP server.
    * SECURITY: Only whitelisted commands are allowed. Args must be an array of strings.
@@ -132,14 +81,6 @@ class ReplitMCPManager {
     let executable, args;
     
     switch (String(name).toLowerCase().trim()) {
-      case 'chromatic-storybook':
-        executable = 'npx';
-        args = ['@chromatic-com/storybook-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--storybook-url', 'http://localhost:6006'];
-        break;
-      case 'storybook':
-        executable = 'npx';
-        args = ['@storybook/mcp-server', '--port', '6006', '--config-dir', '.storybook'];
-        break;
       case 'chromatic-cypress':
         executable = 'npx';
         args = ['@chromatic-com/cypress-mcp', '--project-token', process.env.CHROMATIC_PROJECT_TOKEN, '--cypress-config', 'cypress.config.js'];
@@ -153,7 +94,7 @@ class ReplitMCPManager {
         args = ['@bytebot/mcp-server', '--config', '.bytebot/replit-config.json'];
         break;
       default:
-        throw new Error(`Invalid server name: "${String(name)}". Allowed: chromatic-storybook, storybook, chromatic-cypress, playwright-chromatic, bytebot`);
+        throw new Error(`Invalid server name: "${String(name)}". Allowed: chromatic-cypress, playwright-chromatic, bytebot`);
     }
 
     // SECURITY: Validate executable is in hardcoded whitelist (defense in depth)
@@ -253,8 +194,7 @@ class ReplitMCPManager {
   getStatus() {
     const status = {
       running: this.servers.size,
-      servers: Array.from(this.servers.keys()),
-      storybookReady: this.storybookStarted
+      servers: Array.from(this.servers.keys())
     };
     
     console.log('📊 MCP Server Status:', status);

@@ -23,10 +23,6 @@
     "viewport": { "width": 1920, "height": 1080 }
   },
   "testing": {
-    "storybook": {
-      "url": "http://localhost:6006",
-      "build_command": "npm run build-storybook"
-    },
     "app": {
       "url": "http://localhost:3000",
       "build_command": "npm run build"

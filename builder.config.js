@@ -128,8 +128,7 @@ module.exports = {
     workflowName: 'Start application',
     deploymentTarget: 'autoscale',
     ports: [
-      { local: 5000, external: 80 },
-      { local: 6006, external: 3000 }
+      { local: 5000, external: 80 }
     ]
   }
 };

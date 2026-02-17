@@ -5,20 +5,15 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "dev:all": "concurrently \"npm run dev:server\" \"npm run dev:client\" \"npm run storybook\"",
     "dev:server": "NODE_ENV=development tsx server/index.ts",
     "dev:client": "NODE_OPTIONS='--max-old-space-size=384' vite --port 3000 --host",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "test:visual:all": "npm run test:storybook && npm run test:cypress && npm run test:playwright",
-    "test:storybook": "test-storybook --url http://localhost:6006",
+    "test:visual:all": "npm run test:cypress && npm run test:playwright",
     "test:cypress": "cypress run --component",
     "test:playwright": "playwright test",
-    "chromatic:storybook": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN",
     "chromatic:cypress": "chromatic --cypress --project-token=$CHROMATIC_PROJECT_TOKEN",
     "chromatic:playwright": "chromatic --playwright --project-token=$CHROMATIC_PROJECT_TOKEN",
     "mcp:start": "node scripts/start-mcp-servers.js",
@@ -27,7 +22,6 @@
     "builder:dev": "npm run dev",
     "builder:dev:client": "npm run dev:client",
     "builder:dev:server": "npm run dev:server",
-    "builder:storybook": "npm run storybook",
     "builder:generate": "builder generate --framework react --output ./client/components",
     "builder:sync": "builder sync --design-system --figma",
     "builder:pull": "builder pull --models --components",
@@ -90,8 +84,6 @@
     "@react-three/fiber": "^8.18.0",
     "@sentry/node": "^10.38.0",
     "@sentry/react": "^10.38.0",
-    "@storybook/addon-coverage": "^3.0.0",
-    "@storybook/test-runner": "^0.24.2",
     "@tanstack/react-query": "^5.60.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/memoizee": "^0.4.12",
@@ -172,14 +164,8 @@
     "zod-validation-error": "^3.4.0"
   },
   "devDependencies": {
-    "@chromatic-com/storybook": "^5.0.1",
     "@replit/vite-plugin-cartographer": "^0.3.1",
     "@replit/vite-plugin-runtime-error-modal": "^0.0.3",
-    "@storybook/addon-a11y": "^10.2.8",
-    "@storybook/addon-docs": "^10.2.8",
-    "@storybook/addon-onboarding": "^10.2.8",
-    "@storybook/addon-vitest": "^10.2.8",
-    "@storybook/react-vite": "^10.2.8",
     "@tailwindcss/typography": "^0.5.18",
     "@tailwindcss/vite": "^4.1.13",
     "@types/chokidar": "^2.1.7",
@@ -199,7 +185,6 @@
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.10",
     "postcss": "^8.4.47",
-    "storybook": "^10.2.8",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.20.5",
     "typescript": "^5.6.3",
@@ -210,9 +195,6 @@
     "bufferutil": "^4.0.8"
   },
   "overrides": {
-    "@storybook/addon-coverage": {
-      "vite": "7.3.1"
-    },
     "@esbuild-kit/core-utils": {
       "esbuild": "0.25.10"
     },
@@ -231,9 +213,6 @@
       "glob": "10.5.0"
     },
     "sucrase": {
-      "glob": "10.5.0"
-    },
-    "@joshwooding/vite-plugin-react-docgen-typescript": {
       "glob": "10.5.0"
     },
     "lodash": "$lodash",

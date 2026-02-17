@@ -16,12 +16,6 @@
       "VITE_TURNSTILE_SITE_KEY": "${VITE_TURNSTILE_SITE_KEY}"
     }
   },
-  "storybook": {
-    "url": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev:6006",
-    "command": "npm run storybook",
-    "port": 6006,
-    "enabled": true
-  },
   "backend": {
     "url": "https://6aaaa561-0065-42b7-9a43-fa52389738ae-00-123k4q64cdvhw.spock.replit.dev",
     "command": "npm run dev:server",
@@ -115,10 +109,6 @@
       "chromatic": {
         "enabled": true,
         "projectToken": "${CHROMATIC_PROJECT_TOKEN}"
-      },
-      "storybook": {
-        "enabled": true,
-        "testRunner": true
       }
     },
     "e2e": {

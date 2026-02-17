@@ -206,7 +206,7 @@ export class FigmaMCPServer {
   }
 
   private async saveComponentMetadata(componentData: any) {
-    const metadataDir = path.join(process.cwd(), '.storybook', 'figma-metadata');
+    const metadataDir = path.join(process.cwd(), 'config', 'figma-metadata');
     await fs.mkdir(metadataDir, { recursive: true });
     
     const filePath = path.join(metadataDir, `${componentData.name}.json`);

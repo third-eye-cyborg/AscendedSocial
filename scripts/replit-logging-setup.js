@@ -17,7 +17,6 @@ class ReplitMCPLogger {
   setupLogStreams() {
     this.streams = {
       replit: fs.createWriteStream(path.join(this.logDir, 'replit.log'), { flags: 'a' }),
-      storybook: fs.createWriteStream(path.join(this.logDir, 'storybook-mcp.log'), { flags: 'a' }),
       cypress: fs.createWriteStream(path.join(this.logDir, 'cypress-mcp.log'), { flags: 'a' }),
       playwright: fs.createWriteStream(path.join(this.logDir, 'playwright-mcp.log'), { flags: 'a' }),
       bytebot: fs.createWriteStream(path.join(this.logDir, 'bytebot.log'), { flags: 'a' }),
@@ -85,7 +84,7 @@ class ReplitMCPLogger {
   }
 
   monitorMCPServers() {
-    const servers = ['chromatic-storybook', 'storybook', 'chromatic-cypress', 'playwright-chromatic', 'bytebot'];
+    const servers = ['chromatic-cypress', 'playwright-chromatic', 'bytebot'];
     servers.forEach(server => {
       this.log('replit', 'info', `Monitoring MCP server: ${server}`);
     });

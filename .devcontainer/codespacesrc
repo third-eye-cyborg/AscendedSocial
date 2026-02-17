@@ -1,0 +1,72 @@
+#!/bin/bash
+
+# Ascended Social Codespace Configuration
+# Source this file in your shell: source .devcontainer/codespacesrc
+
+export NODE_ENV=development
+export NODE_OPTIONS="--max-old-space-size=768"
+
+# Aliases for common development tasks
+alias start="npm run dev"
+alias dev-client="npm run dev:client"
+alias dev-server="npm run dev:server"
+alias db-push="npm run db:push"
+alias test-all="npm run test:visual:all"
+alias test-cypress="npm run test:cypress"
+alias test-playwright="npm run test:playwright"
+alias mcp-start="npm run mcp:start"
+alias logs-all="npm run logs:all"
+
+# Function to quickly reset dev environment
+dev-reset() {
+    echo "🔄 Resetting development environment..."
+    rm -rf node_modules package-lock.json
+    npm install
+    npm run db:push
+    npm run dev
+}
+
+# Function to run development with specific logging
+dev-debug() {
+    DEBUG=* npm run dev
+}
+
+# Function to open documentation
+docs() {
+    if command -v code &> /dev/null; then
+        code docs/
+    else
+        echo "Documentation available in docs/ directory"
+        ls -la docs/
+    fi
+}
+
+# Function to check health of services
+health-check() {
+    echo "🏥 Checking service health..."
+    echo "Checking Node version:"
+    node --version
+    echo "Checking npm version:"
+    npm --version
+    echo "Checking database connection:"
+    npm run db:push --dry || echo "Database check complete"
+    echo "Checking TypeScript compilation:"
+    npm run check
+}
+
+# Welcome message
+echo "🔮 Ascended Social Development Environment"
+echo "Available aliases:"
+echo "  start              - Start development server"
+echo "  dev-client         - Frontend only"
+echo "  dev-server         - Backend only"
+echo "  db-push            - Push database schema"
+echo "  test-all           - Run all tests"
+echo "  test-cypress       - Component tests"
+echo "  test-playwright    - E2E tests"
+echo "  mcp-start          - Start MCP servers"
+echo "  logs-all           - View all logs"
+echo "  docs               - Open documentation"
+echo "  health-check       - Verify setup"
+echo "  dev-debug          - Run with debug logging"
+echo "  dev-reset          - Full environment reset"

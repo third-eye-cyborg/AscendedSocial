@@ -1,0 +1,58 @@
+{
+  "name": "Ascended Social - Spiritual Platform (Codespaces)",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/python:3.11": {},
+    "ghcr.io/devcontainers/features/nix:1": {}
+  },
+  "containerEnv": {
+    "NODE_ENV": "development",
+    "NODE_OPTIONS": "--max-old-space-size=768"
+  },
+  "postCreateCommand": "npm install --legacy-peer-deps && npm run check",
+  "postStartCommand": "echo '🔮 Ascended Social workspace ready!' && npm run dev",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "GitHub.copilot",
+        "GitHub.copilot-chat",
+        "ms-vscode.vscode-typescript-next",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "ms-playwright.playwright",
+        "Cypress.cypress",
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "unifiedjs.vscode-mdx",
+        "dsznajder.es7-react-js-snippets"
+      ],
+      "settings": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "editor.fontSize": 14,
+        "terminal.integrated.fontSize": 14,
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  },
+  "forwardPorts": [3000, 3001, 6006],
+  "portsAttributes": {
+    "3000": {
+      "label": "Application",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Preview",
+      "onAutoForward": "notify"
+    },
+    "6006": {
+      "label": "Storybook",
+      "onAutoForward": "notify"
+    }
+  },
+  "remoteUser": "node"
+}

@@ -321,6 +321,14 @@ export async function setupAuth(app: Express) {
 
   app.get("/api/callback", (req, res, next) => {
     const { code, error } = req.query as { code?: string; error?: string };
+    console.log("🔄 Auth callback hit", {
+      hasCode: !!code,
+      error,
+      host: req.get("host"),
+      origin: req.headers["origin"],
+      referer: req.headers["referer"],
+      queryKeys: Object.keys(req.query || {}),
+    });
     if (!code) {
       if (error) {
         console.warn(`⚠️ Auth callback error from provider: ${error}`);

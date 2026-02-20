@@ -320,14 +320,28 @@ export async function setupAdminAuth(app: Express) {
 
   // Admin logout endpoint
   app.get("/api/admin/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
-    });
+    // Preserve host:port from Host header so local/dev ports are not dropped
+    const hostWithPort = req.get('host') || req.hostname;
+    const endHref = client.buildEndSessionUrl(config, {
+      client_id: process.env.REPL_ID!,
+      post_logout_redirect_uri: `${req.protocol}://${hostWithPort}`,
+    }).href;
+
+    try {
+      req.logout(() => {
+        if (req.session) {
+          req.session.destroy((err) => {
+            if (err) console.error('Session destroy error during admin logout:', err);
+            return res.redirect(endHref);
+          });
+        } else {
+          return res.redirect(endHref);
+        }
+      });
+    } catch (err) {
+      console.error('Error during admin logout:', err);
+      return res.redirect(endHref);
+    }
   });
 
   // Get current admin user endpoint

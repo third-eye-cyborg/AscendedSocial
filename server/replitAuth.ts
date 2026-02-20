@@ -36,6 +36,9 @@ export function getSession() {
     ttl: sessionTtl,
     tableName: "sessions",
   });
+  const isReplitPreview = process.env.REPL_SLUG !== undefined;
+  const cookieSameSite: "lax" | "none" = isReplitPreview ? "none" : "lax";
+  const cookieSecure = process.env.NODE_ENV === "production" || isReplitPreview;
   return session({
     secret: process.env.SESSION_SECRET!,
     store: sessionStore,
@@ -43,8 +46,8 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' || process.env.REPL_SLUG !== undefined,
-      sameSite: 'lax',
+      secure: cookieSecure,
+      sameSite: cookieSameSite,
       maxAge: sessionTtl,
     },
   });
@@ -106,8 +109,18 @@ export async function setupAuth(app: Express) {
     }
   };
 
-  for (const domain of process.env
+  const normalizePreviewHost = (host: string) => {
+    const value = (host || "").trim();
+    const previewPort = process.env.PORT || "3000";
+    if (value && /\.spock\.replit\.dev$/i.test(value) && !value.includes(":")) {
+      return `${value}:${previewPort}`;
+    }
+    return value;
+  };
+
+  for (const rawDomain of process.env
     .REPLIT_DOMAINS!.split(",")) {
+    const domain = normalizePreviewHost(rawDomain);
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
@@ -119,6 +132,109 @@ export async function setupAuth(app: Express) {
     );
     passport.use(strategy);
   }
+
+  const getPublicHost = (req: Express.Request) => {
+    const originRaw = (req.headers["origin"] || "").toString().trim();
+    const refererRaw = (req.headers["referer"] || "").toString().trim();
+    const forwardedHostRaw = (req.headers["x-forwarded-host"] || "").toString().trim();
+    const hostHeader = (req.get("host") || "").trim();
+    const hostname = (req.hostname || "").trim();
+
+    const getHostFromUrl = (value: string) => {
+      if (!value) return "";
+      try {
+        return new URL(value).host;
+      } catch {
+        return "";
+      }
+    };
+
+    // x-forwarded-host can be a comma-separated list; use the first entry
+    const forwardedHost = forwardedHostRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)[0] || "";
+
+    // Browser-originated login requests from preview pages usually include Origin/Referer
+    // with the user-visible host:port. Prefer those first.
+    const originHost = getHostFromUrl(originRaw);
+    const refererHost = getHostFromUrl(refererRaw);
+
+    let host = originHost || refererHost || forwardedHost || hostHeader || hostname;
+
+    const previewPort = process.env.PORT || "3000";
+
+    // Replit preview domains may require explicit :3000 publicly.
+    // If proxy strips port, normalize it so callback URIs remain reachable.
+    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
+      host = `${host}:${previewPort}`;
+    }
+
+    return host;
+  };
+
+  const getCallbackHost = (req: Express.Request) => {
+    const forwardedHostRaw = (req.headers["x-forwarded-host"] || "").toString().trim();
+    const hostHeader = (req.get("host") || "").trim();
+    const hostname = (req.hostname || "").trim();
+
+    const forwardedHost = forwardedHostRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)[0] || "";
+
+    let host = forwardedHost || hostHeader || hostname;
+
+    const previewPort = process.env.PORT || "3000";
+    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
+      host = `${host}:${previewPort}`;
+    }
+
+    return host;
+  };
+
+  const getLoginHost = (req: Express.Request) => {
+    const forwardedHostRaw = (req.headers["x-forwarded-host"] || "").toString().trim();
+    const hostHeader = (req.get("host") || "").trim();
+    const hostname = (req.hostname || "").trim();
+
+    const forwardedHost = forwardedHostRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)[0] || "";
+
+    let host = hostHeader || forwardedHost || hostname;
+
+    const previewPort = process.env.PORT || "3000";
+    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
+      host = `${host}:${previewPort}`;
+    }
+
+    return host;
+  };
+
+  const ensureStrategyForHost = (hostWithPort: string, protocol: string) => {
+    const normalizedHost = normalizePreviewHost(hostWithPort);
+    const strategyName = `replitauth:${normalizedHost}`;
+    const existing = (passport as any)._strategy?.(strategyName);
+    if (existing) return strategyName;
+
+    const isLocalhost = normalizedHost.startsWith('localhost') || normalizedHost.startsWith('127.0.0.1');
+    const callbackProtocol = isLocalhost ? 'http' : (protocol === 'https' ? 'https' : 'https');
+    const callbackURL = `${callbackProtocol}://${normalizedHost}/api/callback`;
+    const strategy = new Strategy(
+      {
+        name: strategyName,
+        config,
+        scope: "openid email profile",
+        callbackURL,
+      },
+      verify,
+    );
+    passport.use(strategy);
+    console.log(`✅ Auth strategy registered dynamically: ${strategyName} -> ${callbackURL}`);
+    return strategyName;
+  };
 
   // Add localhost strategy for development
   if (process.env.NODE_ENV === 'development') {
@@ -150,7 +266,7 @@ export async function setupAuth(app: Express) {
     const turnstileToken = req.query.turnstile as string;
     
     // Check if this is a production domain that requires Turnstile
-    const hostname = req.get('host') || '';
+    const hostname = (getPublicHost(req) || '').split(':')[0];
     const isProductionDomain = hostname === 'ascended.social' || 
                                 hostname === 'dev.ascended.social' || 
                                 hostname === 'app.ascended.social';
@@ -186,11 +302,35 @@ export async function setupAuth(app: Express) {
       authOptions.state = state;
     }
     
-    passport.authenticate(`replitauth:${req.hostname}`, authOptions)(req, res, next);
+    const requestedHost = (req.query.host || '').toString().trim();
+    const isAllowedRequestedHost =
+      /^localhost(:\d+)?$/i.test(requestedHost) ||
+      /^127\.0\.0\.1(:\d+)?$/i.test(requestedHost) ||
+      /^([a-z0-9-]+\.)*spock\.replit\.dev(:\d+)?$/i.test(requestedHost) ||
+      /^ascended\.social(:\d+)?$/i.test(requestedHost) ||
+      /^dev\.ascended\.social(:\d+)?$/i.test(requestedHost) ||
+      /^app\.ascended\.social(:\d+)?$/i.test(requestedHost);
+
+    const hostWithPort = isAllowedRequestedHost
+      ? normalizePreviewHost(requestedHost)
+      : (getLoginHost(req) || req.hostname);
+
+    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
+    passport.authenticate(strategyName, authOptions)(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    const strategyName = `replitauth:${req.hostname}`;
+    const { code, error } = req.query as { code?: string; error?: string };
+    if (!code) {
+      if (error) {
+        console.warn(`⚠️ Auth callback error from provider: ${error}`);
+        return res.redirect(`/login?error=${encodeURIComponent(error)}`);
+      }
+      console.warn("⚠️ Auth callback received without code");
+      return res.redirect("/login?error=missing_code");
+    }
+    const hostWithPort = getCallbackHost(req) || req.hostname;
+    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
     
     passport.authenticate(strategyName, {
       failureRedirect: "/login",
@@ -246,14 +386,56 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
-    });
+    // Prefer explicit host:port from Host header so local dev ports are preserved
+    const hostWithPort = getPublicHost(req) || req.hostname;
+    const endSessionHref = client.buildEndSessionUrl(config, {
+      client_id: process.env.REPL_ID!,
+      post_logout_redirect_uri: `${req.protocol}://${hostWithPort}`,
+    }).href;
+
+    // Ensure passport logout and session destruction so session cannot be reused
+    try {
+      req.logout(() => {
+        if (req.session) {
+          req.session.destroy((err) => {
+            if (err) console.error('Session destroy error during logout:', err);
+            return res.redirect(endSessionHref);
+          });
+        } else {
+          return res.redirect(endSessionHref);
+        }
+      });
+    } catch (err) {
+      console.error('Error during logout:', err);
+      return res.redirect(endSessionHref);
+    }
+  });
+
+  // API-compatible logout endpoint (matches docs / mobile clients)
+  app.post('/api/auth/logout', (req, res) => {
+    // If client is using Bearer token (mobile), just acknowledge logout and let client delete token
+    const authHeader = (req.headers.authorization || '').toString();
+    if (authHeader.startsWith('Bearer ')) {
+      console.log('🔓 API logout (bearer token)');
+      return res.json({ message: 'Successfully logged out', success: true });
+    }
+
+    // Otherwise, handle session-based logout
+    try {
+      req.logout(() => {
+        if (req.session) {
+          req.session.destroy((err) => {
+            if (err) console.error('Session destroy error during API logout:', err);
+            return res.json({ message: 'Successfully logged out', success: true });
+          });
+        } else {
+          return res.json({ message: 'Successfully logged out', success: true });
+        }
+      });
+    } catch (err) {
+      console.error('Error during API logout:', err);
+      return res.status(500).json({ message: 'Logout failed', success: false });
+    }
   });
 }
 

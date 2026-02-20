@@ -1,0 +1,64 @@
+{
+  "name": "Ascended Social Development",
+  "displayName": "Ascended Social - Spiritual Platform",
+  "description": "Full-stack development environment for Ascended Social with GitHub Copilot integration",
+  "imageUrl": "https://avatars.githubusercontent.com/u/YOUR-ORG",
+  "gitignore": "default",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/python:3.11": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "GitHub.copilot",
+    "GitHub.copilot-chat",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss"
+  ],
+  "forwardPorts": [3000, 3001, 6006],
+  "portsAttributes": {
+    "3000": {
+      "label": "Application"
+    },
+    "3001": {
+      "label": "Preview"
+    },
+    "6006": {
+      "label": "Storybook"
+    }
+  },
+  "postCreateCommand": "npm install && npm run check",
+  "postStartCommand": "npm run dev",
+  "remoteUser": "node",
+  "customizations": {
+    "codespaces": {
+      "openFiles": [
+        "README.md",
+        ".devcontainer/README.md",
+        "client/src/App.tsx"
+      ],
+      "prebuilds": {
+        "github": {
+          "displayName": "Ascended Social",
+          "iconUrl": "https://github.githubassets.com/assets/GitHub-Mark-773670b34c1bb38a48637e973b91d97dc1b6fe0bfe1a850d6c78e8f51cef3cba.svg",
+          "description": "Prebuilt development container with all dependencies"
+        }
+      }
+    }
+  },
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "50gb"
+  },
+  "productId": "ascended-social-vscode-codespace",
+  "mounts": [],
+  "remotePort": 3000,
+  "onCreateCommand": ".devcontainer/init.sh",
+  "waitFor": "postStartCommand"
+}

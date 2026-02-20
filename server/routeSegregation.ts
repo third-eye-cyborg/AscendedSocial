@@ -47,6 +47,7 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/api\/login$/,
   /^\/api\/callback$/,
   /^\/api\/logout$/,
+  /^\/api\/auth\/logout$/,
   /^\/$/, // Root
   /^\/landing/,
   /^\/about/,

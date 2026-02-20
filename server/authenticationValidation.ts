@@ -526,9 +526,10 @@ async function logSecurityViolation(req: Request, violationType: string, details
     
     console.error(`🚨 SECURITY VIOLATION [${violationType}]:`, logEntry);
     
-    // Store in admin audit log if available
+    // Store in admin audit log if available - use 'other_action' enum value
+    // since security violation types may not match the audit_action enum
     if (typeof logAdminAction === 'function') {
-      await logAdminAction(req, violationType as any, logEntry);
+      await logAdminAction(req, 'other_action' as any, { ...logEntry, violationType });
     }
     
     // Could also send to external security monitoring service here

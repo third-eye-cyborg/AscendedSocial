@@ -429,7 +429,22 @@ export async function setupAuth(app: Express) {
       
       if (err) {
         console.error('❌ Authentication callback error:', err?.message || err);
-        console.error('❌ Error details:', { name: err?.name, code: err?.code, stack: err?.stack?.split('\n').slice(0, 3) });
+        console.error('❌ Error details:', {
+          name: err?.name,
+          code: err?.code,
+          error: err?.error,
+          error_description: err?.error_description,
+          status: err?.status,
+          cause: err?.cause?.message || err?.cause,
+          response_body: err?.response?.body || err?.body,
+          stack: err?.stack?.split('\n').slice(0, 5),
+        });
+        // Log all enumerable properties for debugging
+        const errProps: Record<string, any> = {};
+        for (const key of Object.getOwnPropertyNames(err)) {
+          if (key !== 'stack') errProps[key] = err[key];
+        }
+        console.error('❌ Full error properties:', JSON.stringify(errProps, null, 2));
         return res.redirect('/login?error=auth_error');
       }
       

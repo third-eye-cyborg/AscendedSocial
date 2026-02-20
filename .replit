@@ -84,3 +84,8 @@ defaultBucketID = "replit-objstore-54e3666b-f3fa-4b18-93d8-165a6cc4796f"
 
 [agent]
 integrations = ["javascript_log_in_with_replit:2.0.0"]
+
+[userenv]
+
+[userenv.shared]
+PORT = "3000"

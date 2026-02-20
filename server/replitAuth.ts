@@ -110,9 +110,14 @@ export async function setupAuth(app: Express) {
   };
 
   const normalizePreviewHost = (host: string) => {
-    // Replit's proxy serves on standard HTTPS port externally;
-    // do NOT append :3000 or the OIDC callback URL will mismatch.
-    return (host || "").trim();
+    let h = (host || "").trim();
+    const isLocalhost = h.startsWith('localhost') || h.startsWith('127.0.0.1');
+    if (!isLocalhost) {
+      // Replit's proxy serves on standard HTTPS port externally;
+      // strip internal dev ports (e.g. :3000) so the OIDC callback URL matches.
+      h = h.replace(/:\d+$/, "");
+    }
+    return h;
   };
 
   for (const rawDomain of process.env
@@ -174,9 +179,8 @@ export async function setupAuth(app: Express) {
       .map((s) => s.trim())
       .filter(Boolean)[0] || "";
 
-    let host = hostHeader || forwardedHost || hostname;
-
-    return host;
+    let host = forwardedHost || hostHeader || hostname;
+    return normalizePreviewHost(host);
   };
 
   const getLoginHost = (req: Express.Request) => {
@@ -189,9 +193,8 @@ export async function setupAuth(app: Express) {
       .map((s) => s.trim())
       .filter(Boolean)[0] || "";
 
-    let host = hostHeader || forwardedHost || hostname;
-
-    return host;
+    let host = forwardedHost || hostHeader || hostname;
+    return normalizePreviewHost(host);
   };
 
   const ensureStrategyForHost = (hostWithPort: string, protocol: string) => {

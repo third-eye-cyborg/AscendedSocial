@@ -45,7 +45,34 @@ export default function Login() {
     const urlParams = new URLSearchParams(window.location.search);
     const error = urlParams.get('error');
 
+    // Track login attempts to prevent infinite redirect loops
+    const loginAttemptKey = 'login_attempt_count';
+    const loginAttemptTime = 'login_attempt_time';
+    const now = Date.now();
+    const lastAttempt = parseInt(sessionStorage.getItem(loginAttemptTime) || '0', 10);
+    const attemptCount = parseInt(sessionStorage.getItem(loginAttemptKey) || '0', 10);
+    
+    // Reset counter if last attempt was more than 30 seconds ago
+    if (now - lastAttempt > 30000) {
+      sessionStorage.setItem(loginAttemptKey, '0');
+      sessionStorage.setItem(loginAttemptTime, String(now));
+    }
+    
+    // If too many rapid login attempts, stop auto-redirecting (prevent loop)
+    if (attemptCount >= 3) {
+      console.warn('⚠️ Too many login redirects detected - stopping auto-redirect to break loop');
+      // Reset after showing the page so user can manually retry
+      setTimeout(() => {
+        sessionStorage.setItem(loginAttemptKey, '0');
+      }, 10000);
+      return;
+    }
+
     if (!shouldUseTurnstile && !isEmbeddedPreview() && !error) {
+      // Increment attempt counter
+      sessionStorage.setItem(loginAttemptKey, String(attemptCount + 1));
+      sessionStorage.setItem(loginAttemptTime, String(now));
+      
       const host = window.location.host;
       window.location.href = `/api/login?host=${encodeURIComponent(host)}`;
     }

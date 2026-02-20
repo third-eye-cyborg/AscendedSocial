@@ -110,12 +110,9 @@ export async function setupAuth(app: Express) {
   };
 
   const normalizePreviewHost = (host: string) => {
-    const value = (host || "").trim();
-    const previewPort = process.env.PORT || "3000";
-    if (value && /\.spock\.replit\.dev$/i.test(value) && !value.includes(":")) {
-      return `${value}:${previewPort}`;
-    }
-    return value;
+    // Replit's proxy serves on standard HTTPS port externally;
+    // do NOT append :3000 or the OIDC callback URL will mismatch.
+    return (host || "").trim();
   };
 
   for (const rawDomain of process.env
@@ -162,18 +159,12 @@ export async function setupAuth(app: Express) {
 
     let host = originHost || refererHost || forwardedHost || hostHeader || hostname;
 
-    const previewPort = process.env.PORT || "3000";
-
-    // Replit preview domains may require explicit :3000 publicly.
-    // If proxy strips port, normalize it so callback URIs remain reachable.
-    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
-      host = `${host}:${previewPort}`;
-    }
-
     return host;
   };
 
   const getCallbackHost = (req: Express.Request) => {
+    // Use same resolution order as getLoginHost for consistency
+    // This ensures the same strategy is used for both login and callback
     const forwardedHostRaw = (req.headers["x-forwarded-host"] || "").toString().trim();
     const hostHeader = (req.get("host") || "").trim();
     const hostname = (req.hostname || "").trim();
@@ -183,12 +174,7 @@ export async function setupAuth(app: Express) {
       .map((s) => s.trim())
       .filter(Boolean)[0] || "";
 
-    let host = forwardedHost || hostHeader || hostname;
-
-    const previewPort = process.env.PORT || "3000";
-    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
-      host = `${host}:${previewPort}`;
-    }
+    let host = hostHeader || forwardedHost || hostname;
 
     return host;
   };
@@ -204,11 +190,6 @@ export async function setupAuth(app: Express) {
       .filter(Boolean)[0] || "";
 
     let host = hostHeader || forwardedHost || hostname;
-
-    const previewPort = process.env.PORT || "3000";
-    if (host && /\.spock\.replit\.dev$/i.test(host) && !host.includes(":")) {
-      host = `${host}:${previewPort}`;
-    }
 
     return host;
   };
@@ -315,20 +296,76 @@ export async function setupAuth(app: Express) {
       ? normalizePreviewHost(requestedHost)
       : (getLoginHost(req) || req.hostname);
 
+    // Persist the host used for the authorization request so the callback can
+    // reuse the exact same host/port and strategy configuration.
+    (req.session as any).oidcHost = hostWithPort;
+
     const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
+    console.log(`🔑 Login using strategy: ${strategyName}, host: ${hostWithPort}, requestedHost: ${requestedHost}`);
+    
+    // Passport's Strategy.redirect() uses res.end() directly (NOT res.redirect()).
+    // Express-session's res.end() hook handles async session save before sending response.
+    // We intercept res.end() to verify PKCE data was stored by the Strategy.
+    const issuerHost = (() => {
+      try { return new URL(config.serverMetadata().issuer).host; } catch { return 'unknown'; }
+    })();
+    
+    const expressSessionEnd = res.end;
+    let endIntercepted = false;
+    (res as any).end = function loginEndIntercept(this: any, ...args: any[]) {
+      if (endIntercepted) return expressSessionEnd.apply(this, args);
+      endIntercepted = true;
+      // Restore immediately so express-session's end handler runs normally
+      res.end = expressSessionEnd;
+      
+      // Log PKCE state - the Strategy should have stored it in session by now
+      const pkceData = (req.session as any)?.[issuerHost];
+      const hasPKCE = !!pkceData?.code_verifier;
+      const location = (res.getHeader('Location') || '') as string;
+      
+      if (res.statusCode === 302 && location.includes('replit.com')) {
+        console.log(`🔐 Login → OIDC redirect. SessionID: ${req.sessionID}, PKCE stored: ${hasPKCE}, issuerKey: ${issuerHost}`);
+        if (!hasPKCE) {
+          console.error(`❌ CRITICAL: No PKCE code_verifier in session! Session keys: [${Object.keys(req.session || {}).join(', ')}]`);
+        }
+      }
+      
+      // Pass through to express-session's res.end handler, which will:
+      // 1. Detect session modification (PKCE data added)
+      // 2. Save session to PostgreSQL
+      // 3. Send the response
+      return expressSessionEnd.apply(this, args);
+    };
+    
     passport.authenticate(strategyName, authOptions)(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
     const { code, error } = req.query as { code?: string; error?: string };
+    
+    // Debug: inspect session state for PKCE data
+    const issuerHost = (() => {
+      try {
+        return new URL(config.serverMetadata().issuer).host;
+      } catch { return 'unknown'; }
+    })();
+    const sessionPKCE = (req.session as any)?.[issuerHost];
+    
     console.log("🔄 Auth callback hit", {
       hasCode: !!code,
       error,
       host: req.get("host"),
+      forwardedHost: req.headers["x-forwarded-host"],
       origin: req.headers["origin"],
       referer: req.headers["referer"],
+      protocol: req.protocol,
       queryKeys: Object.keys(req.query || {}),
+      sessionExists: !!req.session,
+      sessionID: req.sessionID,
+      hasPKCEState: !!sessionPKCE?.code_verifier,
+      issuerSessionKey: issuerHost,
     });
+    
     if (!code) {
       if (error) {
         console.warn(`⚠️ Auth callback error from provider: ${error}`);
@@ -337,60 +374,120 @@ export async function setupAuth(app: Express) {
       console.warn("⚠️ Auth callback received without code");
       return res.redirect("/login?error=missing_code");
     }
-    const hostWithPort = getCallbackHost(req) || req.hostname;
-    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
     
-    passport.authenticate(strategyName, {
-      failureRedirect: "/login",
-    })(req, res, (err: any) => {
+    // Use same host resolution as login to ensure strategy consistency
+    const sessionLoginHost = (req.session as any)?.oidcHost as string | undefined;
+    const hostWithPort = sessionLoginHost || getCallbackHost(req) || req.hostname;
+    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
+    console.log(`🔑 Auth callback using strategy: ${strategyName}, host: ${hostWithPort}, sessionHost: ${sessionLoginHost || 'none'}`);
+    
+    // Intercept both res.redirect AND res.end to prevent redirect loops back to IdP
+    // Passport's strategy.redirect() uses res.end() directly, NOT res.redirect()
+    const originalRedirect = res.redirect.bind(res);
+    const originalCallbackEnd = res.end;
+    let loopDetected = false;
+    
+    // Intercept res.end() to catch passport's strategy.redirect() which bypasses res.redirect()
+    (res as any).end = function callbackEndIntercept(this: any, ...args: any[]) {
+      const location = (res.getHeader('Location') || '') as string;
+      if (res.statusCode === 302 && 
+          (location.includes('replit.com/oidc') || (location.includes('replit.com') && location.includes('authorize')))) {
+        loopDetected = true;
+        console.error('🔄❌ REDIRECT LOOP DETECTED via res.end(): Strategy tried to redirect to IdP from callback.');
+        console.error('🔄❌ Session keys:', Object.keys(req.session || {}));
+        console.error('🔄❌ PKCE state for issuer:', sessionPKCE);
+        // Override the redirect - send to login with error instead
+        res.removeHeader('Location');
+        res.end = originalCallbackEnd;
+        return originalRedirect('/login?error=auth_state_lost');
+      }
+      res.end = originalCallbackEnd;
+      return originalCallbackEnd.apply(this, args);
+    };
+    
+    // Also intercept res.redirect for our own callback code  
+    (res as any).redirect = function interceptedRedirect(statusOrUrl: any, url?: string) {
+      const redirectUrl = typeof statusOrUrl === 'string' ? statusOrUrl : url || '';
+      if (redirectUrl.includes('/oidc') || redirectUrl.includes('replit.com/oidc') || 
+          (redirectUrl.startsWith('https://replit.com') && redirectUrl.includes('authorize'))) {
+        loopDetected = true;
+        console.error('🔄❌ REDIRECT LOOP DETECTED via res.redirect(): Trying to redirect to IdP from callback.');
+        return originalRedirect('/login?error=auth_state_lost');
+      }
+      return typeof statusOrUrl === 'number' 
+        ? originalRedirect(statusOrUrl, url!) 
+        : originalRedirect(statusOrUrl);
+    };
+    
+    passport.authenticate(strategyName, (err: any, user: any, info: any) => {
+      // Restore original methods
+      res.redirect = originalRedirect;
+      res.end = originalCallbackEnd;
+      
       if (err) {
-        console.error('Authentication callback error:', err);
-        return res.redirect('/login');
+        console.error('❌ Authentication callback error:', err?.message || err);
+        console.error('❌ Error details:', { name: err?.name, code: err?.code, stack: err?.stack?.split('\n').slice(0, 3) });
+        return res.redirect('/login?error=auth_error');
       }
       
-      if (!req.user) {
-        console.error('Authentication callback: no user after authenticate');
-        return res.redirect('/login');
+      if (!user) {
+        console.error('❌ Authentication callback: no user returned', { info: JSON.stringify(info) });
+        return res.redirect('/login?error=auth_failed');
       }
-      
-      try {
-        const user = req.user as any;
-        const state = req.query.state as string;
-        
-        // Check if this is a mobile authentication request
-        const isMobileAuth = state && state !== 'default';
-        
-        if (isMobileAuth) {
-          const tokenPayload = {
-            userId: user.id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            profileImageUrl: user.profileImageUrl,
-            iat: Math.floor(Date.now() / 1000),
-            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
-          };
-          
-          const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
-          const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
-          
-          // Save session before redirect
-          req.session.save((saveErr) => {
-            if (saveErr) console.error('Session save error:', saveErr);
-            return res.redirect(callbackUrl);
-          });
-        } else {
-          // Web authentication - save session explicitly before redirect
-          req.session.save((saveErr) => {
-            if (saveErr) console.error('Session save error:', saveErr);
-            return res.redirect('/');
-          });
+
+      // Clean up PKCE session state now that auth is complete
+      if (issuerHost && (req.session as any)?.[issuerHost]) {
+        delete (req.session as any)[issuerHost];
+      }
+      if ((req.session as any)?.oidcHost) {
+        delete (req.session as any).oidcHost;
+      }
+
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          console.error('❌ Login after auth callback failed:', loginErr);
+          return res.redirect('/login?error=login_failed');
         }
-      } catch (error) {
-        console.error('Error processing authentication callback:', error);
-        return res.redirect('/login');
-      }
-    });
+      
+        try {
+          const state = req.query.state as string;
+          
+          // Check if this is a mobile authentication request
+          const isMobileAuth = state && state !== 'default';
+          
+          if (isMobileAuth) {
+            const tokenPayload = {
+              userId: user.id,
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+              profileImageUrl: user.profileImageUrl,
+              iat: Math.floor(Date.now() / 1000),
+              exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
+            };
+            
+            const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
+            const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
+            
+            // Save session before redirect
+            req.session.save((saveErr) => {
+              if (saveErr) console.error('Session save error:', saveErr);
+              return res.redirect(callbackUrl);
+            });
+          } else {
+            // Web authentication - save session explicitly before redirect
+            console.log(`✅ Auth callback successful for user: ${user.email}, redirecting to /`);
+            req.session.save((saveErr) => {
+              if (saveErr) console.error('Session save error:', saveErr);
+              return res.redirect('/');
+            });
+          }
+        } catch (error) {
+          console.error('Error processing authentication callback:', error);
+          return res.redirect('/login?error=processing_error');
+        }
+      });
+    })(req, res, next);
   });
 
   app.get("/api/logout", (req, res) => {

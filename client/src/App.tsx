@@ -11,6 +11,7 @@ import { useEffect, useMemo, Suspense, lazy, memo } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 // Critical pages - loaded immediately
+import Landing from "@/pages/landing";
 import LoginScreen from "@/pages/loginScreen";
 import Home from "@/pages/home";
 import AuthCallback from "@/pages/auth-callback";

@@ -2328,38 +2328,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and dataTypes array are required' });
       }
 
-      const allowedDataTypes = new Set([
-        'profile',
-        'posts',
-        'comments',
-        'analytics',
-        'notifications',
-        'messages',
-        'media',
-        'payments',
-        'settings',
-        'engagements',
-        'all'
-      ]);
-
-      const normalizedDataTypes = dataTypes
-        .map((type: any) => (typeof type === 'string' ? type.trim().toLowerCase() : ''))
-        .filter((type: string) => type.length > 0);
-
-      const invalidDataTypes = normalizedDataTypes.filter(type => !allowedDataTypes.has(type));
-      if (invalidDataTypes.length > 0) {
-        return res.status(400).json({ error: 'Invalid dataTypes provided', invalid: invalidDataTypes });
-      }
-
-      const safeDataTypes = Array.from(new Set(normalizedDataTypes));
-
       // Log the data export request
       await AnalyticsService.track({
         event: 'privacy_data_export_requested',
         distinctId: userId,
         properties: {
           email,
-          dataTypes: safeDataTypes,
+          dataTypes,
           requestedAt: new Date().toISOString(),
         },
       });
@@ -2371,7 +2346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // For now, we'll simulate the request being processed
       console.log(`📤 Data export requested for user ${userId} (${email})`);
-      console.log(`Requested data types: ${safeDataTypes.join(', ')}`);
+      console.log(`Requested data types: ${dataTypes.join(', ')}`);
 
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
@@ -2381,7 +2356,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h2>Data Export Request Received</h2>
             <p>Your data export request has been received and will be processed within 30 days as required by GDPR.</p>
-            <p><strong>Requested data types:</strong> ${safeDataTypes.join(', ')}</p>
+            <p><strong>Requested data types:</strong> ${dataTypes.join(', ')}</p>
             <p>You will receive an email with your data when ready.</p>
             <hr>
             <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
@@ -2394,7 +2369,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Data export request submitted successfully',
         requestId: randomUUID(),
         estimatedCompletion: '30 days',
-        dataTypes: safeDataTypes 
+        dataTypes 
       });
     } catch (error) {
       console.error('Error processing data export request:', error);
@@ -2411,101 +2386,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Email and deleteTypes array are required' });
       }
 
-      // SECURITY: Strict allowlist of permitted deletion types
-      // Using a static Set prevents SQL injection and ensures type safety
-      // Never construct SQL queries from deleteTypes - always use ORM methods instead
-      const allowedDeleteTypes = new Set<string>([
-        'profile',
-        'posts',
-        'comments',
-        'analytics',
-        'notifications',
-        'messages',
-        'media',
-        'payments',
-        'settings',
-        'engagements',
-        'all'
-      ]);
-
-      // Normalize and validate all input
-      const normalizedDeleteTypes = deleteTypes
-        .map((type: any) => (typeof type === 'string' ? type.trim().toLowerCase() : ''))
-        .filter((type: string) => type.length > 0);
-
-      // SECURITY CHECK: Reject any deleteTypes not in the allowlist
-      // This prevents SQL injection even if validation logic changes
-      const invalidDeleteTypes = normalizedDeleteTypes.filter(type => !allowedDeleteTypes.has(type));
-      if (invalidDeleteTypes.length > 0) {
-        return res.status(400).json({ error: 'Invalid deleteTypes provided', invalid: invalidDeleteTypes });
-      }
-
-      // Deduplicate and create final safe list
-      const safeDeleteTypes = Array.from(new Set(normalizedDeleteTypes));
-      
-      // Validate that all items in safeDeleteTypes are in the allowlist (defense in depth)
-      for (const type of safeDeleteTypes) {
-        if (!allowedDeleteTypes.has(type)) {
-          throw new Error(`SECURITY VIOLATION: deleteType "${type}" not in allowlist`);
-        }
-      }
-      
-      const safeReason = typeof reason === 'string' ? reason.trim().slice(0, 500) : undefined;
-
       // Log the data deletion request  
       await AnalyticsService.track({
         event: 'privacy_data_deletion_requested',
         distinctId: userId,
         properties: {
           email,
-          deleteTypes: safeDeleteTypes,
-          reason: safeReason,
+          deleteTypes,
+          reason,
           requestedAt: new Date().toISOString(),
         },
       });
 
       console.log(`🗑️ Data deletion requested for user ${userId} (${email})`);
-      
-      console.log('Delete types:', safeDeleteTypes.join(', '));
-      if (safeReason) console.log(`Reason: ${safeReason}`);
+      console.log(`Delete types: ${deleteTypes.join(', ')}`);
+      if (reason) console.log(`Reason: ${reason}`);
 
-      // ===== SECURITY: Data Deletion Implementation Requirements =====
-      // When implementing actual data deletion:
-      // 1. Queue deletion job to background worker
-      // 2. FOR EACH deleteType in safeDeleteTypes, use PARAMETERIZED QUERIES via Drizzle ORM:
-      //    SECURE APPROACH:
-      //      - Use Drizzle ORM: storage.deleteUserData(userId, deleteType)
-      //      - Or use parameterized queries: db.execute with bound parameters
-      //    NEVER USE:
-      //      - String concatenation with user input in database operations
-      //      - Template literals directly in query strings
-      // 3. Send confirmation email after deletion completes
-      // NOTE: Although safeDeleteTypes is allowlist-validated and safe, Drizzle ORM methods
-      //       provide automatic query parameterization and defense-in-depth protection.
+      // In a real implementation, you would:
+      // 1. Queue the deletion job
+      // 2. Anonymize or delete user data based on deleteTypes
+      // 3. Send confirmation email
 
-      // Process deletion request based on deleteTypes
-      if (safeDeleteTypes.includes('all')) {
+      // For now, if 'all' is requested, we could mark user for deletion
+      if (deleteTypes.includes('all')) {
         // Mark user account for deletion (in real implementation)
-        // SECURITY: Always use Drizzle ORM methods which automatically parameterize queries
-        // nosemgrep: sql-injection-risk
         console.log(`⚠️ Full account deletion requested for user ${userId}`);
       }
-
-      // Helper function to safely escape HTML content
-      const escapeHtml = (text: string): string => {
-        const map: { [key: string]: string } = {
-          '&': '&amp;',
-          '<': '&lt;',
-          '>': '&gt;',
-          '"': '&quot;',
-          "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, (char: string) => map[char]);
-      };
-
-      // HTML escape the data types and reason for safe email template usage
-      const escapedDeleteTypes = safeDeleteTypes.map(escapeHtml).join(', ');
-      const escapedReason = safeReason ? escapeHtml(safeReason) : '';
 
       // Send confirmation email
       if (emailService && emailService.sendTransactionalEmail) {
@@ -2515,8 +2421,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           content: `
             <h2>Data Deletion Request Received</h2>
             <p>Your data deletion request has been received and will be processed within 30 days as required by GDPR.</p>
-            <p><strong>Data types to be deleted:</strong> ${escapedDeleteTypes}</p>
-            ${escapedReason ? `<p><strong>Reason:</strong> ${escapedReason}</p>` : ''}
+            <p><strong>Data types to be deleted:</strong> ${deleteTypes.join(', ')}</p>
+            ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
             <p>You will receive a confirmation email once the deletion is complete.</p>
             <hr>
             <p><small>This is an automated message from Ascended Social privacy compliance system.</small></p>
@@ -2529,7 +2435,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: 'Data deletion request submitted successfully',
         requestId: randomUUID(),
         estimatedCompletion: '30 days',
-        deleteTypes: safeDeleteTypes 
+        deleteTypes 
       });
     } catch (error) {
       console.error('Error processing data deletion request:', error);

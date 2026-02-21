@@ -47,7 +47,7 @@ import {
   bookmarks,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count, ilike, or, ne, sum, inArray, gte, lte, gt, lt } from "drizzle-orm";
+import { eq, desc, sql, and, count, ilike, or, ne, sum, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -766,7 +766,7 @@ export class DatabaseStorage implements IStorage {
         and(
           eq(spiritualReadings.userId, userId),
           eq(spiritualReadings.type, "daily"),
-          gte(spiritualReadings.createdAt, today)
+          sql`${spiritualReadings.createdAt} >= ${today}`
         )
       )
       .limit(1);
@@ -1042,16 +1042,16 @@ export class DatabaseStorage implements IStorage {
       // Apply filters if provided
       const conditions = [];
       if (filters?.minAura) {
-        conditions.push(gte(users.aura, filters.minAura));
+        conditions.push(sql`users.aura >= ${filters.minAura}`);
       }
       if (filters?.maxAura) {
-        conditions.push(lte(users.aura, filters.maxAura));
+        conditions.push(sql`users.aura <= ${filters.maxAura}`);
       }
       if (filters?.minEnergy) {
-        conditions.push(gte(users.energy, filters.minEnergy));
+        conditions.push(sql`users.energy >= ${filters.minEnergy}`);
       }
       if (filters?.maxEnergy) {
-        conditions.push(lte(users.energy, filters.maxEnergy));
+        conditions.push(sql`users.energy <= ${filters.maxEnergy}`);
       }
       if (filters?.astrologySign) {
         conditions.push(eq(users.astrologySign, filters.astrologySign));
@@ -1586,7 +1586,7 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db
       .select({ count: count() })
       .from(users)
-      .where(gte(users.createdAt, startDate));
+      .where(sql`${users.createdAt} >= ${startDate}`);
     return result.count;
   }
 
@@ -1606,12 +1606,12 @@ export class DatabaseStorage implements IStorage {
     const [postAuthors] = await db
       .select({ count: count(sql`DISTINCT ${posts.authorId}`) })
       .from(posts)
-      .where(gte(posts.createdAt, startDate));
+      .where(sql`${posts.createdAt} >= ${startDate}`);
     
     const [engagementUsers] = await db
       .select({ count: count(sql`DISTINCT ${postEngagements.userId}`) })
       .from(postEngagements)
-      .where(gte(postEngagements.createdAt, startDate));
+      .where(sql`${postEngagements.createdAt} >= ${startDate}`);
     
     // Simple approximation - in a real system, you'd use a more sophisticated query
     return Math.max(postAuthors.count, engagementUsers.count);
@@ -1684,7 +1684,7 @@ export class DatabaseStorage implements IStorage {
         count: count(),
       })
       .from(users)
-      .where(gte(users.createdAt, startDate))
+      .where(sql`${users.createdAt} >= ${startDate}`)
       .groupBy(sql`DATE(${users.createdAt})`)
       .orderBy(sql`DATE(${users.createdAt})`);
 
@@ -1949,15 +1949,15 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters.minWarningCount !== undefined) {
-      conditions.push(gte(users.warningCount, filters.minWarningCount));
+      conditions.push(sql`${users.warningCount} >= ${filters.minWarningCount}`);
     }
     
     if (filters.createdAfter) {
-      conditions.push(gte(users.createdAt, filters.createdAfter));
+      conditions.push(sql`${users.createdAt} >= ${filters.createdAfter}`);
     }
     
     if (filters.createdBefore) {
-      conditions.push(lte(users.createdAt, filters.createdBefore));
+      conditions.push(sql`${users.createdAt} <= ${filters.createdBefore}`);
     }
     
     // Build query with all conditions at once
@@ -2055,11 +2055,11 @@ export class DatabaseStorage implements IStorage {
     }
     
     if (filters?.fromDate) {
-      conditions.push(gte(auditLogs.createdAt, filters.fromDate));
+      conditions.push(sql`${auditLogs.createdAt} >= ${filters.fromDate}`);
     }
     
     if (filters?.toDate) {
-      conditions.push(lte(auditLogs.createdAt, filters.toDate));
+      conditions.push(sql`${auditLogs.createdAt} <= ${filters.toDate}`);
     }
     
     // Build query with all conditions at once

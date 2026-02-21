@@ -110,7 +110,7 @@ export async function setupAuth(app: Express) {
       {
         name: `replitauth:${domain}`,
         config,
-        scope: "openid email profile offline_access",
+        scope: "openid email profile",
         callbackURL: `https://${domain}/api/callback`,
       },
       verify,
@@ -124,7 +124,7 @@ export async function setupAuth(app: Express) {
       {
         name: `replitauth:localhost`,
         config,
-        scope: "openid email profile offline_access",
+        scope: "openid email profile",
         callbackURL: `http://localhost:5000/api/callback`,
       },
       verify,
@@ -169,7 +169,7 @@ export async function setupAuth(app: Express) {
     
     const authOptions: any = {
       prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
+      scope: ["openid", "email", "profile"],
     };
     
     // Pass through state parameter if provided (for mobile authentication)

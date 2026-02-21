@@ -44,6 +44,26 @@ localPort = 3001
 externalPort = 3002
 
 [[ports]]
+localPort = 3002
+externalPort = 4200
+
+[[ports]]
+localPort = 3003
+externalPort = 5000
+
+[[ports]]
+localPort = 3004
+externalPort = 5173
+
+[[ports]]
+localPort = 3005
+externalPort = 6000
+
+[[ports]]
+localPort = 3006
+externalPort = 6800
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
@@ -55,9 +75,8 @@ externalPort = 3001
 localPort = 6007
 externalPort = 3003
 
-[[ports]]
-localPort = 45063
-externalPort = 4200
-
 [objectStorage]
 defaultBucketID = "replit-objstore-54e3666b-f3fa-4b18-93d8-165a6cc4796f"
+
+[agent]
+integrations = ["javascript_log_in_with_replit:2.0.0"]

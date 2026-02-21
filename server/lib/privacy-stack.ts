@@ -135,11 +135,11 @@ export class PrivacyStackManager extends EventEmitter {
     console.log('🛡️ Initializing Bearer security scanning...');
     
     try {
-      const { execSync } = await import('child_process');
+      const { execFileSync } = await import('child_process');
       
       // Verify Bearer CLI is installed
       try {
-        execSync('bearer version', { stdio: 'pipe' });
+        execFileSync('bearer', ['version'], { stdio: 'pipe' });
         console.log('✅ Bearer CLI found');
       } catch {
         console.warn('⚠️ Bearer CLI not found. Install with: curl -sfL https://raw.githubusercontent.com/Bearer/bearer/main/contrib/install.sh | sh');
@@ -347,7 +347,7 @@ export class PrivacyStackManager extends EventEmitter {
       throw new Error('Bearer is not enabled');
     }
 
-    const { execSync } = await import('child_process');
+    const { execFileSync } = await import('child_process');
     const path = options.path || '.';
     const format = options.format || 'json';
     const severity = options.severity || 'medium';
@@ -355,8 +355,7 @@ export class PrivacyStackManager extends EventEmitter {
     console.log(`🔍 Running Bearer scan on ${path}...`);
 
     try {
-      const command = `bearer scan ${path} --format ${format} --severity ${severity} --quiet`;
-      const output = execSync(command, { 
+      const output = execFileSync('bearer', ['scan', path, '--format', format, '--severity', severity, '--quiet'], { 
         encoding: 'utf-8',
         maxBuffer: 10 * 1024 * 1024 // 10MB buffer
       });

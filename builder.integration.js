@@ -7,23 +7,14 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
-// Configuration
-const BUILDER_API_KEY = process.env.BUILDER_API_KEY;
 const LOCAL_PORT = 5000;
 const BUILDER_PORT = 3001;
-
-if (!BUILDER_API_KEY) {
-  console.error('❌ BUILDER_API_KEY environment variable is required');
-  process.exit(1);
-}
 
 console.log('🚀 Starting Builder.io Fusion Integration for Ascended Social');
 console.log(`📡 Local app: http://localhost:${LOCAL_PORT}`);
 console.log(`🎨 Builder fusion: http://localhost:${BUILDER_PORT}`);
 
-// Create a simple Builder bridge configuration
 const builderBridge = {
-  apiKey: BUILDER_API_KEY,
   localUrl: `http://localhost:${LOCAL_PORT}`,
   previewUrl: `http://localhost:${BUILDER_PORT}`,
   models: [
@@ -47,9 +38,15 @@ const builderBridge = {
 };
 
 // Write builder bridge config
-fs.writeFileSync('.builder-bridge.json', JSON.stringify(builderBridge, null, 2));
+fs.writeFileSync('.builder-bridge.json', JSON.stringify(builderBridge, null, 2), { mode: 0o600 });
+try {
+  fs.chmodSync('.builder-bridge.json', 0o600);
+} catch (error) {
+  console.warn('⚠️ Unable to set strict permissions on .builder-bridge.json:', error.message);
+}
 
 console.log('✅ Builder bridge configuration created');
+console.log('🔐 BUILDER_API_KEY is loaded from environment variables at runtime only.');
 console.log('🔗 Project configured for Builder.io Fusion access');
 console.log('');
 console.log('🎯 Next steps:');

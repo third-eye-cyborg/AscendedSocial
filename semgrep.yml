@@ -57,13 +57,35 @@ rules:
   - id: sql-injection-risk
     pattern-either:
       - pattern: |
-          query($QUERY + $USER_INPUT)
+          $DB.query($QUERY + $USER_INPUT)
       - pattern: |
-          db.raw($QUERY + $USER_INPUT)
+          $DB.raw($QUERY + $USER_INPUT)
       - pattern: |
-          execute("SELECT * FROM ... WHERE " + $INPUT)
-    message: "Potential SQL injection vulnerability - use parameterized queries"
+          $DB.execute($QUERY + $USER_INPUT)
+      - pattern: |
+          $DB.run($QUERY + $USER_INPUT)
+      - pattern: |
+          $DB.all($QUERY + $USER_INPUT)
+      - pattern: |
+          $DB.get($QUERY + $USER_INPUT)
+    message: "Potential SQL injection vulnerability - use parameterized queries or Drizzle ORM"
     severity: ERROR
+    languages: [javascript, typescript]
+    
+  - id: sql-string-interpolation-in-query
+    patterns:
+      - pattern-either:
+          - pattern: $DB.query(`...${$VAR}...`)
+          - pattern: $DB.execute(`...${$VAR}...`)
+          - pattern: $DB.raw(`...${$VAR}...`)
+      - pattern-not-inside: |
+          // nosemgrep: sql-injection-risk
+          ...
+      - pattern-not-inside: |
+          // nosemgrep: sql-string-interpolation-in-query
+          ...
+    message: "Template literal in SQL query - ensure you're using proper ORM (Drizzle) or parameterized queries"
+    severity: WARNING
     languages: [javascript, typescript]
 
   # XSS Prevention

@@ -268,7 +268,8 @@ export async function setupAdminAuth(app: Express) {
   for (const domain of allDomains) {
     const isLocalhost = domain === 'localhost';
     const protocol = isLocalhost ? 'http' : 'https';
-    const port = isLocalhost ? ':5000' : '';
+    const actualPort = isLocalhost ? (process.env.PORT || '5000') : '';
+    const port = isLocalhost ? `:${actualPort}` : '';
     
     const strategy = new Strategy(
       {
@@ -281,7 +282,7 @@ export async function setupAdminAuth(app: Express) {
     );
     passport.use(strategy);
     
-    console.log(`✅ Admin auth strategy registered: replit-admin:${domain}`);
+    console.log(`✅ Admin auth strategy registered: replit-admin:${domain} -> ${protocol}://${domain}${port}/api/admin/callback`);
   }
 
   // Admin login endpoint
@@ -330,9 +331,22 @@ export async function setupAdminAuth(app: Express) {
     try {
       req.logout(() => {
         if (req.session) {
+          let sessionDestroyed = false;
+          const destroyTimeout = setTimeout(() => {
+            if (!sessionDestroyed && !res.headersSent) {
+              console.warn('⚠️ Session destroy timeout during admin logout - force redirecting');
+              sessionDestroyed = true;
+              res.redirect(endHref);
+            }
+          }, 5000);
+          
           req.session.destroy((err) => {
+            clearTimeout(destroyTimeout);
             if (err) console.error('Session destroy error during admin logout:', err);
-            return res.redirect(endHref);
+            if (!sessionDestroyed && !res.headersSent) {
+              sessionDestroyed = true;
+              res.redirect(endHref);
+            }
           });
         } else {
           return res.redirect(endHref);

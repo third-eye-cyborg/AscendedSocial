@@ -34,7 +34,10 @@ export default defineConfig({
     port: 3000,
     host: true,
     hmr: {
-      overlay: true,
+      overlay: false, // Disable overlay to prevent WebSocket errors from blocking the app
+      protocol: 'ws',
+      host: 'localhost',
+      port: 3000,
     },
     fs: {
       strict: true,

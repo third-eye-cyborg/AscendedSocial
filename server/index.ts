@@ -11,6 +11,21 @@ import mcpRoutes from './mcp-routes';
 // Mobile auth routes handled by Replit Auth
 import builderRoutes from './builder-integration';
 
+// Global error handlers
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Promise Rejection:', reason);
+  console.error('Promise:', promise);
+  if (reason instanceof Error) {
+    console.error('Stack:', reason.stack);
+  }
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+});
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -46,18 +61,19 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  try {
+    const server = await registerRoutes(app);
 
-  // Add auth callback route to serve frontend page
-  app.get('/auth-callback', (req, res, next) => {
-    // Let Vite handle serving the frontend page for auth callback
-    if (app.get("env") === "development") {
-      next(); // Let Vite handle it
-    } else {
-      // In production, serve the static frontend
-      res.sendFile('index.html', { root: 'dist/client' });
-    }
-  });
+    // Add auth callback route to serve frontend page
+    app.get('/auth-callback', (req, res, next) => {
+      // Let Vite handle serving the frontend page for auth callback
+      if (app.get("env") === "development") {
+        next(); // Let Vite handle it
+      } else {
+        // In production, serve the static frontend
+        res.sendFile('index.html', { root: 'dist/client' });
+      }
+    });
 
   // Mobile auth routes handled by Replit Auth
 
@@ -204,4 +220,22 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
+
+  // Monitor memory usage
+  setInterval(() => {
+    const memUsage = process.memoryUsage();
+    const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
+    const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(2);
+    log(`📊 Memory: ${heapUsedMB}MB / ${heapTotalMB}MB (rss: ${(memUsage.rss / 1024 / 1024).toFixed(2)}MB)`);
+  }, 30000);
+  } catch (error) {
+    console.error('❌ FATAL ERROR during server startup:', error);
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    console.error('Full error:', JSON.stringify(error, null, 2));
+    process.exit(1);
+  }
 })();

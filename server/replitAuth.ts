@@ -197,14 +197,23 @@ export async function setupAuth(app: Express) {
     return normalizePreviewHost(host);
   };
 
-  const ensureStrategyForHost = (hostWithPort: string, protocol: string) => {
+  const ensureStrategyForHost = (hostWithPort: string, protocol: string, req?: any) => {
     const normalizedHost = normalizePreviewHost(hostWithPort);
     const strategyName = `replitauth:${normalizedHost}`;
     const existing = (passport as any)._strategy?.(strategyName);
     if (existing) return strategyName;
 
     const isLocalhost = normalizedHost.startsWith('localhost') || normalizedHost.startsWith('127.0.0.1');
-    const callbackProtocol = isLocalhost ? 'http' : (protocol === 'https' ? 'https' : 'https');
+    
+    // For non-localhost (Replit preview), always use HTTPS
+    // For localhost, use HTTP
+    let callbackProtocol = isLocalhost ? 'http' : 'https';
+    
+    // Also respect x-forwarded-proto if available (for proxy scenarios)
+    if (req && req.headers['x-forwarded-proto']) {
+      callbackProtocol = req.headers['x-forwarded-proto'];
+    }
+    
     const callbackURL = `${callbackProtocol}://${normalizedHost}/api/callback`;
     const strategy = new Strategy(
       {
@@ -216,22 +225,24 @@ export async function setupAuth(app: Express) {
       verify,
     );
     passport.use(strategy);
-    console.log(`✅ Auth strategy registered dynamically: ${strategyName} -> ${callbackURL}`);
+    console.log(`✅ Auth strategy registered dynamically: ${strategyName} -> ${callbackURL} (protocol: ${callbackProtocol})`);
     return strategyName;
   };
 
   // Add localhost strategy for development
   if (process.env.NODE_ENV === 'development') {
+    const port = process.env.PORT || '5000';
     const localhostStrategy = new Strategy(
       {
         name: `replitauth:localhost`,
         config,
         scope: "openid email profile",
-        callbackURL: `http://localhost:5000/api/callback`,
+        callbackURL: `http://localhost:${port}/api/callback`,
       },
       verify,
     );
     passport.use(localhostStrategy);
+    console.log(`✅ Auth strategy registered for localhost: http://localhost:${port}/api/callback`);
   }
 
   passport.serializeUser((user: Express.User, cb) => {
@@ -245,6 +256,18 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/login", async (req, res, next) => {
+    console.log("🔐🔐🔐 LOGIN ROUTE HIT - Raw request details", {
+      url: req.url,
+      query: req.query,
+      headers: {
+        host: req.get("host"),
+        forwardedHost: req.headers["x-forwarded-host"],
+        origin: req.headers["origin"],
+        referer: req.headers["referer"],
+      },
+      sessionID: req.sessionID,
+    });
+    
     // Extract state parameter for mobile authentication
     const state = req.query.state as string;
     const turnstileToken = req.query.turnstile as string;
@@ -303,7 +326,7 @@ export async function setupAuth(app: Express) {
     // reuse the exact same host/port and strategy configuration.
     (req.session as any).oidcHost = hostWithPort;
 
-    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
+    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol, req);
     console.log(`🔑 Login using strategy: ${strategyName}, host: ${hostWithPort}, requestedHost: ${requestedHost}`);
     
     // Passport's Strategy.redirect() uses res.end() directly (NOT res.redirect()).
@@ -344,6 +367,23 @@ export async function setupAuth(app: Express) {
   });
 
   app.get("/api/callback", (req, res, next) => {
+    console.log("🔄🔄🔄 CALLBACK ROUTE HIT - Raw request details", {
+      url: req.url,
+      originalUrl: req.originalUrl,
+      method: req.method,
+      headers: {
+        host: req.get("host"),
+        forwardedHost: req.headers["x-forwarded-host"],
+        forwardedProto: req.headers["x-forwarded-proto"],
+        origin: req.headers["origin"],
+        referer: req.headers["referer"],
+      },
+      query: req.query,
+      cookies: Object.keys(req.cookies || {}),
+      session: !!req.session,
+      sessionID: req.sessionID,
+    });
+    
     const { code, error } = req.query as { code?: string; error?: string };
     
     // Debug: inspect session state for PKCE data
@@ -381,7 +421,7 @@ export async function setupAuth(app: Express) {
     // Use same host resolution as login to ensure strategy consistency
     const sessionLoginHost = (req.session as any)?.oidcHost as string | undefined;
     const hostWithPort = sessionLoginHost || getCallbackHost(req) || req.hostname;
-    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol);
+    const strategyName = ensureStrategyForHost(hostWithPort, req.protocol, req);
     console.log(`🔑 Auth callback using strategy: ${strategyName}, host: ${hostWithPort}, sessionHost: ${sessionLoginHost || 'none'}`);
     
     // Intercept both res.redirect AND res.end to prevent redirect loops back to IdP
@@ -487,17 +527,44 @@ export async function setupAuth(app: Express) {
             const token = jwt.sign(tokenPayload, process.env.SESSION_SECRET!);
             const callbackUrl = `/auth-callback?token=${encodeURIComponent(token)}&state=${encodeURIComponent(state)}`;
             
-            // Save session before redirect
+            // Save session before redirect with timeout to prevent hanging
+            let sessionSaved = false;
+            const saveTimeout = setTimeout(() => {
+              if (!sessionSaved && !res.headersSent) {
+                console.warn('⚠️ Session save timeout (mobile) - force redirecting');
+                sessionSaved = true;
+                res.redirect(callbackUrl);
+              }
+            }, 5000);
+            
             req.session.save((saveErr) => {
-              if (saveErr) console.error('Session save error:', saveErr);
-              return res.redirect(callbackUrl);
+              clearTimeout(saveTimeout);
+              if (saveErr) console.error('Session save error (mobile):', saveErr);
+              if (!sessionSaved && !res.headersSent) {
+                sessionSaved = true;
+                res.redirect(callbackUrl);
+              }
             });
           } else {
             // Web authentication - save session explicitly before redirect
             console.log(`✅ Auth callback successful for user: ${user.email}, redirecting to /`);
+            
+            let sessionSaved = false;
+            const saveTimeout = setTimeout(() => {
+              if (!sessionSaved && !res.headersSent) {
+                console.warn('⚠️ Session save timeout (web) - force redirecting');
+                sessionSaved = true;
+                res.redirect('/');
+              }
+            }, 5000);
+            
             req.session.save((saveErr) => {
-              if (saveErr) console.error('Session save error:', saveErr);
-              return res.redirect('/');
+              clearTimeout(saveTimeout);
+              if (saveErr) console.error('Session save error (web):', saveErr);
+              if (!sessionSaved && !res.headersSent) {
+                sessionSaved = true;
+                res.redirect('/');
+              }
             });
           }
         } catch (error) {
@@ -520,9 +587,22 @@ export async function setupAuth(app: Express) {
     try {
       req.logout(() => {
         if (req.session) {
+          let sessionDestroyed = false;
+          const destroyTimeout = setTimeout(() => {
+            if (!sessionDestroyed && !res.headersSent) {
+              console.warn('⚠️ Session destroy timeout during logout - force redirecting');
+              sessionDestroyed = true;
+              res.redirect(endSessionHref);
+            }
+          }, 5000);
+          
           req.session.destroy((err) => {
+            clearTimeout(destroyTimeout);
             if (err) console.error('Session destroy error during logout:', err);
-            return res.redirect(endSessionHref);
+            if (!sessionDestroyed && !res.headersSent) {
+              sessionDestroyed = true;
+              res.redirect(endSessionHref);
+            }
           });
         } else {
           return res.redirect(endSessionHref);
@@ -547,9 +627,22 @@ export async function setupAuth(app: Express) {
     try {
       req.logout(() => {
         if (req.session) {
+          let sessionDestroyed = false;
+          const destroyTimeout = setTimeout(() => {
+            if (!sessionDestroyed && !res.headersSent) {
+              console.warn('⚠️ Session destroy timeout during API logout - force responding');
+              sessionDestroyed = true;
+              res.json({ message: 'Successfully logged out', success: true });
+            }
+          }, 5000);
+          
           req.session.destroy((err) => {
+            clearTimeout(destroyTimeout);
             if (err) console.error('Session destroy error during API logout:', err);
-            return res.json({ message: 'Successfully logged out', success: true });
+            if (!sessionDestroyed && !res.headersSent) {
+              sessionDestroyed = true;
+              res.json({ message: 'Successfully logged out', success: true });
+            }
           });
         } else {
           return res.json({ message: 'Successfully logged out', success: true });

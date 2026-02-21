@@ -35,10 +35,7 @@ export default function EnergyPage() {
             <h2 className="text-xl font-bold text-white mb-4">Energy System</h2>
             <p className="text-gray-300 mb-4">Sign in to manage your spiritual energy</p>
             <Button 
-              onClick={() => {
-                const host = window.location.host;
-                window.location.href = `/api/login?host=${encodeURIComponent(host)}`;
-              }}
+              onClick={() => window.location.href = '/api/login'}
               className="bg-primary hover:bg-primary/90 font-semibold text-white !text-white"
               data-testid="button-sign-in"
             >

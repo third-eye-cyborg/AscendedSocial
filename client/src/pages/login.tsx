@@ -11,13 +11,6 @@ export default function Login() {
   const [isVerifying, setIsVerifying] = useState(false);
   const { toast } = useToast();
 
-  const isEmbeddedPreview = () => {
-    if (typeof window === 'undefined') return false;
-    const hostname = window.location.hostname;
-    const isReplitPreview = hostname.endsWith('.spock.replit.dev');
-    return isReplitPreview && window.parent !== window;
-  };
-
   const isProductionDomain = () => {
     if (typeof window === 'undefined') return false;
     const hostname = window.location.hostname;
@@ -42,47 +35,10 @@ export default function Login() {
   }, [toast]);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get('error');
-
-    // Track login attempts to prevent infinite redirect loops
-    const loginAttemptKey = 'login_attempt_count';
-    const loginAttemptTime = 'login_attempt_time';
-    const now = Date.now();
-    const lastAttempt = parseInt(sessionStorage.getItem(loginAttemptTime) || '0', 10);
-    const attemptCount = parseInt(sessionStorage.getItem(loginAttemptKey) || '0', 10);
-    
-    // Reset counter if last attempt was more than 30 seconds ago
-    if (now - lastAttempt > 30000) {
-      sessionStorage.setItem(loginAttemptKey, '0');
-      sessionStorage.setItem(loginAttemptTime, String(now));
-    }
-    
-    // If too many rapid login attempts, stop auto-redirecting (prevent loop)
-    if (attemptCount >= 3) {
-      console.warn('⚠️ Too many login redirects detected - stopping auto-redirect to break loop');
-      // Reset after showing the page so user can manually retry
-      setTimeout(() => {
-        sessionStorage.setItem(loginAttemptKey, '0');
-      }, 10000);
-      return;
-    }
-
-    if (!shouldUseTurnstile && !isEmbeddedPreview() && !error) {
-      // Increment attempt counter
-      sessionStorage.setItem(loginAttemptKey, String(attemptCount + 1));
-      sessionStorage.setItem(loginAttemptTime, String(now));
-      
-      const host = window.location.host;
-      window.location.href = `/api/login?host=${encodeURIComponent(host)}`;
+    if (!shouldUseTurnstile) {
+      window.location.href = '/api/login';
     }
   }, [shouldUseTurnstile]);
-
-  const openLoginInNewTab = () => {
-    const host = window.location.host;
-    const loginUrl = `/api/login?host=${encodeURIComponent(host)}`;
-    window.open(loginUrl, '_blank', 'noopener,noreferrer');
-  };
 
   const handleLogin = () => {
     if (!turnstileToken && shouldUseTurnstile) {
@@ -100,8 +56,7 @@ export default function Login() {
     const urlParams = new URLSearchParams(window.location.search);
     const state = urlParams.get('state');
     
-    const host = window.location.host;
-    let loginUrl = `/api/login?turnstile=${encodeURIComponent(turnstileToken)}&host=${encodeURIComponent(host)}`;
+    let loginUrl = `/api/login?turnstile=${encodeURIComponent(turnstileToken)}`;
     if (state) {
       loginUrl += `&state=${encodeURIComponent(state)}`;
     }
@@ -110,64 +65,6 @@ export default function Login() {
   };
 
   if (!shouldUseTurnstile) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const error = urlParams.get('error');
-
-    if (isEmbeddedPreview()) {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center p-4">
-          <Card className="w-full max-w-md border border-primary/30 bg-gradient-to-br from-cosmic/95 to-cosmic-dark/90 backdrop-blur-xl shadow-2xl shadow-primary/20 glass-effect">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold font-display text-white">Open in New Tab</CardTitle>
-              <CardDescription className="text-muted text-sm">
-                Replit preview runs in an embedded iframe and may block auth cookies.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-white/80 text-center">
-                Click below to open login in a new tab, then use the app from there.
-              </p>
-              <Button
-                onClick={openLoginInNewTab}
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-4 h-12 rounded-lg shadow-lg"
-              >
-                Open Login in New Tab
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center p-4">
-          <Card className="w-full max-w-md border border-primary/30 bg-gradient-to-br from-cosmic/95 to-cosmic-dark/90 backdrop-blur-xl shadow-2xl shadow-primary/20 glass-effect">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-2xl font-bold font-display text-white">Login issue</CardTitle>
-              <CardDescription className="text-muted text-sm">
-                We couldn’t complete authentication. Please try again.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-white/80 text-center">
-                Error: <span className="font-semibold">{error}</span>
-              </p>
-              <Button
-                onClick={() => {
-                  const host = window.location.host;
-                  window.location.href = `/api/login?host=${encodeURIComponent(host)}`;
-                }}
-                className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white font-semibold py-4 h-12 rounded-lg shadow-lg"
-              >
-                Try login again
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      );
-    }
-
     return (
       <div className="min-h-screen bg-gradient-to-br from-cosmic via-cosmic-light to-cosmic flex items-center justify-center">
         <div className="text-center text-white">

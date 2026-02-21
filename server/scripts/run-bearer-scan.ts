@@ -3,9 +3,12 @@
  * Runs Bearer SAST (Static Application Security Testing) to detect security and privacy risks
  */
 
-import { execFileSync } from 'child_process';
+import { execSync } from 'child_process';
 import { writeFileSync } from 'fs';
-import path from 'path';
+
+function escapeShellArg(arg: string): string {
+  return `'${arg.replace(/'/g, "'\\''")}'`;
+}
 
 interface BearerScanOptions {
   path?: string;
@@ -26,30 +29,6 @@ async function runBearerScan(options: BearerScanOptions = {}) {
     failOnSeverity = 'high'
   } = options;
 
-  const allowedFormats = new Set(['text', 'json', 'sarif', 'html']);
-  const allowedSeverities = new Set(['critical', 'high', 'medium', 'low']);
-  const allowedReports = new Set(['security', 'privacy', 'dataflow']);
-  const allowedFailOn = new Set(['critical', 'high', 'medium', 'low']);
-
-  if (!allowedFormats.has(format)) {
-    throw new Error(`Unsupported format: ${format}`);
-  }
-
-  if (!allowedSeverities.has(severity)) {
-    throw new Error(`Unsupported severity: ${severity}`);
-  }
-
-  if (report && !allowedReports.has(report)) {
-    throw new Error(`Unsupported report type: ${report}`);
-  }
-
-  if (!allowedFailOn.has(failOnSeverity)) {
-    throw new Error(`Unsupported fail-on severity: ${failOnSeverity}`);
-  }
-
-  const resolvedPath = path.resolve(path);
-  const resolvedOutput = output ? path.resolve(output) : undefined;
-
   console.log('🛡️ Starting Bearer security scan...');
   console.log(`📂 Scanning path: ${path}`);
   console.log(`📊 Minimum severity: ${severity}`);
@@ -60,17 +39,20 @@ async function runBearerScan(options: BearerScanOptions = {}) {
   }
 
   try {
-    const args = ['scan', resolvedPath, '--format', format, '--severity', severity];
+    // Build Bearer command with properly escaped arguments
+    let command = `bearer scan ${escapeShellArg(path)} --format ${escapeShellArg(format)} --severity ${escapeShellArg(severity)}`;
+    
     if (report) {
-      args.push('--report', report);
+      command += ` --report ${escapeShellArg(report)}`;
     }
-    if (resolvedOutput && format !== 'text') {
-      args.push('--output', resolvedOutput);
+    
+    if (output && format !== 'text') {
+      command += ` --output ${escapeShellArg(output)}`;
     }
 
-    console.log(`🔍 Running: bearer ${args.join(' ')}\n`);
+    console.log(`🔍 Running: ${command}\n`);
 
-    const result = execFileSync('bearer', args, {
+    const result = execSync(command, {
       encoding: 'utf-8',
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       stdio: 'pipe'
@@ -94,9 +76,9 @@ async function runBearerScan(options: BearerScanOptions = {}) {
         console.log(`   📊 Total: ${scanResults.findings.length}`);
       }
 
-      if (resolvedOutput) {
-        writeFileSync(resolvedOutput, JSON.stringify(scanResults, null, 2));
-        console.log(`\n✅ Results saved to: ${resolvedOutput}`);
+      if (output) {
+        writeFileSync(output, JSON.stringify(scanResults, null, 2));
+        console.log(`\n✅ Results saved to: ${output}`);
       }
     } else {
       console.log(result);

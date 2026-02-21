@@ -1,6 +1,10 @@
 module.exports = {
   projectToken: process.env.CHROMATIC_PROJECT_TOKEN,
   
+  // Storybook configuration
+  buildScriptName: 'build-storybook',
+  storybookBuildDir: 'storybook-static',
+  
   // Cypress integration
   cypress: {
     configFile: 'cypress.config.js',
@@ -18,13 +22,14 @@ module.exports = {
   // Replit-specific settings
   replit: {
     host: '0.0.0.0',
-    port: 3000
+    port: 3000,
+    storybookPort: 6006
   },
   
   // MCP integration
   mcp: {
     enabled: true,
-    servers: ['chromatic-cypress', 'playwright-chromatic'],
+    servers: ['chromatic-storybook', 'chromatic-cypress', 'playwright-chromatic'],
     logging: './logs/chromatic-mcp.log'
   },
   

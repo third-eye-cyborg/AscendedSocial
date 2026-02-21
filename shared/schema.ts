@@ -27,17 +27,6 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// Admin session table (separate from user sessions for security isolation)
-export const adminSessions = pgTable(
-  "admin_sessions",
-  {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull(),
-  },
-  (table) => [index("IDX_admin_session_expire").on(table.expire)],
-);
-
 // User role enum
 export const userRoleEnum = pgEnum("user_role", [
   "user",

@@ -11,12 +11,21 @@ export default defineConfig({
     ['json', { outputFile: 'playwright-report/results.json' }]
   ],
   use: {
-    baseURL: 'http://localhost:5000',
+    baseURL: 'http://localhost:6006', // Storybook URL
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
 
   projects: [
+    // Chromatic Storybook tests
+    {
+      name: 'chromatic',
+      use: {
+        ...devices['Desktop Chrome'],
+        storybookBaseUrl: 'http://localhost:6006',
+      },
+      testMatch: /.*\.chromatic\.spec\.ts/,
+    },
     // Standard browser tests
     {
       name: 'chromium',
@@ -42,8 +51,8 @@ export default defineConfig({
 
   webServer: [
     {
-      command: 'npm run dev',
-      port: 5000,
+      command: 'npm run storybook',
+      port: 6006,
       reuseExistingServer: !process.env.CI,
     },
   ],

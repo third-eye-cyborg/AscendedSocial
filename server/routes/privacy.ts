@@ -24,46 +24,29 @@ const privacyStackConfig = {
   polar: { enabled: !!process.env.POLAR_ACCESS_TOKEN, accessToken: process.env.POLAR_ACCESS_TOKEN }
 };
 
-// Initialize managers (lazy startup to avoid heavy boot-time work in constrained environments)
+// Initialize managers
 const fidesManager = getFidesManager(fidesConfig);
 const privacyStack = getPrivacyStackManager(privacyStackConfig);
 
 // Initialize Cloudflare D1 for consent auditing
 let d1Manager: ReturnType<typeof getD1Manager> | null = null;
-let privacyInitialized = false;
 
-async function ensurePrivacyInitialized() {
-  if (privacyInitialized) return;
-  privacyInitialized = true;
-
-  try {
-    // Initialize Cloudflare D1 for consent auditing only when configured
-    if (process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_D1_DATABASE_ID) {
-      const d1Config = {
-        accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
-        apiToken: process.env.CLOUDFLARE_API_TOKEN,
-        databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID,
-      };
-
-      d1Manager = getD1Manager(d1Config);
-      await d1Manager.initialize();
-      await d1Manager.initializeSchema();
-    }
-  } catch (error) {
-    console.error('Privacy D1 initialization error:', error);
-  }
-
-  // Initialize privacy managers without blocking app startup
-  Promise.resolve(fidesManager.initialize()).catch(console.error);
-  Promise.resolve(privacyStack.initialize()).catch(console.error);
+if (process.env.CLOUDFLARE_ACCOUNT_ID && process.env.CLOUDFLARE_API_TOKEN && process.env.CLOUDFLARE_D1_DATABASE_ID) {
+  const d1Config = {
+    accountId: process.env.CLOUDFLARE_ACCOUNT_ID,
+    apiToken: process.env.CLOUDFLARE_API_TOKEN,
+    databaseId: process.env.CLOUDFLARE_D1_DATABASE_ID,
+  };
+  
+  d1Manager = getD1Manager(d1Config);
+  d1Manager.initialize()
+    .then(() => d1Manager!.initializeSchema())
+    .catch(console.error);
 }
 
-// Eager initialization can trigger OOM in constrained preview environments.
-// Run on first request instead.
-router.use(async (_req, _res, next) => {
-  await ensurePrivacyInitialized();
-  next();
-});
+// Initialize on startup
+fidesManager.initialize().catch(console.error);
+privacyStack.initialize().catch(console.error);
 
 /**
  * Submit Data Subject Access Request (DSAR)

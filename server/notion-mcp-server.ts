@@ -7,7 +7,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { NOTION_PAGE_ID, createOrUpdateDocumentationPage, findDatabaseByTitle } from './notion.js';
+import { notion, NOTION_PAGE_ID, createOrUpdateDocumentationPage, findDatabaseByTitle } from './notion.js';
 import chokidar from 'chokidar';
 
 interface NotionMCPServerConfig {
@@ -495,8 +495,13 @@ class NotionMCPServer {
   }
 
   private async getFilesMatchingPattern(pattern: string): Promise<string[]> {
-    const { glob } = require('glob');
-    return await glob(pattern);
+    const glob = require('glob');
+    return new Promise((resolve, reject) => {
+      glob(pattern, (err: any, files: string[]) => {
+        if (err) reject(err);
+        else resolve(files);
+      });
+    });
   }
 
   private convertMarkdownToBlocks(content: string): any[] {

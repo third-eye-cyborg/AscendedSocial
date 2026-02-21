@@ -18,7 +18,7 @@ router.get('/mobile-config', (req, res) => {
       deepLinkScheme: 'ascended://',
       apiBaseUrl: `${req.protocol}://${req.get('host')}/api`,
       issuerUrl: process.env.ISSUER_URL || "https://replit.com/oidc",
-      scopes: ["openid", "email", "profile"],
+      scopes: ["openid", "email", "profile", "offline_access"],
       version: '1.0.0',
       features: {
         deepLinking: true,

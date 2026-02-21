@@ -17,7 +17,22 @@ export function bypassAuthForTesting(req: Request, res: Response, next: NextFunc
   // Never allow bypass in development or production - this prevents security bypass attacks
   const isSafeEnvironment = process.env.NODE_ENV === 'test';
   
+  console.log(`🧪 [AUTH-BYPASS-DEBUG] Middleware called:`, {
+    path: req.path,
+    userAgent: req.headers['user-agent'],
+    nodeEnv: process.env.NODE_ENV,
+    replitEnv: process.env.REPLIT_ENV,
+    isSafeEnvironment,
+    headers: {
+      'x-testing-mode': req.headers['x-testing-mode'],
+      'x-test-auth-bypass': req.headers['x-test-auth-bypass'],
+      'x-spiritual-tester': req.headers['x-spiritual-tester']
+    }
+  });
+  
   if (!isSafeEnvironment) {
+    // In production, this middleware is completely disabled for security
+    console.log(`🧪 [AUTH-BYPASS-DEBUG] Not safe environment, skipping`);
     return next();
   }
 
@@ -108,8 +123,23 @@ export function isAuthenticatedWithBypass(req: Request, res: Response, next: Nex
 
   // Production authentication check - no bypass possible
   if (req.isAuthenticated && req.isAuthenticated()) {
+    console.log(`✅ [AUTH-PROTECTED] User authenticated:`, {
+      userId: (req.user as any)?.id,
+      path: req.path,
+      timestamp: new Date().toISOString()
+    });
     return next();
   }
+
+  // Authentication failed - log security event
+  console.log(`❌ [AUTH-PROTECTED] Authentication required for:`, {
+    path: req.path,
+    method: req.method,
+    userAgent: (req.headers['user-agent'] || '').substring(0, 50),
+    ip: req.ip,
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
+  });
 
   // Return 401 for API routes, redirect for web routes
   if (req.path.startsWith('/api/')) {

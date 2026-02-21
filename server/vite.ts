@@ -20,18 +20,9 @@ export function log(message: string, source = "express") {
 }
 
 export async function setupVite(app: Express, server: Server) {
-  // Determine the correct HMR configuration based on environment
-  const isReplit = process.env.REPL_ID !== undefined;
-  const isProduction = process.env.NODE_ENV === 'production';
-  
-  // For Replit preview, we need to handle HMR differently
-  const hmrConfig = isReplit || isProduction 
-    ? false // Disable HMR on Replit/production - not needed
-    : { server }; // Use server for HMR in local development
-  
   const serverOptions = {
     middlewareMode: true,
-    hmr: hmrConfig,
+    hmr: { server },
     allowedHosts: true as const,
   };
 

@@ -48,7 +48,7 @@ function getAdminSessionConfig() {
   const pgStore = connectPg(session);
   const sessionStore = new pgStore({
     conString: process.env.DATABASE_URL,
-    createTableIfMissing: true,
+    createTableIfMissing: false,
     ttl: sessionTtl,
     tableName: "admin_sessions", // Separate table for admin sessions
   });
@@ -268,8 +268,7 @@ export async function setupAdminAuth(app: Express) {
   for (const domain of allDomains) {
     const isLocalhost = domain === 'localhost';
     const protocol = isLocalhost ? 'http' : 'https';
-    const actualPort = isLocalhost ? (process.env.PORT || '5000') : '';
-    const port = isLocalhost ? `:${actualPort}` : '';
+    const port = isLocalhost ? ':5000' : '';
     
     const strategy = new Strategy(
       {
@@ -282,7 +281,7 @@ export async function setupAdminAuth(app: Express) {
     );
     passport.use(strategy);
     
-    console.log(`✅ Admin auth strategy registered: replit-admin:${domain} -> ${protocol}://${domain}${port}/api/admin/callback`);
+    console.log(`✅ Admin auth strategy registered: replit-admin:${domain}`);
   }
 
   // Admin login endpoint
@@ -321,41 +320,14 @@ export async function setupAdminAuth(app: Express) {
 
   // Admin logout endpoint
   app.get("/api/admin/logout", (req, res) => {
-    // Preserve host:port from Host header so local/dev ports are not dropped
-    const hostWithPort = req.get('host') || req.hostname;
-    const endHref = client.buildEndSessionUrl(config, {
-      client_id: process.env.REPL_ID!,
-      post_logout_redirect_uri: `${req.protocol}://${hostWithPort}`,
-    }).href;
-
-    try {
-      req.logout(() => {
-        if (req.session) {
-          let sessionDestroyed = false;
-          const destroyTimeout = setTimeout(() => {
-            if (!sessionDestroyed && !res.headersSent) {
-              console.warn('⚠️ Session destroy timeout during admin logout - force redirecting');
-              sessionDestroyed = true;
-              res.redirect(endHref);
-            }
-          }, 5000);
-          
-          req.session.destroy((err) => {
-            clearTimeout(destroyTimeout);
-            if (err) console.error('Session destroy error during admin logout:', err);
-            if (!sessionDestroyed && !res.headersSent) {
-              sessionDestroyed = true;
-              res.redirect(endHref);
-            }
-          });
-        } else {
-          return res.redirect(endHref);
-        }
-      });
-    } catch (err) {
-      console.error('Error during admin logout:', err);
-      return res.redirect(endHref);
-    }
+    req.logout(() => {
+      res.redirect(
+        client.buildEndSessionUrl(config, {
+          client_id: process.env.REPL_ID!,
+          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
+        }).href
+      );
+    });
   });
 
   // Get current admin user endpoint

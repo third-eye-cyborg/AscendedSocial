@@ -1,6 +1,3 @@
-// Import Sentry initialization first - before any other imports
-import "./sentry.init.ts";
-
 import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
@@ -9,22 +6,18 @@ import zeroTrustRoutes from './zeroTrustApi';
 import complianceRoutes from './compliance-routes';
 import mcpRoutes from './mcp-routes';
 // Mobile auth routes handled by Replit Auth
+import notionMcpRoutes from './notion-mcp-routes';
+import autoSyncRoutes from './auto-sync-routes';
 import builderRoutes from './builder-integration';
 
-// Global error handlers
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Promise Rejection:', reason);
-  console.error('Promise:', promise);
-  if (reason instanceof Error) {
-    console.error('Stack:', reason.stack);
-  }
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
-  console.error('Stack:', error.stack);
-  process.exit(1);
-});
+// Initialize Sentry for error tracking (v8 API - must be done before creating Express app)
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  });
+}
 
 const app = express();
 app.use(express.json());
@@ -61,19 +54,18 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  try {
-    const server = await registerRoutes(app);
+  const server = await registerRoutes(app);
 
-    // Add auth callback route to serve frontend page
-    app.get('/auth-callback', (req, res, next) => {
-      // Let Vite handle serving the frontend page for auth callback
-      if (app.get("env") === "development") {
-        next(); // Let Vite handle it
-      } else {
-        // In production, serve the static frontend
-        res.sendFile('index.html', { root: 'dist/client' });
-      }
-    });
+  // Add auth callback route to serve frontend page
+  app.get('/auth-callback', (req, res, next) => {
+    // Let Vite handle serving the frontend page for auth callback
+    if (app.get("env") === "development") {
+      next(); // Let Vite handle it
+    } else {
+      // In production, serve the static frontend
+      res.sendFile('index.html', { root: 'dist/client' });
+    }
+  });
 
   // Mobile auth routes handled by Replit Auth
 
@@ -81,6 +73,8 @@ app.use((req, res, next) => {
   app.use('/api/zero-trust', zeroTrustRoutes);
   app.use('/api/compliance', complianceRoutes);
   app.use('/api/mcp', mcpRoutes);
+  app.use('/api/notion-mcp', notionMcpRoutes);
+  app.use('/api/auto-sync', autoSyncRoutes);
   app.use('/api/builder', builderRoutes);
 
   // Sentry error handler (must be after routes, before other error middleware)
@@ -105,96 +99,18 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Serve on configurable port (default 5000 for Replit compatibility)
-  // In development, use PORT env var; in production, default to 5000
-  // This port serves both the API and the client frontend
-  const port = parseInt(process.env.PORT || '5000', 10);
-
-  // Auto-kill any process occupying the port before binding (uses /proc, no system commands needed)
-  const killPortProcess = async (targetPort: number): Promise<void> => {
-    const { readFileSync, readdirSync, readlinkSync } = await import('fs');
-    const targetPortHex = targetPort.toString(16).toUpperCase().padStart(4, '0');
-    
-    try {
-      // Read /proc/net/tcp to find connections on our port
-      const tcpData = readFileSync('/proc/net/tcp', 'utf8');
-      const listeningInodes = new Set<string>();
-      
-      for (const line of tcpData.split('\n').slice(1)) {
-        const parts = line.trim().split(/\s+/);
-        if (parts.length < 10) continue;
-        const [, portHex] = (parts[1] || '').split(':');
-        const state = parts[3]; // 0A = LISTEN
-        if (portHex === targetPortHex && state === '0A') {
-          listeningInodes.add(parts[9]);
-        }
-      }
-
-      if (listeningInodes.size === 0) return;
-
-      // Map inodes to PIDs by scanning /proc/[pid]/fd/
-      const procDirs = readdirSync('/proc').filter(f => /^\d+$/.test(f));
-      for (const pidStr of procDirs) {
-        const pid = parseInt(pidStr);
-        if (pid === process.pid || pid <= 1) continue;
-        try {
-          const fds = readdirSync(`/proc/${pidStr}/fd`);
-          for (const fd of fds) {
-            try {
-              const link = readlinkSync(`/proc/${pidStr}/fd/${fd}`);
-              if (link.startsWith('socket:[')) {
-                const inode = link.slice(8, -1);
-                if (listeningInodes.has(inode)) {
-                  log(`🔄 Killing previous process (PID ${pid}) on port ${targetPort}`);
-                  try { process.kill(pid, 'SIGKILL'); } catch {}
-                  listeningInodes.delete(inode);
-                  if (listeningInodes.size === 0) break;
-                }
-              }
-            } catch {}
-          }
-        } catch {}
-        if (listeningInodes.size === 0) break;
-      }
-    } catch (e) {
-      // /proc not available, try ss as fallback
-      try {
-        const { execSync } = await import('child_process');
-        const result = execSync(`ss -tlnp 'sport = :${targetPort}' 2>/dev/null`, { encoding: 'utf8' });
-        const match = result.match(/pid=(\d+)/);
-        if (match) {
-          const pid = parseInt(match[1]);
-          if (pid !== process.pid) {
-            log(`🔄 Killing previous process (PID ${pid}) on port ${targetPort}`);
-            try { process.kill(pid, 'SIGKILL'); } catch {}
-          }
-        }
-      } catch {}
-    }
-    
-    // Wait for port to be released
-    await new Promise(resolve => setTimeout(resolve, 1000));
-  };
-
-  // Try to kill existing port holder before first listen attempt (dev mode only)
-  if (app.get("env") === "development") {
-    await killPortProcess(port);
-  }
-
+  // ALWAYS serve the app on the port specified in the environment variable PORT
+  // Other ports are firewalled. Default to 5000 if not specified.
+  // this serves both the API and the client.
+  // It is the only port that is not firewalled.
+  // Force port 5000 since it's the only port that works in Replit
+  const port = 5000;
+  
   // Add error handling for port conflicts
-  server.on('error', async (error: any) => {
+  server.on('error', (error: any) => {
     if (error.code === 'EADDRINUSE') {
-      log(`⚠️ Port ${port} in use, attempting to reclaim...`);
-      await killPortProcess(port);
-      // Retry listen after killing
-      try {
-        server.listen({ port, host: "0.0.0.0", reusePort: true }, () => {
-          log(`serving on port ${port} (reclaimed)`);
-        });
-      } catch {
-        console.error(`❌ Could not reclaim port ${port}. Please restart manually.`);
-        process.exit(1);
-      }
+      console.error(`❌ Port ${port} is already in use. Please free the port or use a different one.`);
+      process.exit(1);
     } else {
       console.error('❌ Server error:', error);
       process.exit(1);
@@ -220,22 +136,4 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
-
-  // Monitor memory usage
-  setInterval(() => {
-    const memUsage = process.memoryUsage();
-    const heapUsedMB = (memUsage.heapUsed / 1024 / 1024).toFixed(2);
-    const heapTotalMB = (memUsage.heapTotal / 1024 / 1024).toFixed(2);
-    log(`📊 Memory: ${heapUsedMB}MB / ${heapTotalMB}MB (rss: ${(memUsage.rss / 1024 / 1024).toFixed(2)}MB)`);
-  }, 30000);
-  } catch (error) {
-    console.error('❌ FATAL ERROR during server startup:', error);
-    if (error instanceof Error) {
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-    }
-    console.error('Full error:', JSON.stringify(error, null, 2));
-    process.exit(1);
-  }
 })();

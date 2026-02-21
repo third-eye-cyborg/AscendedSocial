@@ -472,17 +472,14 @@ export const securityErrorHandler: RequestHandler = async (req: Request, res: Re
   const originalSend = res.send;
   
   res.send = function(data: any) {
+    // Log any 401 or 403 responses for security monitoring
     if (res.statusCode === 401 || res.statusCode === 403) {
-      const expectedUnauthPaths = ['/api/auth/user', '/api/auth/status'];
-      const isExpected = res.statusCode === 401 && expectedUnauthPaths.some(p => req.path === p);
-      if (!isExpected) {
-        logSecurityViolation(req, 'security_error_response', {
-          statusCode: res.statusCode,
-          path: req.path,
-          method: req.method,
-          response: typeof data === 'string' ? data.substring(0, 200) : 'non-string-response'
-        }).catch(console.error);
-      }
+      logSecurityViolation(req, 'security_error_response', {
+        statusCode: res.statusCode,
+        path: req.path,
+        method: req.method,
+        response: typeof data === 'string' ? data.substring(0, 200) : 'non-string-response'
+      }).catch(console.error);
     }
     
     return originalSend.call(this, data);
@@ -526,10 +523,9 @@ async function logSecurityViolation(req: Request, violationType: string, details
     
     console.error(`🚨 SECURITY VIOLATION [${violationType}]:`, logEntry);
     
-    // Store in admin audit log if available - use 'other_action' enum value
-    // since security violation types may not match the audit_action enum
+    // Store in admin audit log if available
     if (typeof logAdminAction === 'function') {
-      await logAdminAction(req, 'other_action' as any, { ...logEntry, violationType });
+      await logAdminAction(req, violationType as any, logEntry);
     }
     
     // Could also send to external security monitoring service here

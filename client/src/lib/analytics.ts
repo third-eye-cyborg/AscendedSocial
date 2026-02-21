@@ -71,12 +71,13 @@ const initializePostHog = () => {
         return sanitized;
       },
       
-      loaded: () => {
+      loaded: (posthog) => {
         if (import.meta.env.DEV) {
           console.log('🔍 PostHog analytics initialized (development mode)');
           posthog.debug();
         }
         
+        // Set up consent management
         setupConsentManagement(posthog);
       },
     });
@@ -343,7 +344,7 @@ export class ClientAnalytics {
     return {
       hasAnalyticsConsent: consentManager.hasAnalyticsConsent(),
       hasMarketingConsent: consentManager.hasMarketingConsent(),
-      hasFunctionalConsent: consentManager.hasFunctionalConsent(),
+      hasFunctionalConsent: consentManager.hasPreferencesConsent(),
       isInitialized: isInitialized,
     };
   }

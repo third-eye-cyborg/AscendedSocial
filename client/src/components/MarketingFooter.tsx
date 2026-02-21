@@ -4,10 +4,6 @@ import DisclaimerBanner from "@/components/DisclaimerBanner";
 import ASLogo from "@assets/ASLogo.png";
 
 export default function MarketingFooter() {
-  const loginHref = typeof window !== "undefined"
-    ? `/api/login?host=${encodeURIComponent(window.location.host)}`
-    : "/api/login";
-
   return (
     <footer className="relative z-10 bg-cosmic/80 backdrop-blur-lg border-t border-primary/20 py-12">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -335,7 +331,7 @@ export default function MarketingFooter() {
                 Join the spiritual revolution
               </p>
               <a 
-                href={loginHref}
+                href="/api/login"
                 className="inline-flex items-center space-x-2 bg-gradient-to-r from-primary to-secondary text-white font-semibold px-6 py-2 rounded-lg hover:from-primary/90 hover:to-secondary/90 transition-all duration-300 cursor-pointer"
                 data-testid="button-join-community"
               >

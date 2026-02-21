@@ -1,17 +1,17 @@
 import express, { Request, Response } from 'express';
+import { NotionMCPServer } from './notion-mcp-server.js';
 import { promises as fs } from 'fs';
 import path from 'path';
 
 const router = express.Router();
 console.log('📚 Notion MCP routes registered');
 
-// Initialize Notion MCP server (loaded dynamically to avoid hard dependency on MCP SDK)
-let notionMCPServer: any | null = null;
+// Initialize Notion MCP server
+let notionMCPServer: NotionMCPServer | null = null;
 
 // Initialize Notion MCP server endpoint
 router.post('/init', async (req: Request, res: Response) => {
   try {
-    const { NotionMCPServer } = await import('./notion-mcp-server.js');
     notionMCPServer = new NotionMCPServer({
       watchPaths: ['../*.md', '../docs/**/*.md', '../server/**/*.ts'],
       autoSync: true,
@@ -34,14 +34,11 @@ router.post('/init', async (req: Request, res: Response) => {
       autoSync: true
     });
   } catch (error: any) {
-    const message = error?.code === 'ERR_MODULE_NOT_FOUND'
-      ? 'Notion MCP dependencies are not installed. Skipping initialization.'
-      : 'Failed to initialize Notion MCP server';
     console.error('❌ Notion MCP initialization failed:', error);
-    res.status(503).json({
+    res.status(500).json({
       success: false,
-      error: message,
-      details: error?.message
+      error: 'Failed to initialize Notion MCP server',
+      details: error.message
     });
   }
 });

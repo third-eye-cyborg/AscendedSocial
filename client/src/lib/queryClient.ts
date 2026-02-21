@@ -13,7 +13,7 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   // Get stored auth token for mobile authentication
-  const authToken = localStorage.getItem('replit_auth_token');
+  const authToken = localStorage.getItem('auth_token');
   
   const headers: Record<string, string> = data ? { "Content-Type": "application/json" } : {};
   if (authToken) {
@@ -38,7 +38,7 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     // Get stored auth token for mobile authentication
-    const authToken = localStorage.getItem('replit_auth_token');
+    const authToken = localStorage.getItem('auth_token');
     
     const headers: Record<string, string> = {};
     if (authToken) {

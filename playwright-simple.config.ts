@@ -16,7 +16,7 @@ export default defineConfig({
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: ['**/visual-regression.*'],
+      testIgnore: ['**/chromatic-storybook.*', '**/visual-regression.*'],
     },
   ],
 });

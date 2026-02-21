@@ -47,7 +47,6 @@ const PUBLIC_ROUTE_PATTERNS = [
   /^\/api\/login$/,
   /^\/api\/callback$/,
   /^\/api\/logout$/,
-  /^\/api\/auth\/logout$/,
   /^\/$/, // Root
   /^\/landing/,
   /^\/about/,
@@ -112,46 +111,63 @@ export const routeSegregationMiddleware: RequestHandler = async (req: Request, r
   const isAdminAuthenticated = req.isAuthenticated && req.isAuthenticated() && (req.user as any)?.isAdmin;
   const isUserAuthenticated = (req.session as any)?.user || req.headers.authorization?.startsWith('Bearer ');
   
+  // Log all authentication attempts for audit purposes
+  const logContext = {
+    path: req.path,
+    method: req.method,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    requiredAuthType,
+    isAdminAuthenticated,
+    isUserAuthenticated
+  };
+  
+  console.log('🔍 Route segregation check:', logContext);
+  
   // Handle admin routes
   if (requiredAuthType === AuthType.ADMIN) {
     if (!isAdminAuthenticated) {
-      const details = { path: req.path, method: req.method, ip: req.ip };
-      console.warn('🚫 Unauthorized admin route access attempt:', details);
-      await logSecurityViolation(req, 'unauthorized_admin_access', details);
+      console.warn('🚫 Unauthorized admin route access attempt:', logContext);
+      await logSecurityViolation(req, 'unauthorized_admin_access', logContext);
       return res.status(401).json({ 
         error: 'Admin authentication required',
         message: 'This endpoint requires admin authentication via Replit Auth'
       });
     }
     
+    // Ensure user session is not interfering with admin session
     if (isUserAuthenticated && !isAdminAuthenticated) {
-      const details = { path: req.path, method: req.method, ip: req.ip };
-      console.warn('🚫 User session attempting to access admin route:', details);
-      await logSecurityViolation(req, 'cross_auth_violation', details);
+      console.warn('🚫 User session attempting to access admin route:', logContext);
+      await logSecurityViolation(req, 'cross_auth_violation', logContext);
       return res.status(403).json({ 
         error: 'Access denied',
         message: 'User sessions cannot access admin endpoints'
       });
     }
     
+    console.log('✅ Admin route access granted:', req.path);
     return next();
   }
   
   // Handle user routes
   if (requiredAuthType === AuthType.USER) {
+    // Block admin sessions from accessing user routes
     if (isAdminAuthenticated && !isUserAuthenticated) {
-      const details = { path: req.path, method: req.method, ip: req.ip };
-      console.warn('🚫 Admin session attempting to access user route:', details);
-      await logSecurityViolation(req, 'admin_user_route_access', details);
+      console.warn('🚫 Admin session attempting to access user route:', logContext);
+      await logSecurityViolation(req, 'admin_user_route_access', logContext);
       return res.status(403).json({ 
         error: 'Access denied',
         message: 'Admin sessions cannot access user endpoints. Please use regular user authentication.'
       });
     }
     
+    // User routes will be handled by their specific authentication middleware
+    console.log('📊 User route - proceeding to authentication middleware:', req.path);
     return next();
   }
   
+  // Public routes - proceed without authentication
+  console.log('🌐 Public route access:', req.path);
   return next();
 };
 

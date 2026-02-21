@@ -18,6 +18,7 @@ test:
     - '**/tests/**'
     - '**/cypress/**'
     - '**/playwright/**'
+    - '**/storybook-static/**'
 
 # Monitor settings for continuous security monitoring
 monitor:

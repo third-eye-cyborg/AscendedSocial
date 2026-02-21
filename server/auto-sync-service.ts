@@ -44,10 +44,9 @@ class AutoSyncService {
     try {
       console.log('🚀 Starting Auto-Sync Service...');
       
-      // Check if Notion integration is configured
+      // Initialize Notion connection
       if (!process.env.NOTION_INTEGRATION_SECRET) {
-        console.warn('⚠️ Notion integration not configured (missing NOTION_INTEGRATION_SECRET). Auto-sync service will be disabled.');
-        return;
+        throw new Error('NOTION_INTEGRATION_SECRET not found in environment variables');
       }
 
       // Start file watcher
@@ -294,8 +293,13 @@ class AutoSyncService {
    * Get files matching a glob pattern
    */
   private async getFilesMatchingPattern(pattern: string): Promise<string[]> {
-    const { glob } = require('glob');
-    return await glob(pattern);
+    const glob = require('glob');
+    return new Promise((resolve, reject) => {
+      glob(pattern, (err: any, files: string[]) => {
+        if (err) reject(err);
+        else resolve(files);
+      });
+    });
   }
 
   /**

@@ -1,10 +1,11 @@
 // cypress.config.js
 const { defineConfig } = require("cypress");
+const { installPlugin } = require("@chromatic-com/cypress");
 
 module.exports = defineConfig({
   e2e: {
     setupNodeEvents(on, config) {
-      // Chromatic visual testing handled via hosted Storybook
+      installPlugin(on, config);
     },
   },
 });

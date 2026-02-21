@@ -59,10 +59,7 @@ export default function Community() {
               Connect with like-minded souls, share wisdom, and grow together in sacred spiritual circles.
             </p>
             <Button 
-              onClick={() => {
-                const host = window.location.host;
-                window.location.href = `/api/login?host=${encodeURIComponent(host)}`;
-              }}
+              onClick={() => window.location.href = '/api/login'}
               className="w-full bg-primary hover:bg-primary/80 text-white !text-white"
               data-testid="button-sign-in"
             >

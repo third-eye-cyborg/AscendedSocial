@@ -1,13 +1,12 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
   plugins: [
     react(),
-    // Disabled runtime error overlay - it was trying to use React before initialization
-    // Use Vite's default error overlay instead via server.hmr.overlay
-    // runtimeErrorOverlay(),
+    runtimeErrorOverlay(),
     // Temporarily disabled cartographer plugin due to "traverse is not a function" error
     // ...(process.env.NODE_ENV !== "production" &&
     // process.env.REPL_ID !== undefined
@@ -33,31 +32,9 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true,
-    hmr: {
-      overlay: false, // Disable overlay to prevent WebSocket errors from blocking the app
-      protocol: 'ws',
-      host: 'localhost',
-      port: 3000,
-    },
     fs: {
       strict: true,
       deny: ["**/.*"],
-    },
-    watch: {
-      ignored: [
-        '**/node_modules/**',
-        '**/.git/**',
-        '**/dist/**',
-        '**/test-results/**',
-        '**/playwright-report/**',
-        '**/cypress/**',
-        '**/migrations/**',
-        '**/logs/**',
-        '**/.config/**',
-        '**/attached_assets/**',
-        '**/scripts/**',
-      ],
-      usePolling: false,
     },
   },
 });

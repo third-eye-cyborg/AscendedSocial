@@ -123,15 +123,25 @@ router.post('/api/figma/sync-components', async (req, res) => {
       });
     }
     
-    console.log(`📦 [FIGMA-SYNC] ${syncId} - Found ${components.length} components`);
+    console.log(`📦 [FIGMA-SYNC] ${syncId} - Found ${components.length} components, generating stories...`);
+    
+    // Generate updated story files with error handling
+    let storiesGenerated = 0;
+    try {
+      storiesGenerated = await generateStoriesFromFigmaComponents(components);
+    } catch (storyError: any) {
+      console.error(`⚠️ [FIGMA-SYNC] ${syncId} - Story generation failed:`, storyError.message);
+      // Continue with partial success
+    }
     
     const duration = Date.now() - startTime;
-    console.log(`✅ [FIGMA-SYNC] ${syncId} - Completed in ${duration}ms: ${components.length} components`);
+    console.log(`✅ [FIGMA-SYNC] ${syncId} - Completed in ${duration}ms: ${components.length} components, ${storiesGenerated} stories`);
     
     res.json({
       success: true,
       syncId,
       componentsCount: components.length,
+      storiesGenerated,
       components: components.map(c => ({
         id: c.id,
         name: c.name,
@@ -139,7 +149,7 @@ router.post('/api/figma/sync-components', async (req, res) => {
         figmaUrl: c.figmaUrl
       })),
       duration,
-      message: `Components synced from Figma: ${components.length} components`,
+      message: `Components synced from Figma: ${components.length} components, ${storiesGenerated} stories generated`,
       timestamp: new Date().toISOString()
     });
   } catch (error: any) {
@@ -192,7 +202,7 @@ router.get('/api/figma/component-metadata/:componentName', async (req, res) => {
     const { componentName } = req.params;
     const metadataPath = path.join(
       process.cwd(), 
-      'config', 
+      '.storybook', 
       'figma-metadata', 
       `${componentName}.json`
     );
@@ -245,14 +255,59 @@ function generateCSSVariables(tokens: any): string {
   return css;
 }
 
-// Helper function to save Figma component metadata
-async function saveFigmaComponentMetadata(components: any[]) {
-  const metadataDir = path.join(process.cwd(), 'config', 'figma-metadata');
-  await fs.mkdir(metadataDir, { recursive: true });
+// Helper function to generate stories from Figma components
+async function generateStoriesFromFigmaComponents(components: any[]) {
+  const storiesDir = path.join(process.cwd(), 'client/src/stories');
   
   for (const component of components) {
-    const filePath = path.join(metadataDir, `${component.name}.json`);
-    await fs.writeFile(filePath, JSON.stringify(component, null, 2));
+    const storyContent = `
+import type { Meta, StoryObj } from '@storybook/react';
+import { ${component.name} } from '../components/${component.name}';
+
+// Auto-generated from Figma component: ${component.id}
+const meta: Meta<typeof ${component.name}> = {
+  title: 'Figma Sync/${component.name}',
+  component: ${component.name},
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: 'Component synced from Figma: ${component.description}'
+      }
+    },
+    figma: {
+      component: '${component.id}',
+      url: 'https://www.figma.com/file/${process.env.FIGMA_FILE_KEY}/${component.name}'
+    }
+  },
+  tags: ['autodocs', 'figma-sync'],
+  argTypes: {
+    chakra: {
+      control: 'select',
+      options: ['root', 'sacral', 'solar-plexus', 'heart', 'throat', 'third-eye', 'crown']
+    }
+  }
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+  args: {}
+};
+
+${component.variants?.map((variant: any) => `
+export const ${variant.name.replace(/\s+/g, '')}: Story = {
+  args: {
+    variant: '${variant.name.toLowerCase()}'
+  }
+};`).join('\n') || ''}
+`;
+    
+    await fs.writeFile(
+      path.join(storiesDir, `${component.name}.figma-sync.stories.tsx`),
+      storyContent
+    );
   }
 }
 

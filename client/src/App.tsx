@@ -11,7 +11,7 @@ import { useEffect, useMemo, Suspense, lazy, memo } from "react";
 import { AuthenticatedMarker } from './components/AuthenticatedMarker';
 
 // Critical pages - loaded immediately
-import LoginScreen from "@/pages/loginScreen";
+import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import AuthCallback from "@/pages/auth-callback";
 import NotFound from "@/pages/not-found";
@@ -19,6 +19,9 @@ import Login from "@/pages/login";
 
 // Non-critical pages - lazy loaded
 const Subscribe = lazy(() => import("@/pages/subscribe"));
+const About = lazy(() => import("@/pages/about"));
+const Features = lazy(() => import("@/pages/features"));
+const Pricing = lazy(() => import("@/pages/pricing"));
 const Profile = lazy(() => import("@/pages/profile"));
 const ProfileSettings = lazy(() => import("@/pages/profileSettings"));
 const Post = lazy(() => import("@/pages/post"));
@@ -148,14 +151,17 @@ const Router = memo(() => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Switch>
-        <Route path="/">{isAuthenticated ? <Home /> : <LoginScreen />}</Route>
-        <Route path="/home">{isAuthenticated ? <Home /> : <LoginScreen />}</Route>
+        <Route path="/">{isAuthenticated ? <Home /> : <Landing />}</Route>
+        <Route path="/home">{isAuthenticated ? <Home /> : <Landing />}</Route>
         <Route path="/login" component={Login} />
         <Route path="/auth/callback" component={AuthCallback} />
         <Route path="/auth/mobile-callback" component={AuthCallback} />
         <Route path="/auth" component={AuthCallback} />
         <Route path="/mobile-login" component={MobileLogin} />
         <Route path="/subscribe" component={Subscribe} />
+        <Route path="/about" component={About} />
+        <Route path="/features" component={Features} />
+        <Route path="/pricing" component={Pricing} />
         <Route path="/profile/:id?" component={Profile} />
         <Route path="/profile-settings" component={ProfileSettings} />
         <Route path="/post/:id" component={Post} />
